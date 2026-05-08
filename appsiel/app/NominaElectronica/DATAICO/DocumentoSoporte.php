@@ -10,6 +10,7 @@ use App\Sistema\Services\AppDocType;
 use App\Sistema\TipoTransaccion;
 
 use App\Nomina\NomContrato;
+use App\Nomina\ParametroLegal;
 use App\Nomina\ValueObjects\LapsoNomina;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -135,6 +136,7 @@ class DocumentoSoporte extends Model
    public function get_arr_content_data( $empleado, $lapso )
    {
       $registros = $empleado->get_registros_documentos_nomina_entre_fechas($lapso->fecha_inicial, $lapso->fecha_final);
+      $horas_dia_laboral = $this->get_horas_dia_laboral($lapso->fecha_final);
 
       $registros_por_conceptos = $registros->groupBy('nom_concepto_id');
       
@@ -145,9 +147,15 @@ class DocumentoSoporte extends Model
          $concepto = $registro_concepto->all()[0]->concepto;
 
          if ($concepto->naturaleza == 'devengo') {
-            $line_accruals[] = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_devengo'));
+            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_devengo'),$horas_dia_laboral);
+            if (!empty($value_json)) {
+               $line_accruals[] = $value_json;
+            }
          }else{
-            $line_deductions[] = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_deduccion'));
+            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_deduccion'),$horas_dia_laboral);
+            if (!empty($value_json)) {
+               $line_deductions[] = $value_json;
+            }
          }
       }
 
@@ -157,7 +165,7 @@ class DocumentoSoporte extends Model
       ];
    }
 
-   public function get_linea_empleado($registro_concepto,$concepto,$amount)
+   public function get_linea_empleado($registro_concepto,$concepto,$amount,$horas_dia_laboral)
    {         
       $one_line = [];
 
@@ -173,9 +181,17 @@ class DocumentoSoporte extends Model
       }
       
       $one_line['code'] = $concepto->cpto_dian->codigo;
+
+      if ($amount <= 0) {
+         return [];
+      }
       
       if ($concepto->cpto_dian->liquida_dias) {
-         $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / (float)config('nomina.horas_dia_laboral') , 0 );
+         if ($horas_dia_laboral <= 0) {
+            return $this->get_error_line('No hay parámetro legal activo con Horas por día laboral mayor a cero para el periodo del documento. Revise nom_parametros_legales.');
+         }
+
+         $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / $horas_dia_laboral , 0 );
       }
       
       if ($concepto->cpto_dian->liquida_horas) {
@@ -189,6 +205,34 @@ class DocumentoSoporte extends Model
       $one_line['amount'] = $amount;
 
       return $one_line;
+   }
+
+   protected function get_horas_dia_laboral($fecha_periodo)
+   {
+      $parametro = ParametroLegal::where('estado', 'Activo')
+         ->where('fecha_inicio', '<=', $fecha_periodo)
+         ->where(function ($query) use ($fecha_periodo) {
+            $query->whereNull('fecha_fin')
+               ->orWhere('fecha_fin', '>=', $fecha_periodo);
+         })
+         ->orderBy('fecha_inicio', 'DESC')
+         ->first();
+
+      if (is_null($parametro)) {
+         return 0;
+      }
+
+      return (float)$parametro->horas_dia_laboral;
+   }
+
+   protected function get_error_line($message)
+   {
+      return [
+         'status' => 'error',
+         'code' => 0,
+         'amount' => 0,
+         'message' => $message
+      ];
    }
 
    public function get_json_to_send()

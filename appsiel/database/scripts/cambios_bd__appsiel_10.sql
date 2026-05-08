@@ -15,6 +15,82 @@ VALUES
 ('2026-01-01', '2026-07-14', 1750905.00, 249095.00, 52374.00, 220.000, 7.333, 'Decretos 1469 y 1470 de 2025 / Resolucion DIAN 238 de 2025 / Ley 2101 de 2021: jornada 44h semanales hasta 2026-07-14', 'Activo', NOW(), NOW()),
 ('2026-07-15', '2026-12-31', 1750905.00, 249095.00, 52374.00, 210.000, 7.000, 'Decretos 1469 y 1470 de 2025 / Resolucion DIAN 238 de 2025 / Ley 2101 de 2021: jornada 42h semanales desde 2026-07-15', 'Activo', NOW(), NOW());
 
+-- 08 MAYO 2026 - Nomina electronica: equivalencia DIAN de conceptos legacy migrados.
+UPDATE `nom_conceptos` nc
+SET nc.`cpto_dian_id` = CASE
+  WHEN nc.`naturaleza` = 'Devengo' AND nc.`abreviatura` IN ('001','002','003','022','093','152') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'BASICO' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND nc.`abreviatura` = '004' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'APOYO_PRACTICA' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND (nc.`abreviatura` = '005' OR UPPER(nc.`descripcion`) LIKE '%TRANSPORTE%') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'AUXILIO_DE_TRANSPORTE' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND UPPER(nc.`descripcion`) LIKE '%COMISION%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'COMISION' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND nc.`abreviatura` IN ('006','150') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'HORA_EXTRA_DIARIA' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND nc.`abreviatura` = '007' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'HORA_EXTRA_NOCTURNA' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND nc.`abreviatura` IN ('008','012') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'HORA_EXTRA_DIURNA_DF' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND nc.`abreviatura` = '009' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'HORA_EXTRA_NOCTURNA_DF' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND nc.`abreviatura` IN ('010','011') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'HORA_RECARGO_DIURNA_DF' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND nc.`abreviatura` IN ('013','151') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'HORA_RECARGO_NOCTURNO' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND nc.`abreviatura` = '014' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'HORA_RECARGO_NOCTURNO_DF' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND UPPER(nc.`descripcion`) LIKE '%INDEMNIZ%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'INDEMNIZACION' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND UPPER(nc.`descripcion`) LIKE '%BONIFIC%RETIRO%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'BONIFICACION_RETIRO' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND UPPER(nc.`descripcion`) LIKE '%BONIFIC%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'BONIFICACION' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND UPPER(nc.`descripcion`) LIKE '%VACACION%COMPENS%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'VACACION_COMPENSADA' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND UPPER(nc.`descripcion`) LIKE '%VACACION%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'VACACION' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND UPPER(nc.`descripcion`) LIKE '%PRIMA%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'PRIMA' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND UPPER(nc.`descripcion`) LIKE '%CESANT%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'CESANTIAS' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND UPPER(nc.`descripcion`) LIKE '%LEY MARIA%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'LICENCIA_PATERNIDAD' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND UPPER(nc.`descripcion`) LIKE '%LICENCIA%REMUNERADA%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'LICENCIA_REMUNERADA' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND (UPPER(nc.`descripcion`) LIKE '%INCAPAC%' OR UPPER(nc.`descripcion`) LIKE '%MATERNIDAD%') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'INCAPACIDAD' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND (UPPER(nc.`descripcion`) LIKE '%AUXILIO%' OR UPPER(nc.`descripcion`) LIKE '%REEMBOLSO%' OR UPPER(nc.`descripcion`) LIKE '%REMBOLSO%') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'AUXILIO' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Devengo' AND UPPER(nc.`descripcion`) LIKE '%ANTICIPO%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'ANTICIPO' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND (UPPER(nc.`descripcion`) LIKE '%RETE%' OR UPPER(nc.`descripcion`) LIKE '%RETENCION%') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'RETENCION_FUENTE' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND (UPPER(nc.`descripcion`) LIKE '%SALUD COMPLEMENTARIA%' OR UPPER(nc.`descripcion`) LIKE '%BENEFICIARIO ADICIONAL%') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'PLANES_COMPLEMENTARIOS' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND UPPER(nc.`descripcion`) LIKE '%SALUD%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'SALUD' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND (UPPER(nc.`descripcion`) LIKE '%SUSPENSION%' OR UPPER(nc.`descripcion`) LIKE '%INASISTENCIA%' OR UPPER(nc.`descripcion`) LIKE '%LICENCIA NO REMUNERADA%' OR UPPER(nc.`descripcion`) LIKE '%PERMISO NO REMUNERADO%') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'SANCION' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND UPPER(nc.`descripcion`) LIKE '%PENSION SOLIDARIDAD%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'FONDO_SOLIDARIDAD_PENSIONAL' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND UPPER(nc.`descripcion`) LIKE '%PENSION VOLUNTARIA%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'PENSION_VOLUNTARIA' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND (UPPER(nc.`descripcion`) LIKE 'DCTO%PENSION%' OR UPPER(nc.`descripcion`) LIKE 'DSCTO%PENSION%') AND UPPER(nc.`descripcion`) NOT LIKE '%DOCENTES%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'EDUCACION' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND UPPER(nc.`descripcion`) LIKE '%PENSION%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'FONDO_PENSION' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND UPPER(nc.`descripcion`) LIKE '%SOLIDARIDAD%LEY 797%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'FONDO_SOLIDARIDAD_PENSIONAL' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND UPPER(nc.`descripcion`) LIKE '%SOLIDARIDAD%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'OTRA_DEDUCCION' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND UPPER(nc.`descripcion`) LIKE '%LIBRANZA%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'LIBRANZA' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND (UPPER(nc.`descripcion`) LIKE '%PRESTAMO%' OR UPPER(nc.`descripcion`) LIKE '%DEUDA%' OR UPPER(nc.`descripcion`) LIKE '%MORA%') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'DEUDA' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND UPPER(nc.`descripcion`) LIKE '%EMBARGO%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'EMBARGO_FISCAL' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND UPPER(nc.`descripcion`) LIKE '%SANCION%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'SANCION' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND (UPPER(nc.`descripcion`) LIKE '%ANTICIPO%' OR UPPER(nc.`descripcion`) LIKE '%MAYOR VALOR PAGADO%') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'ANTICIPO' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND UPPER(nc.`descripcion`) LIKE '%REINTEGRO%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'REINTEGRO' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND UPPER(nc.`descripcion`) LIKE '%COOPERATIVA%' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'COOPERATIVA' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND (UPPER(nc.`descripcion`) LIKE '%EDUCATIV%' OR UPPER(nc.`descripcion`) LIKE '%MATRICULA%' OR UPPER(nc.`descripcion`) LIKE '%LIBROS%' OR UPPER(nc.`descripcion`) LIKE '%TEXTOS%' OR UPPER(nc.`descripcion`) LIKE '%CAMBRIDGE%') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'EDUCACION' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' AND (nc.`modo_liquidacion_id` IN (3,4) OR UPPER(nc.`descripcion`) LIKE '%DAVIVIENDA%' OR UPPER(nc.`descripcion`) LIKE '%COMFAMA%' OR UPPER(nc.`descripcion`) LIKE '%COMFACESAR%' OR UPPER(nc.`descripcion`) LIKE '%RECORDAR%' OR UPPER(nc.`descripcion`) LIKE '%ESPERANZA%' OR UPPER(nc.`descripcion`) LIKE '%SEGURO%' OR UPPER(nc.`descripcion`) LIKE '%CAFETERIA%' OR UPPER(nc.`descripcion`) LIKE '%ALMUERZO%' OR UPPER(nc.`descripcion`) LIKE '%MERIENDA%' OR UPPER(nc.`descripcion`) LIKE '%UNIFORME%' OR UPPER(nc.`descripcion`) LIKE '%ARRIENDO%' OR UPPER(nc.`descripcion`) LIKE '%HOTELERIA%' OR UPPER(nc.`descripcion`) LIKE '%SERV. PUBLICO%' OR UPPER(nc.`descripcion`) LIKE '%SERVICIO PUBLICO%') THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'PAGO_TERCERO' LIMIT 1)
+  WHEN nc.`naturaleza` = 'Deduccion' THEN (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'OTRA_DEDUCCION' LIMIT 1)
+  ELSE (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'OTRO_CONCEPTO' LIMIT 1)
+END
+WHERE nc.`cpto_dian_id` = 0
+   OR nc.`cpto_dian_id` IS NULL
+   OR nc.`cpto_dian_id` NOT IN (SELECT id FROM `nom_elect_cat_cptos_dian`);
+
+UPDATE `nom_conceptos`
+SET `cpto_dian_id` = (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'SANCION' LIMIT 1)
+WHERE `naturaleza` = 'Deduccion'
+  AND (UPPER(`descripcion`) LIKE '%SUSPENSION%'
+       OR UPPER(`descripcion`) LIKE '%INASISTENCIA%'
+       OR UPPER(`descripcion`) LIKE '%LICENCIA NO REMUNERADA%'
+       OR UPPER(`descripcion`) LIKE '%PERMISO NO REMUNERADO%');
+
+UPDATE `nom_conceptos`
+SET `cpto_dian_id` = (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'FONDO_SOLIDARIDAD_PENSIONAL' LIMIT 1)
+WHERE `naturaleza` = 'Deduccion'
+  AND UPPER(`descripcion`) LIKE '%PENSION SOLIDARIDAD%';
+
+UPDATE `nom_conceptos`
+SET `cpto_dian_id` = (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'EDUCACION' LIMIT 1)
+WHERE `naturaleza` = 'Deduccion'
+  AND (UPPER(`descripcion`) LIKE 'DCTO%PENSION%' OR UPPER(`descripcion`) LIKE 'DSCTO%PENSION%')
+  AND UPPER(`descripcion`) NOT LIKE '%DOCENTES%';
+
+UPDATE `nom_conceptos`
+SET `cpto_dian_id` = (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'FONDO_PENSION' LIMIT 1)
+WHERE `naturaleza` = 'Deduccion'
+  AND UPPER(`descripcion`) LIKE '%PENSION%DOCENTES%';
+
 -- 06 ABRIL 2026 - APM
 -- Primera impresion: ORIGINAL (copy_number = 0)
 -- Reimpresiones del mismo documento: COPIA #1, COPIA #2, ...
@@ -560,6 +636,3 @@ UPDATE `permissions` SET `fa_icon` = 'calculator' WHERE `permissions`.`id` = 494
 UPDATE `permissions` SET `fa_icon` = 'columns' WHERE `permissions`.`id` = 676;
 UPDATE `permissions` SET `fa_icon` = 'archive' WHERE `permissions`.`id` = 340;
 UPDATE `permissions` SET `fa_icon` = 'plus-square-o' WHERE `permissions`.`id` = 541;
-
-
-
