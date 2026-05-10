@@ -583,6 +583,28 @@ function get_text_from_select_for_value( value )
   return texto_motivo;
 }
 
+function get_label_caja_pdv_default()
+{
+  var caja_default_id = $("#caja_pdv_default_id").val();
+  var caja_default_label = $.trim($("#caja_pdv_default_label").val() || "");
+
+  if (caja_default_label != "") {
+    return caja_default_label;
+  }
+
+  var option_caja_default = $("#teso_caja_id option[value='" + caja_default_id + "']");
+  if (option_caja_default.length) {
+    return $.trim(option_caja_default.text());
+  }
+
+  option_caja_default = $("#teso_caja_id option[value^='" + caja_default_id + "-']");
+  if (option_caja_default.length) {
+    return $.trim(option_caja_default.text());
+  }
+
+  return "";
+}
+
 /**
  * 
  * @returns json_table2
@@ -607,7 +629,7 @@ function get_json_registros_medios_recaudo() {
       '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"' + teso_motivo_default_id + '-' + texto_motivo + '","teso_caja_id":"' +
       $("#caja_pdv_default_id").val() +
       "-" +
-      $("#caja_pdv_default_label").val() +
+      get_label_caja_pdv_default() +
       '","teso_cuenta_bancaria_id":"0-","valor":"$' + total_factura +
       '"}]';
   } else {
@@ -934,7 +956,7 @@ function llenar_resumen_medios_recaudo() {
 
     $("#teso_caja_id").val($("#caja_pdv_default_id").val());
 
-    var lbl_caja_banco = $("#teso_caja_id option:selected").text();
+    var lbl_caja_banco = get_label_caja_pdv_default();
 
     var lbl_valor_medio_pago =
       $("#total_efectivo_recibido").val() - $("#valor_total_cambio").val();

@@ -419,13 +419,22 @@ class TesoMovimiento extends Model
         return $query->where(function ($subquery) use ($pdv_id, $pdv, $teso_caja_id, $teso_cuenta_bancaria_id) {
             $subquery->where('teso_movimientos.pdv_id', $pdv_id);
 
-            if ( $teso_caja_id == 0 && $teso_cuenta_bancaria_id == 0 && !is_null($pdv) && (int)$pdv->caja_default_id != 0 ) {
+            if ( self::debeIncluirMovimientosLegacyPdv($pdv, $teso_caja_id, $teso_cuenta_bancaria_id) ) {
                 $subquery->orWhere(function ($legacyQuery) use ($pdv) {
                     $legacyQuery->whereNull('teso_movimientos.pdv_id')
                                 ->where('teso_movimientos.teso_caja_id', (int)$pdv->caja_default_id);
                 });
             }
         });
+    }
+
+    protected static function debeIncluirMovimientosLegacyPdv($pdv, $teso_caja_id, $teso_cuenta_bancaria_id)
+    {
+        if ( is_null($pdv) || (int)$pdv->caja_default_id == 0 || (int)$teso_cuenta_bancaria_id != 0 ) {
+            return false;
+        }
+
+        return (int)$teso_caja_id == 0 || (int)$teso_caja_id == (int)$pdv->caja_default_id;
     }
 
     public static function get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres, $user_id = 0, $pdv_id = 0, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0 )
