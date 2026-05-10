@@ -44,6 +44,7 @@ class InvoicingService
         $lineas_registros = json_decode($request->lineas_registros);
 
         $this->validar_lineas_registros_pos($lineas_registros);
+        $this->quitar_medios_recaudo_repetidos_en_exceso($request, $lineas_registros);
 
         // Encabezado
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
@@ -155,6 +156,86 @@ class InvoicingService
 
             $this->validar_totales_linea($linea, $index + 1);
         }
+    }
+
+    protected function quitar_medios_recaudo_repetidos_en_exceso(Request $request, array $lineas_registros)
+    {
+        $lineas_recaudos = json_decode((string)$request->lineas_registros_medios_recaudos, true);
+        if (!is_array($lineas_recaudos) || count($lineas_recaudos) < 2) {
+            return;
+        }
+
+        $total_documento = $this->get_total_documento_pos($request, $lineas_registros);
+        $total_recaudos = 0;
+        foreach ($lineas_recaudos as $linea) {
+            $total_recaudos += $this->parse_valor_recaudo(isset($linea['valor']) ? $linea['valor'] : 0);
+        }
+
+        $tolerancia = 1.0;
+        if ($total_recaudos <= ($total_documento + $tolerancia)) {
+            return;
+        }
+
+        $vistos = [];
+        $lineas_filtradas = [];
+        foreach ($lineas_recaudos as $linea) {
+            if (!is_array($linea)) {
+                $lineas_filtradas[] = $linea;
+                continue;
+            }
+
+            $valor_linea = $this->parse_valor_recaudo(isset($linea['valor']) ? $linea['valor'] : 0);
+            $clave = implode('|', [
+                isset($linea['teso_medio_recaudo_id']) ? $linea['teso_medio_recaudo_id'] : '',
+                isset($linea['teso_motivo_id']) ? $linea['teso_motivo_id'] : '',
+                isset($linea['teso_caja_id']) ? $linea['teso_caja_id'] : '',
+                isset($linea['teso_cuenta_bancaria_id']) ? $linea['teso_cuenta_bancaria_id'] : '',
+                number_format($valor_linea, 2, '.', '')
+            ]);
+
+            if (isset($vistos[$clave]) && ($total_recaudos - $valor_linea) >= ($total_documento - $tolerancia)) {
+                $total_recaudos -= $valor_linea;
+                continue;
+            }
+
+            $vistos[$clave] = true;
+            $lineas_filtradas[] = $linea;
+        }
+
+        if (count($lineas_filtradas) != count($lineas_recaudos)) {
+            $request->merge([
+                'lineas_registros_medios_recaudos' => json_encode(array_values($lineas_filtradas))
+            ]);
+        }
+    }
+
+    protected function get_total_documento_pos(Request $request, array $lineas_registros)
+    {
+        $total = 0;
+        foreach ($lineas_registros as $linea) {
+            $total += (float)$this->get_line_value($linea, 'precio_total', 0);
+        }
+
+        return $total
+            + (float)$request->get('valor_ajuste_al_peso', 0)
+            + (float)$request->get('valor_total_bolsas', 0);
+    }
+
+    protected function parse_valor_recaudo($valor)
+    {
+        $valor = trim(str_replace(['$', ' '], '', (string)$valor));
+        if ($valor == '') {
+            return 0;
+        }
+
+        if (strpos($valor, ',') !== false) {
+            $valor = str_replace('.', '', $valor);
+            $valor = str_replace(',', '.', $valor);
+        } elseif (preg_match('/\.\d{3}$/', $valor)) {
+            $valor = str_replace('.', '', $valor);
+        }
+
+        return (float)$valor;
     }
 
     protected function validar_totales_linea($linea, $numero_linea)

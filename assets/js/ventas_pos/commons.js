@@ -946,6 +946,7 @@ function llenar_resumen_medios_recaudo() {
   }
 
   $("#div_resumen_medios_pago").show();
+  $("#tabla_resumen_medios_pago").find("tbody").html("");
 
   var valor_total_lineas_medios_recaudos = parseFloat(
     $("#total_valor_total").html().substring(1)
