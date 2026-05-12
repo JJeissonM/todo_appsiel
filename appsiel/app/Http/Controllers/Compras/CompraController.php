@@ -53,7 +53,9 @@ use App\Compras\Services\RetencionFuenteService;
 use App\Inventarios\Services\AverageCost;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 
 class CompraController extends TransaccionController
@@ -83,20 +85,7 @@ class CompraController extends TransaccionController
                 ->leftJoin('compras_condiciones_pago', 'compras_condiciones_pago.id', '=', 'compras_proveedores.condicion_pago_id')
                 ->where('compras_proveedores.estado', 'Activo')
                 ->where('compras_proveedores.id', (int)Input::get('proveedor_id'))
-                ->select(
-                    'compras_proveedores.id AS proveedor_id',
-                    'compras_proveedores.liquida_impuestos',
-                    'compras_proveedores.declarante_renta',
-                    'compras_proveedores.retencion_fuente_concepto_default_id',
-                    'compras_proveedores.estado',
-                    'compras_proveedores.clase_proveedor_id',
-                    'core_terceros.id AS core_tercero_id',
-                    'core_terceros.descripcion AS nombre_proveedor',
-                    'core_terceros.razon_social',
-                    'core_terceros.numero_identificacion',
-                    'compras_proveedores.inv_bodega_id',
-                    'compras_condiciones_pago.dias_plazo'
-                )
+                ->select($this->get_columnas_consulta_proveedor())
                 ->get()
                 ->first();
 
@@ -754,20 +743,7 @@ class CompraController extends TransaccionController
             ->leftJoin('compras_condiciones_pago', 'compras_condiciones_pago.id', '=', 'compras_proveedores.condicion_pago_id')
             ->where('core_terceros.' . $campo_busqueda, $operador, $texto_busqueda)
             ->orWhere('core_terceros.razon_social', 'LIKE', $texto_busqueda)
-            ->select(
-                'compras_proveedores.id AS proveedor_id',
-                'compras_proveedores.liquida_impuestos',
-                'compras_proveedores.declarante_renta',
-                'compras_proveedores.retencion_fuente_concepto_default_id',
-                'compras_proveedores.estado',
-                'compras_proveedores.clase_proveedor_id',
-                'core_terceros.id AS core_tercero_id',
-                'core_terceros.descripcion AS nombre_proveedor',
-                'core_terceros.razon_social',
-                'core_terceros.numero_identificacion',
-                'compras_proveedores.inv_bodega_id',
-                'compras_condiciones_pago.dias_plazo'
-            )->get()
+            ->select($this->get_columnas_consulta_proveedor())->get()
             ->take(7);
 
         $html = '<div class="list-group">';
@@ -812,6 +788,36 @@ class CompraController extends TransaccionController
         $html .= '</div>';
 
         return $html;
+    }
+
+    protected function get_columnas_consulta_proveedor()
+    {
+        $columnas = [
+            'compras_proveedores.id AS proveedor_id',
+            'compras_proveedores.liquida_impuestos',
+            'compras_proveedores.estado',
+            'compras_proveedores.clase_proveedor_id',
+            'core_terceros.id AS core_tercero_id',
+            'core_terceros.descripcion AS nombre_proveedor',
+            'core_terceros.razon_social',
+            'core_terceros.numero_identificacion',
+            'compras_proveedores.inv_bodega_id',
+            'compras_condiciones_pago.dias_plazo',
+        ];
+
+        if (Schema::hasColumn('compras_proveedores', 'declarante_renta')) {
+            $columnas[] = 'compras_proveedores.declarante_renta';
+        } else {
+            $columnas[] = DB::raw("'declarante' AS declarante_renta");
+        }
+
+        if (Schema::hasColumn('compras_proveedores', 'retencion_fuente_concepto_default_id')) {
+            $columnas[] = 'compras_proveedores.retencion_fuente_concepto_default_id';
+        } else {
+            $columnas[] = DB::raw('0 AS retencion_fuente_concepto_default_id');
+        }
+
+        return $columnas;
     }
 
 

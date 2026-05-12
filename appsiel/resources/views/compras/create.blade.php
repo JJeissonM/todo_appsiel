@@ -67,6 +67,8 @@
 
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
+			<!-- Campos adicionales para el proceso de compras -->
+			<!-- 
 				<div class="row" style="margin: 5px 5px 20px 5px;">
 					<div class="col-md-6">
 						<label>Declarante renta proveedor</label>
@@ -77,7 +79,7 @@
 						<input type="text" id="lbl_retencion_fuente_concepto_default" class="form-control" value="Automático según producto/servicio" readonly="readonly">
 					</div>
 				</div>
-
+			-->
 				{{ Form::hidden('url_id', Input::get('id'), ['id'=>'url_id']) }}
 				{{ Form::hidden('url_id_modelo', Input::get('id_modelo'), ['id'=>'url_id_modelo']) }}
 				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion'), ['id'=>'url_id_transaccion'] ) }}
