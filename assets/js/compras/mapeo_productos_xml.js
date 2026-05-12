@@ -142,11 +142,24 @@ $(document).ready(function () {
         e.preventDefault();
         var $form = $(this);
         var self = this;
+        var $btn = $('#btn_guardar_mapeo');
+
+        // Evitar clics adicionales mientras se muestra el diálogo o se envía
+        if ($btn.hasClass('disabled') || $btn.prop('disabled')) {
+            return false;
+        }
 
         var sinMapear = 0;
         $form.find('.select2-mapeo').each(function () {
             if (!$(this).val()) sinMapear++;
         });
+
+        function doSubmit() {
+            $btn.addClass('disabled').attr('disabled', 'disabled');
+            $btn.html('<i class="fa fa-spinner fa-spin"></i> Guardando mapeo...');
+            self.enviando_nativo = true;
+            self.submit();
+        }
 
         if (sinMapear > 0) {
             var msg = 'Hay ' + sinMapear + ' producto(s) sin vincular. Tu progreso actual se guardará correctamente. ¿Deseas continuar?';
@@ -162,19 +175,16 @@ $(document).ready(function () {
                 }).then(function (result) {
                     // Compatibilidad con diferentes versiones de SweetAlert2
                     if (result && (result.isConfirmed || result.value)) {
-                        self.enviando_nativo = true;
-                        self.submit();
+                        doSubmit();
                     }
                 });
             } else {
                 if (confirm(msg)) {
-                    self.enviando_nativo = true;
-                    self.submit();
+                    doSubmit();
                 }
             }
         } else {
-            self.enviando_nativo = true;
-            self.submit();
+            doSubmit();
         }
     });
 });
