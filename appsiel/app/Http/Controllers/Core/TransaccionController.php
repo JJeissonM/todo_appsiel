@@ -567,6 +567,14 @@ class TransaccionController extends Controller
             dd('Error en Tipo de Documento (tipo_documento_app)', $this);
         }
         
-        return redirect( url( $url . $id_doc_encabezado . '?id=' . $app_id . '&id_modelo=' . $doc_encabezado->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $core_tipo_transaccion_id ) );
+        $tipo_transaccion = $doc_encabezado->tipo_transaccion;
+        if( is_null( $tipo_transaccion ) )
+        {
+            dd('Error en Tipo de Transacción (tipo_transaccion)', $this);
+        }
+
+        $documento_app_id = $tipo_transaccion->core_app_id;
+        
+        return redirect( url( $url . $id_doc_encabezado . '?id=' . $documento_app_id . '&id_modelo=' . $tipo_transaccion->core_modelo_id . '&id_transaccion=' . $core_tipo_transaccion_id ) );
     }
 }

@@ -170,7 +170,13 @@ class TesoMovimiento extends Model
 
     public function enlace_show_documento()
     {
-        $enlace = '<a href="' . url( 'enlace_show_documento/' . Input::get('id') . '/' . $this->core_tipo_transaccion_id . '/' . $this->core_tipo_doc_app_id . '/' . $this->consecutivo ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
+        $app_id = Input::get('id');
+        if ( !is_null( $this->tipo_transaccion ) )
+        {
+            $app_id = $this->tipo_transaccion->core_app_id;
+        }
+
+        $enlace = '<a href="' . url( 'enlace_show_documento/' . $app_id . '/' . $this->core_tipo_transaccion_id . '/' . $this->core_tipo_doc_app_id . '/' . $this->consecutivo ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
 
         return $enlace;
     }
