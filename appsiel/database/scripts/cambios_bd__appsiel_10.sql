@@ -636,3 +636,7 @@ UPDATE `permissions` SET `fa_icon` = 'calculator' WHERE `permissions`.`id` = 494
 UPDATE `permissions` SET `fa_icon` = 'columns' WHERE `permissions`.`id` = 676;
 UPDATE `permissions` SET `fa_icon` = 'archive' WHERE `permissions`.`id` = 340;
 UPDATE `permissions` SET `fa_icon` = 'plus-square-o' WHERE `permissions`.`id` = 541;
+
+
+-- Cambiar nombre a  permiso de boton facturar en PDV
+UPDATE `permissions` SET `name` = 'vtas_pos_boton_facturar' WHERE `permissions`.`id` = 401;
