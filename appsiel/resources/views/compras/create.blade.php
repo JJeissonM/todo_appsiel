@@ -2,6 +2,8 @@
 
 <?php
 	use App\Http\Controllers\Sistema\VistaController;
+	use App\Compras\Services\RetencionFuenteService;
+	$maneja_retenciones_compras = (new RetencionFuenteService())->maneja_retenciones_compras();
 ?>
 
 @section('estilos_1')
@@ -100,6 +102,7 @@
 
 				<input type="hidden" name="valor_total_retefuente" id="valor_total_retefuente" value="0">
 				<input type="hidden" name="retencion_id" id="retencion_id" value="0">
+				<input type="hidden" id="maneja_retenciones_compras" value="{{ $maneja_retenciones_compras ? 1 : 0 }}">
 
 				<input type="hidden" name="inv_bodega_default_id" id="inv_bodega_default_id" value="{{ config('inventarios.item_bodega_principal_id') }}">				
 				
@@ -173,6 +176,7 @@
 								 &nbsp;
 							 </td>
 	            		</tr>
+	            		@if($maneja_retenciones_compras)
 	            		<tr>
 	            			<td style="text-align: right; font-weight: bold;"> Ret. Fuente: &nbsp; </td> 
 							<td>
@@ -185,6 +189,7 @@
 								&nbsp;
 							</td>
 	            		</tr>
+	            		@endif
 	            		<tr>
 	            			<td style="text-align: right; font-weight: bold;"> Total factura: &nbsp; </td> 
 							<td>
@@ -214,7 +219,9 @@
 		$(document).ready(function(){
 
 			checkCookie();
-			cargar_retenciones_fuente();
+			if (maneja_retenciones_compras()) {
+				cargar_retenciones_fuente();
+			}
 
 			$('#fecha').val( get_fecha_hoy() );
 

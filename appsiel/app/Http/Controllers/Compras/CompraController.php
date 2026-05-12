@@ -159,6 +159,10 @@ class CompraController extends TransaccionController
     {
         $total_retenciones = 0;
         $service = new RetencionFuenteService();
+        if (!$service->maneja_retenciones_compras($fecha)) {
+            return 0;
+        }
+
         $proveedor = $proveedor_id ? Proveedor::find((int)$proveedor_id) : null;
 
         foreach ($lineas_registros as $linea_registro) {
@@ -277,6 +281,8 @@ class CompraController extends TransaccionController
         $total_documento = 0;
         $total_retenciones_documento = 0;
         $retencion_service = new RetencionFuenteService();
+        $maneja_retenciones = $retencion_service->maneja_retenciones_compras($doc_encabezado->fecha);
+        $campos_retencion_disponibles = $retencion_service->campos_retencion_linea_disponibles();
         // Por cada entrada de almacén pendiente
         $cantidad_registros = count($lineas_registros);
 
@@ -319,7 +325,7 @@ class CompraController extends TransaccionController
                     $valor_total_descuento = $lineas_registros_originales[$linea]->valor_total_descuento;
                 }
 
-                if (isset($lineas_registros_originales[$linea]->contab_retencion_id)) {
+                if ($maneja_retenciones && isset($lineas_registros_originales[$linea]->contab_retencion_id)) {
                     $contab_retencion_id = (int)$lineas_registros_originales[$linea]->contab_retencion_id;
                     if (isset($lineas_registros_originales[$linea]->retencion_fuente_concepto_anual_id)) {
                         $retencion_fuente_concepto_anual_id = (int)$lineas_registros_originales[$linea]->retencion_fuente_concepto_anual_id;
@@ -378,13 +384,17 @@ class CompraController extends TransaccionController
                     ['valor_impuesto' => $valor_impuesto] +
                     ['tasa_descuento' => $tasa_descuento] +
                     ['valor_total_descuento' => $valor_total_descuento] +
-                    ['contab_retencion_id' => $contab_retencion_id] +
-                    ['tasa_retencion' => $tasa_retencion] +
-                    ['valor_retencion' => $valor_retencion] +
-                    ['retencion_fuente_concepto_anual_id' => $retencion_fuente_concepto_anual_id] +
-                    ['retencion_fuente_codigo' => $retencion_fuente_codigo] +
                     ['creado_por' => Auth::user()->email] +
                     ['estado' => 'Activo'];
+
+                if ($campos_retencion_disponibles) {
+                    $linea_datos = $linea_datos +
+                        ['contab_retencion_id' => $contab_retencion_id] +
+                        ['tasa_retencion' => $tasa_retencion] +
+                        ['valor_retencion' => $valor_retencion] +
+                        ['retencion_fuente_concepto_anual_id' => $retencion_fuente_concepto_anual_id] +
+                        ['retencion_fuente_codigo' => $retencion_fuente_codigo];
+                }
 
                 ComprasDocRegistro::create(
                     $datos +
@@ -908,31 +918,34 @@ class CompraController extends TransaccionController
                 ['valor_impuesto' => $valor_impuesto]
             );
 
-            $retencion = (new RetencionFuenteService())->liquidar_linea(
-                (object)[
-                    'inv_producto_id' => $producto_id,
-                    'precio_unitario' => round($precio_unitario, 2),
-                    'cantidad' => 1,
-                    'tasa_impuesto' => $tasa_impuesto,
-                ],
-                Input::get('fecha'),
-                null,
-                Proveedor::find($proveedor_id)
-            );
+            $retencion_service = new RetencionFuenteService();
+            if ($retencion_service->maneja_retenciones_compras(Input::get('fecha'))) {
+                $retencion = $retencion_service->liquidar_linea(
+                    (object)[
+                        'inv_producto_id' => $producto_id,
+                        'precio_unitario' => round($precio_unitario, 2),
+                        'cantidad' => 1,
+                        'tasa_impuesto' => $tasa_impuesto,
+                    ],
+                    Input::get('fecha'),
+                    null,
+                    Proveedor::find($proveedor_id)
+                );
 
-            $producto = array_merge(
-                $producto,
-                [
-                    'contab_retencion_id' => (int)$retencion['contab_retencion_id'],
-                    'tasa_retencion' => (float)$retencion['tasa_retencion'],
-                    'valor_retencion' => (float)$retencion['valor_retencion'],
-                    'retencion_fuente_concepto_anual_id' => (int)$retencion['concepto_id'],
-                    'retencion_fuente_codigo' => $retencion['codigo_concepto'],
-                    'retencion_fuente_concepto' => $retencion['concepto'],
-                    'retencion_fuente_tipo_declarante' => $retencion['tipo_declarante'],
-                    'retencion_fuente_cuantia_minima_pesos' => (float)$retencion['cuantia_minima_pesos'],
-                ]
-            );
+                $producto = array_merge(
+                    $producto,
+                    [
+                        'contab_retencion_id' => (int)$retencion['contab_retencion_id'],
+                        'tasa_retencion' => (float)$retencion['tasa_retencion'],
+                        'valor_retencion' => (float)$retencion['valor_retencion'],
+                        'retencion_fuente_concepto_anual_id' => (int)$retencion['concepto_id'],
+                        'retencion_fuente_codigo' => $retencion['codigo_concepto'],
+                        'retencion_fuente_concepto' => $retencion['concepto'],
+                        'retencion_fuente_tipo_declarante' => $retencion['tipo_declarante'],
+                        'retencion_fuente_cuantia_minima_pesos' => (float)$retencion['cuantia_minima_pesos'],
+                    ]
+                );
+            }
         }
 
         //print_r($producto);

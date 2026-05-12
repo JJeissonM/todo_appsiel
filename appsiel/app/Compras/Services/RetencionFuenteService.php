@@ -10,11 +10,16 @@ use App\Compras\RetencionFuenteConceptoAnual;
 use App\Contabilidad\Retencion;
 use App\Inventarios\InvProducto;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class RetencionFuenteService
 {
     public function get_retenciones_activas()
     {
+        if (!$this->maneja_retenciones_compras()) {
+            return collect();
+        }
+
         return Retencion::where('estado', 'Activo')
             ->select('id', 'descripcion', 'nombre_corto', 'tasa_retencion')
             ->orderBy('descripcion')
@@ -43,6 +48,10 @@ class RetencionFuenteService
     {
         $anio = $anio ? (int)$anio : (int)date('Y');
 
+        if (!$this->maneja_retenciones_compras($anio)) {
+            return collect();
+        }
+
         return RetencionFuenteConceptoAnual::where('anio', $anio)
             ->where('estado', 'Activo')
             ->orderBy('tipo_operacion')
@@ -52,6 +61,10 @@ class RetencionFuenteService
 
     public function liquidar_lineas_request(array $lineas, $fecha = null, $proveedorId = 0, $forzar = false)
     {
+        if (!$this->maneja_retenciones_compras($fecha)) {
+            return $this->limpiar_retenciones_lineas($lineas);
+        }
+
         $proveedor = $proveedorId ? Proveedor::find((int)$proveedorId) : null;
 
         foreach ($lineas as $linea) {
@@ -87,6 +100,11 @@ class RetencionFuenteService
     public function liquidar_linea($linea, $fecha = null, $codigoConcepto = null, Proveedor $proveedor = null)
     {
         $anio = $this->get_anio($fecha);
+
+        if (!$this->maneja_retenciones_compras($anio)) {
+            return $this->respuesta_no_aplica($anio);
+        }
+
         $producto = $this->get_producto_linea($linea);
         $tipoItem = $producto && $producto->tipo == 'servicio' ? 'servicio' : 'producto';
         $codigoConcepto = $this->get_codigo_concepto_linea($linea, $codigoConcepto);
@@ -127,6 +145,14 @@ class RetencionFuenteService
 
     public function liquidar_documento(ComprasDocEncabezado $docEncabezado, $almacenar = false)
     {
+        if (!$this->maneja_retenciones_compras($docEncabezado->fecha)) {
+            return [
+                'documento_id' => (int)$docEncabezado->id,
+                'total_retenciones' => 0,
+                'lineas' => [],
+            ];
+        }
+
         $lineas = ComprasDocRegistro::where('compras_doc_encabezado_id', $docEncabezado->id)->get();
         $resultado = [];
         $total = 0;
@@ -154,6 +180,10 @@ class RetencionFuenteService
 
     public function almacenar_liquidacion_linea(ComprasDocEncabezado $docEncabezado, ComprasDocRegistro $linea, Retencion $retencion, array $datosRetencion, $contabRegistroRetencionId = 0, $origen = 'automatico')
     {
+        if (!$this->maneja_retenciones_compras($docEncabezado->fecha) || !Schema::hasTable('compras_retenciones_liquidaciones')) {
+            return null;
+        }
+
         $liquidacion = $this->liquidar_linea($linea, $docEncabezado->fecha, null, $docEncabezado->proveedor);
 
         if (isset($datosRetencion['base_sin_iva'])) {
@@ -203,6 +233,10 @@ class RetencionFuenteService
 
     protected function get_concepto_para_linea($anio, $tipoItem, $tipoDeclarante, $codigoConcepto = null, $conceptoId = 0)
     {
+        if (!$this->maneja_retenciones_compras($anio)) {
+            return null;
+        }
+
         if ($conceptoId > 0) {
             $concepto = RetencionFuenteConceptoAnual::where('anio', $anio)
                 ->where('estado', 'Activo')
@@ -280,6 +314,74 @@ class RetencionFuenteService
         }
 
         return (int)date('Y');
+    }
+
+    public function maneja_retenciones_compras($fecha = null)
+    {
+        $config = config('compras.maneja_retenciones_fuente', '0');
+
+        if (is_bool($config)) {
+            $habilitado = $config;
+        } else {
+            $valor = strtolower(trim((string)$config));
+            if (in_array($valor, ['0', 'no', 'false', 'inactivo', 'deshabilitado'])) {
+                return false;
+            }
+
+            $habilitado = in_array($valor, ['1', 'si', 'sí', 'true', 'activo', 'habilitado']);
+        }
+
+        if (!$this->esquema_retenciones_disponible()) {
+            return false;
+        }
+
+        if ($habilitado) {
+            return true;
+        }
+
+        $anio = is_numeric($fecha) ? (int)$fecha : $this->get_anio($fecha);
+
+        return RetencionFuenteConceptoAnual::where('anio', $anio)
+            ->where('estado', 'Activo')
+            ->exists();
+    }
+
+    public function campos_retencion_linea_disponibles()
+    {
+        return Schema::hasColumn('compras_doc_registros', 'contab_retencion_id')
+            && Schema::hasColumn('compras_doc_registros', 'tasa_retencion')
+            && Schema::hasColumn('compras_doc_registros', 'valor_retencion')
+            && Schema::hasColumn('compras_doc_registros', 'retencion_fuente_concepto_anual_id')
+            && Schema::hasColumn('compras_doc_registros', 'retencion_fuente_codigo');
+    }
+
+    protected function esquema_retenciones_disponible()
+    {
+        return $this->existe_tabla_conceptos_anuales()
+            && Schema::hasTable('contab_retenciones')
+            && $this->campos_retencion_linea_disponibles();
+    }
+
+    protected function existe_tabla_conceptos_anuales()
+    {
+        return Schema::hasTable('compras_retencion_fuente_conceptos_anuales');
+    }
+
+    protected function limpiar_retenciones_lineas(array $lineas)
+    {
+        foreach ($lineas as $linea) {
+            if (!is_object($linea)) {
+                continue;
+            }
+
+            $linea->contab_retencion_id = 0;
+            $linea->tasa_retencion = 0;
+            $linea->valor_retencion = 0;
+            $linea->retencion_fuente_concepto_anual_id = 0;
+            $linea->retencion_fuente_codigo = '';
+        }
+
+        return $lineas;
     }
 
     protected function respuesta_no_aplica($anio, $concepto = null)

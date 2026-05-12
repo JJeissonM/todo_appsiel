@@ -2,6 +2,7 @@
 
 namespace App\Compras;
 
+use App\Compras\Services\RetencionFuenteService;
 use Collective\Html\FormFacade as Form;
 
 class ComprasTransaccion
@@ -10,13 +11,11 @@ class ComprasTransaccion
     {
         $campos_invisibles = app($tipo_transaccion->modelo_registros_documentos)->campos_invisibles_linea_registro;
         $campos_visibles = app($tipo_transaccion->modelo_registros_documentos)->campos_visibles_linea_registro;
-        $aplica_retencion_fuente = in_array((int)$tipo_transaccion->id, [25, 48]);
+        $retencion_service = new RetencionFuenteService();
+        $aplica_retencion_fuente = in_array((int)$tipo_transaccion->id, [25, 48])
+            && $retencion_service->maneja_retenciones_compras();
 
         if (!$aplica_retencion_fuente) {
-            $campos_invisibles = array_values(array_filter($campos_invisibles, function ($campo) {
-                return !in_array($campo, ['contab_retencion_id', 'tasa_retencion', 'valor_retencion', 'retencion_fuente_concepto_anual_id', 'retencion_fuente_codigo']);
-            }));
-
             $campos_visibles = array_values(array_filter($campos_visibles, function ($campo) {
                 return $campo[0] !== 'Ret. Fuente';
             }));

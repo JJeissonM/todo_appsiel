@@ -15,9 +15,14 @@ var hay_productos = 0;
 
 var ya_esta;
 
+function maneja_retenciones_compras()
+{
+    return $('#maneja_retenciones_compras').val() == '1';
+}
+
 function cargar_retenciones_fuente()
 {
-    if ($('#url_id_transaccion').val() != 25 && $('#url_id_transaccion').val() != 48) {
+    if (!maneja_retenciones_compras() || ($('#url_id_transaccion').val() != 25 && $('#url_id_transaccion').val() != 48)) {
         return false;
     }
 
@@ -99,7 +104,9 @@ function calcular_totales()
         valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() ) || 0;
         total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) || 0;
         total_factura += parseFloat( $(this).find('.precio_total').text() ) || 0;
-        total_retencion += parseFloat( $(this).find('.valor_retencion').text() ) || 0;
+        if (maneja_retenciones_compras()) {
+            total_retencion += parseFloat( $(this).find('.valor_retencion').text() ) || 0;
+        }
 
     });
     $('#total_cantidad').text( new Intl.NumberFormat("de-DE").format( cantidad ) );
@@ -508,7 +515,7 @@ function generar_string_celdas( fila )
 
     num_celda++;
 
-    var aplica_retencion_fuente = ($('#url_id_transaccion').val() == 25 || $('#url_id_transaccion').val() == 48);
+    var aplica_retencion_fuente = maneja_retenciones_compras() && ($('#url_id_transaccion').val() == 25 || $('#url_id_transaccion').val() == 48);
     var contab_retencion_id = 0;
     tasa_retencion = 0;
     valor_retencion = 0;
@@ -522,29 +529,29 @@ function generar_string_celdas( fila )
         if (contab_retencion_id > 0 && tasa_retencion > 0) {
             valor_retencion = calcular_valor_retencion_linea(precio_unitario, cantidad, tasa_impuesto, tasa_retencion);
         }
-
-        celdas[ num_celda ] = '<td style="display: none;"><div class="contab_retencion_id">'+ contab_retencion_id +'</div></td>';
-        
-        num_celda++;
-
-        celdas[ num_celda ] = '<td style="display: none;"><div class="tasa_retencion">'+ tasa_retencion +'</div></td>';
-        
-        num_celda++;
-
-        celdas[ num_celda ] = '<td style="display: none;"><div class="valor_retencion">'+ valor_retencion.toFixed(2) +'</div></td>';
-        
-        num_celda++;
-
-        celdas[ num_celda ] = '<td style="display: none;"><div class="retencion_fuente_concepto_anual_id">'+ ($('#linea_ingreso_default').data('retencion_fuente_concepto_anual_id') || 0) +'</div></td>';
-
-        num_celda++;
-
-        celdas[ num_celda ] = '<td style="display: none;"><div class="retencion_fuente_codigo">'+ ($('#linea_ingreso_default').data('retencion_fuente_codigo') || '') +'</div></td>';
-
-        num_celda++;
     } else {
         valor_retencion = 0;
     }
+
+    celdas[ num_celda ] = '<td style="display: none;"><div class="contab_retencion_id">'+ contab_retencion_id +'</div></td>';
+
+    num_celda++;
+
+    celdas[ num_celda ] = '<td style="display: none;"><div class="tasa_retencion">'+ tasa_retencion +'</div></td>';
+
+    num_celda++;
+
+    celdas[ num_celda ] = '<td style="display: none;"><div class="valor_retencion">'+ valor_retencion.toFixed(2) +'</div></td>';
+
+    num_celda++;
+
+    celdas[ num_celda ] = '<td style="display: none;"><div class="retencion_fuente_concepto_anual_id">'+ (aplica_retencion_fuente ? ($('#linea_ingreso_default').data('retencion_fuente_concepto_anual_id') || 0) : 0) +'</div></td>';
+
+    num_celda++;
+
+    celdas[ num_celda ] = '<td style="display: none;"><div class="retencion_fuente_codigo">'+ (aplica_retencion_fuente ? ($('#linea_ingreso_default').data('retencion_fuente_codigo') || '') : '') +'</div></td>';
+
+    num_celda++;
 
     celdas[ num_celda ] = '<td> &nbsp; </td>';
     

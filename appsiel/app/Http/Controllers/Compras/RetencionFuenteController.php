@@ -31,7 +31,9 @@ class RetencionFuenteController extends Controller
     {
         $docEncabezado = ComprasDocEncabezado::findOrFail((int)$id);
         $resultado = $service->liquidar_documento($docEncabezado, true);
-        (new ContabilidadService())->aplicar_retenciones_por_linea_compras($docEncabezado);
+        if ($service->maneja_retenciones_compras($docEncabezado->fecha)) {
+            (new ContabilidadService())->aplicar_retenciones_por_linea_compras($docEncabezado);
+        }
 
         return response()->json($resultado);
     }

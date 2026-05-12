@@ -13,6 +13,11 @@ class ContabilidadService
 {
     public function aplicar_retenciones_por_linea_compras(ComprasDocEncabezado $doc_encabezado)
     {
+        $service = new RetencionFuenteService();
+        if (!$service->maneja_retenciones_compras($doc_encabezado->fecha)) {
+            return false;
+        }
+
         $lineas = ComprasDocRegistro::where('compras_doc_encabezado_id', $doc_encabezado->id)
             ->where('contab_retencion_id', '>', 0)
             ->where('valor_retencion', '>', 0)
@@ -22,7 +27,6 @@ class ContabilidadService
             return false;
         }
 
-        $service = new RetencionFuenteService();
         $total_retenciones = 0;
         $ultimo_dato_movimiento = [];
 
