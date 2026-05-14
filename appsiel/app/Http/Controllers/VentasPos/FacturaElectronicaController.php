@@ -236,7 +236,7 @@ class FacturaElectronicaController extends TransaccionController
         }
 
         if ($factura_pos_encabezado->cliente->tercero->tipo == 'Interno') {
-            return url('/') . '/vtas_imprimir/' . $factura_pos_encabezado_id . '?id=20&id_modelo=244&id_transaccion=52&formato_impresion_id=pos';
+            return $this->build_url_print_fe((int)$factura_pos_encabezado_id);
         }
 
         $doc_header_serv = new DocumentHeaderService();
@@ -263,7 +263,7 @@ class FacturaElectronicaController extends TransaccionController
             }
         }
 
-        $url_print = url('/') . '/vtas_imprimir/' . $result->new_document_header_id . '?id=21&id_modelo=244&id_transaccion=52&formato_impresion_id=pos';
+        $url_print = $this->build_url_print_fe((int)$result->new_document_header_id);
 
         return $url_print;
     }
@@ -378,6 +378,6 @@ class FacturaElectronicaController extends TransaccionController
 
     protected function build_url_print_fe($factura_electronica_id)
     {
-        return url('/') . '/vtas_imprimir/' . (int)$factura_electronica_id . '?id=21&id_modelo=244&id_transaccion=52&formato_impresion_id=pos';
+        return url('/') . '/vtas_imprimir/' . (int)$factura_electronica_id . '?id=20&id_modelo=230&id_transaccion=52&formato_impresion_id=pos';
     }
 }
