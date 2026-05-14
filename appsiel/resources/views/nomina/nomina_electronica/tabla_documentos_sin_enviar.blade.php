@@ -13,7 +13,10 @@
     <div id="mensaje_envio_masivo" style="display: none; margin-bottom: 15px;"></div>
 
     <table class="table table-bordered table-striped table-hover" id="tbDatos">
-        {{ Form::bsTableHeader($encabezado_tabla) }}
+        <?php
+            $encabezado_tabla_doc_soporte = array_merge($encabezado_tabla, ['Último error']);
+        ?>
+        {{ Form::bsTableHeader($encabezado_tabla_doc_soporte) }}
         <tbody>
             @foreach ($registros as $fila)
                 <tr id="fila_doc_{{ $fila->id }}" data-documento-id="{{ $fila->id }}">
@@ -24,15 +27,115 @@
                     <td> {{ $fila->get_value_to_show() }} </td>
                     <td> {{ $fila->empleado->tercero->descripcion }} </td>
                     <td class="col-estado"> {{ $fila->estado }} </td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn-sm btn-ver-ultimo-error" data-documento-id="{{ $fila->id }}">
+                            <i class="fa fa-exclamation-triangle"></i> Ver error
+                        </button>
+                    </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 </div>
 
+<div class="modal fade" id="modal_ultimo_error_envio" tabindex="-1" role="dialog" aria-labelledby="modal_ultimo_error_envio_label">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal_ultimo_error_envio_label">Último error de envío</h4>
+            </div>
+            <div class="modal-body" id="modal_ultimo_error_envio_body">
+                <div class="text-center">
+                    <i class="fa fa-spinner fa-spin"></i> Consultando...
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var btnEnviarTodos = document.getElementById('btn_enviar_todos');
+        var modalBody = document.getElementById('modal_ultimo_error_envio_body');
+        var modalTitle = document.getElementById('modal_ultimo_error_envio_label');
+
+        function escapeHtml(texto) {
+            if (texto === null || texto === undefined) {
+                return '';
+            }
+
+            return String(texto)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function mostrarModalUltimoError(documentoId) {
+            modalTitle.textContent = 'Último error de envío';
+            modalBody.innerHTML = '<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Consultando...</div>';
+            $('#modal_ultimo_error_envio').modal('show');
+
+            fetch("{{ url('nom_electronica_ultimo_error_envio') }}/" + documentoId, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                credentials: 'same-origin'
+            }).then(function (response) {
+                return response.json().catch(function () {
+                    return {};
+                }).then(function (data) {
+                    if (!response.ok) {
+                        throw data;
+                    }
+                    return data;
+                });
+            }).then(function (data) {
+                var resultado = data.resultado || {};
+                var mensajes = resultado.mensajes || [];
+                var mensajesHtml = mensajes.length ? '<ul style="margin-bottom: 0;">' + mensajes.map(function (mensaje) {
+                    return '<li>' + escapeHtml(mensaje) + '</li>';
+                }).join('') + '</ul>' : '<span class="text-muted">Sin mensaje DIAN registrado.</span>';
+
+                modalTitle.textContent = 'Último error de envío - ' + (data.documento || '');
+                modalBody.innerHTML =
+                    '<table class="table table-bordered table-condensed">' +
+                        '<tbody>' +
+                            '<tr><th style="width: 180px;">ID resultado</th><td>' + escapeHtml(resultado.id) + '</td></tr>' +
+                            '<tr><th>Documento</th><td>' + escapeHtml(data.documento) + '</td></tr>' +
+                            '<tr><th>Fecha</th><td>' + escapeHtml(resultado.fecha) + '</td></tr>' +
+                            '<tr><th>Cod. respuesta</th><td>' + escapeHtml(resultado.codigo) + '</td></tr>' +
+                            '<tr><th>DIAN Status</th><td>' + escapeHtml(resultado.dian_status) + '</td></tr>' +
+                            '<tr><th>Email Status</th><td>' + escapeHtml(resultado.email_status) + '</td></tr>' +
+                            '<tr><th>CUNE</th><td>' + escapeHtml(resultado.cune) + '</td></tr>' +
+                            '<tr><th>Registrado</th><td>' + escapeHtml(resultado.created_at) + '</td></tr>' +
+                            '<tr><th>Mensaje respuesta DIAN</th><td>' + mensajesHtml + '</td></tr>' +
+                        '</tbody>' +
+                    '</table>' +
+                    '<label>Obj. JSON Enviado:</label>' +
+                    '<pre style="max-height: 260px; overflow: auto; white-space: pre-wrap;">' + escapeHtml(resultado.objeto_json_enviado) + '</pre>';
+            }).catch(function (error) {
+                modalBody.innerHTML = '<div class="alert alert-warning" style="margin-bottom: 0;">' + escapeHtml(error.message || 'No fue posible consultar el último error de envío.') + '</div>';
+            });
+        }
+
+        document.addEventListener('click', function (e) {
+            var btnError = e.target.closest('.btn-ver-ultimo-error');
+            if (!btnError) {
+                return;
+            }
+
+            e.preventDefault();
+            mostrarModalUltimoError(btnError.getAttribute('data-documento-id'));
+        });
+
         if (!btnEnviarTodos) {
             return;
         }

@@ -173,6 +173,16 @@
                 <td colspan="4">&nbsp;</td>
             </tr>
 
+            @if ( $total_a_pagar < 0 )
+                <tr>
+                    <td colspan="4">
+                        <div class="alert alert-warning" style="margin-bottom: 0;">
+                            <i class="fa fa-warning"></i> Advertencia: el saldo a pagar de este empleado queda negativo porque las deducciones superan los devengos.
+                        </div>
+                    </td>
+                </tr>
+            @endif
+
             <tr>
                 <td colspan="4">
                     <b>Saldo a pagar: </b> 

@@ -115,6 +115,19 @@
 							$("#btn_enviar").attr( 'href', $("#btn_enviar").attr('href') + '/nom_electronica_enviar_documentos/' + document.getElementById('arr_ids_docs_generados').value);						
 						}
 					}
+			    })
+			    .fail(function( xhr ){
+			    	$("#btn_previsualizar").children('.fa-spinner').attr('class','fa fa-check');
+
+			        $('#div_cargando').hide();
+
+			        var respuesta = xhr.responseText;
+			        if ( respuesta == null || respuesta == '' ) {
+			        	respuesta = '<div class="alert alert-danger"><strong>Error:</strong> No fue posible generar los documentos. Revise el log de Laravel o el log del contenedor.</div>';
+			        }
+
+        			$("#div_resultado_panel_generar").html( respuesta );
+        			$("#div_resultado_panel_generar").fadeIn( 1000 );
 			    });
 		    });
 

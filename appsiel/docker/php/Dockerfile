@@ -22,6 +22,7 @@ RUN docker-php-ext-install mbstring mysqli pdo pdo_mysql zip intl soap
 
 RUN a2enmod rewrite
 
+COPY docker/php/conf.d/app.ini /usr/local/etc/php/conf.d/app.ini
 COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
 

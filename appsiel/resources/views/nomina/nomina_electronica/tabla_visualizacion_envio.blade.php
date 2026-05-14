@@ -1,7 +1,60 @@
 <div class="cuadro">
-    <h5 style="text-align: center;"> 
-        Envío Nómina Eectrónica &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Desde: </b>{{ $lapso->fecha_inicial }} &nbsp;&nbsp;&nbsp; <b>Hasta:</b> {{ $lapso->fecha_final }}
-    </h5>
+    <?php
+        $total_devengos_periodo = 0;
+        $total_deducciones_periodo = 0;
+
+        foreach ($datos_vista as $comprobante_periodo) {
+            foreach ($comprobante_periodo['accruals'] as $registro_periodo) {
+                $amount = 0;
+                if (isset($registro_periodo['amount'])) {
+                    $amount = $registro_periodo['amount'];
+                }
+                if (isset($registro_periodo['amount-ns'])) {
+                    $amount = $registro_periodo['amount-ns'];
+                }
+
+                $total_devengos_periodo += $amount;
+            }
+
+            foreach ($comprobante_periodo['deductions'] as $registro_periodo) {
+                $amount = 0;
+                if (isset($registro_periodo['amount'])) {
+                    $amount = $registro_periodo['amount'];
+                }
+                if (isset($registro_periodo['amount-ns'])) {
+                    $amount = $registro_periodo['amount-ns'];
+                }
+
+                $total_deducciones_periodo += $amount;
+            }
+        }
+    ?>
+
+    <table class="table table-bordered" style="width:100%; margin-bottom: 15px; font-size: 13px;">
+        <thead>
+            <tr style="background-color: #f5f5f5;">
+                <th colspan="4" style="text-align: center; font-size: 16px;">
+                    Envío Nómina Electrónica
+                </th>
+            </tr>
+            <tr>
+                <th style="text-align: center;">Desde</th>
+                <th style="text-align: center;">Hasta</th>
+                <th style="text-align: center;">Total devengos</th>
+                <th style="text-align: center;">Total deducciones</th>
+                <th style="text-align: center;">Saldo a pagar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align: center;">{{ $lapso->fecha_inicial }}</td>
+                <td style="text-align: center;">{{ $lapso->fecha_final }}</td>
+                <td style="text-align: right;">{{ Form::TextoMoneda($total_devengos_periodo) }}</td>
+                <td style="text-align: right;">{{ Form::TextoMoneda($total_deducciones_periodo) }}</td>
+                <td style="text-align: right;">{{ Form::TextoMoneda($total_devengos_periodo - $total_deducciones_periodo) }}</td>
+            </tr>
+        </tbody>
+    </table>
 
     @if (!empty($empleados_excluidos))
         <div class="alert alert-info">
@@ -188,6 +241,16 @@
                 <tr>
                     <td colspan="4">&nbsp;</td>
                 </tr>
+
+                @if ( $total_a_pagar < 0 )
+                    <tr>
+                        <td colspan="4">
+                            <div class="alert alert-warning" style="margin-bottom: 0;">
+                                <i class="fa fa-warning"></i> Advertencia: el saldo a pagar de este empleado queda negativo porque las deducciones superan los devengos.
+                            </div>
+                        </td>
+                    </tr>
+                @endif
 
                 <tr>
                     <td colspan="4">

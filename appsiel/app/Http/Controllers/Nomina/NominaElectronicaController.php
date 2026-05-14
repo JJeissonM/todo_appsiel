@@ -14,6 +14,7 @@ use App\Nomina\ValueObjects\LapsoNomina;
 
 use App\NominaElectronica\DATAICO\DocumentoSoporte;
 use App\NominaElectronica\DATAICO\Services\DocumentoSoporteService;
+use App\NominaElectronica\ResultadoEnvioDocumento;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 use GuzzleHttp\Client;
 
@@ -101,67 +102,90 @@ class NominaElectronicaController extends TransaccionController
 
     public function generar_doc_soporte( Request $request )
     {
-        $doc_soporte_service = new DocumentoSoporteService();
-        $company_serv = (new CompanyService());
-        
-        $lapso = new LapsoNomina( $request->fecha_final_periodo );
-        $this->lapso = $lapso;
-
-        $this->datos_vista = [];
-        $this->arr_ids_docs_generados = [];
-        $this->empleados_excluidos = [];
-
-        $data = [
-            'core_empresa_id' => $company_serv->company->id,
-            'core_tipo_transaccion_id' => self::CORE_TIPO_TRANSACCION_ID,
-            'core_tipo_doc_app_id' => config('nomina.nom_elect_tipo_doc_app_id'),
-            'fecha' => $lapso->fecha_final,
-        ];
-        
-        $ids_contratos_all_docs_generados = DocumentoSoporte::where( $data )->get()->pluck('nom_contrato_id')->toArray();
-
-        $empleados_con_movimiento = $lapso->get_empleados_con_movimiento();
-
-        if( count($ids_contratos_all_docs_generados) == count($empleados_con_movimiento) )
-        {
-            return '<h4>Ya se generaron los documentos de nómina electrónica para TODOS los empleados en el periodo seleccionado.</h4>';
-        }
-
-        $almacenar_registros = $request->almacenar_registros;
-
-        // Un "Documento de soporte de nómina electrónica" por cada empleado
-        foreach ( $empleados_con_movimiento as $registro_empleado )
-        {
-
-            if ( in_array($registro_empleado->contrato->id, $ids_contratos_all_docs_generados) ) {
-                continue;
-            }
-
-            $empleado = $registro_empleado->contrato;
-
-            if ( $empleado->excluir_documentos_nomina_electronica )
-            {
-                $nombre_empleado = isset($empleado->tercero) && $empleado->tercero ? $empleado->tercero->descripcion : 'Contrato #' . $empleado->id;
-                $identificacion = isset($empleado->tercero) && $empleado->tercero ? $empleado->tercero->numero_identificacion : null;
-                $this->empleados_excluidos[] = trim( $nombre_empleado . ( $identificacion ? ' (' . $identificacion . ')' : '' ) );
-                continue;
-            }
-
-            $datos_doc_soporte = $doc_soporte_service->get_data_for_json( $empleado, $lapso, $almacenar_registros );
+        try {
+            $doc_soporte_service = new DocumentoSoporteService();
+            $company_serv = (new CompanyService());
             
-            $this->actualizar_datos_vista( $datos_doc_soporte );
+            $lapso = new LapsoNomina( $request->fecha_final_periodo );
+            $this->lapso = $lapso;
 
-            if( $almacenar_registros && !$doc_soporte_service->hay_errores($datos_doc_soporte) )
+            $this->datos_vista = [];
+            $this->arr_ids_docs_generados = [];
+            $this->empleados_excluidos = [];
+
+            $transaccion = TipoTransaccion::find( self::CORE_TIPO_TRANSACCION_ID );
+            $tipo_doc_app = is_null($transaccion) ? null : $transaccion->tipos_documentos->first();
+
+            if ( is_null($tipo_doc_app) )
             {
-                $data2 = $doc_soporte_service->get_data_to_store_from_calculation( $datos_doc_soporte, Auth::user()->id );
+                return response('<div class="alert alert-danger"><strong>Error:</strong> No hay un tipo de documento asociado a la transacción de documento de soporte de nómina electrónica.</div>', 422);
+            }
 
-                $dos_generado = DocumentoSoporte::create( $data + $data2 );
+            $data = [
+                'core_empresa_id' => $company_serv->company->id,
+                'core_tipo_transaccion_id' => self::CORE_TIPO_TRANSACCION_ID,
+                'core_tipo_doc_app_id' => $tipo_doc_app->id,
+                'fecha' => $lapso->fecha_final,
+            ];
+            
+            $ids_contratos_all_docs_generados = DocumentoSoporte::where( $data )->get()->pluck('nom_contrato_id')->toArray();
 
-                $this->arr_ids_docs_generados[] = $dos_generado->id;
-            }        
+            $empleados_con_movimiento = $lapso->get_empleados_con_movimiento();
+
+            if( count($ids_contratos_all_docs_generados) == count($empleados_con_movimiento) )
+            {
+                return '<h4>Ya se generaron los documentos de nómina electrónica para TODOS los empleados en el periodo seleccionado.</h4>';
+            }
+
+            $almacenar_registros = $request->almacenar_registros;
+
+            // Un "Documento de soporte de nómina electrónica" por cada empleado
+            foreach ( $empleados_con_movimiento as $registro_empleado )
+            {
+
+                if ( in_array($registro_empleado->contrato->id, $ids_contratos_all_docs_generados) ) {
+                    continue;
+                }
+
+                $empleado = $registro_empleado->contrato;
+
+                if ( $empleado->excluir_documentos_nomina_electronica )
+                {
+                    $nombre_empleado = isset($empleado->tercero) && $empleado->tercero ? $empleado->tercero->descripcion : 'Contrato #' . $empleado->id;
+                    $identificacion = isset($empleado->tercero) && $empleado->tercero ? $empleado->tercero->numero_identificacion : null;
+                    $this->empleados_excluidos[] = trim( $nombre_empleado . ( $identificacion ? ' (' . $identificacion . ')' : '' ) );
+                    continue;
+                }
+
+                $datos_doc_soporte = $doc_soporte_service->get_data_for_json( $empleado, $lapso, $almacenar_registros );
+                
+                $this->actualizar_datos_vista( $datos_doc_soporte );
+
+                if( $almacenar_registros && !$doc_soporte_service->hay_errores($datos_doc_soporte) )
+                {
+                    $data2 = $doc_soporte_service->get_data_to_store_from_calculation( $datos_doc_soporte, Auth::user()->id );
+
+                    $dos_generado = DocumentoSoporte::create( $data + $data2 );
+
+                    $this->arr_ids_docs_generados[] = $dos_generado->id;
+                }        
+            }
+
+            return $this->dibujar_vista();
+        } catch ( \Throwable $e ) {
+            \Log::error('Error generando documento soporte de nomina electronica.', [
+                'fecha_final_periodo' => $request->fecha_final_periodo,
+                'almacenar_registros' => $request->almacenar_registros,
+                'user_id' => Auth::check() ? Auth::user()->id : null,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            $mensaje = config('app.debug') ? $e->getMessage() : 'No fue posible generar los documentos de soporte.';
+
+            return response('<div class="alert alert-danger"><strong>Error:</strong> ' . e($mensaje) . '</div>', 500);
         }
-
-        return $this->dibujar_vista();
     }
 
     public function remove_status_line($json_string)
@@ -239,6 +263,56 @@ class NominaElectronicaController extends TransaccionController
         return response()->json($resultado, $resultado['ok'] ? 200 : 422);
     }
 
+    public function ultimo_error_envio($documento_id)
+    {
+        $documento = DocumentoSoporte::find($documento_id);
+
+        if (is_null($documento)) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Documento no encontrado.'
+            ], 404);
+        }
+
+        $resultado = ResultadoEnvioDocumento::where([
+                ['core_empresa_id', '=', $documento->core_empresa_id],
+                ['core_tipo_transaccion_id', '=', $documento->core_tipo_transaccion_id],
+                ['core_tipo_doc_app_id', '=', $documento->core_tipo_doc_app_id],
+                ['consecutivo', '=', $documento->consecutivo],
+                ['fecha', '=', $documento->fecha],
+            ])
+            ->orderBy('created_at', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->first();
+
+        if (is_null($resultado)) {
+            return response()->json([
+                'ok' => false,
+                'documento' => $documento->get_value_to_show(),
+                'message' => 'Este documento no tiene resultados de envío registrados.'
+            ], 404);
+        }
+
+        $mensajes = $this->normalizar_mensajes_dian($resultado->dian_messages);
+
+        return response()->json([
+            'ok' => true,
+            'documento' => $documento->get_value_to_show(),
+            'resultado' => [
+                'id' => $resultado->id,
+                'fecha' => $resultado->fecha,
+                'codigo' => $resultado->codigo,
+                'dian_status' => $resultado->dian_status,
+                'email_status' => $resultado->email_status,
+                'cune' => $resultado->cune,
+                'created_at' => (string)$resultado->created_at,
+                'mensajes' => $mensajes,
+                'dian_messages_raw' => $resultado->dian_messages,
+                'objeto_json_enviado' => $resultado->objeto_json_enviado,
+            ]
+        ]);
+    }
+
     protected function procesar_envio_documentos(array $arr_ids)
     {
         $resultados = [];
@@ -282,7 +356,25 @@ class NominaElectronicaController extends TransaccionController
             ];
         }
 
-        $json_doc_electronico_enviado = json_encode($document_header->get_json_to_send());
+        try {
+            $json_doc_electronico_enviado = json_encode($document_header->get_json_to_send());
+        } catch ( \Throwable $e ) {
+            \Log::error('No se pudo construir el JSON de documento soporte de nomina electronica.', [
+                'documento_id' => $document_header->id,
+                'core_tipo_doc_app_id' => $document_header->core_tipo_doc_app_id,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return [
+                'ok' => false,
+                'documento_id' => (int)$document_header->id,
+                'documento' => $document_header->get_value_to_show(),
+                'message' => $e->getMessage()
+            ];
+        }
+
         $response = null;
         $array_respuesta = [];
 

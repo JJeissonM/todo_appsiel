@@ -45,10 +45,25 @@ class DocumentoSoporte extends Model
        return $this->belongsTo( NomContrato::class, 'nom_contrato_id' );
    }
 
-   public function get_value_to_show()
-   {
-       return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
-   }
+	   public function get_value_to_show()
+	   {
+	       return $this->get_prefix_to_show() . ' ' . $this->consecutivo;
+	   }
+
+      protected function get_prefix_to_show()
+      {
+         $head_data = $this->get_head_data_stored();
+
+         if (isset($head_data['prefix']) && $head_data['prefix'] != '') {
+            return $head_data['prefix'];
+         }
+
+         if (!is_null($this->tipo_documento_app)) {
+            return $this->tipo_documento_app->prefijo;
+         }
+
+         return 'Documento';
+      }
 
    public static function consultar_registros($nro_registros, $search)
    {
@@ -236,18 +251,20 @@ class DocumentoSoporte extends Model
       ];
    }
 
-   public function get_json_to_send()
-   {
-      $lapso = new LapsoNomina( $this->fecha );
-      
-      $document_header = $this->toArray();
+	   public function get_json_to_send()
+	   {
+	      $lapso = new LapsoNomina( $this->fecha );
+	      
+	      $document_header = $this->toArray();
+         $head_data = $this->get_head_data_stored();
+         $prefix = $this->get_prefix_to_send($head_data);
 
-      $data = [ 
-         'env' => config('nomina.nom_elec_ambiente'),
-         'send_dian' => true,
-         'prefix' => $this->tipo_documento_app->prefijo,
-         'number' => $this->consecutivo,
-         'salary' =>  $this->empleado->sueldo,
+	      $data = [ 
+	         'env' => config('nomina.nom_elec_ambiente'),
+	         'send_dian' => true,
+	         'prefix' => $prefix,
+	         'number' => $this->consecutivo,
+	         'salary' =>  $this->empleado->sueldo,
          'periodicity' => 'MENSUAL',
          'initial-settlement-date' => formatear_fecha_factura_electronica($lapso->fecha_inicial),
          'final-settlement-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
@@ -265,7 +282,31 @@ class DocumentoSoporte extends Model
 
       //dd('{"env":"PRODUCCION","prefix":"N","number":1,"salary":1854290.00,"periodicity":"MENSUAL","initial-settlement-date":"01/01/2023","final-settlement-date":"31/01/2023","issue-date":"04/04/2023","payment-date":"31/01/2023","accruals":[{"amount":51393.00,"code":"AUXILIO_DE_TRANSPORTE"},{"days":11,"amount":679906.0,"code":"BASICO"},{"days":19,"amount":1174384.0,"code":"VACACION"}],"deductions":[{"amount":74172.0,"percentage":4.0,"code":"SALUD"},{"amount":74172.0,"percentage":4.0,"code":"FONDO_PENSION"}],"employee":{"other-names":"PEDRO","second-last-name":"PICAPIEDRA","first-name":"","integral-salary":false,"fire-date":"31/12/2023","email":"pedro@hotmail.com","last-name":"BEDOYA","worker-type":"DEPENDIENTE","address":{"line":"CR 53 50 31","city":"101","department":"05"},"identification":"111111111","payment-means":"EFECTIVO","sub-code":"NO_APLICA","start-date":"18/01/2012","identification-type":"NIT","contract-type":"TERMINO_FIJO"},"software":{"pin":"4123412","test-set-id":"201b3830-cf33-4966-9e63-4e8dcc450457","dian-id":"d0e88268-a4ab-447d-918c-19c1c248b5c3"}}',json_encode($data));
 
-      return $data;
-   
-   }
-}
+	      return $data;
+	   
+	   }
+
+      protected function get_head_data_stored()
+      {
+         $head_data = json_decode($this->head_data_json, true);
+
+         if (!is_array($head_data)) {
+            return [];
+         }
+
+         return $head_data;
+      }
+
+      protected function get_prefix_to_send(array $head_data)
+      {
+         if (isset($head_data['prefix']) && $head_data['prefix'] != '') {
+            return $head_data['prefix'];
+         }
+
+         if (!is_null($this->tipo_documento_app)) {
+            return $this->tipo_documento_app->prefijo;
+         }
+
+         throw new \RuntimeException('El documento de soporte #' . $this->id . ' no tiene un tipo de documento válido ni prefijo almacenado.');
+      }
+	}
