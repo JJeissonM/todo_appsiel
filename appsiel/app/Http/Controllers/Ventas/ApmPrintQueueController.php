@@ -20,14 +20,18 @@ class ApmPrintQueueController extends Controller
 
     public function index()
     {
-        $jobs = $this->service->getPendingJobs()->map(function ($job) {
+        $jobs = ($this->userCanManageQueue()
+            ? $this->service->getManageableJobs()
+            : $this->service->getPendingJobs()
+        )->map(function ($job) {
             return $this->service->serializeJob($job);
         });
 
         return response()->json([
             'data' => $jobs->values(),
             'permissions' => [
-                'can_retire' => $this->userCanRetireQueue()
+                'can_retire' => $this->userCanRetireQueue(),
+                'can_manage' => $this->userCanManageQueue()
             ]
         ]);
     }
@@ -73,6 +77,16 @@ class ApmPrintQueueController extends Controller
         }
     }
 
+    public function markAttempted($jobId, Request $request)
+    {
+        try {
+            $job = $this->service->markAttempted($jobId, $request->input('message', 'Trabajo enviado a APM. Pendiente confirmar impresion fisica.'));
+            return response()->json(['job' => $this->service->serializeJob($job)]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
     public function markFailed($jobId, Request $request)
     {
         try {
@@ -101,6 +115,17 @@ class ApmPrintQueueController extends Controller
     {
         $user = Auth::user();
 
-        return !is_null($user) && $user->can(self::RETIRE_PERMISSION);
+        return !is_null($user) && ($this->userCanManageQueue() || $user->can(self::RETIRE_PERMISSION));
+    }
+
+    protected function userCanManageQueue()
+    {
+        $user = Auth::user();
+
+        return !is_null($user) && (
+            $user->hasRole('SuperAdmin') ||
+            $user->hasRole('Administrador') ||
+            $user->can(self::RETIRE_PERMISSION)
+        );
     }
 }

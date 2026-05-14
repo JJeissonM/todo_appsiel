@@ -15,6 +15,15 @@
     $cierre = App\VentasPos\CierreEncabezado::where('pdv_id', $pdv->id)->get()->last();
 
     $fecha_desde = '--';
+    $estado_pdv = $pdv->estado;
+
+    if (!in_array($estado_pdv, ['Abierto', 'Cerrado', 'Inactivo'])) {
+        if (!is_null($apertura) && (is_null($cierre) || $apertura->created_at > $cierre->created_at)) {
+            $estado_pdv = 'Abierto';
+        } else {
+            $estado_pdv = 'Cerrado';
+        }
+    }
 
     $btn_abrir = '<a href="' . url('web/create') . '?id=20&id_modelo=228&id_transaccion=45&pdv_id='.$pdv->id.'&cajero_id='.Auth::user()->id.'" class="btn btn-xs btn-success" > Apertura </a>';
 
@@ -34,7 +43,7 @@
 
     $color = 'red';
 
-    if ( $pdv->estado == 'Abierto' )
+    if ( $estado_pdv == 'Abierto' )
     {
         $color = 'green';
 
@@ -48,7 +57,7 @@
         }
     }
 
-    if ( $pdv->estado == 'Cerrado' )
+    if ( $estado_pdv == 'Cerrado' )
     {
         $btn_cerrar = '';
         $btn_facturar = '';
@@ -90,7 +99,7 @@
                         
                         
                             <div>
-                                <b> Estado: </b> <i class="fa fa-circle" style="color: {{$color}}"> </i> {{ $pdv->estado }} <small> | desde {{ $fecha_desde }} </small>
+                                <b> Estado: </b> <i class="fa fa-circle" style="color: {{$color}}"> </i> {{ $estado_pdv }} <small> | desde {{ $fecha_desde }} </small>
                             </div>
                         
                             @can('vtas_pos_ver_valor_documento_en_consultar_facturas_pdv')

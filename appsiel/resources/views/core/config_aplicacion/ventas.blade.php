@@ -215,7 +215,7 @@
 									$apm_printer_id_pedidos_ventas = $parametros['apm_printer_id_pedidos_ventas'];
 								}
 							?>
-							{{ Form::bsText('apm_printer_id_pedidos_ventas', $apm_printer_id_pedidos_ventas, 'APM PrinterId pedidos de ventas', ['class'=>'form-control']) }}
+							{{ Form::bsSelect('apm_printer_id_pedidos_ventas', $apm_printer_id_pedidos_ventas, 'Dispositivo APM pedidos de ventas', App\Ventas\ApmDevice::printerOptions(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -245,7 +245,7 @@
 									$apm_printer_id_pedidos_restaurante = $parametros['apm_printer_id_pedidos_restaurante'];
 								}
 							?>
-							{{ Form::bsText('apm_printer_id_pedidos_restaurante', $apm_printer_id_pedidos_restaurante, 'APM PrinterId pedidos restaurante', ['class'=>'form-control']) }}
+							{{ Form::bsSelect('apm_printer_id_pedidos_restaurante', $apm_printer_id_pedidos_restaurante, 'Dispositivo APM pedidos restaurante', App\Ventas\ApmDevice::printerOptions(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -275,7 +275,7 @@
 									$apm_printer_id_factura_pos = $parametros['apm_printer_id_factura_pos'];
 								}
 							?>
-							{{ Form::bsText('apm_printer_id_factura_pos', $apm_printer_id_factura_pos, 'APM PrinterId facturas POS', ['class'=>'form-control']) }}
+							{{ Form::bsSelect('apm_printer_id_factura_pos', $apm_printer_id_factura_pos, 'Dispositivo APM facturas POS', App\Ventas\ApmDevice::printerOptions(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 

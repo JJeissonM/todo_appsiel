@@ -1,6 +1,87 @@
 // main.js - Demo UI para Appsiel Print Manager (APM)
 
 ((global) => {
+    global.APM_UPDATE_TEMPLATES = global.APM_UPDATE_TEMPLATES || {
+        comanda1: {
+            Action: 'UpdateTemplate',
+            Template: {
+                DocumentType: 'comanda',
+                Name: 'Comanda Minimalista',
+                Sections: [
+                    {
+                        Name: 'Encabezado',
+                        Type: 'Static',
+                        Order: 1,
+                        Elements: [
+                            { Type: 'Text', StaticValue: '=== PEDIDO COCINA ===', Format: 'Size2 Bold', Align: 'Center' },
+                            { Type: 'Text', Label: 'Mesa: ', Source: 'order.Table', Format: 'Size1', Align: 'Left' },
+                            { Type: 'Line' }
+                        ]
+                    },
+                    {
+                        Name: 'Items',
+                        Type: 'Table',
+                        DataSource: 'order.Items',
+                        Order: 2,
+                        Elements: [
+                            { Type: 'Text', Label: 'Cant', Source: 'Qty', WidthPercentage: 30, Align: 'Left' },
+                            { Type: 'Text', Label: 'Producto', Source: 'Name', WidthPercentage: 70, Align: 'Left' }
+                        ]
+                    }
+                ]
+            }
+        },
+        factura1: {
+            Action: 'UpdateTemplate',
+            Template: {
+                DocumentType: 'factura_electronica',
+                Name: 'Factura Clasica',
+                Sections: [
+                    {
+                        Name: 'SellerInfo',
+                        Type: 'Static',
+                        Order: 1,
+                        Elements: [
+                            { Type: 'Text', Source: 'Seller.Name', Format: 'Size1 Bold', Align: 'Center' },
+                            { Type: 'Text', Label: 'NIT: ', Source: 'Seller.Nit', Align: 'Center' },
+                            { Type: 'Line' }
+                        ]
+                    },
+                    {
+                        Name: 'Items',
+                        Type: 'Table',
+                        DataSource: 'Invoice.Items',
+                        Order: 2,
+                        Elements: [
+                            { Type: 'Text', Label: 'Desc', Source: 'Description', WidthPercentage: 50 },
+                            { Type: 'Text', Label: 'Cant', Source: 'Quantity', WidthPercentage: 20 },
+                            { Type: 'Text', Label: 'Total', Source: 'Total', WidthPercentage: 30, Align: 'Right' }
+                        ]
+                    }
+                ]
+            }
+        }
+    };
+
+    global.sendUpdateTemplate = (templateKey) => {
+        if (!global.APM_CLIENT || typeof global.APM_CLIENT.sendUpdateTemplate !== 'function') {
+            return false;
+        }
+
+        return global.APM_CLIENT.sendUpdateTemplate(global.APM_UPDATE_TEMPLATES[templateKey]);
+    };
+
+    global.sendDirectCommand = (command, printerId) => {
+        if (!global.APM_CLIENT || typeof global.APM_CLIENT.sendDirectCommand !== 'function') {
+            return false;
+        }
+
+        const directPrinterIdInput = document.getElementById('directPrinterId');
+        const selectedPrinterId = printerId || (directPrinterIdInput ? directPrinterIdInput.value : '');
+
+        return global.APM_CLIENT.sendDirectCommand(command, selectedPrinterId);
+    };
+
     const initDemoUI = () => {
         const statusSpan = document.getElementById('status');
         const messagesDiv = document.getElementById('messages');

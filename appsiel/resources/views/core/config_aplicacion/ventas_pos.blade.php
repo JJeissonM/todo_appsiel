@@ -230,6 +230,37 @@
 					</div>
 				</div>
 
+				<h4> Appsiel Print Manager (APM) - Báscula </h4>
+				<hr>
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$apm_scale_listener_activo = '0';
+								if( isset($parametros['apm_scale_listener_activo'] ) )
+								{
+									$apm_scale_listener_activo = $parametros['apm_scale_listener_activo'];
+								}
+							?>
+							{{ Form::bsSelect('apm_scale_listener_activo', $apm_scale_listener_activo, 'Activar báscula APM en creación POS', [ '0' => 'No', '1' => 'Si' ], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$apm_scale_id_pos = '';
+								if( isset($parametros['apm_scale_id_pos'] ) )
+								{
+									$apm_scale_id_pos = $parametros['apm_scale_id_pos'];
+								}
+							?>
+							{{ Form::bsSelect('apm_scale_id_pos', $apm_scale_id_pos, 'Báscula APM para POS', App\Ventas\ApmDevice::scaleOptions(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+				</div>
+
 
 				<h4> Parámetros Para facturación de bolsas  </h4>
 				<hr>

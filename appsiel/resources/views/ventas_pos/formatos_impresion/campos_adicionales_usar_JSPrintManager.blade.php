@@ -19,3 +19,6 @@
 <input type="hidden" id="apm_printer_id_pedidos_ventas" value="{{ config('ventas.apm_printer_id_pedidos_ventas') }}">
 <input type="hidden" id="apm_printer_id_pedidos_restaurante" value="{{ config('ventas.apm_printer_id_pedidos_restaurante') }}">
 <input type="hidden" id="apm_printer_id_factura_pos" value="{{ config('ventas.apm_printer_id_factura_pos') }}">
+<input type="hidden" id="apm_devices_config" value="{{ e(json_encode(App\Ventas\ApmDevice::frontConfigByDeviceIds([config('ventas.apm_printer_id_pedidos_ventas'), config('ventas.apm_printer_id_pedidos_restaurante'), config('ventas.apm_printer_id_factura_pos'), config('ventas_pos.apm_scale_id_pos'), $params_JSPrintManager->impresora_principal_por_defecto, $params_JSPrintManager->impresora_cocina_por_defecto]))) }}">
+<input type="hidden" id="apm_scale_listener_activo" value="{{ (int) config('ventas_pos.apm_scale_listener_activo') }}">
+<input type="hidden" id="apm_scale_id_pos" value="{{ config('ventas_pos.apm_scale_id_pos') }}">

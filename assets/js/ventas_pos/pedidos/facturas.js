@@ -180,7 +180,9 @@ function get_descuento(producto_id)
 	return descuento;
 }
 
-function ventana_imprimir() {
+function ventana_imprimir(imprimir) {
+  imprimir = imprimir !== false;
+
   try {
     ventana_factura = window.open("", "Impresión de factura POS", "width=400,height=600,menubar=no");
   } catch (e) {
@@ -193,7 +195,9 @@ function ventana_imprimir() {
 
   try {
     ventana_factura.document.write($("#div_plantilla_factura").html());
-    ventana_factura.print();
+    if (imprimir) {
+      ventana_factura.print();
+    }
     return true;
   } catch (e) {
     return false;

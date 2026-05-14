@@ -229,6 +229,7 @@
 	<input type="hidden" id="apm_ws_url" value="{{ config('ventas.apm_ws_url') }}">
 	<input type="hidden" id="impresora_cocina_por_defecto" value="{{ config('ventas_pos.impresora_cocina_por_defecto') }}">
 	<input type="hidden" id="apm_printer_id_pedidos_ventas" value="{{ config('ventas.apm_printer_id_pedidos_ventas') }}">
+	<input type="hidden" id="apm_devices_config" value="{{ e(json_encode(App\Ventas\ApmDevice::frontConfigByDeviceIds([config('ventas.apm_printer_id_pedidos_ventas')]))) }}">
 
 	<script src="{{ asset( 'assets/js/apm/client.js?aux=' . uniqid() )}}"></script>
 	<script src="{{ asset( 'assets/js/ventas/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>

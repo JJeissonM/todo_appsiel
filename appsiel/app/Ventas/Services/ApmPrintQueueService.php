@@ -18,6 +18,19 @@ class ApmPrintQueueService
             ->get();
     }
 
+    public function getManageableJobs($limit = 30)
+    {
+        return ApmPrintJob::whereIn('apm_print_status_id', [
+                $this->getStatusId('pending'),
+                $this->getStatusId('printed'),
+                $this->getStatusId('retired')
+            ])
+            ->orderByRaw('CASE WHEN apm_print_status_id = ? THEN 0 ELSE 1 END', [$this->getStatusId('pending')])
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+
     public function prepareJob(array $payload, array $documentMeta)
     {
         $meta = $this->normalizeDocumentMeta($documentMeta);
@@ -43,6 +56,7 @@ class ApmPrintQueueService
 
         $copyLabel = $this->buildCopyLabel($copyNumber);
         $payload = $this->applyCopyLabel($payload, $copyLabel);
+        $payload = $this->normalizePayloadTextFields($payload);
 
         $user = Auth::user();
         $job = ApmPrintJob::create([
@@ -74,13 +88,46 @@ class ApmPrintQueueService
     {
         $job = ApmPrintJob::findOrFail($jobId);
 
-        if ((int) $job->apm_print_status_id !== (int) $this->getStatusId('pending')) {
-            throw new \RuntimeException('El trabajo seleccionado ya no esta pendiente en la cola de APM.');
+        if ((int) $job->apm_print_status_id === (int) $this->getStatusId('pending')) {
+            $payload = $this->normalizePayloadTextFields(json_decode($job->payload_json, true));
+            $job->payload_json = json_encode($payload);
+            $job->save();
+
+            return [
+                'job' => $job,
+                'payload' => $payload
+            ];
         }
 
+        $payload = json_decode($job->payload_json, true);
+        $copyNumber = $this->nextCopyNumber($job);
+        $copyLabel = $this->buildCopyLabel($copyNumber);
+        $payload = $this->applyCopyLabel(is_array($payload) ? $payload : [], $copyLabel);
+        $payload = $this->normalizePayloadTextFields($payload);
+
+        $user = Auth::user();
+        $newJob = ApmPrintJob::create([
+            'core_empresa_id' => $job->core_empresa_id,
+            'core_tipo_transaccion_id' => $job->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $job->core_tipo_doc_app_id,
+            'consecutivo' => $job->consecutivo,
+            'apm_print_status_id' => $this->getStatusId('pending'),
+            'document_type' => $job->document_type,
+            'document_label' => $job->document_label,
+            'copy_number' => $copyNumber,
+            'copy_label' => $copyLabel,
+            'printer_id' => isset($payload['PrinterId']) ? $payload['PrinterId'] : $job->printer_id,
+            'station_id' => isset($payload['StationId']) ? $payload['StationId'] : $job->station_id,
+            'payload_json' => json_encode($payload),
+            'attempts_count' => 0,
+            'last_error' => null,
+            'queued_by' => is_null($user) ? null : $user->email,
+            'queued_at' => Carbon::now()->toDateTimeString()
+        ]);
+
         return [
-            'job' => $job,
-            'payload' => json_decode($job->payload_json, true)
+            'job' => $newJob,
+            'payload' => $payload
         ];
     }
 
@@ -95,6 +142,22 @@ class ApmPrintQueueService
         $job->printed_at = Carbon::now()->toDateTimeString();
         $job->printed_by = is_null($user) ? null : $user->email;
         $job->last_error = null;
+        $job->save();
+
+        return $job;
+    }
+
+    public function markAttempted($jobId, $message)
+    {
+        $job = ApmPrintJob::findOrFail($jobId);
+
+        if ((int) $job->apm_print_status_id !== (int) $this->getStatusId('pending')) {
+            throw new \RuntimeException('El trabajo seleccionado ya no esta pendiente en la cola de APM.');
+        }
+
+        $job->attempts_count = (int) $job->attempts_count + 1;
+        $job->last_attempt_at = Carbon::now()->toDateTimeString();
+        $job->last_error = $message;
         $job->save();
 
         return $job;
@@ -214,6 +277,61 @@ class ApmPrintQueueService
         return $payload;
     }
 
+    protected function normalizePayloadTextFields($payload)
+    {
+        if (!is_array($payload)) {
+            return [];
+        }
+
+        foreach (['JobId', 'StationId', 'PrinterId', 'DocumentType'] as $field) {
+            if (isset($payload[$field])) {
+                $payload[$field] = (string)$payload[$field];
+            }
+        }
+
+        if (!isset($payload['Document']) || !is_array($payload['Document'])) {
+            return $payload;
+        }
+
+        foreach (['company', 'customer'] as $section) {
+            if (!isset($payload['Document'][$section]) || !is_array($payload['Document'][$section])) {
+                continue;
+            }
+
+            foreach (['Name', 'Nit', 'Address', 'Phone', 'Email', 'City', 'IdType'] as $field) {
+                if (isset($payload['Document'][$section][$field])) {
+                    $payload['Document'][$section][$field] = (string)$payload['Document'][$section][$field];
+                }
+            }
+        }
+
+        if (isset($payload['Document']['seller']) && is_array($payload['Document']['seller']) && isset($payload['Document']['seller']['Name'])) {
+            $payload['Document']['seller']['Name'] = (string)$payload['Document']['seller']['Name'];
+        }
+
+        if (isset($payload['Document']['sale']) && is_array($payload['Document']['sale'])) {
+            foreach (['Number', 'Date', 'COPY'] as $field) {
+                if (isset($payload['Document']['sale'][$field])) {
+                    $payload['Document']['sale'][$field] = (string)$payload['Document']['sale'][$field];
+                }
+            }
+
+            if (isset($payload['Document']['sale']['Items']) && is_array($payload['Document']['sale']['Items'])) {
+                foreach ($payload['Document']['sale']['Items'] as $key => $item) {
+                    if (is_array($item) && isset($item['Name'])) {
+                        $payload['Document']['sale']['Items'][$key]['Name'] = (string)$item['Name'];
+                    }
+                }
+            }
+        }
+
+        if (isset($payload['Document']['COPY'])) {
+            $payload['Document']['COPY'] = (string)$payload['Document']['COPY'];
+        }
+
+        return $payload;
+    }
+
     protected function buildCopyLabel($copyNumber)
     {
         if ((int) $copyNumber === 0) {
@@ -221,6 +339,17 @@ class ApmPrintQueueService
         }
 
         return 'COPIA # ' . (int) $copyNumber;
+    }
+
+    protected function nextCopyNumber(ApmPrintJob $job)
+    {
+        $maxCopyNumber = ApmPrintJob::where('core_tipo_transaccion_id', $job->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $job->core_tipo_doc_app_id)
+            ->where('consecutivo', $job->consecutivo)
+            ->where('document_type', $job->document_type)
+            ->max('copy_number');
+
+        return is_null($maxCopyNumber) ? 1 : ((int) $maxCopyNumber + 1);
     }
 
     protected function getStatusId($code)
@@ -237,8 +366,7 @@ class ApmPrintQueueService
         ];
 
         if (!isset($defaults[$code])) {
-            throw new 
-untimeException('No existe la definicion del estado de cola APM: ' . $code);
+            throw new \RuntimeException('No existe la definicion del estado de cola APM: ' . $code);
         }
 
         $status = ApmPrintStatus::firstOrCreate(

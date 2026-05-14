@@ -17,6 +17,11 @@
 
     const cloneData = (data) => JSON.parse(JSON.stringify(data || {}));
 
+    const getHiddenInputValue = (id) => {
+        const input = document.getElementById(id);
+        return input ? String(input.value || '') : '';
+    };
+
     const getWsUrl = () => {
         if (global.APM_CONFIG && global.APM_CONFIG.url) {
             return String(global.APM_CONFIG.url).trim();
@@ -57,9 +62,11 @@
             this.processingDocumentKeys = {};
             this.queueItems = [];
             this.canRetireQueue = false;
+            this.canManageQueue = false;
             this.queueModalOpen = false;
             this.uiInitialized = false;
             this.queueSyncInterval = null;
+            this.scaleListeners = [];
         }
 
         setLogger(loggerFn) {
@@ -111,6 +118,7 @@
 
             this.socket.onmessage = (event) => {
                 this.log(`Mensaje APM: ${event.data}`, 'info');
+                this.notifyScaleListeners(event.data);
                 this.resolvePendingJob(event.data);
             };
 
@@ -144,6 +152,124 @@
                 this.log('Error en WebSocket APM. Revisa la consola para detalles.', 'error');
                 console.error('APM WebSocket Error:', error);
             };
+        }
+
+        send(payload) {
+            if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+                this.connect();
+                this.log('APM no conectado. No fue posible enviar el mensaje.', 'warning');
+                return false;
+            }
+
+            this.socket.send(typeof payload === 'string' ? payload : JSON.stringify(payload));
+            return true;
+        }
+
+        sendDirectCommand(command, printerId) {
+            const cleanCommand = String(command || '').trim();
+            const cleanPrinterId = String(printerId || '').trim();
+
+            if (!cleanCommand || !cleanPrinterId) {
+                return false;
+            }
+
+            return this.send({
+                Action: 'ExecuteCommand',
+                PrinterId: cleanPrinterId,
+                Command: cleanCommand
+            });
+        }
+
+        sendConfiguredDirectCommands(payload) {
+            const printerId = payload && payload.PrinterId ? String(payload.PrinterId).trim() : '';
+            const deviceConfig = this.getDeviceConfig(printerId);
+
+            if (!printerId || !deviceConfig) {
+                return;
+            }
+
+            const commands = [];
+            if (parseInt(deviceConfig.beep_after_print || 0, 10) === 1) {
+                commands.push('Beep');
+            }
+
+            if (parseInt(deviceConfig.open_drawer_after_print || 0, 10) === 1) {
+                commands.push('Drawer');
+            }
+
+            if (parseInt(deviceConfig.cut_after_print || 0, 10) === 1) {
+                commands.push('Cut');
+            }
+
+            commands.forEach((command, index) => {
+                global.setTimeout(() => {
+                    this.sendDirectCommand(command, printerId);
+                }, 120 * (index + 1));
+            });
+        }
+
+        getDeviceConfig(deviceId) {
+            const cleanDeviceId = String(deviceId || '').trim();
+            if (!cleanDeviceId) {
+                return null;
+            }
+
+            const config = global.APM_DEVICES_CONFIG || safeJsonParse(getHiddenInputValue('apm_devices_config'), {});
+            return config && config[cleanDeviceId] ? config[cleanDeviceId] : null;
+        }
+
+        sendUpdateTemplate(template) {
+            if (!template) {
+                return false;
+            }
+
+            const sent = this.send(template);
+
+            if (/Android/i.test(navigator.userAgent)) {
+                global.setTimeout(() => {
+                    global.location.href = 'apm://update';
+                }, 150);
+            }
+
+            return sent;
+        }
+
+        startScaleListening(scaleId) {
+            const cleanScaleId = String(scaleId || '').trim();
+
+            if (!cleanScaleId) {
+                return false;
+            }
+
+            return this.send({
+                Action: 'StartListening',
+                ScaleId: cleanScaleId
+            });
+        }
+
+        stopScaleListening() {
+            return this.send({
+                Action: 'StopListening'
+            });
+        }
+
+        addScaleListener(listener) {
+            if (typeof listener !== 'function') {
+                return;
+            }
+
+            this.scaleListeners.push(listener);
+        }
+
+        notifyScaleListeners(rawMessage) {
+            const parsed = safeJsonParse(rawMessage, null);
+            if (!parsed || parsed.Weight === undefined || parsed.Unit === undefined) {
+                return;
+            }
+
+            this.scaleListeners.forEach((listener) => {
+                listener(parsed);
+            });
         }
 
         resolvePendingJob(rawMessage) {
@@ -350,7 +476,9 @@
         }
 
         completeQueuedJob(job, apmResponse) {
-            return this.request('POST', `apm_print_queue/${job.id}/mark_printed`, {})
+            return this.request('POST', `apm_print_queue/${job.id}/mark_attempted`, {
+                message: 'Trabajo enviado a APM. Pendiente confirmar impresion fisica.'
+            })
                 .then(() => {
                     this.syncQueueItems();
                     return Object.assign({}, apmResponse, {
@@ -480,6 +608,7 @@
                 .then((response) => {
                     this.queueItems = response && response.data ? response.data : [];
                     this.canRetireQueue = !!(response && response.permissions && response.permissions.can_retire);
+                    this.canManageQueue = !!(response && response.permissions && response.permissions.can_manage);
                     this.renderQueueButton();
                     this.renderQueueModalContent();
                     return this.queueItems;
@@ -487,6 +616,7 @@
                 .catch(() => {
                     this.queueItems = [];
                     this.canRetireQueue = false;
+                    this.canManageQueue = false;
                     this.renderQueueButton();
                     this.renderQueueModalContent();
                     return [];
@@ -517,6 +647,10 @@
                     queueJobId: job.id
                 })
                     .then((apmResponse) => this.completeQueuedJob(job, apmResponse))
+                    .then((response) => {
+                        this.sendConfiguredDirectCommands(payloadToSend);
+                        return response;
+                    })
                     .catch((apmError) => {
                         return this.failQueuedJob(job, apmError);
                     });
@@ -540,6 +674,10 @@
                         queueJobId: job.id
                     })
                         .then((apmResponse) => this.completeQueuedJob(job, apmResponse))
+                        .then((response) => {
+                            this.sendConfiguredDirectCommands(prepared.payload);
+                            return response;
+                        })
                         .catch((apmError) => {
                             return this.failQueuedJob(job, apmError);
                         });
@@ -550,6 +688,14 @@
 
         retireQueuedJob(jobId) {
             return this.request('POST', `apm_print_queue/${jobId}/mark_retired`, {})
+                .then((response) => {
+                    this.syncQueueItems();
+                    return response;
+                });
+        }
+
+        confirmPrintedJob(jobId) {
+            return this.request('POST', `apm_print_queue/${jobId}/mark_printed`, {})
                 .then((response) => {
                     this.syncQueueItems();
                     return response;
@@ -623,7 +769,7 @@
                 const button = document.createElement('button');
                 button.id = QUEUE_BUTTON_ID;
                 button.type = 'button';
-                button.innerHTML = '<span class="apm-queue-label">Cola APM</span><span id="' + QUEUE_BADGE_ID + '">0</span>';
+                button.innerHTML = '<span class="apm-queue-label">Gestor APM</span><span id="' + QUEUE_BADGE_ID + '">0</span>';
                 button.addEventListener('click', () => this.openQueueModal());
                 document.body.appendChild(button);
             }
@@ -645,28 +791,39 @@
             }
 
             badge.textContent = String(this.queueItems.length || 0);
-            button.style.display = this.queueItems.length ? 'inline-flex' : 'none';
+            button.style.display = (this.queueItems.length || this.canManageQueue) ? 'inline-flex' : 'none';
         }
 
         buildQueueModalHtml() {
             if (!this.queueItems.length) {
-                return '<p style="margin:0;">No hay documentos pendientes en la cola de APM.</p>';
+                return '<p style="margin:0;">No hay documentos recientes en el gestor APM.</p>';
             }
 
             return this.queueItems.map((item) => {
                 const label = item.document_label || `${item.document_type} ${item.consecutivo}`;
-                const retireButtonHtml = this.canRetireQueue
+                const isRetired = !!item.retired_at;
+                const isPending = !item.printed_at && !item.retired_at;
+                const retireButtonHtml = this.canRetireQueue && isPending
                     ? `<button type="button" class="btn btn-default btn-xs apm-retire-btn" data-job-id="${item.id}" style="margin-left:6px;">Retirar</button>`
                     : '';
+                const confirmButtonHtml = isPending
+                    ? `<button type="button" class="btn btn-success btn-xs apm-confirm-printed-btn" data-job-id="${item.id}" style="margin-left:6px;">Confirmar impreso</button>`
+                    : '';
+                const actionLabel = isPending ? 'Reenviar APM' : 'Imprimir copia';
+                const statusLabel = isRetired ? 'Retirado' : (isPending ? 'Pendiente' : 'Impreso');
 
                 return `
                     <div class="apm-queue-item">
                         <div class="apm-queue-item-title">${label}</div>
                         <div class="apm-queue-item-meta">
                             Copia: ${item.copy_label}<br>
+                            Estado: ${statusLabel}<br>
+                            ${item.printed_at ? 'Impreso: ' + item.printed_at + '<br>' : ''}
+                            ${item.retired_at ? 'Retirado: ' + item.retired_at + '<br>' : ''}
                         </div>
-                        <div class="apm-queue-item-error">${item.last_error || 'Pendiente de reimpresion manual.'}</div>
-                        <button type="button" class="btn btn-primary btn-xs apm-reprint-btn" data-job-id="${item.id}">Reimprimir</button>
+                        <div class="apm-queue-item-error">${item.last_error || (isPending ? 'Pendiente de reimpresion manual.' : '')}</div>
+                        <button type="button" class="btn btn-primary btn-xs apm-reprint-btn" data-job-id="${item.id}">${actionLabel}</button>
+                        ${confirmButtonHtml}
                         ${retireButtonHtml}
                     </div>
                 `;
@@ -701,6 +858,13 @@
                     this.handleManualRetire(button.getAttribute('data-job-id'), button);
                 };
             });
+
+            const confirmButtons = document.querySelectorAll('.apm-confirm-printed-btn');
+            confirmButtons.forEach((button) => {
+                button.onclick = () => {
+                    this.handleConfirmPrinted(button.getAttribute('data-job-id'), button);
+                };
+            });
         }
 
         handleManualReprint(jobId, button) {
@@ -720,7 +884,7 @@
                     if (global.Swal) {
                         global.Swal.fire({
                             icon: 'success',
-                            title: 'Impresion enviada',
+                            title: 'Impresion APM',
                             text: (response.CopyLabel || 'Copia enviada') + ' procesada por APM.'
                         });
                     }
@@ -740,6 +904,64 @@
                         this.openQueueModal();
                     }
                 });
+        }
+
+        handleConfirmPrinted(jobId, button) {
+            if (!jobId) {
+                return;
+            }
+
+            const executeConfirm = () => {
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'Confirmando...';
+                }
+
+                this.confirmPrintedJob(jobId)
+                    .then(() => {
+                        if (global.Swal) {
+                            global.Swal.fire({
+                                icon: 'success',
+                                title: 'Impresion confirmada',
+                                text: 'El trabajo APM fue marcado como impreso.'
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        if (global.Swal) {
+                            global.Swal.fire({
+                                icon: 'error',
+                                title: 'Error al confirmar',
+                                text: error && error.ErrorMessage ? error.ErrorMessage : 'No fue posible confirmar la impresion.'
+                            });
+                        }
+                    })
+                    .then(() => this.syncQueueItems())
+                    .then(() => {
+                        if (this.queueModalOpen) {
+                            this.openQueueModal();
+                        }
+                    });
+            };
+
+            if (!global.Swal) {
+                executeConfirm();
+                return;
+            }
+
+            global.Swal.fire({
+                icon: 'question',
+                title: 'Confirmar impresion',
+                text: 'Marcar este trabajo como impreso solo si la impresora fisica imprimio el documento.',
+                showCancelButton: true,
+                confirmButtonText: 'Si, impreso',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                const isConfirmed = !!(result && (result.isConfirmed === true || result.value === true));
+                if (isConfirmed) {
+                    executeConfirm();
+                }
+            });
         }
 
         handleManualRetire(jobId, button) {
@@ -810,7 +1032,7 @@
 
             this.syncQueueItems().then(() => {
                 global.Swal.fire({
-                    title: 'Cola de impresion APM',
+                    title: 'Gestor de impresiones APM',
                     html: this.buildQueueModalHtml(),
                     width: 700,
                     showConfirmButton: false,

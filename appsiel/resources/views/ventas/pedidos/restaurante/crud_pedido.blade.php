@@ -256,6 +256,7 @@ input[type=number]::-webkit-outer-spin-button {
     <input type="hidden" id="metodo_impresion_pedido_restaurante" value="{{ config('ventas.metodo_impresion_pedido_restaurante') }}">
     <input type="hidden" id="apm_ws_url" value="{{ config('ventas.apm_ws_url') }}">
     <input type="hidden" id="apm_printer_id_pedidos_restaurante" value="{{ config('ventas.apm_printer_id_pedidos_restaurante') }}">
+    <input type="hidden" id="apm_devices_config" value="{{ e(json_encode(App\Ventas\ApmDevice::frontConfigByDeviceIds([config('ventas.apm_printer_id_pedidos_restaurante')]))) }}">
 
     @if( isset( $la_cocina ) && $la_cocina != null && $la_cocina->printer_ip != '' )
         <input type="hidden" name="printer_ip" id="printer_ip" value="{{ $la_cocina->printer_ip }}">

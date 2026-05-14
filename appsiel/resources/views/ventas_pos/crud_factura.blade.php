@@ -176,6 +176,7 @@
     <script src="{{ asset( 'assets/js/ventas_pos/commons.js?v=' . $asset_v )}}"></script>
 
     <script src="{{ asset( 'assets/js/apm/client.js?v=' . $asset_v )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/apm_scale_listener.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?v=' . $asset_v )}}"></script>
     
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas.js?v=' . $asset_v )}}"></script>

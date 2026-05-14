@@ -33,6 +33,9 @@
 
 <input type="hidden" name="url_id_transaccion" id="url_id_transaccion" value="{{Input::get('id_transaccion')}}"
         required="required">
+<input type="hidden" name="core_empresa_id" id="core_empresa_id" value="{{ Auth::user()->empresa_id }}">
+<input type="hidden" name="core_tipo_transaccion_id" id="core_tipo_transaccion_id" value="{{ Input::get('id_transaccion') }}">
+<input type="hidden" name="core_tipo_doc_app_id" id="core_tipo_doc_app_id" value="{{ $pdv->tipo_doc_app_default_id }}">
 
 {{ Form::hidden( 'pdv_id', Input::get('pdv_id'), ['id'=>'pdv_id'] ) }}
 {{ Form::hidden('cajero_id', Auth::user()->id, ['id'=>'cajero_id'] ) }}

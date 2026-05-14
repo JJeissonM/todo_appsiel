@@ -48,6 +48,7 @@
         <input type="hidden" id="usar_apm_pago_cxp" value="1">
         <input type="hidden" id="apm_ws_url" value="{{ config('ventas.apm_ws_url') }}">
         <input type="hidden" id="apm_printer_id_pago_cxp" value="{{ config('tesoreria.apm_printer_id_pago_cxp') }}">
+        <input type="hidden" id="apm_devices_config" value="{{ e(json_encode(App\Ventas\ApmDevice::frontConfigByDeviceIds([config('tesoreria.apm_printer_id_pago_cxp')]))) }}">
         <input type="hidden" id="pago_cxp_apm_payload_url" value="{{ url('tesoreria_pagos_cxp_apm_payload/' . $id . $variables_url) }}">
         <input type="hidden" id="pago_cxp_document_label" value="{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}">
         <input type="hidden" id="pago_cxp_core_empresa_id" value="{{ $doc_encabezado->core_empresa_id }}">
