@@ -82,6 +82,7 @@ function crear_payload_apm_pedido_ventas()
 
     var station_id = $('#pdv_label').val() || $('#pdv_id').val() || '';
     var printer_id = $('#apm_printer_id_pedidos_ventas').val() || $('#impresora_cocina_por_defecto').val() || '';
+    var company_name = apm_get_company_name_pedido_ventas();
 
     var total_label = $('#vlr_total_factura').text() || $('#lbl_total_factura').val() || $('#lbl_total_factura').text() || '';
     var total_factura = parseFloat( total_label.replace(/[^0-9\.-]+/g, '') || subtotal );
@@ -99,7 +100,7 @@ function crear_payload_apm_pedido_ventas()
                 'COPY': 'COPIA # 1'
             },
             'company': {
-                'Name': station_id,
+                'Name': company_name,
                 'Nit': '',
                 'Address': '',
                 'Phone': ''
@@ -116,4 +117,32 @@ function crear_payload_apm_pedido_ventas()
             'footer': ['Pedido de ventas']
         }
     };
+}
+
+function apm_to_string_pedido_ventas(value)
+{
+    if (value === null || value === undefined) {
+        return '';
+    }
+
+    return String(value);
+}
+
+function apm_get_company_name_pedido_ventas()
+{
+    var candidates = [
+        $('#empresa_descripcion').val(),
+        $('#pdv_label').val(),
+        $('.headempresap b').first().text(),
+        $('.headempresa b').first().text()
+    ];
+
+    for (var i = 0; i < candidates.length; i++) {
+        var value = apm_to_string_pedido_ventas(candidates[i]).trim();
+        if (value !== '' && !/^\d+$/.test(value)) {
+            return value;
+        }
+    }
+
+    return '';
 }

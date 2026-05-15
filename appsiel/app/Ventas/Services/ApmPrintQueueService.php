@@ -4,6 +4,7 @@ namespace App\Ventas\Services;
 
 use App\Ventas\ApmPrintJob;
 use App\Ventas\ApmPrintStatus;
+use App\Ventas\ApmDevice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -57,6 +58,7 @@ class ApmPrintQueueService
         $copyLabel = $this->buildCopyLabel($copyNumber);
         $payload = $this->applyCopyLabel($payload, $copyLabel);
         $payload = $this->normalizePayloadTextFields($payload);
+        $payload = $this->applyCurrentDeviceConfig($payload);
 
         $user = Auth::user();
         $job = ApmPrintJob::create([
@@ -89,7 +91,10 @@ class ApmPrintQueueService
         $job = ApmPrintJob::findOrFail($jobId);
 
         if ((int) $job->apm_print_status_id === (int) $this->getStatusId('pending')) {
-            $payload = $this->normalizePayloadTextFields(json_decode($job->payload_json, true));
+            $storedPayload = json_decode($job->payload_json, true);
+            $payload = $this->applyCopyLabel(is_array($storedPayload) ? $storedPayload : [], $job->copy_label);
+            $payload = $this->normalizePayloadTextFields($payload);
+            $payload = $this->applyCurrentDeviceConfig($payload);
             $job->payload_json = json_encode($payload);
             $job->save();
 
@@ -104,6 +109,7 @@ class ApmPrintQueueService
         $copyLabel = $this->buildCopyLabel($copyNumber);
         $payload = $this->applyCopyLabel(is_array($payload) ? $payload : [], $copyLabel);
         $payload = $this->normalizePayloadTextFields($payload);
+        $payload = $this->applyCurrentDeviceConfig($payload);
 
         $user = Auth::user();
         $newJob = ApmPrintJob::create([
@@ -246,28 +252,41 @@ class ApmPrintQueueService
 
     protected function applyCopyLabel(array $payload, $copyLabel)
     {
+        $payload['CopyLabel'] = $copyLabel;
+
         if (!isset($payload['Document']) || !is_array($payload['Document'])) {
             $payload['Document'] = [];
         }
 
+        $payload['Document']['CopyLabel'] = $copyLabel;
+
         if (isset($payload['Document']['order']) && is_array($payload['Document']['order'])) {
             $payload['Document']['order']['COPY'] = $copyLabel;
+            $payload['Document']['order']['CopyLabel'] = $copyLabel;
+            $payload['Document']['order']['RestaurantLabel'] = isset($payload['Document']['order']['RestaurantName'])
+                ? $payload['Document']['order']['RestaurantName']
+                : '';
+            $payload['Document']['order']['RestaurantName'] = $copyLabel;
         }
 
         if (isset($payload['Document']['sale']) && is_array($payload['Document']['sale'])) {
             $payload['Document']['sale']['COPY'] = $copyLabel;
+            $payload['Document']['sale']['CopyLabel'] = $copyLabel;
         }
 
         if (isset($payload['Document']['header']) && is_array($payload['Document']['header'])) {
             $payload['Document']['header']['COPY'] = $copyLabel;
+            $payload['Document']['header']['CopyLabel'] = $copyLabel;
         }
 
         if (isset($payload['Document']['egreso']) && is_array($payload['Document']['egreso'])) {
             $payload['Document']['egreso']['COPY'] = $copyLabel;
+            $payload['Document']['egreso']['CopyLabel'] = $copyLabel;
         }
 
         if (isset($payload['Document']['cheque']) && is_array($payload['Document']['cheque'])) {
             $payload['Document']['cheque']['COPY'] = $copyLabel;
+            $payload['Document']['cheque']['CopyLabel'] = $copyLabel;
         }
 
         if (!isset($payload['Document']['COPY'])) {
@@ -325,9 +344,62 @@ class ApmPrintQueueService
             }
         }
 
+        if (isset($payload['Document']['order']) && is_array($payload['Document']['order'])) {
+            foreach (['Number', 'Date', 'COPY', 'CopyLabel', 'RestaurantName', 'RestaurantLabel'] as $field) {
+                if (isset($payload['Document']['order'][$field])) {
+                    $payload['Document']['order'][$field] = (string)$payload['Document']['order'][$field];
+                }
+            }
+        }
+
         if (isset($payload['Document']['COPY'])) {
             $payload['Document']['COPY'] = (string)$payload['Document']['COPY'];
         }
+
+        return $payload;
+    }
+
+    protected function applyCurrentDeviceConfig(array $payload)
+    {
+        $printerId = isset($payload['PrinterId']) ? trim((string) $payload['PrinterId']) : '';
+
+        if ($printerId === '') {
+            return $payload;
+        }
+
+        $device = ApmDevice::where('device_id', $printerId)->first();
+
+        if (is_null($device)) {
+            unset($payload['DeviceConfig']);
+            return $payload;
+        }
+
+        $payload['DeviceConfig'] = [
+            'device_type' => $device->device_type,
+            'device_id' => $device->device_id,
+            'name' => $device->device_name,
+            'beep_after_print' => (int) $device->beep_after_print,
+            'open_drawer_after_print' => (int) $device->open_drawer_after_print,
+            'cut_after_print' => (int) $device->cut_after_print,
+            'serial_port' => $device->serial_port,
+            'baud_rate' => (int) $device->baud_rate,
+            'data_bits' => (int) $device->data_bits,
+            'parity' => $device->parity,
+            'stop_bits' => $device->stop_bits
+        ];
+
+        $payload['BeepAfterPrint'] = (int) $device->beep_after_print === 1;
+        $payload['OpenDrawerAfterPrint'] = (int) $device->open_drawer_after_print === 1;
+        $payload['OpenDrawer'] = (int) $device->open_drawer_after_print === 1;
+        $payload['CutAfterPrint'] = (int) $device->cut_after_print === 1;
+
+        if (!isset($payload['Document']) || !is_array($payload['Document'])) {
+            $payload['Document'] = [];
+        }
+
+        $payload['Document']['OpenDrawerAfterPrint'] = $payload['OpenDrawerAfterPrint'];
+        $payload['Document']['OpenDrawer'] = $payload['OpenDrawer'];
+        $payload['Document']['CutAfterPrint'] = $payload['CutAfterPrint'];
 
         return $payload;
     }

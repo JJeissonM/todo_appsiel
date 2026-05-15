@@ -206,8 +206,9 @@ function crear_payload_apm_comanda( doc_encabezado )
     var cliente_nombre = doc_encabezado.doc_encabezado_tercero_nombre_completo || $('#cliente_input').val() || '';
 
     var empresa = doc_encabezado.empresa || {};
+    var restaurant_name = apm_get_restaurant_name_pedido_restaurante(doc_encabezado);
     var company = {
-        'Name': empresa.descripcion || empresa.razon_social || station_id || '',
+        'Name': restaurant_name,
         'Nit': empresa.numero_identificacion || empresa.nit || '',
         'Address': empresa.direccion1 || empresa.direccion || '',
         'Phone': empresa.telefono1 || empresa.telefono || ''
@@ -235,7 +236,7 @@ function crear_payload_apm_comanda( doc_encabezado )
                 'Table': mesa || '',
                 'Waiter': mesero || '',
                 'Date': fecha_hora_actual,
-                'RestaurantName': station_id || '',
+                'RestaurantName': restaurant_name,
                 'Items': items,
                 'GeneratedDate': fecha_hora_actual,
                 'CreatedBy': doc_encabezado.doc_encabezado_vendedor_descripcion || ''
@@ -248,6 +249,35 @@ function crear_payload_apm_comanda( doc_encabezado )
             'resolution': doc_encabezado.resolucion || {}
         }
     };
+}
+
+function apm_to_string_pedido_restaurante(value)
+{
+    if (value === null || value === undefined) {
+        return '';
+    }
+
+    return String(value);
+}
+
+function apm_get_restaurant_name_pedido_restaurante(doc_encabezado)
+{
+    var empresa = doc_encabezado && typeof doc_encabezado.empresa === 'object' ? doc_encabezado.empresa : {};
+    var candidates = [
+        empresa.descripcion,
+        empresa.razon_social,
+        empresa.nombre_comercial,
+        empresa.nombre1
+    ];
+
+    for (var i = 0; i < candidates.length; i++) {
+        var value = apm_to_string_pedido_restaurante(candidates[i]).trim();
+        if (value !== '' && !/^\d+$/.test(value)) {
+            return value;
+        }
+    }
+
+    return '';
 }
 
 function crear_string_json_para_envio_servidor_impresion( doc_encabezado )

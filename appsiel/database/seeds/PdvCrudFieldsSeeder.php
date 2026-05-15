@@ -29,11 +29,6 @@ class PdvCrudFieldsSeeder extends Seeder
             $orden = $campo['orden'];
             unset($campo['orden']);
 
-            if ($campo['name'] == 'estado') {
-                $this->ensurePdvEstadoField($modeloId, $campo, $orden, $now);
-                continue;
-            }
-
             $campoRelacionadoId = $this->getCampoRelacionadoId($modeloId, $campo['name']);
 
             if ($campoRelacionadoId) {
@@ -78,7 +73,6 @@ class PdvCrudFieldsSeeder extends Seeder
         }
 
         $this->removeDuplicateRelations($modeloId);
-        $this->normalizeUnexpectedPdvStates();
     }
 
     protected function getCampos()
@@ -102,7 +96,6 @@ class PdvCrudFieldsSeeder extends Seeder
             $this->campo(16, 'Impresion directa en Caja (Factura)', 'select', 'imprimir_factura_automaticamente', '{"0":"No","1":"Si","2":"Preguntar"}', '0', '', 0),
             $this->campo(17, 'Impresion directa en cocina (Comanda)', 'select', 'enviar_impresion_directamente_a_la_impresora', '{"0":"No","1":"Si","2":"Preguntar"}', '0', '', 0),
             $this->campo(18, 'Usar complemento JSPrintManager', 'select', 'usar_complemento_JSPrintManager', '{"0":"No","1":"Si"}', '0', '', 0),
-            $this->campo(19, 'Estado', 'select', 'estado', '{"Cerrado":"Cerrado","Abierto":"Abierto","Inactivo":"Inactivo"}', 'Cerrado', '', 1),
         ];
     }
 
@@ -130,39 +123,6 @@ class PdvCrudFieldsSeeder extends Seeder
             ->value('sys_modelo_tiene_campos.core_campo_id');
     }
 
-    protected function ensurePdvEstadoField($modeloId, array $campo, $orden, $now)
-    {
-        $estadoRelacionado = DB::table('sys_modelo_tiene_campos')
-            ->join('sys_campos', 'sys_campos.id', '=', 'sys_modelo_tiene_campos.core_campo_id')
-            ->where('sys_modelo_tiene_campos.core_modelo_id', $modeloId)
-            ->where('sys_campos.name', 'estado')
-            ->where('sys_campos.opciones', 'LIKE', '%Abierto%')
-            ->orderBy('sys_modelo_tiene_campos.orden')
-            ->orderBy('sys_modelo_tiene_campos.id')
-            ->select('sys_modelo_tiene_campos.id AS relacion_id', 'sys_campos.id AS campo_id')
-            ->first();
-
-        if ($estadoRelacionado) {
-            $campo['updated_at'] = $now;
-            DB::table('sys_campos')->where('id', $estadoRelacionado->campo_id)->update($campo);
-            DB::table('sys_modelo_tiene_campos')->where('id', $estadoRelacionado->relacion_id)->update(['orden' => $orden]);
-            $this->removeDuplicateRelations($modeloId);
-            return;
-        }
-
-        $campo['created_at'] = $now;
-        $campo['updated_at'] = $now;
-        $campoId = DB::table('sys_campos')->insertGetId($campo);
-
-        DB::table('sys_modelo_tiene_campos')->insert([
-            'orden' => $orden,
-            'core_modelo_id' => $modeloId,
-            'core_campo_id' => $campoId,
-        ]);
-
-        $this->removeDuplicateRelations($modeloId);
-    }
-
     protected function removeDuplicateRelations($modeloId)
     {
         $fieldNames = array_map(function ($campo) {
@@ -174,10 +134,6 @@ class PdvCrudFieldsSeeder extends Seeder
                 ->join('sys_campos', 'sys_campos.id', '=', 'sys_modelo_tiene_campos.core_campo_id')
                 ->where('sys_modelo_tiene_campos.core_modelo_id', $modeloId)
                 ->where('sys_campos.name', $fieldName);
-
-            if ($fieldName == 'estado') {
-                $relations->orderByRaw("CASE WHEN sys_campos.opciones LIKE '%Abierto%' THEN 0 ELSE 1 END");
-            }
 
             $relations = $relations->orderBy('sys_modelo_tiene_campos.orden')
                 ->orderBy('sys_modelo_tiene_campos.id')
@@ -193,47 +149,6 @@ class PdvCrudFieldsSeeder extends Seeder
 
                 DB::table('sys_modelo_tiene_campos')->where('id', $relation->id)->delete();
             }
-        }
-    }
-
-    protected function normalizeUnexpectedPdvStates()
-    {
-        if (!Schema::hasTable('vtas_pos_puntos_de_ventas')) {
-            return;
-        }
-
-        $pdvs = DB::table('vtas_pos_puntos_de_ventas')
-            ->whereNotIn('estado', ['Abierto', 'Cerrado', 'Inactivo'])
-            ->orWhereNull('estado')
-            ->select('id')
-            ->get();
-
-        foreach ($pdvs as $pdv) {
-            $ultimaApertura = null;
-            $ultimoCierre = null;
-
-            if (Schema::hasTable('vtas_pos_apertura_encabezados')) {
-                $ultimaApertura = DB::table('vtas_pos_apertura_encabezados')
-                    ->where('pdv_id', $pdv->id)
-                    ->orderBy('created_at', 'desc')
-                    ->orderBy('id', 'desc')
-                    ->first();
-            }
-
-            if (Schema::hasTable('vtas_pos_cierre_encabezados')) {
-                $ultimoCierre = DB::table('vtas_pos_cierre_encabezados')
-                    ->where('pdv_id', $pdv->id)
-                    ->orderBy('created_at', 'desc')
-                    ->orderBy('id', 'desc')
-                    ->first();
-            }
-
-            $estado = 'Cerrado';
-            if (!is_null($ultimaApertura) && (is_null($ultimoCierre) || $ultimaApertura->created_at > $ultimoCierre->created_at)) {
-                $estado = 'Abierto';
-            }
-
-            DB::table('vtas_pos_puntos_de_ventas')->where('id', $pdv->id)->update(['estado' => $estado]);
         }
     }
 

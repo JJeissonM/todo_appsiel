@@ -326,6 +326,7 @@ const updateTemplates = {
                     Order: 1,
                     Elements: [
                         { Type: "Text", StaticValue: "=== PEDIDO COCINA ===", Format: "Size2 Bold", Align: "Center" },
+                        { Type: "Text", Source: "order.COPY", Format: "Size1 Bold", Align: "Center" },
                         { Type: "Text", Label: "Mesa: ", Source: "order.Table", Format: "Size1", Align: "Left" },
                         { Type: "Line" }
                     ]
@@ -363,6 +364,7 @@ const updateTemplates = {
                     Order: 1,
                     Elements: [
                         { Type: "Text", Label: "Restaurante: ", Source: "order.RestaurantName", Align: "Center" },
+                        { Type: "Text", Source: "order.COPY", Format: "Bold", Align: "Center" },
                         { Type: "Text", Label: "Mesero: ", Source: "order.Waiter", Format: "Bold", Align: "Center" },
                         { Type: "Line" }
                     ]

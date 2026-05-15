@@ -246,8 +246,6 @@ class FacturaPosController extends TransaccionController
      */
     public function store(Request $request)
     {
-        $email = Auth::user()->email; // Solo para verificar que la sesión esté activa. Si se cerró la sesión, Laravel lanza una excepción
-
         $this->aplicar_excedente_transferencia_como_otros_recaudos($request);
         $this->aplicar_fechas_factura_pos_por_defecto($request);
 

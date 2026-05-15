@@ -317,7 +317,7 @@ function crear_payload_apm_comanda( doc_encabezado )
                 'Table': $('#lbl_mesa_seleccionada').text() || '',
                 'Waiter': $('#lbl_vendedor_mesero').text() || doc_encabezado.doc_encabezado_vendedor_descripcion || '',
                 'Date': new Date().toISOString(),
-                'RestaurantName': station_id,
+                'RestaurantName': apm_get_restaurant_name(doc_encabezado),
                 'Items': items,
                 'GeneratedDate': new Date().toISOString(),
                 'CreatedBy': doc_encabezado.doc_encabezado_vendedor_descripcion || ''
@@ -504,6 +504,26 @@ function apm_to_string(value)
     }
 
     return String(value);
+}
+
+function apm_get_restaurant_name(doc_encabezado)
+{
+    var empresa = doc_encabezado && typeof doc_encabezado.empresa === 'object' ? doc_encabezado.empresa : {};
+    var candidates = [
+        empresa.descripcion,
+        empresa.razon_social,
+        empresa.nombre_comercial,
+        empresa.nombre1
+    ];
+
+    for (var i = 0; i < candidates.length; i++) {
+        var value = apm_to_string(candidates[i]).trim();
+        if (value !== '' && !/^\d+$/.test(value)) {
+            return value;
+        }
+    }
+
+    return '';
 }
 
 function crear_meta_apm_comanda( doc_encabezado )

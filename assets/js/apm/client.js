@@ -6,6 +6,7 @@
     const QUEUE_BUTTON_ID = 'apm-queue-toggle';
     const QUEUE_BADGE_ID = 'apm-queue-badge';
     const QUEUE_STYLE_ID = 'apm-queue-style';
+    const ENABLE_CONFIRM_PRINTED_ACTION = false;
 
     const safeJsonParse = (value, fallback) => {
         try {
@@ -182,22 +183,24 @@
 
         sendConfiguredDirectCommands(payload) {
             const printerId = payload && payload.PrinterId ? String(payload.PrinterId).trim() : '';
-            const deviceConfig = this.getDeviceConfig(printerId);
+            const deviceConfig = this.getDeviceConfig(printerId, payload);
 
             if (!printerId || !deviceConfig) {
                 return;
             }
 
             const commands = [];
+            const shouldOpenDrawer = parseInt(deviceConfig.open_drawer_after_print || 0, 10) === 1;
             if (parseInt(deviceConfig.beep_after_print || 0, 10) === 1) {
                 commands.push('Beep');
             }
 
-            if (parseInt(deviceConfig.open_drawer_after_print || 0, 10) === 1) {
+            if (shouldOpenDrawer) {
                 commands.push('Drawer');
             }
 
-            if (parseInt(deviceConfig.cut_after_print || 0, 10) === 1) {
+            // Algunas versiones de APM/impresoras ejecutan el corte directo junto con el pulso del cajon.
+            if (parseInt(deviceConfig.cut_after_print || 0, 10) === 1 && shouldOpenDrawer) {
                 commands.push('Cut');
             }
 
@@ -208,10 +211,14 @@
             });
         }
 
-        getDeviceConfig(deviceId) {
+        getDeviceConfig(deviceId, payload = null) {
             const cleanDeviceId = String(deviceId || '').trim();
             if (!cleanDeviceId) {
                 return null;
+            }
+
+            if (payload && payload.DeviceConfig && String(payload.DeviceConfig.device_id || '').trim() === cleanDeviceId) {
+                return payload.DeviceConfig;
             }
 
             const config = global.APM_DEVICES_CONFIG || safeJsonParse(getHiddenInputValue('apm_devices_config'), {});
@@ -806,9 +813,9 @@
                 const retireButtonHtml = this.canRetireQueue && isPending
                     ? `<button type="button" class="btn btn-default btn-xs apm-retire-btn" data-job-id="${item.id}" style="margin-left:6px;">Retirar</button>`
                     : '';
-                const confirmButtonHtml = isPending
-                    ? `<button type="button" class="btn btn-success btn-xs apm-confirm-printed-btn" data-job-id="${item.id}" style="margin-left:6px;">Confirmar impreso</button>`
-                    : '';
+                //const confirmButtonHtml = isPending
+                //    ? `<button type="button" class="btn btn-default btn-xs apm-confirm-printed-btn" data-job-id="${item.id}" style="margin-left:6px;"${ENABLE_CONFIRM_PRINTED_ACTION ? '' : ' disabled="disabled" title="Opción inactiva"'}>Confirmar impreso</button>`
+                //    : '';
                 const actionLabel = isPending ? 'Reenviar APM' : 'Imprimir copia';
                 const statusLabel = isRetired ? 'Retirado' : (isPending ? 'Pendiente' : 'Impreso');
 
@@ -823,10 +830,10 @@
                         </div>
                         <div class="apm-queue-item-error">${item.last_error || (isPending ? 'Pendiente de reimpresion manual.' : '')}</div>
                         <button type="button" class="btn btn-primary btn-xs apm-reprint-btn" data-job-id="${item.id}">${actionLabel}</button>
-                        ${confirmButtonHtml}
+                        
                         ${retireButtonHtml}
                     </div>
-                `;
+                `;//${confirmButtonHtml}
             }).join('');
         }
 
