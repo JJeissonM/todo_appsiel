@@ -35,6 +35,7 @@ use App\Nomina\ProgramacionVacacion;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\ModosLiquidacion\ModoLiquidacion; // Facade
+use App\Nomina\Services\ParametroLegalService;
 
 class LiquidacionPorModosController extends TransaccionController
 {
@@ -91,6 +92,8 @@ class LiquidacionPorModosController extends TransaccionController
         $core_empresa_id = $usuario->empresa_id;
 
         $documento = NomDocEncabezado::find($id);
+
+        (new ParametroLegalService())->aplicarParametrosEnConfig($documento->fecha);
 
         // Se obtienen los Empleados del documento
         $empleados_documento = $documento->empleados;

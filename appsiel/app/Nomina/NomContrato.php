@@ -96,12 +96,38 @@ class NomContrato extends Model
 
     public function salario_x_hora()
     {
-        return $this->sueldo / (float)config('nomina.horas_laborales');
+        return $this->sueldo / $this->get_horas_laborales_para_salario();
     }
 
     public function salario_x_dia()
     {
-        return ($this->sueldo / (float)config('nomina.horas_laborales')) * (float)config('nomina.horas_dia_laboral');
+        return $this->salario_x_hora() * $this->get_horas_dia_laboral_para_salario();
+    }
+
+    protected function get_horas_laborales_para_salario()
+    {
+        $horas_laborales = (float)config('nomina.horas_laborales');
+
+        if ($horas_laborales <= 0) {
+            $horas_laborales = (float)$this->horas_laborales;
+        }
+
+        if ($horas_laborales <= 0) {
+            $horas_laborales = 240;
+        }
+
+        return $horas_laborales;
+    }
+
+    protected function get_horas_dia_laboral_para_salario()
+    {
+        $horas_dia_laboral = (float)config('nomina.horas_dia_laboral');
+
+        if ($horas_dia_laboral <= 0) {
+            $horas_dia_laboral = $this->get_horas_laborales_para_salario() / 30;
+        }
+
+        return $horas_dia_laboral;
     }
 
     public function fecha_liquidacion_contrato()
@@ -149,7 +175,7 @@ class NomContrato extends Model
             return $this->sueldo;
         }
 
-        return $valor_ibc;
+        return $valor_ibc->valor_ibc_mes;
     }
 
     public function dias_laborados_adicionales_docentes()

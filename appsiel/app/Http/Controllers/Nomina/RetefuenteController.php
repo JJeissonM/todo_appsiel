@@ -35,6 +35,7 @@ use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\ModosLiquidacion\ModoLiquidacion; // Facade
 use App\Nomina\ModosLiquidacion\Estrategias\Retefuente;
 use App\Nomina\ParametroLiquidacionPrestacionesSociales;
+use App\Nomina\Services\ParametroLegalService;
 
 use App\Nomina\ParametrosRetefuenteEmpleado;
 
@@ -54,6 +55,8 @@ class RetefuenteController extends TransaccionController
         }
         
         $documento_nomina = NomDocEncabezado::find( (int)$request->nom_doc_encabezado_id );
+
+        (new ParametroLegalService())->aplicarParametrosEnConfig($documento_nomina->fecha);
 
         // Se obtienen los Empleados del documento de nómina
         $empleados_documento = $documento_nomina->empleados;

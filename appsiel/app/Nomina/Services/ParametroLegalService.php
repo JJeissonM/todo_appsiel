@@ -8,6 +8,21 @@ use Illuminate\Support\Facades\Schema;
 
 class ParametroLegalService
 {
+    public function aplicarParametrosEnConfig($fecha)
+    {
+        $parametros = $this->getParametrosParaFecha($fecha);
+
+        config([
+            'nomina.SMMLV' => $parametros->smmlv,
+            'nomina.auxilio_transporte' => $parametros->auxilio_transporte,
+            'nomina.valor_uvt_actual' => $parametros->uvt,
+            'nomina.horas_laborales' => $parametros->horas_laborales,
+            'nomina.horas_dia_laboral' => $parametros->horas_dia_laboral,
+        ]);
+
+        return $parametros;
+    }
+
     public function getParametrosParaFecha($fecha)
     {
         $fechaPeriodo = Carbon::parse($fecha)->format('Y-m-d');

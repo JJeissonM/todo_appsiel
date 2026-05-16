@@ -266,7 +266,7 @@ class TiempoNoLaborado implements Estrategia
 			$porcentaje_a_pagar = $porcentaje_liquidacion_legal;
 		}
 
-		$horas_laborales = (float)config('nomina.horas_laborales');
+		$horas_laborales = $this->get_horas_laborales();
 		if ( $empleado->horas_laborales != 0 )
 		{
 			$horas_laborales = $empleado->horas_laborales;
@@ -275,9 +275,9 @@ class TiempoNoLaborado implements Estrategia
 		// El IBC almacenado es el del mes anterior; si no existe, se toma el sueldo
 		$valor_hora = $empleado->valor_ibc() / $horas_laborales;
 		// Se debe respetar al salario mínimo
-		if( $valor_hora < (float)config('nomina.SMMLV') / (float)config('nomina.horas_laborales') )
+		if( $valor_hora < (float)config('nomina.SMMLV') / $this->get_horas_laborales() )
 		{
-			$valor_hora = (float)config('nomina.SMMLV') / (float)config('nomina.horas_laborales');
+			$valor_hora = (float)config('nomina.SMMLV') / $this->get_horas_laborales();
 		}
 
 		$valor_total_liquidar = $valor_hora * $cantidad_horas_a_liquidar;
@@ -462,30 +462,32 @@ class TiempoNoLaborado implements Estrategia
 
 		$cantidad_horas_a_liquidar = abs( $registro->cantidad_horas );
 
-		// Para todas las novedades
-		if ( $registro->nom_concepto_id != (int)config('nomina.id_concepto_pagar_empresa_en_incapacidades')  )
+		if ( $this->es_registro_pago_empresa_incapacidad( $registro, $novedad ) )
 		{
-			$this->actualizar_dias_amortizados( $novedad, -1 * ( $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral() ) );
-		}
-
-		if ( $novedad->tipo_novedad_tnl == 'incapacidad' )
-		{
-			$this->calcular_valores_liquidar_incapacidad( $novedad, $registro->contrato, $cantidad_horas_a_liquidar );
-
-			/*
-				Refactorizar este procedimiento del valor pagado por la empresa 
-			*/
-			// Cuando todo lo paga la empresa ( 2 primeros días )
-			$valor_registro = $this->valor_a_pagar_eps + $this->valor_a_pagar_arl + $this->valor_a_pagar_afp;
-			if ( ($this->valor_a_pagar_empresa > 0) && ($valor_registro == 0) )
+			if ( $cantidad_horas_a_liquidar > 0 )
 			{
 				$this->actualizar_dias_amortizados( $novedad, -1 * ( $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral() ) );
 			}
-		
-			$novedad->valor_a_pagar_eps -= $this->valor_a_pagar_eps;
-			$novedad->valor_a_pagar_arl -= $this->valor_a_pagar_arl;
-			$novedad->valor_a_pagar_afp -= $this->valor_a_pagar_afp;
-			$novedad->valor_a_pagar_empresa -= $this->valor_a_pagar_empresa;
+
+			$novedad->valor_a_pagar_empresa -= $this->get_valor_registro( $registro );
+			if ( $novedad->valor_a_pagar_empresa < 0 )
+			{
+				$novedad->valor_a_pagar_empresa = 0;
+			}
+
+			$this->normalizar_residuos_novedad( $novedad );
+			$novedad->save();
+			$registro->delete();
+
+			return 0;
+		}
+
+		// Para todas las novedades
+		$this->actualizar_dias_amortizados( $novedad, -1 * ( $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral() ) );
+
+		if ( $novedad->tipo_novedad_tnl == 'incapacidad' )
+		{
+			$this->descontar_valores_incapacidad( $novedad, $registro, $cantidad_horas_a_liquidar );
 
 		}else{
 			$novedad->valor_a_pagar_eps = 0;
@@ -494,12 +496,98 @@ class TiempoNoLaborado implements Estrategia
 			$novedad->valor_a_pagar_empresa = 0;
 		}
 
+		$this->normalizar_residuos_novedad( $novedad );
 		$novedad->save();
 
         $registro->delete();
+		}
+
+	protected function descontar_valores_incapacidad( &$novedad, NomDocRegistro $registro, $cantidad_horas_a_liquidar )
+	{
+		$valor_registro = $this->get_valor_registro( $registro );
+		if ( $valor_registro <= 0 )
+		{
+			return;
+		}
+
+		$dias_a_retirar = $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral();
+		$novedad_para_calculo = clone $novedad;
+		$novedad_para_calculo->cantidad_dias_amortizados = max( 0, (float)$novedad->cantidad_dias_amortizados - $dias_a_retirar );
+
+		$this->calcular_valores_liquidar_incapacidad( $novedad_para_calculo, $registro->contrato, $cantidad_horas_a_liquidar );
+
+		$total_calculado = $this->valor_a_pagar_eps + $this->valor_a_pagar_arl + $this->valor_a_pagar_afp;
+		if ( $total_calculado > 0 )
+		{
+			$factor = $valor_registro / $total_calculado;
+			$novedad->valor_a_pagar_eps -= $this->valor_a_pagar_eps * $factor;
+			$novedad->valor_a_pagar_arl -= $this->valor_a_pagar_arl * $factor;
+			$novedad->valor_a_pagar_afp -= $this->valor_a_pagar_afp * $factor;
+
+			return;
+		}
+
+		if ( $novedad->origen_incapacidad == 'laboral' )
+		{
+			$novedad->valor_a_pagar_arl -= $valor_registro;
+			return;
+		}
+
+		$novedad->valor_a_pagar_eps -= $valor_registro;
 	}
-protected function get_horas_dia_laboral()
+
+	protected function es_registro_pago_empresa_incapacidad( NomDocRegistro $registro, $novedad )
+	{
+		if ( $novedad->tipo_novedad_tnl != 'incapacidad' )
+		{
+			return false;
+		}
+
+		if ( $registro->nom_concepto_id == (int)config('nomina.id_concepto_pagar_empresa_en_incapacidades') )
+		{
+			return true;
+		}
+
+		return (float)$registro->cantidad_horas == 0 && $this->get_valor_registro( $registro ) > 0;
+	}
+
+	protected function get_valor_registro( NomDocRegistro $registro )
+	{
+		return (float)$registro->valor_devengo + (float)$registro->valor_deduccion;
+	}
+
+	protected function normalizar_residuos_novedad( &$novedad )
+	{
+		foreach ( ['valor_a_pagar_eps', 'valor_a_pagar_arl', 'valor_a_pagar_afp', 'valor_a_pagar_empresa'] as $campo )
+		{
+			if ( abs( (float)$novedad->{$campo} ) < 1 )
+			{
+				$novedad->{$campo} = 0;
+			}
+		}
+	}
+
+	protected function get_horas_dia_laboral()
     {
-        return (float)config('nomina.horas_dia_laboral');
+		$horas_dia_laboral = (float)config('nomina.horas_dia_laboral');
+
+		if ( $horas_dia_laboral <= 0 )
+		{
+			$horas_dia_laboral = $this->get_horas_laborales() / 30;
+		}
+
+        return $horas_dia_laboral;
     }
+
+	protected function get_horas_laborales()
+	{
+		$horas_laborales = (float)config('nomina.horas_laborales');
+
+		if ( $horas_laborales <= 0 )
+		{
+			$horas_laborales = 240;
+		}
+
+		return $horas_laborales;
+	}
 }

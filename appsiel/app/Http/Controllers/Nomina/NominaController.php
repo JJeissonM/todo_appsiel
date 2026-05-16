@@ -21,6 +21,7 @@ use App\Nomina\NomContrato;
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\Services\Cotizante51Service;
 use App\Nomina\Services\LiquidacionPorTurnosService;
+use App\Nomina\Services\ParametroLegalService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -91,6 +92,8 @@ class NominaController extends TransaccionController
         $usuario = Auth::user();
 
         $documento = NomDocEncabezado::find($id);
+
+        (new ParametroLegalService())->aplicarParametrosEnConfig($documento->fecha);
 
         // Se obtienen los Empleados del documento
         $empleados_documento = $documento->empleados;
@@ -368,6 +371,9 @@ class NominaController extends TransaccionController
     public function retirar_liquidacion($id)
     {
         $documento_nomina = NomDocEncabezado::find( $id );
+
+        (new ParametroLegalService())->aplicarParametrosEnConfig($documento_nomina->fecha);
+
         $registros_documento = $documento_nomina->registros_liquidacion;
 
         $liquidacion_turnos_service = new LiquidacionPorTurnosService();
