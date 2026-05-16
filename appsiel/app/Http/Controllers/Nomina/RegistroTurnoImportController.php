@@ -80,8 +80,11 @@ class RegistroTurnoImportController extends Controller
 
             if (!isset($cacheContratos[$fingerId])) {
                     $cacheContratos[$fingerId] = NomContrato::where('fingerprint_reader_id', 'like', '%'.$fingerId.'%')
+                        ->where('clase_contrato', 'por_turnos')
                         ->select('id', 'cargo_id', 'turno_default_id')
                         ->with('turno_default')
+                        ->orderByRaw("CASE WHEN estado = 'Activo' THEN 0 ELSE 1 END")
+                        ->orderBy('id', 'DESC')
                         ->first();
             }
             

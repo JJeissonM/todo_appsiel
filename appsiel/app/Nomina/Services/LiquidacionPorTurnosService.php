@@ -57,29 +57,28 @@ class LiquidacionPorTurnosService
         return false;
     }
 
-    public function retirar_registro_empleado(NomContrato $empleado, NomDocEncabezado $documento)
+    public function retirar_registro_empleado(NomContrato $empleado, NomDocEncabezado $documento, NomDocRegistro $registro_documento = null)
     {
         $lapso = $documento->lapso();
         $fecha_final_turnos = $this->get_fecha_final_turnos($documento, $lapso->fecha_final);
 
-        $registros_turnos = RegistroTurno::where('contrato_id', $empleado->id)
+        RegistroTurno::where('contrato_id', $empleado->id)
             ->where('fecha', '>=', $lapso->fecha_inicial)
             ->where('fecha', '<=', $fecha_final_turnos)
             ->where('estado', 'Liquidado')
-            ->get();
+            ->update(['estado' => 'Pendiente']);
 
-        foreach ($registros_turnos as $registro_turno) {
-            // Actualizamos el estado del registro de turno a 'Pendiente'
-            $registro_turno->estado = 'Pendiente';
-            $registro_turno->save();
+        if (!is_null($registro_documento)) {
+            $registro_documento->delete();
+            return;
         }
 
         NomDocRegistro::where([
-                                ['nom_doc_encabezado_id' , $documento->id],
-                                ['nom_concepto_id' , (int)config('nomina.concepto_pago_turnos')],
-                                ['nom_contrato_id' , $empleado->id]
-                            ])
-                        ->delete();
+                ['nom_doc_encabezado_id' , $documento->id],
+                ['nom_concepto_id' , (int)config('nomina.concepto_pago_turnos')],
+                ['nom_contrato_id' , $empleado->id]
+            ])
+            ->delete();
         
     }
 

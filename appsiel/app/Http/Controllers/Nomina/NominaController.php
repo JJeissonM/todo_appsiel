@@ -101,18 +101,20 @@ class NominaController extends TransaccionController
         // Guardar los valores para cada empleado 
         foreach ( $empleados_documento as $empleado ) 
         {
+            if ( $empleado->clase_contrato == 'por_turnos') {
+                if( (new LiquidacionPorTurnosService())->almacenar_registro_empleado( $empleado, $documento, $usuario ))
+                {
+                    $this->registros_procesados++;
+                }
+
+                continue;
+            }
+
             $cant = count( $this->array_ids_modos_liquidacion_automaticos );
 
             for ( $i=0; $i < $cant; $i++ ) 
             {
-                if ( $empleado->clase_contrato == 'por_turnos') {
-                    if( (new LiquidacionPorTurnosService())->almacenar_registro_empleado( $empleado, $documento, $usuario ))
-                    {
-                        $this->registros_procesados++;
-                    }
-                }else{
-                    $this->liquidar_automaticos_empleado( $this->array_ids_modos_liquidacion_automaticos[$i], $empleado, $documento, $usuario);
-                }
+                $this->liquidar_automaticos_empleado( $this->array_ids_modos_liquidacion_automaticos[$i], $empleado, $documento, $usuario);
             }
         }
 
@@ -377,21 +379,34 @@ class NominaController extends TransaccionController
         $registros_documento = $documento_nomina->registros_liquidacion;
 
         $liquidacion_turnos_service = new LiquidacionPorTurnosService();
+        $concepto_pago_turnos_id = (int)config('nomina.concepto_pago_turnos');
 
         foreach ( $registros_documento as $registro )
         {
-            if ( $registro->concepto != null && $registro->contrato != null )
+            if ( $registro->contrato == null )
+            {
+                continue;
+            }
+
+            if ( $registro->contrato->clase_contrato == 'por_turnos' )
+            {
+                $liquidacion_turnos_service->retirar_registro_empleado( $registro->contrato, $documento_nomina, $registro );
+                continue;
+            }
+
+            if ( (int)$registro->nom_concepto_id == $concepto_pago_turnos_id )
+            {
+                $liquidacion_turnos_service->retirar_registro_empleado( $registro->contrato, $documento_nomina );
+                continue;
+            }
+
+            if ( $registro->concepto != null )
             {
                 if ( in_array( $registro->concepto->modo_liquidacion_id, $this->array_ids_modos_liquidacion_automaticos) )
                 {
                     // Se llama al subsistema de liquidación
                     $liquidacion = new LiquidacionConcepto( $registro->concepto->id, $registro->contrato, $documento_nomina);
                     $liquidacion->retirar( $registro->concepto->modo_liquidacion_id, $registro );
-                }
-
-                if ( $registro->concepto->id == (int)config('nomina.concepto_pago_turnos') )
-                {
-                    $liquidacion_turnos_service->retirar_registro_empleado( $registro->contrato, $documento_nomina );
                 }
             }   
         }
