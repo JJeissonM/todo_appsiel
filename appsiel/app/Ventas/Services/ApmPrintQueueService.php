@@ -47,13 +47,19 @@ class ApmPrintQueueService
             throw new \RuntimeException('Este documento ya esta pendiente en la cola de APM.');
         }
 
-        $maxCopyNumber = ApmPrintJob::where('core_tipo_transaccion_id', $meta['core_tipo_transaccion_id'])
+        $documentJobs = ApmPrintJob::where('core_tipo_transaccion_id', $meta['core_tipo_transaccion_id'])
             ->where('core_tipo_doc_app_id', $meta['core_tipo_doc_app_id'])
             ->where('consecutivo', $meta['consecutivo'])
             ->where('document_type', $meta['document_type'])
-            ->max('copy_number');
+            ->orderBy('copy_number', 'desc')
+            ->orderBy('id', 'desc')
+            ->limit(20)
+            ->get();
+        $lastDocumentJob = $documentJobs->first();
+        $documentDataJob = $this->findJobWithDocumentData($documentJobs);
 
-        $copyNumber = is_null($maxCopyNumber) ? 0 : ((int) $maxCopyNumber + 1);
+        $copyNumber = is_null($lastDocumentJob) ? 0 : ((int) $lastDocumentJob->copy_number + 1);
+        $payload = $this->fillMissingDocumentDataFromPreviousJob($payload, $documentDataJob);
 
         $copyLabel = $this->buildCopyLabel($copyNumber);
         $payload = $this->applyCopyLabel($payload, $copyLabel);
@@ -96,7 +102,9 @@ class ApmPrintQueueService
 
         if (!$forceCopy && (int) $job->apm_print_status_id === (int) $this->getStatusId('pending')) {
             $storedPayload = json_decode($job->payload_json, true);
-            $payload = $this->applyCopyLabel(is_array($storedPayload) ? $storedPayload : [], $job->copy_label);
+            $payload = is_array($storedPayload) ? $storedPayload : [];
+            $payload = $this->fillMissingDocumentDataFromPreviousJob($payload, $this->findJobWithDocumentData($this->getDocumentJobs($job)));
+            $payload = $this->applyCopyLabel($payload, $job->copy_label);
             $payload = $this->normalizePayloadTextFields($payload);
             $payload = $this->applyCurrentDeviceConfig($payload);
             $job->payload_json = json_encode($payload);
@@ -111,7 +119,9 @@ class ApmPrintQueueService
         $payload = json_decode($job->payload_json, true);
         $copyNumber = $this->nextCopyNumber($job);
         $copyLabel = $this->buildCopyLabel($copyNumber);
-        $payload = $this->applyCopyLabel(is_array($payload) ? $payload : [], $copyLabel);
+        $payload = is_array($payload) ? $payload : [];
+        $payload = $this->fillMissingDocumentDataFromPreviousJob($payload, $this->findJobWithDocumentData($this->getDocumentJobs($job)));
+        $payload = $this->applyCopyLabel($payload, $copyLabel);
         $payload = $this->normalizePayloadTextFields($payload);
         $payload = $this->applyCurrentDeviceConfig($payload);
 
@@ -198,7 +208,9 @@ class ApmPrintQueueService
 
         $payload = json_decode($job->payload_json, true);
 
-        $payload = $this->applyCopyLabel(is_array($payload) ? $payload : [], $job->copy_label);
+        $payload = is_array($payload) ? $payload : [];
+        $payload = $this->fillMissingDocumentDataFromPreviousJob($payload, $this->findJobWithDocumentData($this->getDocumentJobs($job)));
+        $payload = $this->applyCopyLabel($payload, $job->copy_label);
         $payload = $this->normalizePayloadTextFields($payload);
         $payload = $this->applyCurrentDeviceConfig($payload);
 
@@ -319,16 +331,13 @@ class ApmPrintQueueService
             $payload['Document'] = [];
         }
 
-        unset($payload['CopyLabel']);
-        unset($payload['Document']['COPY']);
-        unset($payload['Document']['CopyLabel']);
+        $payload['COPY'] = $copyLabel;
+        $payload['CopyLabel'] = $copyLabel;
 
         if (isset($payload['Document']['order']) && is_array($payload['Document']['order'])) {
             $payload['Document']['order'] = $this->removeLegacyCopyLabelsFromOrder($payload['Document']['order'], $copyLabel);
             $payload['Document']['order']['COPY'] = $copyLabel;
             $payload['Document']['order']['CopyLabel'] = $copyLabel;
-
-            unset($payload['Document']['COPY']);
             unset($payload['Document']['order']['RestaurantLabel']);
         }
 
@@ -351,6 +360,9 @@ class ApmPrintQueueService
             unset($payload['Document']['cheque']['COPY']);
             unset($payload['Document']['cheque']['CopyLabel']);
         }
+
+        $payload['Document']['COPY'] = $copyLabel;
+        $payload['Document']['CopyLabel'] = $copyLabel;
 
         return $payload;
     }
@@ -389,7 +401,7 @@ class ApmPrintQueueService
             return [];
         }
 
-        foreach (['JobId', 'StationId', 'PrinterId', 'DocumentType'] as $field) {
+        foreach (['JobId', 'StationId', 'PrinterId', 'DocumentType', 'COPY', 'CopyLabel'] as $field) {
             if (isset($payload[$field])) {
                 $payload[$field] = (string)$payload[$field];
             }
@@ -439,7 +451,133 @@ class ApmPrintQueueService
             }
         }
 
+        foreach (['COPY', 'CopyLabel'] as $field) {
+            if (isset($payload['Document'][$field])) {
+                $payload['Document'][$field] = (string)$payload['Document'][$field];
+            }
+        }
+
         return $payload;
+    }
+
+    protected function fillMissingDocumentDataFromPreviousJob(array $payload, $previousJob)
+    {
+        if (is_null($previousJob) || trim((string) $previousJob->payload_json) === '') {
+            return $payload;
+        }
+
+        $previousPayload = json_decode($previousJob->payload_json, true);
+        if (!is_array($previousPayload) || !isset($previousPayload['Document']) || !is_array($previousPayload['Document'])) {
+            return $payload;
+        }
+
+        if (!isset($payload['Document']) || !is_array($payload['Document'])) {
+            $payload['Document'] = [];
+        }
+
+        $payload = $this->fillMissingCompanyData($payload, $previousPayload);
+        $payload = $this->fillMissingOrderData($payload, $previousPayload);
+
+        foreach (['labels', 'resolution'] as $section) {
+            if ($this->isEmptyPayloadValue(isset($payload['Document'][$section]) ? $payload['Document'][$section] : null)
+                && isset($previousPayload['Document'][$section])) {
+                $payload['Document'][$section] = $previousPayload['Document'][$section];
+            }
+        }
+
+        return $payload;
+    }
+
+    protected function findJobWithDocumentData($jobs)
+    {
+        foreach ($jobs as $job) {
+            if (trim((string) $job->payload_json) === '') {
+                continue;
+            }
+
+            $payload = json_decode($job->payload_json, true);
+            if (!is_array($payload) || !isset($payload['Document']) || !is_array($payload['Document'])) {
+                continue;
+            }
+
+            $companyName = isset($payload['Document']['company']['Name']) ? $payload['Document']['company']['Name'] : null;
+            $restaurantName = isset($payload['Document']['order']['RestaurantName']) ? $payload['Document']['order']['RestaurantName'] : null;
+
+            if (!$this->isEmptyPayloadValue($companyName) || !$this->isEmptyPayloadValue($restaurantName)) {
+                return $job;
+            }
+        }
+
+        return null;
+    }
+
+    protected function getDocumentJobs(ApmPrintJob $job)
+    {
+        return ApmPrintJob::where('core_tipo_transaccion_id', $job->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $job->core_tipo_doc_app_id)
+            ->where('consecutivo', $job->consecutivo)
+            ->where('document_type', $job->document_type)
+            ->orderBy('copy_number', 'desc')
+            ->orderBy('id', 'desc')
+            ->limit(20)
+            ->get();
+    }
+
+    protected function fillMissingCompanyData(array $payload, array $previousPayload)
+    {
+        if (!isset($previousPayload['Document']['company']) || !is_array($previousPayload['Document']['company'])) {
+            return $payload;
+        }
+
+        if (!isset($payload['Document']['company']) || !is_array($payload['Document']['company'])) {
+            $payload['Document']['company'] = [];
+        }
+
+        foreach (['Name', 'Nit', 'Address', 'Phone', 'Email', 'City', 'IdType'] as $field) {
+            if ($this->isEmptyPayloadValue(isset($payload['Document']['company'][$field]) ? $payload['Document']['company'][$field] : null)
+                && !$this->isEmptyPayloadValue(isset($previousPayload['Document']['company'][$field]) ? $previousPayload['Document']['company'][$field] : null)) {
+                $payload['Document']['company'][$field] = $previousPayload['Document']['company'][$field];
+            }
+        }
+
+        return $payload;
+    }
+
+    protected function fillMissingOrderData(array $payload, array $previousPayload)
+    {
+        if (!isset($previousPayload['Document']['order']) || !is_array($previousPayload['Document']['order'])) {
+            return $payload;
+        }
+
+        if (!isset($payload['Document']['order']) || !is_array($payload['Document']['order'])) {
+            $payload['Document']['order'] = [];
+        }
+
+        foreach (['RestaurantName', 'RestaurantLabel'] as $field) {
+            if ($this->isEmptyPayloadValue(isset($payload['Document']['order'][$field]) ? $payload['Document']['order'][$field] : null)
+                && !$this->isEmptyPayloadValue(isset($previousPayload['Document']['order'][$field]) ? $previousPayload['Document']['order'][$field] : null)) {
+                $payload['Document']['order'][$field] = $previousPayload['Document']['order'][$field];
+            }
+        }
+
+        return $payload;
+    }
+
+    protected function isEmptyPayloadValue($value)
+    {
+        if (is_null($value)) {
+            return true;
+        }
+
+        if (is_string($value)) {
+            return trim($value) === '';
+        }
+
+        if (is_array($value)) {
+            return count($value) === 0;
+        }
+
+        return false;
     }
 
     protected function applyCurrentDeviceConfig(array $payload)

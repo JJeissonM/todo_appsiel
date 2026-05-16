@@ -1083,6 +1083,8 @@
             DocumentType: 'comanda',
             Document: {
                 order: {
+                    COPY: 'ORIGINAL',
+                    CopyLabel: 'ORIGINAL',
                     Number: 'CMD-001',
                     Table: 'Mesa 5',
                     Waiter: 'Carlos',

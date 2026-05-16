@@ -227,11 +227,12 @@ function crear_payload_apm_comanda( doc_encabezado )
                 'Number': doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || '',
                 'Customer': cliente_nombre,
                 'Seller': doc_encabezado.doc_encabezado_vendedor_descripcion || '',
-                'COPY': 'COPIA # 1'
+                'COPY': 'ORIGINAL'
             },
             'company': company,
             'order': {
-                'COPY': 'COPIA # 1',
+                'COPY': 'ORIGINAL',
+                'CopyLabel': 'ORIGINAL',
                 'Number': doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || '',
                 'Table': mesa || '',
                 'Waiter': mesero || '',
