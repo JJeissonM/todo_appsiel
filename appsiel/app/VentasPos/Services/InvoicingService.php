@@ -6,6 +6,8 @@ use App\Core\EncabezadoDocumentoTransaccion;
 use App\Contabilidad\Impuesto;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\Inventarios\Services\InvDocumentsService;
+use App\Ventas\Cliente;
+use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\VtasMovimiento;
 use App\VentasPos\DocRegistro;
 use App\VentasPos\Movimiento;
@@ -43,7 +45,7 @@ class InvoicingService
 
         $lineas_registros = json_decode($request->lineas_registros);
 
-        $this->validar_lineas_registros_pos($lineas_registros);
+        $this->validar_lineas_registros_pos($lineas_registros, $request);
         $this->quitar_medios_recaudo_repetidos_en_exceso($request, $lineas_registros);
 
         // Encabezado
@@ -102,7 +104,7 @@ class InvoicingService
     {
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros
 
-        $this->validar_lineas_registros_pos($lineas_registros);
+        $this->validar_lineas_registros_pos($lineas_registros, $request);
 
         $cantidad_registros = count($lineas_registros);
 
@@ -143,11 +145,13 @@ class InvoicingService
         }
     }
 
-    public function validar_lineas_registros_pos($lineas_registros)
+    public function validar_lineas_registros_pos($lineas_registros, Request $request = null)
     {
         if (!is_array($lineas_registros) || count($lineas_registros) == 0) {
             throw new \InvalidArgumentException('No hay líneas de productos para guardar la factura.');
         }
+
+        $precios_lista = $this->get_precios_lista_para_validar($lineas_registros, $request);
 
         foreach ($lineas_registros as $index => $linea) {
             if ((int)$this->get_line_value($linea, 'inv_producto_id', 0) == 0) {
@@ -155,7 +159,111 @@ class InvoicingService
             }
 
             $this->validar_totales_linea($linea, $index + 1);
+            $this->validar_precio_lista_linea($linea, $index + 1, $precios_lista);
         }
+    }
+
+    protected function get_precios_lista_para_validar(array $lineas_registros, Request $request = null)
+    {
+        if (!$this->debe_validar_precio_lista($request)) {
+            return [];
+        }
+
+        $lista_precios_id = $this->get_lista_precios_id_para_validar($request);
+        $fecha = trim((string)$request->get('fecha', ''));
+
+        if ($lista_precios_id <= 0 || $fecha == '') {
+            return [];
+        }
+
+        $productos_ids = [];
+        foreach ($lineas_registros as $linea) {
+            $producto_id = (int)$this->get_line_value($linea, 'inv_producto_id', 0);
+            if ($producto_id > 0) {
+                $productos_ids[$producto_id] = $producto_id;
+            }
+        }
+
+        if (count($productos_ids) == 0) {
+            return [];
+        }
+
+        $registros = ListaPrecioDetalle::where('lista_precios_id', $lista_precios_id)
+            ->where('fecha_activacion', '<=', $fecha)
+            ->whereIn('inv_producto_id', array_values($productos_ids))
+            ->orderBy('fecha_activacion', 'DESC')
+            ->get();
+
+        $precios = [];
+        foreach ($registros as $registro) {
+            $producto_id = (int)$registro->inv_producto_id;
+            if (!isset($precios[$producto_id])) {
+                $precios[$producto_id] = (float)$registro->precio;
+            }
+        }
+
+        return $precios;
+    }
+
+    protected function debe_validar_precio_lista(Request $request = null)
+    {
+        if (is_null($request) || !(int)config('ventas_pos.validar_precio_lista_al_guardar_factura_pos', 1)) {
+            return false;
+        }
+
+        if ((int)$request->get('pedido_id', 0) > 0) {
+            return false;
+        }
+
+        if (Auth::check()) {
+            if (!Auth::user()->can('bloqueo_cambiar_precio_unitario')) {
+                return false;
+            }
+
+            if (Auth::user()->can('editar_precio_total_en_linea_registro_factura_pos')) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected function validar_precio_lista_linea($linea, $numero_linea, array $precios_lista)
+    {
+        $producto_id = (int)$this->get_line_value($linea, 'inv_producto_id', 0);
+
+        if ($producto_id <= 0 || !isset($precios_lista[$producto_id])) {
+            return;
+        }
+
+        $precio_lista = (float)$precios_lista[$producto_id];
+        if ($precio_lista <= 0) {
+            return;
+        }
+
+        $precio_unitario = (float)$this->get_line_value($linea, 'precio_unitario', 0);
+        if (abs($precio_lista - $precio_unitario) <= 1.0) {
+            return;
+        }
+
+        throw new \InvalidArgumentException(
+            'La línea ' . $numero_linea . ' tiene precio desactualizado. Precio enviado: $' .
+            number_format($precio_unitario, 0, ',', '.') . '. Precio vigente: $' .
+            number_format($precio_lista, 0, ',', '.') . '. Recargue el producto y vuelva a guardar.'
+        );
+    }
+
+    protected function get_lista_precios_id_para_validar(Request $request)
+    {
+        $cliente_id = (int)$request->get('cliente_id', 0);
+        if ($cliente_id > 0) {
+            $cliente = Cliente::find($cliente_id);
+            if (!is_null($cliente)) {
+                return (int)$cliente->lista_precios_id;
+            }
+        }
+
+        return (int)$request->get('lista_precios_id', 0);
     }
 
     protected function quitar_medios_recaudo_repetidos_en_exceso(Request $request, array $lineas_registros)

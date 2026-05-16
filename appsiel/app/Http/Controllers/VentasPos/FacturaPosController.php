@@ -733,7 +733,7 @@ class FacturaPosController extends TransaccionController
         }
 
         try {
-            (new InvoicingService())->validar_lineas_registros_pos($lineas_registros);
+            (new InvoicingService())->validar_lineas_registros_pos($lineas_registros, $request);
         } catch (\InvalidArgumentException $e) {
             return response()->json([
                 'status' => 'error',
