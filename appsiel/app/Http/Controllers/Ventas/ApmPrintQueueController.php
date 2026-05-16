@@ -11,6 +11,7 @@ class ApmPrintQueueController extends Controller
 {
     protected $service;
     const RETIRE_PERMISSION = 'vtas_apm_retirar_cola_impresion';
+    const MANAGE_PERMISSION = 'vtas_apm_print_jobs';
 
     public function __construct(ApmPrintQueueService $service)
     {
@@ -20,10 +21,7 @@ class ApmPrintQueueController extends Controller
 
     public function index()
     {
-        $jobs = ($this->userCanManageQueue()
-            ? $this->service->getManageableJobs()
-            : $this->service->getPendingJobs()
-        )->map(function ($job) {
+        $jobs = $this->service->getPendingJobs()->map(function ($job) {
             return $this->service->serializeJob($job);
         });
 
@@ -56,7 +54,11 @@ class ApmPrintQueueController extends Controller
     public function prepareReprint($jobId)
     {
         try {
-            $prepared = $this->service->prepareReprint($jobId);
+            $prepared = $this->service->prepareReprint(
+                $jobId,
+                request()->input('force_copy') ? true : false,
+                request()->input('retry_only') ? true : false
+            );
 
             return response()->json([
                 'job' => $this->service->serializeJob($prepared['job']),
@@ -111,6 +113,76 @@ class ApmPrintQueueController extends Controller
         }
     }
 
+    public function catalogMarkPending($jobId)
+    {
+        if (!$this->userCanManageQueue()) {
+            return $this->redirectForbidden();
+        }
+
+        try {
+            $this->service->markPending($jobId, true);
+            return $this->redirectBackWithMessage('Trabajo reenviado a la cola APM.');
+        } catch (\Exception $e) {
+            return $this->redirectBackWithError($e->getMessage());
+        }
+    }
+
+    public function catalogMarkPrinted($jobId)
+    {
+        if (!$this->userCanManageQueue()) {
+            return $this->redirectForbidden();
+        }
+
+        try {
+            $this->service->markPrinted($jobId);
+            return $this->redirectBackWithMessage('Trabajo marcado como impreso.');
+        } catch (\Exception $e) {
+            return $this->redirectBackWithError($e->getMessage());
+        }
+    }
+
+    public function catalogMarkRetired($jobId)
+    {
+        if (!$this->userCanRetireQueue()) {
+            return $this->redirectForbidden();
+        }
+
+        try {
+            $this->service->markRetired($jobId);
+            return $this->redirectBackWithMessage('Trabajo retirado de la cola APM.');
+        } catch (\Exception $e) {
+            return $this->redirectBackWithError($e->getMessage());
+        }
+    }
+
+    public function catalogMarkCancelled($jobId)
+    {
+        if (!$this->userCanManageQueue()) {
+            return $this->redirectForbidden();
+        }
+
+        try {
+            $this->service->markCancelled($jobId);
+            return $this->redirectBackWithMessage('Trabajo cancelado.');
+        } catch (\Exception $e) {
+            return $this->redirectBackWithError($e->getMessage());
+        }
+    }
+
+    public function catalogDelete($jobId)
+    {
+        if (!$this->userCanManageQueue()) {
+            return $this->redirectForbidden();
+        }
+
+        try {
+            $this->service->deleteJob($jobId);
+            return $this->redirectBackWithMessage('Trabajo eliminado.');
+        } catch (\Exception $e) {
+            return $this->redirectBackWithError($e->getMessage());
+        }
+    }
+
     protected function userCanRetireQueue()
     {
         $user = Auth::user();
@@ -125,7 +197,23 @@ class ApmPrintQueueController extends Controller
         return !is_null($user) && (
             $user->hasRole('SuperAdmin') ||
             $user->hasRole('Administrador') ||
-            $user->can(self::RETIRE_PERMISSION)
+            $user->can(self::RETIRE_PERMISSION) ||
+            $user->can(self::MANAGE_PERMISSION)
         );
+    }
+
+    protected function redirectBackWithMessage($message)
+    {
+        return redirect()->back()->with('flash_message', $message);
+    }
+
+    protected function redirectBackWithError($message)
+    {
+        return redirect()->back()->with('mensaje_error', $message);
+    }
+
+    protected function redirectForbidden()
+    {
+        return $this->redirectBackWithError('No tiene permiso para gestionar trabajos de impresion APM.');
     }
 }

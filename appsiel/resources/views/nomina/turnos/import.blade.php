@@ -10,7 +10,7 @@
         <br>
         <b>Columna D:</b> ID del empleado en el lector de huellas.
         <br>
-        <b>Columna I:</b> Fecha y hora de Entrada/Salida.
+        <b>Columna J:</b> Fecha y hora de Entrada/Salida.
         <br><br>
         ✅ El archivo de Excel debe incluir información correspondiente a la <b>fecha del día siguiente</b> al corte final, con el fin de poder obtener correctamente los registros de salidas.<br> Es decir, si el corte final es el 31 de enero, el Excel debe contener registros hasta el 1 de febrero.
         <br><br>

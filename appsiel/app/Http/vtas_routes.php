@@ -10,6 +10,12 @@ Route::post('apm_print_queue/{jobId}/mark_printed', 'Ventas\ApmPrintQueueControl
 Route::post('apm_print_queue/{jobId}/mark_failed', 'Ventas\ApmPrintQueueController@markFailed');
 Route::post('apm_print_queue/{jobId}/mark_retired', 'Ventas\ApmPrintQueueController@markRetired');
 
+Route::get('apm_print_jobs/{jobId}/mark_pending', 'Ventas\ApmPrintQueueController@catalogMarkPending');
+Route::get('apm_print_jobs/{jobId}/mark_printed', 'Ventas\ApmPrintQueueController@catalogMarkPrinted');
+Route::get('apm_print_jobs/{jobId}/mark_retired', 'Ventas\ApmPrintQueueController@catalogMarkRetired');
+Route::get('apm_print_jobs/{jobId}/mark_cancelled', 'Ventas\ApmPrintQueueController@catalogMarkCancelled');
+Route::get('apm_print_jobs/{jobId}/delete', 'Ventas\ApmPrintQueueController@catalogDelete');
+
 Route::post('vtas_agregar_precio_lista', 'Ventas\VentaController@agregar_precio_lista');
 Route::post('vtas_doc_registro_guardar', 'Ventas\VentaController@doc_registro_guardar');
 Route::get('vtas_get_formulario_edit_registro', 'Ventas\VentaController@get_formulario_edit_registro');

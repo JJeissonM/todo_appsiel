@@ -483,9 +483,7 @@
         }
 
         completeQueuedJob(job, apmResponse) {
-            return this.request('POST', `apm_print_queue/${job.id}/mark_attempted`, {
-                message: 'Trabajo enviado a APM. Pendiente confirmar impresion fisica.'
-            })
+            return this.request('POST', `apm_print_queue/${job.id}/mark_printed`, {})
                 .then(() => {
                     this.syncQueueItems();
                     return Object.assign({}, apmResponse, {
@@ -613,7 +611,8 @@
         syncQueueItems() {
             return this.request('GET', 'apm_print_queue')
                 .then((response) => {
-                    this.queueItems = response && response.data ? response.data : [];
+                    const items = response && response.data ? response.data : [];
+                    this.queueItems = items.filter((item) => !item.printed_at && !item.retired_at);
                     this.canRetireQueue = !!(response && response.permissions && response.permissions.can_retire);
                     this.canManageQueue = !!(response && response.permissions && response.permissions.can_manage);
                     this.renderQueueButton();
@@ -666,13 +665,16 @@
             return this.registerDispatchPromise(enqueuePromise, { documentKey: documentKey });
         }
 
-        reprintQueuedJob(jobId, timeoutMs = DEFAULT_TIMEOUT_MS) {
+        reprintQueuedJob(jobId, timeoutMs = DEFAULT_TIMEOUT_MS, options = {}) {
             const existingPromise = this.getDispatchPromise({ queueJobId: jobId });
             if (existingPromise) {
                 return existingPromise;
             }
 
-            const reprintPromise = this.request('POST', `apm_print_queue/${jobId}/prepare_reprint`, {})
+            const reprintPromise = this.request('POST', `apm_print_queue/${jobId}/prepare_reprint`, {
+                force_copy: !!options.forceCopy,
+                retry_only: !!options.retryOnly
+            })
                 .then((prepared) => {
                     const job = prepared.job;
                     return this.queueDispatch({
@@ -776,7 +778,7 @@
                 const button = document.createElement('button');
                 button.id = QUEUE_BUTTON_ID;
                 button.type = 'button';
-                button.innerHTML = '<span class="apm-queue-label">Gestor APM</span><span id="' + QUEUE_BADGE_ID + '">0</span>';
+                button.innerHTML = '<span class="apm-queue-label">Pedidos por imprimir</span><span id="' + QUEUE_BADGE_ID + '">0</span>';
                 button.addEventListener('click', () => this.openQueueModal());
                 document.body.appendChild(button);
             }
@@ -798,42 +800,29 @@
             }
 
             badge.textContent = String(this.queueItems.length || 0);
-            button.style.display = (this.queueItems.length || this.canManageQueue) ? 'inline-flex' : 'none';
+            button.style.display = this.queueItems.length ? 'inline-flex' : 'none';
         }
 
         buildQueueModalHtml() {
             if (!this.queueItems.length) {
-                return '<p style="margin:0;">No hay documentos recientes en el gestor APM.</p>';
+                return '<p style="margin:0;">No hay pedidos pendientes por fallas de impresion.</p>';
             }
 
             return this.queueItems.map((item) => {
                 const label = item.document_label || `${item.document_type} ${item.consecutivo}`;
-                const isRetired = !!item.retired_at;
-                const isPending = !item.printed_at && !item.retired_at;
-                const retireButtonHtml = this.canRetireQueue && isPending
-                    ? `<button type="button" class="btn btn-default btn-xs apm-retire-btn" data-job-id="${item.id}" style="margin-left:6px;">Retirar</button>`
-                    : '';
-                //const confirmButtonHtml = isPending
-                //    ? `<button type="button" class="btn btn-default btn-xs apm-confirm-printed-btn" data-job-id="${item.id}" style="margin-left:6px;"${ENABLE_CONFIRM_PRINTED_ACTION ? '' : ' disabled="disabled" title="Opción inactiva"'}>Confirmar impreso</button>`
-                //    : '';
-                const actionLabel = isPending ? 'Reenviar APM' : 'Imprimir copia';
-                const statusLabel = isRetired ? 'Retirado' : (isPending ? 'Pendiente' : 'Impreso');
 
                 return `
                     <div class="apm-queue-item">
                         <div class="apm-queue-item-title">${label}</div>
                         <div class="apm-queue-item-meta">
                             Copia: ${item.copy_label}<br>
-                            Estado: ${statusLabel}<br>
-                            ${item.printed_at ? 'Impreso: ' + item.printed_at + '<br>' : ''}
-                            ${item.retired_at ? 'Retirado: ' + item.retired_at + '<br>' : ''}
+                            Pendiente desde: ${item.queued_at || ''}<br>
+                            Intentos: ${item.attempts_count || 0}
                         </div>
-                        <div class="apm-queue-item-error">${item.last_error || (isPending ? 'Pendiente de reimpresion manual.' : '')}</div>
-                        <button type="button" class="btn btn-primary btn-xs apm-reprint-btn" data-job-id="${item.id}">${actionLabel}</button>
-                        
-                        ${retireButtonHtml}
+                        <div class="apm-queue-item-error">${item.last_error || 'No se pudo confirmar la impresion del pedido.'}</div>
+                        <button type="button" class="btn btn-primary btn-xs apm-reprint-btn" data-job-id="${item.id}">Reenviar impresion</button>
                     </div>
-                `;//${confirmButtonHtml}
+                `;
             }).join('');
         }
 
@@ -891,8 +880,8 @@
                     if (global.Swal) {
                         global.Swal.fire({
                             icon: 'success',
-                            title: 'Impresion APM',
-                            text: (response.CopyLabel || 'Copia enviada') + ' procesada por APM.'
+                            title: 'Pedido reenviado',
+                            text: (response.CopyLabel || 'Impresion') + ' enviada correctamente.'
                         });
                     }
                 })
@@ -900,8 +889,8 @@
                     if (global.Swal) {
                         global.Swal.fire({
                             icon: 'error',
-                            title: 'Error de reimpresion',
-                            text: error && error.ErrorMessage ? error.ErrorMessage : 'No fue posible reimprimir el documento pendiente.'
+                            title: 'Error al reenviar',
+                            text: error && error.ErrorMessage ? error.ErrorMessage : 'No fue posible reenviar la impresion del pedido.'
                         });
                     }
                 })
@@ -1033,13 +1022,13 @@
             this.queueModalOpen = true;
 
             if (!global.Swal) {
-                alert('Pendientes en cola APM: ' + this.queueItems.length);
+                alert('Pedidos pendientes por imprimir: ' + this.queueItems.length);
                 return;
             }
 
             this.syncQueueItems().then(() => {
                 global.Swal.fire({
-                    title: 'Gestor de impresiones APM',
+                    title: 'Pedidos pendientes por imprimir',
                     html: this.buildQueueModalHtml(),
                     width: 700,
                     showConfirmButton: false,
@@ -1074,7 +1063,6 @@
             Document: {
                 company: { Name: 'Supermercado Demo', Nit: '900123456', Address: 'Calle Principal #123', Phone: '555-1234' },
                 sale: {
-                    COPY: 'COPIA # 1',
                     Number: 'FV-1001',
                     Date: new Date().toISOString(),
                     Items: [
@@ -1095,7 +1083,6 @@
             DocumentType: 'comanda',
             Document: {
                 order: {
-                    COPY: 'COPIA # 1',
                     Number: 'CMD-001',
                     Table: 'Mesa 5',
                     Waiter: 'Carlos',
@@ -1118,7 +1105,7 @@
             PrinterId: 'printHambuger',
             DocumentType: 'factura_electronica',
             Document: {
-                header: { Title: 'FACTURA ELECTRONICA DE VENTA', Number: 'FE-2025', COPY: 'COPIA # 1' },
+                header: { Title: 'FACTURA ELECTRONICA DE VENTA', Number: 'FE-2025' },
                 customer: { Name: 'Empresa Cliente S.A.S', Nit: '800.111.222-3', Address: 'Av. Empresarial 55' },
                 totals: { Subtotal: 100000, Tax: 19000, Total: 119000 },
                 cufe: 'abc1234567890def...'

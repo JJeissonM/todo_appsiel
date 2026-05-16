@@ -51,6 +51,7 @@ class RegistroTurnoImportController extends Controller
         }
 
         $cacheContratos = []; // fingerprint_reader_id => modelo contrato
+        $cacheContratosPorId = []; // contrato_id => modelo contrato
         $dedup = [];          // contrato|Y-m-d H:i:s
         $marcas = [];         // contrato|fecha => [horas]
         $fechaPrimerDia = null;
@@ -89,6 +90,8 @@ class RegistroTurnoImportController extends Controller
             if (!$contrato) {
                 continue; // sin contrato asociado
             }
+
+            $cacheContratosPorId[$contrato->id] = $contrato;
 
             $dedupKey = $contrato->id . '|' . $dt->toDateTimeString();
             if (isset($dedup[$dedupKey])) {

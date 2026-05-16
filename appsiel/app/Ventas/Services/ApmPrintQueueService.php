@@ -86,11 +86,15 @@ class ApmPrintQueueService
         ];
     }
 
-    public function prepareReprint($jobId)
+    public function prepareReprint($jobId, $forceCopy = false, $retryOnly = false)
     {
         $job = ApmPrintJob::findOrFail($jobId);
 
-        if ((int) $job->apm_print_status_id === (int) $this->getStatusId('pending')) {
+        if ($retryOnly) {
+            $this->validateRetryableFailedJob($job);
+        }
+
+        if (!$forceCopy && (int) $job->apm_print_status_id === (int) $this->getStatusId('pending')) {
             $storedPayload = json_decode($job->payload_json, true);
             $payload = $this->applyCopyLabel(is_array($storedPayload) ? $storedPayload : [], $job->copy_label);
             $payload = $this->normalizePayloadTextFields($payload);
@@ -137,6 +141,21 @@ class ApmPrintQueueService
         ];
     }
 
+    protected function validateRetryableFailedJob(ApmPrintJob $job)
+    {
+        if (!is_null($job->printed_at)) {
+            throw new \RuntimeException('Imprimir ahora solo aplica para trabajos con error que nunca se han impreso.');
+        }
+
+        if (trim((string) $job->last_error) === '') {
+            throw new \RuntimeException('Imprimir ahora solo aplica para trabajos con error de impresion.');
+        }
+
+        if ((int) $job->apm_print_status_id !== (int) $this->getStatusId('pending')) {
+            throw new \RuntimeException('Imprimir ahora solo aplica para trabajos pendientes en la cola APM.');
+        }
+    }
+
     public function markPrinted($jobId)
     {
         $job = ApmPrintJob::findOrFail($jobId);
@@ -164,6 +183,31 @@ class ApmPrintQueueService
         $job->attempts_count = (int) $job->attempts_count + 1;
         $job->last_attempt_at = Carbon::now()->toDateTimeString();
         $job->last_error = $message;
+        $job->save();
+
+        return $job;
+    }
+
+    public function markPending($jobId, $retryOnly = false)
+    {
+        $job = ApmPrintJob::findOrFail($jobId);
+
+        if ($retryOnly) {
+            $this->validateRetryableFailedJob($job);
+        }
+
+        $payload = json_decode($job->payload_json, true);
+
+        $payload = $this->applyCopyLabel(is_array($payload) ? $payload : [], $job->copy_label);
+        $payload = $this->normalizePayloadTextFields($payload);
+        $payload = $this->applyCurrentDeviceConfig($payload);
+
+        $job->apm_print_status_id = $this->getStatusId('pending');
+        $job->payload_json = json_encode($payload);
+        $job->last_error = null;
+        $job->retired_at = null;
+        $job->retired_by = null;
+        $job->queued_at = Carbon::now()->toDateTimeString();
         $job->save();
 
         return $job;
@@ -198,6 +242,25 @@ class ApmPrintQueueService
         $job->save();
 
         return $job;
+    }
+
+    public function markCancelled($jobId)
+    {
+        $job = ApmPrintJob::findOrFail($jobId);
+        $user = Auth::user();
+
+        $job->apm_print_status_id = $this->getStatusId('cancelled');
+        $job->retired_at = Carbon::now()->toDateTimeString();
+        $job->retired_by = is_null($user) ? null : $user->email;
+        $job->save();
+
+        return $job;
+    }
+
+    public function deleteJob($jobId)
+    {
+        $job = ApmPrintJob::findOrFail($jobId);
+        $job->delete();
     }
 
     public function serializeJob(ApmPrintJob $job)
@@ -252,48 +315,72 @@ class ApmPrintQueueService
 
     protected function applyCopyLabel(array $payload, $copyLabel)
     {
-        $payload['CopyLabel'] = $copyLabel;
-
         if (!isset($payload['Document']) || !is_array($payload['Document'])) {
             $payload['Document'] = [];
         }
 
-        $payload['Document']['CopyLabel'] = $copyLabel;
+        unset($payload['CopyLabel']);
+        unset($payload['Document']['COPY']);
+        unset($payload['Document']['CopyLabel']);
 
         if (isset($payload['Document']['order']) && is_array($payload['Document']['order'])) {
+            $payload['Document']['order'] = $this->removeLegacyCopyLabelsFromOrder($payload['Document']['order'], $copyLabel);
             $payload['Document']['order']['COPY'] = $copyLabel;
             $payload['Document']['order']['CopyLabel'] = $copyLabel;
-            $payload['Document']['order']['RestaurantLabel'] = isset($payload['Document']['order']['RestaurantName'])
-                ? $payload['Document']['order']['RestaurantName']
-                : '';
-            $payload['Document']['order']['RestaurantName'] = $copyLabel;
+
+            unset($payload['Document']['COPY']);
+            unset($payload['Document']['order']['RestaurantLabel']);
         }
 
         if (isset($payload['Document']['sale']) && is_array($payload['Document']['sale'])) {
-            $payload['Document']['sale']['COPY'] = $copyLabel;
-            $payload['Document']['sale']['CopyLabel'] = $copyLabel;
+            unset($payload['Document']['sale']['COPY']);
+            unset($payload['Document']['sale']['CopyLabel']);
         }
 
         if (isset($payload['Document']['header']) && is_array($payload['Document']['header'])) {
-            $payload['Document']['header']['COPY'] = $copyLabel;
-            $payload['Document']['header']['CopyLabel'] = $copyLabel;
+            unset($payload['Document']['header']['COPY']);
+            unset($payload['Document']['header']['CopyLabel']);
         }
 
         if (isset($payload['Document']['egreso']) && is_array($payload['Document']['egreso'])) {
-            $payload['Document']['egreso']['COPY'] = $copyLabel;
-            $payload['Document']['egreso']['CopyLabel'] = $copyLabel;
+            unset($payload['Document']['egreso']['COPY']);
+            unset($payload['Document']['egreso']['CopyLabel']);
         }
 
         if (isset($payload['Document']['cheque']) && is_array($payload['Document']['cheque'])) {
-            $payload['Document']['cheque']['COPY'] = $copyLabel;
-            $payload['Document']['cheque']['CopyLabel'] = $copyLabel;
-        }
-
-        if (!isset($payload['Document']['COPY'])) {
-            $payload['Document']['COPY'] = $copyLabel;
+            unset($payload['Document']['cheque']['COPY']);
+            unset($payload['Document']['cheque']['CopyLabel']);
         }
 
         return $payload;
+    }
+
+    protected function removeLegacyCopyLabelsFromOrder(array $order, $currentCopyLabel)
+    {
+        $restaurantName = isset($order['RestaurantName']) ? trim((string) $order['RestaurantName']) : '';
+        $restaurantLabel = isset($order['RestaurantLabel']) ? trim((string) $order['RestaurantLabel']) : '';
+
+        if ($restaurantName !== '' && $this->isCopyLabelText($restaurantName, $currentCopyLabel)) {
+            if ($restaurantLabel !== '' && !$this->isCopyLabelText($restaurantLabel, $currentCopyLabel)) {
+                $order['RestaurantName'] = $restaurantLabel;
+            } else {
+                unset($order['RestaurantName']);
+            }
+        }
+
+        return $order;
+    }
+
+    protected function isCopyLabelText($value, $currentCopyLabel)
+    {
+        $value = trim((string) $value);
+        $currentCopyLabel = trim((string) $currentCopyLabel);
+
+        if ($value === '' || $value === $currentCopyLabel || strtoupper($value) === 'ORIGINAL') {
+            return true;
+        }
+
+        return preg_match('/^COPIA\s*#\s*\d+$/i', $value) === 1;
     }
 
     protected function normalizePayloadTextFields($payload)
@@ -329,7 +416,7 @@ class ApmPrintQueueService
         }
 
         if (isset($payload['Document']['sale']) && is_array($payload['Document']['sale'])) {
-            foreach (['Number', 'Date', 'COPY'] as $field) {
+            foreach (['Number', 'Date'] as $field) {
                 if (isset($payload['Document']['sale'][$field])) {
                     $payload['Document']['sale'][$field] = (string)$payload['Document']['sale'][$field];
                 }
@@ -345,15 +432,11 @@ class ApmPrintQueueService
         }
 
         if (isset($payload['Document']['order']) && is_array($payload['Document']['order'])) {
-            foreach (['Number', 'Date', 'COPY', 'CopyLabel', 'RestaurantName', 'RestaurantLabel'] as $field) {
+            foreach (['Number', 'Date', 'COPY', 'CopyLabel', 'RestaurantName'] as $field) {
                 if (isset($payload['Document']['order'][$field])) {
                     $payload['Document']['order'][$field] = (string)$payload['Document']['order'][$field];
                 }
             }
-        }
-
-        if (isset($payload['Document']['COPY'])) {
-            $payload['Document']['COPY'] = (string)$payload['Document']['COPY'];
         }
 
         return $payload;

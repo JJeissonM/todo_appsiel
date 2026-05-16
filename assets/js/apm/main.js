@@ -14,7 +14,6 @@
                         Order: 1,
                         Elements: [
                             { Type: 'Text', StaticValue: '=== PEDIDO COCINA ===', Format: 'Size2 Bold', Align: 'Center' },
-                            { Type: 'Text', Source: 'order.COPY', Format: 'Size1 Bold', Align: 'Center' },
                             { Type: 'Text', Label: 'Mesa: ', Source: 'order.Table', Format: 'Size1', Align: 'Left' },
                             { Type: 'Line' }
                         ]
