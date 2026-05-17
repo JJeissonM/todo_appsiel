@@ -31,6 +31,7 @@ use App\Ventas\RestauranteCocina;
 use App\Ventas\VtasMovimiento;
 use App\Compras\Proveedor;
 use App\Sistema\Campo;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -65,6 +66,23 @@ class InvFisicoController extends TransaccionController
 
         $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create' );
 
+        $doc_clonar_id = session('inv_fisico_clonar_documento_id', Input::get('doc_inv_fisico_clonar_id'));
+        $documento_clonado = null;
+        $lineas_registros = '';
+        $cantidad_total = 0;
+        $costo_total = 0;
+
+        if ( !is_null($doc_clonar_id) && (int)$doc_clonar_id > 0 )
+        {
+            $documento_clonado = InvDocEncabezado::with(['lineas_registros.item', 'lineas_registros.motivo'])->findOrFail((int)$doc_clonar_id);
+            $lista_campos = $this->preparar_campos_clon_inventario_fisico($lista_campos, $documento_clonado);
+            $datos_lineas_clon = $this->preparar_lineas_clon_inventario_fisico($documento_clonado);
+
+            $lineas_registros = $datos_lineas_clon['lineas_registros'];
+            $cantidad_total = $datos_lineas_clon['cantidad_total'];
+            $costo_total = $datos_lineas_clon['costo_total'];
+        }
+
         $url_form_create = 'web';
 
         if ( $modelo->url_form_create != '')
@@ -90,7 +108,18 @@ class InvFisicoController extends TransaccionController
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = '';
 
-        return view('inventarios.inventario_fisico.create', compact('form_create','id_transaccion','motivos','miga_pan','tabla','grupos'));
+        return view('inventarios.inventario_fisico.create', compact('form_create','id_transaccion','motivos','miga_pan','tabla','grupos','lineas_registros','cantidad_total','costo_total','documento_clonado'));
+    }
+
+    public function clonar_inventario_fisico()
+    {
+        $id = (int)Input::get('doc_inv_fisico_id');
+
+        InvDocEncabezado::findOrFail($id);
+
+        session()->flash('inv_fisico_clonar_documento_id', $id);
+
+        return redirect('inv_fisico/create?id=' . Input::get('id', Input::get('url_id')) . '&id_modelo=' . Input::get('id_modelo', Input::get('url_id_modelo')) . '&id_transaccion=' . Input::get('id_transaccion', Input::get('url_id_transaccion')));
     }
 
     /**
@@ -577,29 +606,10 @@ class InvFisicoController extends TransaccionController
             }
         }
 
-        $numero_linea = count( $registro->lineas_registros );
-
-        $lineas_registros = '';
-        $cantidad_total = 0;
-        $costo_total = 0;
-        $i = 1;
-        foreach ( $registro->lineas_registros as $linea )
-        {
-            $descripcion_item = $linea->item->get_value_to_show(true);
-
-            $lineas_registros .= '<tr id="' . $linea->inv_producto_id . '">' . 
-                                                                '<td class="text-center">' . $linea->inv_producto_id . '</td>' . 
-                                                                '<td class="nom_prod">' . $descripcion_item . '</td>' . 
-                                                                '<td><span style="color:white;">12-</span><span style="color:green;">Inventario Físico</span><input type="hidden" class="movimiento" value="entrada"></td>' . 
-                                                                '<td class="lbl_costo_unitario">' . $linea->costo_unitario . '</td>' . 
-                                                                '<td class="lbl_cantidad"> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> '.$linea->cantidad.'</div> </div> </td>' . 
-                                                                '<td class="lbl_costo_total">' . $linea->costo_total . '</td>' . 
-                                                                '<td> <button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button> </td>' . 
-                                                                '</tr>';
-            $i++;
-            $cantidad_total += $linea->cantidad;
-            $costo_total += $linea->costo_total;
-        }
+        $datos_lineas = $this->preparar_lineas_inventario_fisico($registro->lineas_registros, false, $registro->inv_bodega_id);
+        $lineas_registros = $datos_lineas['lineas_registros'];
+        $cantidad_total = $datos_lineas['cantidad_total'];
+        $costo_total = $datos_lineas['costo_total'];
 
         $url_form_create = 'web';
 
@@ -626,6 +636,84 @@ class InvFisicoController extends TransaccionController
         $tabla = '';
 
         return view('inventarios.inventario_fisico.edit', compact('form_create','id_transaccion','motivos','miga_pan','tabla','grupos','registro','lineas_registros', 'cantidad_total', 'costo_total'));
+    }
+
+    private function preparar_campos_clon_inventario_fisico(array $lista_campos, InvDocEncabezado $documento)
+    {
+        foreach ($lista_campos as $key => $value)
+        {
+            if ($value['name'] == 'core_empresa_id')
+            {
+                $lista_campos[$key]['value'] = $documento->core_empresa_id;
+            }
+
+            if ($value['name'] == 'inv_bodega_id')
+            {
+                $lista_campos[$key]['value'] = $documento->inv_bodega_id;
+            }
+
+            if ($value['name'] == 'fecha')
+            {
+                $lista_campos[$key]['value'] = Carbon::today()->format('Y-m-d');
+            }
+
+            if ($value['name'] == 'descripcion')
+            {
+                $lista_campos[$key]['value'] = $documento->descripcion;
+            }
+
+            if ($value['name'] == 'core_tercero_id')
+            {
+                $lista_campos[$key]['value'] = $documento->core_tercero_id;
+            }
+        }
+
+        return $lista_campos;
+    }
+
+    private function preparar_lineas_clon_inventario_fisico(InvDocEncabezado $documento)
+    {
+        return $this->preparar_lineas_inventario_fisico($documento->lineas_registros, true, $documento->inv_bodega_id);
+    }
+
+    private function preparar_lineas_inventario_fisico($lineas, $actualizar_costos, $bodega_id)
+    {
+        $lineas_registros = '';
+        $cantidad_total = 0;
+        $costo_total = 0;
+
+        foreach ( $lineas as $linea )
+        {
+            $cantidad = (float)$linea->cantidad;
+            $costo_unitario = (float)$linea->costo_unitario;
+
+            if ( $actualizar_costos )
+            {
+                $costo_unitario = (float)InvCostoPromProducto::get_costo_promedio((int)$bodega_id, (int)$linea->inv_producto_id);
+            }
+
+            $costo_total_linea = $cantidad * $costo_unitario;
+            $descripcion_item = $linea->item != null ? $linea->item->get_value_to_show(true) : '';
+            $motivo_id = $linea->motivo != null ? $linea->motivo->id : $linea->inv_motivo_id;
+            $motivo_descripcion = $linea->motivo != null ? $linea->motivo->descripcion : 'Inventario Fisico';
+            $motivo_movimiento = $linea->motivo != null ? $linea->motivo->movimiento : 'entrada';
+            $color_motivo = $motivo_movimiento == 'salida' ? 'red' : 'green';
+
+            $lineas_registros .= '<tr id="' . $linea->inv_producto_id . '">' .
+                '<td class="text-center">' . $linea->inv_producto_id . '</td>' .
+                '<td class="nom_prod">' . e($descripcion_item) . '</td>' .
+                '<td><span style="color:white;">' . $motivo_id . '-</span><span style="color:' . $color_motivo . ';">' . e($motivo_descripcion) . '</span><input type="hidden" class="movimiento" value="' . e($motivo_movimiento) . '"></td>' .
+                '<td class="lbl_costo_unitario">' . $costo_unitario . '</td>' .
+                '<td class="lbl_cantidad"> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' . $cantidad . '</div> </div> </td>' .
+                '<td class="lbl_costo_total">' . $costo_total_linea . '</td>' .
+                '<td> <button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button> </td>' .
+                '</tr>';
+
+            $cantidad_total += $cantidad;
+            $costo_total += $costo_total_linea;
+        }
+
+        return compact('lineas_registros', 'cantidad_total', 'costo_total');
     }
 
     /**

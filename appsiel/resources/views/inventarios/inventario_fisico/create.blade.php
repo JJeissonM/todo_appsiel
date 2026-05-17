@@ -60,6 +60,7 @@
 		            </tr>
 		        </thead>
 		        <tbody>
+					{!! isset($lineas_registros) ? $lineas_registros : '' !!}
 		        </tbody>
 		        <tfoot>
 		        	<tr id="linea_ingreso_default">
@@ -76,8 +77,8 @@
                     </tr>
 		            <tr>
 		                <td colspan="4">&nbsp;</td>
-		                <td> <div id="total_cantidad"> 0 </div> </td>
-		                <td> <div id="total_costo_total"> $0</div> </td>
+		                <td> <div id="total_cantidad"> {{ isset($cantidad_total) ? $cantidad_total : 0 }} </div> </td>
+		                <td> <div id="total_costo_total"> ${{ isset($costo_total) ? $costo_total : 0 }}</div> </td>
 		                <td> &nbsp;</td>
 		            </tr>
 		        </tfoot>
@@ -92,7 +93,11 @@
 
 	<script type="text/javascript">
 		$(document).ready(function(){
-			$('#core_empresa_id').val(1);
+			@if( isset($documento_clonado) && !is_null($documento_clonado) )
+				$('#core_empresa_id').val({{ $documento_clonado->core_empresa_id }});
+			@else
+				$('#core_empresa_id').val(1);
+			@endif
 
 			$('#fecha').val( get_fecha_hoy() );
 			$('#fecha').focus();			
@@ -100,6 +105,10 @@
 			$('#hora_inicio').val( get_hora_actual() );
 
 			$('#movimiento').removeAttr('required');
+
+			@if( isset($documento_clonado) && !is_null($documento_clonado) )
+				calcular_totales();
+			@endif
 
 			$('#fecha').keyup(function(event){
 				var x = event.which || event.keyCode;

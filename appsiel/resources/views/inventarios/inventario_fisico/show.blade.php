@@ -6,11 +6,14 @@
 
 @section('botones_acciones')
 	{{ Form::bsBtnCreate( 'inv_fisico/create'.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.$id_transaccion ) }}
+    <button type="button" class="btn-gmail" data-toggle="modal" data-target="#modal_clonar_documento" title="Clonar documento">
+        <i class="fa fa-clone"></i>
+    </button>
     
     @if( !$inventario_fisico_tiene_ajuste )
         {{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'inv_fisico/id_fila/edit'.$variables_url ),'Editar') }}
 
-        <a class="btn-gmail" href="{{ url('inv_fisico_hacer_ajuste?id=8&id_modelo=25&id_transaccion=28&doc_inv_fisico_id='.$id) }}" target="_blank" title="Hacer Ajuste"><i class="fa fa-btn fa-cog"></i></a>
+        <a class="btn-gmail" href="{{ url('inv_fisico_hacer_ajuste?id=8&id_modelo=25&id_transaccion=28&doc_inv_fisico_id='.$id) }}" title="Hacer Ajuste"><i class="fa fa-btn fa-cog"></i></a>
         <button type="button" class="btn-gmail" data-toggle="modal" data-target="#modal_unificar_lineas" title="Unificar items repetidos">
             <i class="fa fa-compress"></i>
         </button>
@@ -49,6 +52,36 @@
 @section('section_after_documento_vista')
 
 <div class="container-fluid">
+    <div class="modal fade" id="modal_clonar_documento" tabindex="-1" role="dialog" aria-labelledby="modal_clonar_documento_label" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal_clonar_documento_label">Clonar documento</h4>
+                </div>
+                <div class="modal-body">
+                    Se abrirá un nuevo formulario con los datos y productos del documento actual. Únicamente se actualizarán la fecha, tomando la del día de hoy, y los costos, utilizando el costo promedio actual.
+                    <br><br>
+                    ¿Deseas continuar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <form method="POST" action="{{ url('inv_clonar_inventario_fisico'.$variables_url) }}" style="display:inline;" id="form_clonar_documento">
+                        {{ csrf_field() }}
+                        <input type="hidden" name="doc_inv_fisico_id" value="{{ $id }}">
+                        <input type="hidden" name="url_id" value="{{ Input::get('id') }}">
+                        <input type="hidden" name="url_id_modelo" value="{{ Input::get('id_modelo') }}">
+                        <input type="hidden" name="url_id_transaccion" value="{{ $id_transaccion }}">
+                        <button type="submit" class="btn btn-danger" id="btn_clonar_documento">
+                            <i class="fa fa-spinner fa-spin" id="spinner_clonar_documento" style="display:none;"></i>
+                            Clonar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="modal_unificar_lineas" tabindex="-1" role="dialog" aria-labelledby="modal_unificar_lineas_label" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -144,6 +177,11 @@
         $(document).on('submit', '#form_unificar_lineas', function() {
             $('#spinner_unificar_lineas').show();
             $('#btn_unificar_lineas').prop('disabled', true);
+        });
+
+        $(document).on('submit', '#form_clonar_documento', function() {
+            $('#spinner_clonar_documento').show();
+            $('#btn_clonar_documento').prop('disabled', true);
         });
 
         $(document).on('submit', '#form_ajustar_saldos_bodega', function() {

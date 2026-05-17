@@ -47,6 +47,7 @@ Route::get('inv_get_item_stock/{item_id}/{bodega_id}/{fecha}','Inventarios\Inven
 
 Route::get('inv_fisico_imprimir/{id}','Inventarios\InvFisicoController@imprimir');
 Route::get('inv_fisico_hacer_ajuste','Inventarios\InvFisicoController@hacer_ajuste');
+Route::post('inv_clonar_inventario_fisico','Inventarios\InvFisicoController@clonar_inventario_fisico');
 Route::post('inv_fisico_unificar_registros/{id}','Inventarios\\InvFisicoController@unificar_registros');
 Route::post('inv_fisico_ajustar_saldos_bodega/{id}','Inventarios\\InvFisicoController@ajustar_saldos_bodega');
 Route::post('inv_fisico_descontar_ventas/{id}','Inventarios\\InvFisicoController@descontar_ventas')->middleware('permission:inventarios.inventario_fisico.descontar_ventas');
