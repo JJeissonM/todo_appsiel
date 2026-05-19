@@ -642,3 +642,7 @@ UPDATE `permissions` SET `fa_icon` = '' WHERE `permissions`.`id` = 230;
 
 -- Cambiar nombre a  permiso de boton facturar en PDV
 UPDATE `permissions` SET `name` = 'vtas_pos_boton_facturar' WHERE `permissions`.`id` = 401;
+
+
+INSERT INTO `sys_modelos` (`id`, `descripcion`, `modelo`, `name_space`, `modelo_relacionado`, `url_crear`, `url_edit`, `url_print`, `url_ver`, `enlaces`, `url_estado`, `url_eliminar`, `controller_complementario`, `url_form_create`, `home_miga_pan`, `ruta_storage_imagen`, `ruta_storage_archivo_adjunto`, `created_at`, `updated_at`) VALUES (352, 'Archivo', 'archivo', 'App\\Nube\\Archivo', '', '', '', '', '', '', '', '', '', '', '', '', '', '2026-05-16 08:29:20', NULL);
+UPDATE `permissions` SET `modelo_id` = '352' WHERE `permissions`.`id` = 215;

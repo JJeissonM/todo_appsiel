@@ -65,34 +65,7 @@ class VentaController extends TransaccionController
     protected $doc_encabezado;
 
     /* El método index() está en TransaccionController */
-
     
-    public function catalogos()
-    {
-        $this->set_variables_globales();
-
-        $permisos = Permission::where( [
-                                        ['core_app_id', '=', $this->app->id],
-                                        ['parent','=',0],
-                                        ['modelo_id','<>',0]
-                                    ] )
-                                ->orderBy('orden','ASC')
-                                ->get();
-
-        $permisos->push( Permission::where( [
-                ['core_app_id', '=', $this->app->id],
-                ['name', '=', 'pw_nube']
-                ] )
-                ->get()->first()->toArray()
-        );
-
-        $miga_pan = [
-                        ['url' => $this->app->app.'?id='.$this->app->id, 'etiqueta' => $this->app->descripcion],
-                        ['url' => 'NO', 'etiqueta' => 'Catálogos']
-                    ];
-
-        return view( $this->app->app.'.catalogos', compact('permisos', 'miga_pan') );
-    }
     
     public function create()
     {
