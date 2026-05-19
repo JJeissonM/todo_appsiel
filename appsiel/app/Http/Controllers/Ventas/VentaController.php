@@ -58,6 +58,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
+use Spatie\Permission\Models\Permission;
 
 class VentaController extends TransaccionController
 {
@@ -65,6 +66,33 @@ class VentaController extends TransaccionController
 
     /* El método index() está en TransaccionController */
 
+    
+    public function catalogos()
+    {
+        $this->set_variables_globales();
+
+        $permisos = Permission::where( [
+                                        ['core_app_id', '=', $this->app->id],
+                                        ['parent','=',0],
+                                        ['modelo_id','<>',0]
+                                    ] )
+                                ->orderBy('orden','ASC')
+                                ->get();
+
+        $permisos->push( Permission::where( [
+                ['core_app_id', '=', $this->app->id],
+                ['name', '=', 'pw_nube']
+                ] )
+                ->get()->first()->toArray()
+        );
+
+        $miga_pan = [
+                        ['url' => $this->app->app.'?id='.$this->app->id, 'etiqueta' => $this->app->descripcion],
+                        ['url' => 'NO', 'etiqueta' => 'Catálogos']
+                    ];
+
+        return view( $this->app->app.'.catalogos', compact('permisos', 'miga_pan') );
+    }
     
     public function create()
     {
