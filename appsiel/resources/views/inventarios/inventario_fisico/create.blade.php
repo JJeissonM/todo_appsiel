@@ -108,6 +108,7 @@
 
 			@if( isset($documento_clonado) && !is_null($documento_clonado) )
 				calcular_totales();
+				$('.input_cantidad').first().select();
 			@endif
 
 			$('#fecha').keyup(function(event){

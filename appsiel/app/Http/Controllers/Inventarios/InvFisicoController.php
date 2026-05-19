@@ -673,10 +673,10 @@ class InvFisicoController extends TransaccionController
 
     private function preparar_lineas_clon_inventario_fisico(InvDocEncabezado $documento)
     {
-        return $this->preparar_lineas_inventario_fisico($documento->lineas_registros, true, $documento->inv_bodega_id);
+        return $this->preparar_lineas_inventario_fisico($documento->lineas_registros, true, $documento->inv_bodega_id, true);
     }
 
-    private function preparar_lineas_inventario_fisico($lineas, $actualizar_costos, $bodega_id)
+    private function preparar_lineas_inventario_fisico($lineas, $actualizar_costos, $bodega_id, $dejar_cantidades_vacias = false)
     {
         $lineas_registros = '';
         $cantidad_total = 0;
@@ -692,25 +692,34 @@ class InvFisicoController extends TransaccionController
                 $costo_unitario = (float)InvCostoPromProducto::get_costo_promedio((int)$bodega_id, (int)$linea->inv_producto_id);
             }
 
-            $costo_total_linea = $cantidad * $costo_unitario;
+            $costo_total_linea = $dejar_cantidades_vacias ? '' : $cantidad * $costo_unitario;
             $descripcion_item = $linea->item != null ? $linea->item->get_value_to_show(true) : '';
             $motivo_id = $linea->motivo != null ? $linea->motivo->id : $linea->inv_motivo_id;
             $motivo_descripcion = $linea->motivo != null ? $linea->motivo->descripcion : 'Inventario Fisico';
             $motivo_movimiento = $linea->motivo != null ? $linea->motivo->movimiento : 'entrada';
             $color_motivo = $motivo_movimiento == 'salida' ? 'red' : 'green';
+            $cantidad_html = '<div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' . $cantidad . '</div> </div>';
+
+            if ( $dejar_cantidades_vacias )
+            {
+                $cantidad_html = '<input type="text" name="cantidad_' . $linea->inv_producto_id . '" class="input_cantidad" autocomplete="off">';
+            }
 
             $lineas_registros .= '<tr id="' . $linea->inv_producto_id . '">' .
                 '<td class="text-center">' . $linea->inv_producto_id . '</td>' .
                 '<td class="nom_prod">' . e($descripcion_item) . '</td>' .
                 '<td><span style="color:white;">' . $motivo_id . '-</span><span style="color:' . $color_motivo . ';">' . e($motivo_descripcion) . '</span><input type="hidden" class="movimiento" value="' . e($motivo_movimiento) . '"></td>' .
                 '<td class="lbl_costo_unitario">' . $costo_unitario . '</td>' .
-                '<td class="lbl_cantidad"> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' . $cantidad . '</div> </div> </td>' .
+                '<td class="lbl_cantidad">' . $cantidad_html . '</td>' .
                 '<td class="lbl_costo_total">' . $costo_total_linea . '</td>' .
                 '<td> <button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button> </td>' .
                 '</tr>';
 
-            $cantidad_total += $cantidad;
-            $costo_total += $costo_total_linea;
+            if ( !$dejar_cantidades_vacias )
+            {
+                $cantidad_total += $cantidad;
+                $costo_total += $costo_total_linea;
+            }
         }
 
         return compact('lineas_registros', 'cantidad_total', 'costo_total');
