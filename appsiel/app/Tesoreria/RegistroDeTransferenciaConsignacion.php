@@ -16,7 +16,6 @@ class RegistroDeTransferenciaConsignacion extends TesoDocEncabezado
 {
     public function almacenar_registros( $json_lineas_registros, $doc_encabezado )
     {
-        $teso_medio_recaudo_id = 4; // Banco (Consignación)
         $lineas_registros = json_decode( $json_lineas_registros );
 
         if( is_null($lineas_registros) )
@@ -27,6 +26,13 @@ class RegistroDeTransferenciaConsignacion extends TesoDocEncabezado
         array_pop($lineas_registros); // Elimina ultimo elemento del array
         
         $cantidad = count($lineas_registros);
+        if ( $cantidad == 0 )
+        {
+            return false;
+        }
+
+        $teso_medio_recaudo_id = TesoMedioRecaudo::get_id_por_tipo_registro('transferencia_consignacion');
+
         for ($i=0; $i < $cantidad; $i++) 
         {
             $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_transferencia_consignacion );

@@ -146,9 +146,8 @@ class PagoCxpController extends TransaccionController
         $tarjeta_credito->almacenar_registros( $request->lineas_registros_tarjeta_credito, $doc_encabezado );
 
         try {
-            // $teso_medio_recaudo_id = 6; // Cheque propio
             $cheques = new RegistroDeCheque();
-            $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 6, 'Emitido', 'propio' );
+            $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 'cheque_propio', 'Emitido', 'propio' );
         } catch (\Exception $e) {
             return redirect('tesoreria/pagos_cxp/create?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)
                 ->with('mensaje_error', 'Error al registrar cheques: ' . $e->getMessage());

@@ -156,9 +156,8 @@ class RecaudoCxcController extends Controller
         $tarjeta_credito = new RegistroDeTarjetaCredito();
         $tarjeta_credito->almacenar_registros( $request->lineas_registros_tarjeta_credito, $doc_encabezado );
 
-        // $teso_medio_recaudo_id = 7; // Cheque de tercero
         $cheques = new RegistroDeCheque();
-        $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 7, 'Recibido', 'de_tercero' );
+        $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 'cheque_tercero', 'Recibido', 'de_tercero' );
 
         $doc_encabezado->actualizar_valor_total();
 

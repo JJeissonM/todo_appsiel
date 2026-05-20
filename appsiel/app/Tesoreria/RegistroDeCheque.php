@@ -27,6 +27,15 @@ class RegistroDeCheque extends TesoDocEncabezado
         array_pop($lineas_registros); // Elimina ultimo elemento del array
         
         $cantidad = count($lineas_registros);
+        if ( $cantidad == 0 )
+        {
+            return false;
+        }
+
+        if (!is_numeric($teso_medio_recaudo_id)) {
+            $teso_medio_recaudo_id = TesoMedioRecaudo::get_id_por_tipo_registro($teso_medio_recaudo_id);
+        }
+
         for ($i=0; $i < $cantidad; $i++) 
         {
             $numero_cheque = (int)$lineas_registros[$i]->numero_cheque;
