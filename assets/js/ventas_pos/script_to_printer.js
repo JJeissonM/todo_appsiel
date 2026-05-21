@@ -14,6 +14,7 @@ function enviar_impresion( doc_encabezado )
     var metodo_factura = $('#metodo_impresion_factura_pos').val() || 'normal';
     var apm_jobs = [];
     var mostrar_previsualizacion_factura = false;
+    var preguntar_factura_apm = false;
 
     // Imprimir siempre en cocina
     if ( metodo_comanda == 'apm' ) {
@@ -45,10 +46,7 @@ function enviar_impresion( doc_encabezado )
         case '1':
             if ( metodo_factura == 'apm' ) {
                 mostrar_previsualizacion_factura = true;
-                apm_jobs.push({
-                    label: 'Factura POS',
-                    promise: print_factura_apm(doc_encabezado)
-                });
+                preguntar_factura_apm = true;
             } else {
                 print_factura(doc_encabezado);
             }
@@ -57,10 +55,7 @@ function enviar_impresion( doc_encabezado )
             if (confirm("¿Quiere enviar la FACTURA a la impresora principal?") == true) {
                 if ( metodo_factura == 'apm' ) {
                     mostrar_previsualizacion_factura = true;
-                    apm_jobs.push({
-                        label: 'Factura POS',
-                        promise: print_factura_apm(doc_encabezado)
-                    });
+                    preguntar_factura_apm = true;
                 } else {
                     print_factura(doc_encabezado);
                 }
@@ -76,22 +71,21 @@ function enviar_impresion( doc_encabezado )
                 }
             } else {
                 mostrar_previsualizacion_factura = true;
-                apm_jobs.push({
-                    label: 'Factura POS',
-                    promise: print_factura_apm(doc_encabezado)
-                });
+                preguntar_factura_apm = true;
             }
             break;
     }
 
-    if ( mostrar_previsualizacion_factura ) {
+    if ( preguntar_factura_apm ) {
+        pos_previsualizar_y_preguntar_factura_apm(doc_encabezado, apm_jobs);
+    } else if ( mostrar_previsualizacion_factura ) {
         var preview_abierta = ventana_imprimir(false);
         if (!preview_abierta) {
             pos_notificar_popup_bloqueado();
         }
     }
 
-    if ( apm_jobs.length ) {
+    if ( !preguntar_factura_apm && apm_jobs.length ) {
         pos_mostrar_modal_apm(apm_jobs, doc_encabezado);
     }
 
@@ -108,12 +102,195 @@ function enviar_impresion( doc_encabezado )
     }
 }
 
+function pos_previsualizar_y_preguntar_factura_apm(doc_encabezado, apm_jobs)
+{
+    var preview_abierta = ventana_imprimir(false);
+    if (!preview_abierta) {
+        pos_notificar_popup_bloqueado();
+    }
+
+    var factura_apm_payload = crear_payload_apm_factura(doc_encabezado);
+    var factura_apm_meta = crear_meta_apm_factura_pos(doc_encabezado);
+    var drawer_printer_id = factura_apm_payload.PrinterId || $('#apm_printer_id_factura_pos').val() || $('#impresora_principal_por_defecto').val() || '';
+
+    pos_agregar_confirmacion_apm_en_previsualizacion()
+        .then(function (shouldPrint) {
+            if (shouldPrint === null) {
+                return;
+            }
+
+            pos_cerrar_previsualizacion_factura();
+
+            if (shouldPrint) {
+                apm_jobs.push({
+                    label: 'Factura POS',
+                    promise: print_factura_apm_preparada(factura_apm_payload, factura_apm_meta)
+                });
+                pos_mostrar_modal_apm(apm_jobs, doc_encabezado);
+                return;
+            }
+
+            pos_mostrar_modal_apm([
+                {
+                    label: 'OpenDrawer',
+                    promise: apm_open_drawer_factura_pos(drawer_printer_id)
+                }
+            ], doc_encabezado);
+        });
+}
+
+function pos_agregar_confirmacion_apm_en_previsualizacion(options)
+{
+    options = options || {};
+    var title = options.title || 'Impresion APM';
+    var question = options.question || '¿Desea imprimir la factura POS por APM?';
+    var confirmText = options.confirmText || 'Si, imprimir';
+    var skipText = options.skipText || 'No imprimir';
+
+    return new Promise(function (resolve) {
+        var settled = false;
+        var closeWatcher = null;
+        var resolveOnce = function (value) {
+            if (settled) {
+                return;
+            }
+            settled = true;
+            if (closeWatcher) {
+                clearInterval(closeWatcher);
+            }
+            resolve(value);
+        };
+
+        if (!ventana_factura || ventana_factura.closed || !ventana_factura.document) {
+            resolveOnce(true);
+            return;
+        }
+
+        try {
+            var previewDocument = ventana_factura.document;
+            var existingPanel = previewDocument.getElementById('apm_pos_print_confirmation');
+            if (existingPanel) {
+                existingPanel.parentNode.removeChild(existingPanel);
+            }
+
+            previewDocument.body.style.paddingBottom = '150px';
+
+            var panel = previewDocument.createElement('div');
+            panel.id = 'apm_pos_print_confirmation';
+            panel.setAttribute('tabindex', '-1');
+            panel.style.cssText = [
+                'position: fixed',
+                'left: 0',
+                'right: 0',
+                'bottom: 0',
+                'z-index: 2147483647',
+                'margin: 0',
+                'padding: 14px 12px 18px 12px',
+                'border-top: 3px solid #574696',
+                'background: #f7f7fb',
+                'font-family: Arial, sans-serif',
+                'text-align: center',
+                'min-height: 118px',
+                'box-shadow: 0 -3px 12px rgba(0,0,0,0.18)',
+                'box-sizing: border-box'
+            ].join(';');
+
+            panel.innerHTML = [
+                '<div style="font-size:16px;font-weight:bold;margin-bottom:8px;color:#333;">' + apm_escape_html(title) + '</div>',
+                '<div style="font-size:13px;margin-bottom:12px;color:#333;">' + apm_escape_html(question) + '</div>',
+                '<button type="button" id="apm_pos_confirm_print" style="padding:8px 14px;margin-right:8px;background:#337ab7;color:#fff;border:0;border-radius:3px;font-weight:bold;cursor:pointer;">' + apm_escape_html(confirmText) + '</button>',
+                '<button type="button" id="apm_pos_skip_print" style="padding:8px 14px;background:#777;color:#fff;border:0;border-radius:3px;font-weight:bold;cursor:pointer;">' + apm_escape_html(skipText) + '</button>'
+            ].join('');
+
+            previewDocument.body.appendChild(panel);
+
+            var confirmButton = previewDocument.getElementById('apm_pos_confirm_print');
+            var skipButton = previewDocument.getElementById('apm_pos_skip_print');
+
+            confirmButton.onclick = function () {
+                resolveOnce(true);
+            };
+
+            skipButton.onclick = function () {
+                resolveOnce(false);
+            };
+
+            previewDocument.addEventListener('keydown', function (event) {
+                var key = event.key || event.keyCode;
+                if (key === 'q' || key === 'Q' || key === 81 || key === 'Escape' || key === 'Esc' || key === 27) {
+                    event.preventDefault();
+                    pos_cerrar_previsualizacion_factura();
+                    resolveOnce(false);
+                }
+            });
+
+            closeWatcher = setInterval(function () {
+                try {
+                    if (!ventana_factura || ventana_factura.closed) {
+                        resolveOnce(false);
+                    }
+                } catch (e) {
+                    resolveOnce(false);
+                }
+            }, 250);
+
+            ventana_factura.focus();
+            pos_enfocar_confirmacion_apm_previsualizacion(ventana_factura, confirmButton);
+        } catch (e) {
+            resolveOnce(true);
+        }
+    });
+}
+
+function apm_escape_html(value)
+{
+    return apm_to_string(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function pos_enfocar_confirmacion_apm_previsualizacion(previewWindow, focusElement)
+{
+    var focusConfirmation = function () {
+        try {
+            if (typeof focusElement.focus === 'function') {
+                try {
+                    focusElement.focus({ preventScroll: true });
+                } catch (focusError) {
+                    focusElement.focus();
+                }
+            }
+        } catch (e) {}
+    };
+
+    focusConfirmation();
+    setTimeout(focusConfirmation, 80);
+    setTimeout(focusConfirmation, 250);
+    setTimeout(focusConfirmation, 600);
+    setTimeout(focusConfirmation, 1200);
+}
+
+function pos_cerrar_previsualizacion_factura()
+{
+    try {
+        if (ventana_factura && !ventana_factura.closed) {
+            ventana_factura.close();
+        }
+    } catch (e) {}
+}
+
 function pos_mostrar_modal_apm(apm_jobs, doc_encabezado)
 {
     var documento = '';
     if (doc_encabezado && doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo) {
         documento = doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo;
     }
+    var jobLabels = apm_jobs.map(function (job) {
+        return job.label;
+    }).join(', ');
 
     if (window.focus) {
         window.focus();
@@ -121,8 +298,14 @@ function pos_mostrar_modal_apm(apm_jobs, doc_encabezado)
 
     if (window.Swal) {
         Swal.fire({
-            title: 'Impresion APM',
-            html: '<p>Enviando ' + apm_jobs.length + ' trabajo(s) a Appsiel Print Manager...</p><p><b>' + documento + '</b></p>',
+            title: 'Esperando respuesta de APM',
+            html: [
+                '<div style="text-align:center;">',
+                '<p style="margin-bottom:8px;">Enviando instruccion al servidor de impresion.</p>',
+                '<p style="margin-bottom:6px;"><b>' + apm_escape_html(documento) + '</b></p>',
+                '<p style="font-size:12px;color:#666;margin-bottom:0;">' + apm_escape_html(jobLabels) + '</p>',
+                '</div>'
+            ].join(''),
             allowOutsideClick: false,
             allowEscapeKey: false,
             showConfirmButton: false,
@@ -136,7 +319,7 @@ function pos_mostrar_modal_apm(apm_jobs, doc_encabezado)
         $('#popup_alerta_success').text('Enviando impresion por APM... Por favor, espere!');
     }
 
-    Promise.all(apm_jobs.map(function (job) {
+    return Promise.all(apm_jobs.map(function (job) {
         return Promise.resolve(job.promise)
             .then(function (response) {
                 return {
@@ -160,7 +343,7 @@ function pos_mostrar_modal_apm(apm_jobs, doc_encabezado)
         $('#popup_alerta_success').hide();
 
         if (!window.Swal) {
-            return;
+            return results;
         }
 
         if (failed.length) {
@@ -169,17 +352,26 @@ function pos_mostrar_modal_apm(apm_jobs, doc_encabezado)
                 title: 'Impresion APM con novedades',
                 html: pos_build_apm_result_html(results)
             });
-            return;
+            return results;
         }
+
+        var successTitle = pos_apm_results_are_drawer_only(results) ? 'Cajon abierto con APM' : 'Impresion enviada a APM';
 
         Swal.fire({
             icon: 'success',
-            title: 'Impresion enviada a APM',
+            title: successTitle,
             html: pos_build_apm_result_html(results),
             timer: 2500,
             showConfirmButton: false
         });
+
+        return results;
     });
+}
+
+function pos_apm_results_are_drawer_only(results)
+{
+    return results.length === 1 && results[0].label === 'OpenDrawer';
 }
 
 function pos_build_apm_result_html(results)
@@ -188,7 +380,8 @@ function pos_build_apm_result_html(results)
 
     results.forEach(function (result) {
         if (result.ok) {
-            html += '<p><b>' + result.label + ':</b> enviada correctamente.</p>';
+            var okMessage = result.label === 'OpenDrawer' ? 'ejecutado correctamente.' : 'enviada correctamente.';
+            html += '<p><b>' + result.label + ':</b> ' + okMessage + '</p>';
             return;
         }
 
@@ -376,6 +569,72 @@ function print_factura_apm( doc_encabezado )
         documentMeta: crear_meta_apm_factura_pos( doc_encabezado ),
         timeoutMs: 30000
     });
+}
+
+function print_factura_apm_preparada(payload, documentMeta)
+{
+    if ( !window.APM_CLIENT || typeof window.APM_CLIENT.enqueuePrintJob !== 'function' ) {
+        return Promise.reject({
+            Status: 'ERROR',
+            ErrorMessage: 'APM no esta disponible en este navegador.'
+        });
+    }
+
+    return window.APM_CLIENT.enqueuePrintJob({
+        payload: payload,
+        documentMeta: documentMeta,
+        timeoutMs: 30000
+    });
+}
+
+function crear_payload_apm_factura_electronica(doc_encabezado, facturaElectronica)
+{
+    var payload = crear_payload_apm_factura(doc_encabezado);
+    var electronicInfo = facturaElectronica || doc_encabezado.factura_electronica || {};
+    var number = apm_to_string(doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || '');
+
+    payload.DocumentType = 'factura_electronica';
+    payload.JobId = number || payload.JobId;
+    payload.Document.header = {
+        'Title': 'FACTURA ELECTRONICA DE VENTA',
+        'Number': number,
+        'Date': apm_to_string(doc_encabezado.doc_encabezado_fecha || '')
+    };
+    payload.Document.cufe = apm_to_string(electronicInfo.cufe || '');
+    payload.Document.qr = apm_to_string(electronicInfo.qr || '');
+    payload.Document.electronic = {
+        'Cufe': apm_to_string(electronicInfo.cufe || ''),
+        'Qr': apm_to_string(electronicInfo.qr || ''),
+        'Result': apm_to_string(electronicInfo.resultado || ''),
+        'Message': apm_to_string(electronicInfo.mensaje || ''),
+        'AcceptedAt': apm_to_string(electronicInfo.fecha_aceptacion_dian || ''),
+        'DocumentNumber': apm_to_string(electronicInfo.consecutivo_documento || number)
+    };
+
+    return payload;
+}
+
+function apm_open_drawer_factura_pos(printerId)
+{
+    if ( !window.APM_CLIENT || typeof window.APM_CLIENT.sendDirectCommandAndWait !== 'function' ) {
+        return Promise.reject({
+            Status: 'ERROR',
+            ErrorMessage: 'APM no esta disponible en este navegador.'
+        });
+    }
+
+    var cleanPrinterId = apm_to_string(printerId || $('#apm_printer_id_factura_pos').val() || $('#impresora_principal_por_defecto').val()).trim();
+    if (cleanPrinterId === '') {
+        return Promise.reject({
+            Status: 'ERROR',
+            ErrorMessage: 'No se encontro impresora APM para abrir el cajon.'
+        });
+    }
+
+    return window.APM_CLIENT.waitForSocketReady(5000)
+        .then(function () {
+            return window.APM_CLIENT.sendDirectCommandAndWait('OpenDrawer', cleanPrinterId, 12000);
+        });
 }
 
 function print_factura( doc_encabezado ) 

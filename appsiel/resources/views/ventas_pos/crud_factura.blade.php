@@ -177,7 +177,7 @@
 
     <script src="{{ asset( 'assets/js/apm/client.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/apm_scale_listener.js?v=' . $asset_v )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?v=' . $asset_v )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?v=' . $asset_v . '&aux=' . uniqid() )}}"></script>
     
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas.js?v=' . $asset_v )}}"></script>
 
@@ -199,7 +199,7 @@
     @endif
 
     @if ( (int)config('ventas_pos.modulo_fe_activo'))
-        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/factura_electronica.js?v=' . $asset_v )}}"></script>
+        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/factura_electronica.js?v=' . $asset_v . '&aux=' . uniqid() )}}"></script>
     @endif
 
     <script src="{{ asset( 'assets/js/ventas_pos/componentes/boton_prefactura.js?v=' . $asset_v )}}"></script>

@@ -16,6 +16,10 @@ Route::get('apm_print_jobs/{jobId}/mark_retired', 'Ventas\ApmPrintQueueControlle
 Route::get('apm_print_jobs/{jobId}/mark_cancelled', 'Ventas\ApmPrintQueueController@catalogMarkCancelled');
 Route::get('apm_print_jobs/{jobId}/delete', 'Ventas\ApmPrintQueueController@catalogDelete');
 
+Route::post('apm_devices/{deviceId}/test_beep', 'Ventas\ApmDeviceCommandController@beep');
+Route::post('apm_devices/{deviceId}/test_open_drawer', 'Ventas\ApmDeviceCommandController@openDrawer');
+Route::post('apm_devices/{deviceId}/test_cut', 'Ventas\ApmDeviceCommandController@cut');
+
 Route::post('vtas_agregar_precio_lista', 'Ventas\VentaController@agregar_precio_lista');
 Route::post('vtas_doc_registro_guardar', 'Ventas\VentaController@doc_registro_guardar');
 Route::get('vtas_get_formulario_edit_registro', 'Ventas\VentaController@get_formulario_edit_registro');

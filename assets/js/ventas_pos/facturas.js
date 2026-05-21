@@ -327,7 +327,24 @@ function ventana_imprimir(imprimir) {
   imprimir = imprimir !== false;
 
   try {
-    ventana_factura = window.open("", "Impresión de factura POS", "width=400,height=600,menubar=no");
+    var screenWidth = window.screen && window.screen.availWidth ? window.screen.availWidth : 1024;
+    var screenHeight = window.screen && window.screen.availHeight ? window.screen.availHeight : 768;
+    var previewWidth = Math.min(420, Math.max(320, Math.floor(screenWidth * 0.42)));
+    var previewHeight = Math.min(700, Math.max(500, screenHeight - 100));
+    var previewFeatures = [
+      "width=" + previewWidth,
+      "height=" + previewHeight,
+      "left=10",
+      "top=60",
+      "menubar=no",
+      "toolbar=no",
+      "location=no",
+      "status=no",
+      "scrollbars=yes",
+      "resizable=yes"
+    ].join(",");
+
+    ventana_factura = window.open("", "Impresión de factura POS", previewFeatures);
   } catch (e) {
     ventana_factura = null;
   }

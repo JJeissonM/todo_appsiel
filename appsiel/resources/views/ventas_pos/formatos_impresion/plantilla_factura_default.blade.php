@@ -47,7 +47,7 @@
 @if($datos_factura->core_tipo_transaccion_id == '')
     <body>
 @else
-    <body onload="window.print()">
+    <body @if(Input::get('no_auto_print') != '1') onload="window.print()" @endif>
 @endif
     <?php
         $tamanino_fuente_2 = '0.9em';

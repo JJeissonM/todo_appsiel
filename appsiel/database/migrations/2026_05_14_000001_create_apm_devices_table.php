@@ -131,6 +131,10 @@ class CreateApmDevicesTable extends Migration
                 ]);
             }
 
+            if (in_array($field['name'], ['ip_address', 'paper_width_mm', 'code_page', 'beep_after_print', 'open_drawer_after_print', 'cut_after_print', 'ip_address'])) {
+                continue;
+            }
+
             $exists = DB::table('sys_modelo_tiene_campos')
                 ->where('core_modelo_id', $modeloId)
                 ->where('core_campo_id', $campoId)

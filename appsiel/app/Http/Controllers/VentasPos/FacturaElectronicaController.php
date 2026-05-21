@@ -18,6 +18,7 @@ use App\Ventas\VtasPedido;
 use App\Ventas\VtasDocEncabezado;
 
 use App\FacturacionElectronica\Factura;
+use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\VentasPos\Services\CxCService;
 use App\VentasPos\Services\InvoicingService;
@@ -123,7 +124,7 @@ class FacturaElectronicaController extends TransaccionController
                             'factura_electronica_id' => (int)$factura_electronica_existente->id
                         ]);
 
-                        return $this->build_url_print_fe((int)$factura_electronica_existente->id);
+                        return response()->json($this->build_print_response_fe($factura_electronica_existente), 200);
                     }
                 }
 
@@ -174,17 +175,14 @@ class FacturaElectronicaController extends TransaccionController
             (new TreasuryService())->crear_abonos_documento($vtas_document_header, $datos['lineas_registros_medios_recaudos']);
         }
 
-        $url_print = $this->build_url_print_fe((int)$result->new_document_header_id);
-
         if ($mensaje->tipo == 'mensaje_error') {
-            return response()->json([
+            return response()->json(array_merge($this->build_print_response_fe($vtas_document_header), [
                 'status' => 'warning',
-                'message' => $mensaje->contenido,
-                'url_print' => $url_print
-            ], 200);
+                'message' => $mensaje->contenido
+            ]), 200);
         }
 
-        return $url_print;
+        return response()->json($this->build_print_response_fe($vtas_document_header), 200);
     }
 
     /**
@@ -379,5 +377,60 @@ class FacturaElectronicaController extends TransaccionController
     protected function build_url_print_fe($factura_electronica_id)
     {
         return url('/') . '/vtas_imprimir/' . (int)$factura_electronica_id . '?id=20&id_modelo=230&id_transaccion=52&formato_impresion_id=pos';
+    }
+
+    protected function build_print_response_fe(Factura $factura_electronica)
+    {
+        $resultado_envio = ResultadoEnvioDocumento::where('vtas_doc_encabezado_id', (int)$factura_electronica->id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        return [
+            'url_print' => $this->build_url_print_fe((int)$factura_electronica->id),
+            'doc_encabezado' => $this->build_json_doc_encabezado_fe($factura_electronica),
+            'factura_electronica' => $resultado_envio ? [
+                'cufe' => (string)$resultado_envio->cufe,
+                'qr' => (string)$resultado_envio->qr,
+                'resultado' => (string)$resultado_envio->resultado,
+                'mensaje' => (string)$resultado_envio->mensaje,
+                'fecha_aceptacion_dian' => (string)$resultado_envio->fechaAceptacionDIAN,
+                'consecutivo_documento' => (string)$resultado_envio->consecutivoDocumento
+            ] : []
+        ];
+    }
+
+    protected function build_json_doc_encabezado_fe(Factura $factura_electronica)
+    {
+        $factura_pos = FacturaPos::find((int)$factura_electronica->ventas_doc_relacionado_id);
+        $base = [];
+
+        if (!is_null($factura_pos)) {
+            $base = (new FacturaPosController())->build_json_doc_encabezado($factura_pos);
+        }
+
+        $resolucion = $factura_electronica->resolucion_facturacion();
+        $tipo_documento = $factura_electronica->tipo_documento_app;
+        $cliente = $factura_electronica->cliente;
+        $vendedor = $factura_electronica->vendedor;
+
+        return array_merge($base, [
+            'id' => (int)$factura_electronica->id,
+            'core_empresa_id' => (int)$factura_electronica->core_empresa_id,
+            'core_tipo_transaccion_id' => (int)$factura_electronica->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => (int)$factura_electronica->core_tipo_doc_app_id,
+            'doc_encabezado_documento_transaccion_descripcion' => $tipo_documento ? $tipo_documento->descripcion : 'Factura Electronica',
+            'consecutivo' => $factura_electronica->consecutivo,
+            'doc_encabezado_documento_transaccion_prefijo_consecutivo' => $tipo_documento ? $tipo_documento->prefijo . ' ' . $factura_electronica->consecutivo : (string)$factura_electronica->consecutivo,
+            'doc_encabezado_fecha' => $factura_electronica->fecha,
+            'doc_encabezado_fecha_vencimiento' => $factura_electronica->fecha_vencimiento,
+            'doc_encabezado_forma_pago' => $factura_electronica->forma_pago,
+            'doc_encabezado_valor_total' => (float)$factura_electronica->valor_total,
+            'doc_encabezado_tercero_nombre_completo' => $cliente && $cliente->tercero ? $cliente->tercero->descripcion : '',
+            'doc_encabezado_vendedor_descripcion' => $vendedor && $vendedor->tercero ? $vendedor->tercero->descripcion : '',
+            'cantidad_total_productos' => count($factura_electronica->lineas_registros),
+            'doc_encabezado_descripcion' => $factura_electronica->descripcion,
+            'resolucion' => $resolucion ? $resolucion->toArray() : [],
+            'lbl_creado_por_fecha_y_hora' => explode('@', (string)$factura_electronica->creado_por)[0]
+        ]);
     }
 }

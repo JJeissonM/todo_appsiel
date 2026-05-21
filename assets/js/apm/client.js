@@ -18,11 +18,6 @@
 
     const cloneData = (data) => JSON.parse(JSON.stringify(data || {}));
 
-    const getHiddenInputValue = (id) => {
-        const input = document.getElementById(id);
-        return input ? String(input.value || '') : '';
-    };
-
     const getWsUrl = () => {
         if (global.APM_CONFIG && global.APM_CONFIG.url) {
             return String(global.APM_CONFIG.url).trim();
@@ -181,48 +176,34 @@
             });
         }
 
-        sendConfiguredDirectCommands(payload) {
-            const printerId = payload && payload.PrinterId ? String(payload.PrinterId).trim() : '';
-            const deviceConfig = this.getDeviceConfig(printerId, payload);
+        sendDirectCommandAndWait(command, printerId, timeoutMs = DEFAULT_TIMEOUT_MS) {
+            const cleanCommand = String(command || '').trim();
+            const cleanPrinterId = String(printerId || '').trim();
 
-            if (!printerId || !deviceConfig) {
-                return;
+            if (!cleanCommand || !cleanPrinterId) {
+                return Promise.reject({
+                    Status: 'ERROR',
+                    ErrorMessage: 'Comando directo APM invalido.'
+                });
             }
 
-            const commands = [];
-            const shouldOpenDrawer = parseInt(deviceConfig.open_drawer_after_print || 0, 10) === 1;
-            if (parseInt(deviceConfig.beep_after_print || 0, 10) === 1) {
-                commands.push('Beep');
-            }
-
-            if (shouldOpenDrawer) {
-                commands.push('Drawer');
-            }
-
-            // Algunas versiones de APM/impresoras ejecutan el corte directo junto con el pulso del cajon.
-            if (parseInt(deviceConfig.cut_after_print || 0, 10) === 1 && shouldOpenDrawer) {
-                commands.push('Cut');
-            }
-
-            commands.forEach((command, index) => {
-                global.setTimeout(() => {
-                    this.sendDirectCommand(command, printerId);
-                }, 120 * (index + 1));
-            });
+            return this.sendAndWait({
+                Action: 'ExecuteCommand',
+                PrinterId: cleanPrinterId,
+                Command: cleanCommand,
+                JobId: `APM-CMD-${Date.now()}`
+            }, timeoutMs);
         }
 
-        getDeviceConfig(deviceId, payload = null) {
-            const cleanDeviceId = String(deviceId || '').trim();
-            if (!cleanDeviceId) {
-                return null;
-            }
-
-            if (payload && payload.DeviceConfig && String(payload.DeviceConfig.device_id || '').trim() === cleanDeviceId) {
-                return payload.DeviceConfig;
-            }
-
-            const config = global.APM_DEVICES_CONFIG || safeJsonParse(getHiddenInputValue('apm_devices_config'), {});
-            return config && config[cleanDeviceId] ? config[cleanDeviceId] : null;
+        sendDirectCommandFromEndpoint(endpoint, timeoutMs = DEFAULT_TIMEOUT_MS) {
+            return this.request('POST', endpoint, {})
+                .then((commandData) => {
+                    return this.waitForSocketReady()
+                        .then(() => this.sendDirectCommandAndWait(commandData.command, commandData.printer_id, timeoutMs))
+                        .then((apmResponse) => Object.assign({}, commandData, {
+                            apm_response: apmResponse
+                        }));
+                });
         }
 
         sendUpdateTemplate(template) {
@@ -653,10 +634,6 @@
                     queueJobId: job.id
                 })
                     .then((apmResponse) => this.completeQueuedJob(job, apmResponse))
-                    .then((response) => {
-                        this.sendConfiguredDirectCommands(payloadToSend);
-                        return response;
-                    })
                     .catch((apmError) => {
                         return this.failQueuedJob(job, apmError);
                     });
@@ -683,10 +660,6 @@
                         queueJobId: job.id
                     })
                         .then((apmResponse) => this.completeQueuedJob(job, apmResponse))
-                        .then((response) => {
-                            this.sendConfiguredDirectCommands(prepared.payload);
-                            return response;
-                        })
                         .catch((apmError) => {
                             return this.failQueuedJob(job, apmError);
                         });
@@ -778,7 +751,7 @@
                 const button = document.createElement('button');
                 button.id = QUEUE_BUTTON_ID;
                 button.type = 'button';
-                button.innerHTML = '<span class="apm-queue-label">Pedidos por imprimir</span><span id="' + QUEUE_BADGE_ID + '">0</span>';
+                button.innerHTML = '<span class="apm-queue-label">Documentos por imprimir</span><span id="' + QUEUE_BADGE_ID + '">0</span>';
                 button.addEventListener('click', () => this.openQueueModal());
                 document.body.appendChild(button);
             }

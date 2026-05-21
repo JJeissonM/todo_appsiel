@@ -16,6 +16,10 @@
 
 						VistaController::campos_dos_colummnas($form_create['campos'], 'show');
 					?>
+
+					@if($registro instanceof \App\Ventas\ApmDevice)
+						@include('ventas.apm_devices.show_test_commands')
+					@endif
 		    	</div>
 		    </div>
 		</div>

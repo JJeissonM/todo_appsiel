@@ -582,6 +582,7 @@ class ApmPrintQueueService
 
     protected function applyCurrentDeviceConfig(array $payload)
     {
+        $payload = $this->removeAfterPrintInstructions($payload);
         $printerId = isset($payload['PrinterId']) ? trim((string) $payload['PrinterId']) : '';
 
         if ($printerId === '') {
@@ -599,9 +600,6 @@ class ApmPrintQueueService
             'device_type' => $device->device_type,
             'device_id' => $device->device_id,
             'name' => $device->device_name,
-            'beep_after_print' => (int) $device->beep_after_print,
-            'open_drawer_after_print' => (int) $device->open_drawer_after_print,
-            'cut_after_print' => (int) $device->cut_after_print,
             'serial_port' => $device->serial_port,
             'baud_rate' => (int) $device->baud_rate,
             'data_bits' => (int) $device->data_bits,
@@ -609,18 +607,33 @@ class ApmPrintQueueService
             'stop_bits' => $device->stop_bits
         ];
 
-        $payload['BeepAfterPrint'] = (int) $device->beep_after_print === 1;
-        $payload['OpenDrawerAfterPrint'] = (int) $device->open_drawer_after_print === 1;
-        $payload['OpenDrawer'] = (int) $device->open_drawer_after_print === 1;
-        $payload['CutAfterPrint'] = (int) $device->cut_after_print === 1;
+        return $payload;
+    }
 
-        if (!isset($payload['Document']) || !is_array($payload['Document'])) {
-            $payload['Document'] = [];
+    protected function removeAfterPrintInstructions(array $payload)
+    {
+        unset(
+            $payload['BeepAfterPrint'],
+            $payload['OpenDrawerAfterPrint'],
+            $payload['OpenDrawer'],
+            $payload['CutAfterPrint']
+        );
+
+        if (isset($payload['DeviceConfig']) && is_array($payload['DeviceConfig'])) {
+            unset(
+                $payload['DeviceConfig']['beep_after_print'],
+                $payload['DeviceConfig']['open_drawer_after_print'],
+                $payload['DeviceConfig']['cut_after_print']
+            );
         }
 
-        $payload['Document']['OpenDrawerAfterPrint'] = $payload['OpenDrawerAfterPrint'];
-        $payload['Document']['OpenDrawer'] = $payload['OpenDrawer'];
-        $payload['Document']['CutAfterPrint'] = $payload['CutAfterPrint'];
+        if (isset($payload['Document']) && is_array($payload['Document'])) {
+            unset(
+                $payload['Document']['OpenDrawerAfterPrint'],
+                $payload['Document']['OpenDrawer'],
+                $payload['Document']['CutAfterPrint']
+            );
+        }
 
         return $payload;
     }

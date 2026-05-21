@@ -29,7 +29,7 @@
         }
     </style>
 </head>
-<body onload="window.print()">
+<body @if(Input::get('no_auto_print') != '1') onload="window.print()" @endif>
     <?php        
         $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
 
@@ -114,9 +114,11 @@
     
     <br><br><br>
 
-    <script type="text/javascript">
-        window.onload = function() { window.print(); }
-    </script>
+    @if(Input::get('no_auto_print') != '1')
+        <script type="text/javascript">
+            window.onload = function() { window.print(); }
+        </script>
+    @endif
 
 </body>
 

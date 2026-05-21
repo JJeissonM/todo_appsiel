@@ -208,14 +208,7 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
-								$apm_printer_id_pedidos_ventas = '';
-								if( isset($parametros['apm_printer_id_pedidos_ventas'] ) )
-								{
-									$apm_printer_id_pedidos_ventas = $parametros['apm_printer_id_pedidos_ventas'];
-								}
-							?>
-							{{ Form::bsSelect('apm_printer_id_pedidos_ventas', $apm_printer_id_pedidos_ventas, 'Dispositivo APM pedidos de ventas', App\Ventas\ApmDevice::printerOptions(), ['class'=>'form-control']) }}
+							&nbsp;
 						</div>
 					</div>
 
@@ -238,14 +231,7 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
-								$apm_printer_id_pedidos_restaurante = '';
-								if( isset($parametros['apm_printer_id_pedidos_restaurante'] ) )
-								{
-									$apm_printer_id_pedidos_restaurante = $parametros['apm_printer_id_pedidos_restaurante'];
-								}
-							?>
-							{{ Form::bsSelect('apm_printer_id_pedidos_restaurante', $apm_printer_id_pedidos_restaurante, 'Dispositivo APM pedidos restaurante', App\Ventas\ApmDevice::printerOptions(), ['class'=>'form-control']) }}
+							&nbsp;
 						</div>
 					</div>
 
@@ -268,14 +254,7 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
-								$apm_printer_id_factura_pos = '';
-								if( isset($parametros['apm_printer_id_factura_pos'] ) )
-								{
-									$apm_printer_id_factura_pos = $parametros['apm_printer_id_factura_pos'];
-								}
-							?>
-							{{ Form::bsSelect('apm_printer_id_factura_pos', $apm_printer_id_factura_pos, 'Dispositivo APM facturas POS', App\Ventas\ApmDevice::printerOptions(), ['class'=>'form-control']) }}
+							&nbsp;
 						</div>
 					</div>
 
