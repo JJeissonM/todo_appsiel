@@ -122,6 +122,8 @@ function pos_esperar_previsualizacion_factura_electronica(previewWindow)
 {
     return new Promise(function (resolve) {
         var resolved = false;
+        var attempts = 0;
+        var maxAttempts = 80;
         var finish = function () {
             if (resolved) {
                 return;
@@ -130,12 +132,38 @@ function pos_esperar_previsualizacion_factura_electronica(previewWindow)
             setTimeout(resolve, 100);
         };
 
-        try {
-            previewWindow.onload = finish;
-            previewWindow.addEventListener('load', finish);
-        } catch (e) {}
+        var waitForRealDocument = setInterval(function () {
+            attempts++;
 
-        setTimeout(finish, 1500);
+            try {
+                if (!previewWindow || previewWindow.closed) {
+                    clearInterval(waitForRealDocument);
+                    finish();
+                    return;
+                }
+
+                var href = String(previewWindow.location && previewWindow.location.href ? previewWindow.location.href : '');
+                var readyState = previewWindow.document && previewWindow.document.readyState;
+                var bodyText = previewWindow.document && previewWindow.document.body ? previewWindow.document.body.textContent : '';
+                var isLoadingPlaceholder = bodyText.indexOf('Cargando') !== -1 && bodyText.length < 80;
+                var isRealPreview = href.indexOf('vtas_imprimir') !== -1 || href.indexOf('formato_impresion_id=pos') !== -1;
+
+                if (isRealPreview && readyState === 'complete' && !isLoadingPlaceholder) {
+                    clearInterval(waitForRealDocument);
+                    finish();
+                    return;
+                }
+            } catch (e) {
+                clearInterval(waitForRealDocument);
+                finish();
+                return;
+            }
+
+            if (attempts >= maxAttempts) {
+                clearInterval(waitForRealDocument);
+                finish();
+            }
+        }, 250);
     });
 }
 
