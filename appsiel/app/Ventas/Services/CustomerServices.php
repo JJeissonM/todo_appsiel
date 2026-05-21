@@ -169,6 +169,12 @@ class CustomerServices
             $vendedor_descripcion = $vendedor->tercero->descripcion;
         }
 
+        $numero_identificacion = trim((string)$linea->numero_identificacion);
+        $numero_identificacion_texto = $numero_identificacion;
+        if (is_numeric($numero_identificacion)) {
+            $numero_identificacion_texto = number_format($numero_identificacion, 0, ',', '.');
+        }
+
         $html = '<a class="list-group-item list-group-item-cliente '.$clase.'" data-cliente_id="'.$linea->cliente_id.
                                 '" data-primer_item="'.$primer_item.
                                 '" data-accion="na" '.
@@ -181,7 +187,7 @@ class CustomerServices
                             '" data-core_tercero_id="'.$linea->core_tercero_id.
                             '" data-direccion1="'.$linea->direccion1.
                             '" data-telefono1="'.$linea->telefono1.
-                            '" data-numero_identificacion="'.$linea->numero_identificacion.
+                            '" data-numero_identificacion="'.$numero_identificacion.
                             '" data-vendedor_id="'.$linea->vendedor_id.
                             '" data-vendedor_descripcion="' . $vendedor_descripcion.
                             '" data-equipo_ventas_id="0'.
@@ -190,7 +196,7 @@ class CustomerServices
                             '" data-dias_plazo="'.$linea->dias_plazo.
                             '" data-lista_precios_id="'.$linea->lista_precios_id.
                             '" data-lista_descuentos_id="'.$linea->lista_descuentos_id.
-                            '" > '.$descripcion.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
+                            '" > '.$descripcion.' ('.$numero_identificacion_texto.') </a>';
                             
         return $html;
     }
