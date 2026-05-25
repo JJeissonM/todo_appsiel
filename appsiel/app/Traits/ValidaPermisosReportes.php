@@ -18,7 +18,7 @@ trait ValidaPermisosReportes
     {
         $user = Auth::user();
 
-        if ($user->hasRole('SuperAdmin') || $user->hasRole('Administrador')) {
+        if ($this->usuarioTieneRolPrivilegiadoReporte($user)) {
             return true;
         }
 
@@ -27,5 +27,33 @@ trait ValidaPermisosReportes
         } catch (PermissionDoesNotExist $e) {
             return false;
         }
+    }
+
+    private function usuarioTieneRolPrivilegiadoReporte($user): bool
+    {
+        $rolesPrivilegiados = array_unique(array_merge(
+            ['SuperAdmin', 'Administrador'],
+            array_map('trim', (array)config('filtrado_registros.roles_sin_filtro', []))
+        ));
+
+        if (empty($rolesPrivilegiados)) {
+            return false;
+        }
+
+        if (method_exists($user, 'hasAnyRole')) {
+            try {
+                return $user->hasAnyRole($rolesPrivilegiados);
+            } catch (\Throwable $e) {
+                // Compatibilidad con instalaciones donde hasAnyRole no acepte arreglos.
+            }
+        }
+
+        foreach ($rolesPrivilegiados as $role) {
+            if ($user->hasRole($role)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
