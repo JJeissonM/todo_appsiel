@@ -646,3 +646,9 @@ UPDATE `permissions` SET `name` = 'vtas_pos_boton_facturar' WHERE `permissions`.
 
 INSERT INTO `sys_modelos` (`id`, `descripcion`, `modelo`, `name_space`, `modelo_relacionado`, `url_crear`, `url_edit`, `url_print`, `url_ver`, `enlaces`, `url_estado`, `url_eliminar`, `controller_complementario`, `url_form_create`, `home_miga_pan`, `ruta_storage_imagen`, `ruta_storage_archivo_adjunto`, `created_at`, `updated_at`) VALUES (355, 'Archivo', 'archivo', 'App\\Nube\\Archivo', '', '', '', '', '', '', '', '', '', '', '', '', '', '2026-05-16 08:29:20', NULL);
 UPDATE `permissions` SET `modelo_id` = '355' WHERE `permissions`.`id` = 215;
+
+-- Cte. Transporte - Modelo y permiso para vista Index de Planilla FUEC
+INSERT INTO `sys_modelos` (`id`, `descripcion`, `modelo`, `name_space`, `modelo_relacionado`, `url_crear`, `url_edit`, `url_print`, `url_ver`, `enlaces`, `url_estado`, `url_eliminar`, `controller_complementario`, `url_form_create`, `home_miga_pan`, `ruta_storage_imagen`, `ruta_storage_archivo_adjunto`, `created_at`, `updated_at`) VALUES ('360', 'Planillas Fuec', 'FuecAdicional', 'App\\Contratotransporte\\FuecAdicional', '', '', '', '', '', '', '', '', '', '', '', '', '', '2026-05-25 15:31:07', NULL);
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (NULL, '19', '360', 'cte_fuec_adicional_index', 'Planillas FUEC', 'web', '356', '2', '1', '', '2026-05-25 15:32:29', NULL);
+
+
