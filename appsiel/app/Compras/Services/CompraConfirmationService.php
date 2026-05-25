@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 
 class CompraConfirmationService
 {
-    public function confirm(ComprasDocEncabezado $documento)
+    public function confirm(ComprasDocEncabezado $documento, array $registros_medio_pago = [])
     {
         if ($documento->estado === 'Anulado') {
             throw new \Exception('No es posible confirmar un documento anulado.');
@@ -35,7 +35,7 @@ class CompraConfirmationService
             throw new \Exception('El documento ya tiene contabilizaciones o registros financieros generados. Revise el estado antes de confirmar.');
         }
 
-        DB::transaction(function () use ($documento) {
+        DB::transaction(function () use ($documento, $registros_medio_pago) {
             $documento->load([
                 'lineas_registros' => function ($query) {
                     $query->where('estado', 'Activo');
@@ -46,11 +46,18 @@ class CompraConfirmationService
             $this->ensureLinesHaveMotives($documento);
 
             $request = $this->buildRequestFromDocument($documento);
+            $request['registros_medio_pago'] = $registros_medio_pago;
 
-            if (!$this->hasWarehouseEntry($documento)) {
+            if ($documento->forma_pago == 'contado' && empty($registros_medio_pago)) {
+                throw new \Exception('Debe ingresar un medio de pago para confirmar una factura de contado.');
+            }
+
+            if (!$this->hasLinkedWarehouseEntryIds($documento)) {
                 $request['entrada_almacen_id'] = app(CompraController::class)->crear_entrada_almacen($request);
                 $documento->entrada_almacen_id = $request['entrada_almacen_id'];
                 $documento->save();
+            } else {
+                $this->ensureWarehouseEntriesExist($documento);
             }
 
             $this->markWarehouseEntriesAsBilled($documento->entrada_almacen_id);
@@ -59,6 +66,8 @@ class CompraConfirmationService
             if ((float)$documento->lineas_registros->sum('valor_retencion') > 0) {
                 (new ContabilidadService())->aplicar_retenciones_por_linea_compras($documento);
             }
+
+            $this->ensureAccountingIsBalanced($documento);
         });
     }
 
@@ -263,15 +272,33 @@ class CompraConfirmationService
             || TesoMovimiento::where($where)->exists();
     }
 
-    protected function hasWarehouseEntry(ComprasDocEncabezado $documento)
+    protected function hasLinkedWarehouseEntryIds(ComprasDocEncabezado $documento)
+    {
+        return !empty($this->getWarehouseEntryIds($documento));
+    }
+
+    protected function ensureWarehouseEntriesExist(ComprasDocEncabezado $documento)
+    {
+        $ids = $this->getWarehouseEntryIds($documento);
+        foreach ($ids as $entrada_almacen_id) {
+            if (InvDocEncabezado::find($entrada_almacen_id) == null) {
+                throw new \Exception('La factura tiene una entrada de almacén vinculada que no existe: ' . $entrada_almacen_id . '.');
+            }
+        }
+    }
+
+    protected function getWarehouseEntryIds(ComprasDocEncabezado $documento)
     {
         if (empty($documento->entrada_almacen_id)) {
-            return false;
+            return [];
         }
 
-        $entrada_almacen_id = explode(',', $documento->entrada_almacen_id)[0];
-
-        return InvDocEncabezado::find((int)$entrada_almacen_id) != null;
+        return array_values(array_filter(
+            array_map('intval', explode(',', $documento->entrada_almacen_id)),
+            function ($id) {
+                return $id > 0;
+            }
+        ));
     }
 
     protected function markWarehouseEntriesAsBilled($entrada_almacen_id)
@@ -288,6 +315,23 @@ class CompraConfirmationService
 
             $registro->estado = 'Facturada';
             $registro->save();
+        }
+    }
+
+    protected function ensureAccountingIsBalanced(ComprasDocEncabezado $documento)
+    {
+        $where = [
+            'core_empresa_id' => $documento->core_empresa_id,
+            'core_tipo_transaccion_id' => $documento->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $documento->core_tipo_doc_app_id,
+            'consecutivo' => $documento->consecutivo
+        ];
+
+        $debitos = (float) ContabMovimiento::where($where)->sum('valor_debito');
+        $creditos = abs((float) ContabMovimiento::where($where)->sum('valor_credito'));
+
+        if (round($debitos, 2) != round($creditos, 2)) {
+            throw new \Exception('La contabilización generada no está cuadrada. Débitos: ' . number_format($debitos, 2, '.', '') . ' Créditos: ' . number_format($creditos, 2, '.', '') . '.');
         }
     }
 }

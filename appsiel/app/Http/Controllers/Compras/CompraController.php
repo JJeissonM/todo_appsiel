@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Inventarios\InventarioController;
 use App\Http\Controllers\Core\TransaccionController;
+use App\Http\Controllers\Tesoreria\RecaudoController;
 
 use App\Http\Controllers\Contabilidad\ContabilidadController;
 use App\Http\Controllers\Sistema\ModeloController;
@@ -43,6 +44,7 @@ use App\CxP\CxpMovimiento;
 use App\CxP\CxpAbono;
 
 use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\RegistrosMediosPago;
 use App\Tesoreria\TesoCuentaBancaria;
@@ -645,6 +647,33 @@ class CompraController extends TransaccionController
                 ->get();
         }        
 
+        $medios_recaudo_confirmacion = RecaudoController::get_medios_recaudo();
+        $cajas_confirmacion = RecaudoController::get_cajas();
+        $cuentas_bancarias_confirmacion = RecaudoController::get_cuentas_bancarias();
+        $motivo_pago_contado = TesoMotivo::find((int)config('tesoreria.motivo_tesoreria_compras_contado'));
+        if (is_null($motivo_pago_contado)) {
+            $motivo_pago_contado = TesoMotivo::find((int)config('tesoreria.motivo_comprobante_egresos_id'));
+        }
+        $motivos_pago_confirmacion = [];
+        if (!is_null($motivo_pago_contado)) {
+            $motivos_pago_confirmacion[$motivo_pago_contado->id . '-' . $motivo_pago_contado->descripcion] = $motivo_pago_contado->descripcion;
+        }
+
+        $valor_total_confirmacion = (float) ComprasDocRegistro::where([
+            'compras_doc_encabezado_id' => $doc_encabezado->id,
+            'estado' => 'Activo'
+        ])->sum('precio_total');
+
+        $valor_retenciones_confirmacion = 0;
+        if (Schema::hasColumn('compras_doc_registros', 'valor_retencion')) {
+            $valor_retenciones_confirmacion = (float) ComprasDocRegistro::where([
+                'compras_doc_encabezado_id' => $doc_encabezado->id,
+                'estado' => 'Activo'
+            ])->sum('valor_retencion');
+        }
+
+        $valor_neto_confirmacion = $valor_total_confirmacion - $valor_retenciones_confirmacion;
+
         $mostrar_boton_confirmar = false;
         if ( $doc_encabezado->estado != 'Anulado' )
         {
@@ -676,7 +705,12 @@ class CompraController extends TransaccionController
             'productos_para_select',
             'ea_asignadas',
             'mensaje_advertencia_retencion',
-            'mostrar_boton_confirmar'
+            'mostrar_boton_confirmar',
+            'medios_recaudo_confirmacion',
+            'cajas_confirmacion',
+            'cuentas_bancarias_confirmacion',
+            'motivos_pago_confirmacion',
+            'valor_neto_confirmacion'
         ));
     }
 
@@ -689,8 +723,32 @@ class CompraController extends TransaccionController
             return redirect()->back()->with('mensaje_error','No se encontró el documento de compras a confirmar.');
         }
 
+        $registros_medio_pago = [];
+        if ($factura->forma_pago == 'contado') {
+            $lineas_registros = $factura->lineas_registros()->where('estado', 'Activo')->get()->toArray();
+            $total_documento = (float)$factura->lineas_registros()->where('estado', 'Activo')->sum('precio_total');
+
+            if (Schema::hasColumn('compras_doc_registros', 'valor_retencion')) {
+                $total_documento -= (float)$factura->lineas_registros()->where('estado', 'Activo')->sum('valor_retencion');
+            }
+
+            $lineas_medios_pago = $request->lineas_registros_medios_recaudo;
+            if (empty($lineas_medios_pago) || $lineas_medios_pago == '0') {
+                return redirect('compras/'.$factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion)
+                    ->with('mensaje_error', 'Debe ingresar un medio de pago para confirmar una factura de contado.');
+            }
+
+            $registros_medio_pago = (new RegistrosMediosPago())->get_datos_ids($lineas_medios_pago, $lineas_registros, $total_documento, 'compras');
+            $total_medios_pago = array_sum(array_column($registros_medio_pago, 'valor_recaudo'));
+
+            if (round($total_medios_pago, 2) != round($total_documento, 2)) {
+                return redirect('compras/'.$factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion)
+                    ->with('mensaje_error', 'El total de los medios de pago no coincide con el valor neto a pagar de la factura.');
+            }
+        }
+
         try {
-            (new CompraConfirmationService())->confirm( $factura );
+            (new CompraConfirmationService())->confirm( $factura, $registros_medio_pago );
         } catch (\Exception $e) {
             return redirect( 'compras/'.$factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error', $e->getMessage() );
         }

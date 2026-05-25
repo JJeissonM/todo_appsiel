@@ -101,6 +101,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 			{{ Form::hidden('url_id_modelo', Input::get('id_modelo')) }}
 			{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
 			{{ Form::hidden('factura_id', $id) }}
+			{{ Form::hidden('lineas_registros_medios_recaudo', '0', ['id' => 'lineas_registros_medios_recaudo_confirmacion']) }}
 		{{ Form::close() }}
 
 		<div class="modal fade" id="modal_confirmar_documento" tabindex="-1" role="dialog" aria-hidden="true">
@@ -114,10 +115,72 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 						<div class="alert alert-warning">
 							<strong>Advertencia!</strong>
 							<br>
-							Se generará la entrada de almacén, los movimientos de compras, las contabilizaciones y los registros de pago del documento actual.
+							Se validará la entrada de almacén vinculada o se generará una nueva si no existe; además se crearán los movimientos de compras, las contabilizaciones y los registros de pago del documento actual.
 							<br><br>
 							Esta operación debe ejecutarse una sola vez.
 						</div>
+						@if($doc_encabezado->forma_pago == 'contado')
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<strong>Medio de pago</strong>
+								</div>
+								<div class="panel-body">
+									<div class="row">
+										<div class="col-sm-6">
+											<div class="form-group">
+												<label>Medio</label>
+												<select class="form-control" id="confirmar_teso_medio_recaudo_id">
+													@foreach($medios_recaudo_confirmacion as $value => $label)
+														@if($value !== '')
+															<option value="{{ $value }}">{{ $label }}</option>
+														@endif
+													@endforeach
+												</select>
+											</div>
+										</div>
+										<div class="col-sm-6">
+											<div class="form-group">
+												<label>Motivo</label>
+												<select class="form-control" id="confirmar_teso_motivo_id">
+													@foreach($motivos_pago_confirmacion as $value => $label)
+														<option value="{{ $value }}">{{ $label }}</option>
+													@endforeach
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-6" id="confirmar_div_caja">
+											<div class="form-group">
+												<label>Caja</label>
+												<select class="form-control" id="confirmar_teso_caja_id">
+													@foreach($cajas_confirmacion as $value => $label)
+														<option value="{{ $value }}">{{ $label }}</option>
+													@endforeach
+												</select>
+											</div>
+										</div>
+										<div class="col-sm-6" id="confirmar_div_cuenta_bancaria" style="display:none;">
+											<div class="form-group">
+												<label>Cuenta bancaria</label>
+												<select class="form-control" id="confirmar_teso_cuenta_bancaria_id">
+													@foreach($cuentas_bancarias_confirmacion as $value => $label)
+														<option value="{{ $value }}">{{ $label }}</option>
+													@endforeach
+												</select>
+											</div>
+										</div>
+										<div class="col-sm-6">
+											<div class="form-group">
+												<label>Valor</label>
+												<input type="text" class="form-control" id="confirmar_valor_medio_pago" value="{{ number_format($valor_neto_confirmacion, 2, '.', '') }}">
+												<p class="help-block">Valor neto a pagar: ${{ number_format($valor_neto_confirmacion, 2, ',', '.') }}</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						@endif
 						<p>¿Desea continuar con la confirmación del documento?</p>
 					</div>
 					<div class="modal-footer">
@@ -338,17 +401,110 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 
 			$('#btn_confirmar_documento').click(function(e){
 				e.preventDefault();
+				actualizar_destino_medio_pago_confirmacion();
 				$('#modal_confirmar_documento').modal({backdrop: "static"});
+			});
+
+			$('#confirmar_teso_medio_recaudo_id').change(function(){
+				actualizar_destino_medio_pago_confirmacion();
 			});
 
 			$('#btn_confirmar_modal_accion').click(function(e){
 				e.preventDefault();
+				if (!preparar_medios_pago_confirmacion()) {
+					return false;
+				}
 				$(this).prop('disabled', true);
 				$('#icon_confirmar_modal').hide();
 				$('#icon_confirmar_modal_spin').show();
 				$('#texto_confirmar_modal').text('Procesando...');
 				$('#form_confirmar_documento').submit();
 			});
+
+			function actualizar_destino_medio_pago_confirmacion() {
+				var medio = ($('#confirmar_teso_medio_recaudo_id').val() || '').split('-');
+				if (medio.length > 1 && medio[1] == 'Tarjeta bancaria') {
+					$('#confirmar_div_caja').hide();
+					$('#confirmar_div_cuenta_bancaria').show();
+					return;
+				}
+
+				$('#confirmar_div_cuenta_bancaria').hide();
+				$('#confirmar_div_caja').show();
+			}
+
+			function preparar_medios_pago_confirmacion() {
+				@if($doc_encabezado->forma_pago != 'contado')
+					return true;
+				@endif
+
+				var valorNeto = parseFloat('{{ number_format($valor_neto_confirmacion, 2, '.', '') }}');
+				var valor = parseFloat(($('#confirmar_valor_medio_pago').val() || '').replace(',', '.'));
+
+				if (!$.isNumeric(valor) || valor <= 0) {
+					alert('Debe ingresar un valor válido para el medio de pago.');
+					$('#confirmar_valor_medio_pago').focus();
+					return false;
+				}
+
+				if (valor.toFixed(2) != valorNeto.toFixed(2)) {
+					alert('El valor del medio de pago debe ser igual al valor neto a pagar.');
+					$('#confirmar_valor_medio_pago').focus();
+					return false;
+				}
+
+				if (($('#confirmar_teso_medio_recaudo_id').val() || '') == '') {
+					alert('Debe seleccionar un medio de pago.');
+					$('#confirmar_teso_medio_recaudo_id').focus();
+					return false;
+				}
+
+				if (($('#confirmar_teso_motivo_id').val() || '') == '') {
+					alert('Debe seleccionar un motivo de tesorería.');
+					$('#confirmar_teso_motivo_id').focus();
+					return false;
+				}
+
+				var usaCuenta = $('#confirmar_div_cuenta_bancaria').is(':visible');
+				var cajaId = usaCuenta ? '0' : ($('#confirmar_teso_caja_id').val() || '');
+				var cuentaId = usaCuenta ? ($('#confirmar_teso_cuenta_bancaria_id').val() || '') : '0';
+
+				if (!usaCuenta && cajaId == '') {
+					alert('Debe seleccionar una caja.');
+					$('#confirmar_teso_caja_id').focus();
+					return false;
+				}
+
+				if (usaCuenta && cuentaId == '') {
+					alert('Debe seleccionar una cuenta bancaria.');
+					$('#confirmar_teso_cuenta_bancaria_id').focus();
+					return false;
+				}
+
+				var medioLabel = $('#confirmar_teso_medio_recaudo_id option:selected').text();
+				var cajaLabel = usaCuenta ? '' : $('#confirmar_teso_caja_id option:selected').text();
+				var cuentaLabel = usaCuenta ? $('#confirmar_teso_cuenta_bancaria_id option:selected').text() : '';
+
+				var lineas = [
+					{
+						teso_medio_recaudo_id: $('#confirmar_teso_medio_recaudo_id').val().split('-')[0] + '-' + medioLabel,
+						teso_motivo_id: $('#confirmar_teso_motivo_id').val(),
+						teso_caja_id: cajaId + '-' + cajaLabel,
+						teso_cuenta_bancaria_id: cuentaId + '-' + cuentaLabel,
+						valor: '$' + valor.toFixed(2)
+					},
+					{
+						teso_medio_recaudo_id: '',
+						teso_motivo_id: '',
+						teso_caja_id: '',
+						teso_cuenta_bancaria_id: '',
+						valor: '$' + valor.toFixed(2)
+					}
+				];
+
+				$('#lineas_registros_medios_recaudo_confirmacion').val(JSON.stringify(lineas));
+				return true;
+			}
 
 		/*
 			validar_existencia_actual
@@ -476,4 +632,3 @@ $(document).ready(function () {
 });
 </script>
 @endsection
-
