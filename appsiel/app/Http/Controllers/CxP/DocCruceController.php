@@ -20,6 +20,7 @@ use App\CxP\CxpAbono;
 use App\Contabilidad\ContabMovimiento;
 use App\CxC\CxcMovimiento;
 use App\CxP\Services\AccountingServices;
+use App\CxP\Services\CxpAccountingAccountResolver;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -227,18 +228,8 @@ class DocCruceController extends TransaccionController
 
     public function contabilizar_debito( $movimiento_cartera, $valor_aplicar, $detalle_operacion)
     {
-      /*
-            ESTA FORMA DE TRAER LA CUENTA NO ES FIDEDIGNA: SI EL DOCUMENTO TIENE VARIOS REGISTRO PARA EL MISMO TERCERO CON DISTINTA CUENTAS, PUEDE TRAER UNA CUENTA EQUIVOCADA
-      */
       // Contabilizar MOVIMIENTO DEBITO (CARTERA del proveedor)
-      $array_wheres = [
-                      'core_empresa_id' => $movimiento_cartera->core_empresa_id, 
-                      'core_tipo_transaccion_id' => $movimiento_cartera->core_tipo_transaccion_id,
-                      'core_tipo_doc_app_id' => $movimiento_cartera->core_tipo_doc_app_id,
-                      'consecutivo' => $movimiento_cartera->consecutivo,
-                      'core_tercero_id' => $movimiento_cartera->core_tercero_id
-                    ];
-      $contab_cuenta_id = ContabMovimiento::where($array_wheres)->where( 'valor_debito', 0 )->value('contab_cuenta_id');
+      $contab_cuenta_id = (new CxpAccountingAccountResolver())->getPayableAccountId($movimiento_cartera);
       $valor_debito = $valor_aplicar;
       $valor_credito = 0;
       $this->contabilizar_registro( $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
@@ -246,20 +237,8 @@ class DocCruceController extends TransaccionController
 
     public function contabilizar_credito( $movimiento_afavor, $valor_aplicar, $detalle_operacion)
     {
-      /*
-            ESTA FORMA DE TRAER LA CUENTA NO ES FIDEDIGNA: SI EL DOCUMENTO TIENE VARIOS REGISTRO PARA EL MISMO TERCERO CON DISTINTA CUENTAS, PUEDE TRAER UNA CUENTA EQUIVOCADA
-      */
-
       // Contabilizar MOVIMIENTO CREDITO (AFAVOR - Anticipo del proveedor)
-      $array_wheres = [
-                    'core_empresa_id' => $movimiento_afavor->core_empresa_id, 
-                    'core_tipo_transaccion_id' => $movimiento_afavor->core_tipo_transaccion_id,
-                    'core_tipo_doc_app_id' => $movimiento_afavor->core_tipo_doc_app_id,
-                    'consecutivo' => $movimiento_afavor->consecutivo,
-                    'core_tercero_id' => $movimiento_afavor->core_tercero_id
-                  ];
-
-      $contab_cuenta_id = ContabMovimiento::where($array_wheres)->where( 'valor_credito', 0 )->value('contab_cuenta_id');
+      $contab_cuenta_id = (new CxpAccountingAccountResolver())->getAdvanceAccountId($movimiento_afavor);
       $valor_debito = 0;
       $valor_credito = $valor_aplicar;
       $this->contabilizar_registro( $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
