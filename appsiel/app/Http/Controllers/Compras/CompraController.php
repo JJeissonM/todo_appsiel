@@ -673,6 +673,7 @@ class CompraController extends TransaccionController
         }
 
         $valor_neto_confirmacion = $valor_total_confirmacion - $valor_retenciones_confirmacion;
+        $factura_es_contado = strtolower((string)$doc_encabezado->forma_pago) == 'contado';
 
         $mostrar_boton_confirmar = false;
         if ( $doc_encabezado->estado != 'Anulado' )
@@ -710,7 +711,8 @@ class CompraController extends TransaccionController
             'cajas_confirmacion',
             'cuentas_bancarias_confirmacion',
             'motivos_pago_confirmacion',
-            'valor_neto_confirmacion'
+            'valor_neto_confirmacion',
+            'factura_es_contado'
         ));
     }
 

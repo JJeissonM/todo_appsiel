@@ -119,7 +119,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 							<br><br>
 							Esta operación debe ejecutarse una sola vez.
 						</div>
-						@if($doc_encabezado->forma_pago == 'contado')
+						@if($factura_es_contado)
 							<div class="panel panel-default">
 								<div class="panel-heading">
 									<strong>Medio de pago</strong>
@@ -434,7 +434,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 			}
 
 			function preparar_medios_pago_confirmacion() {
-				@if($doc_encabezado->forma_pago != 'contado')
+				@if(!$factura_es_contado)
 					return true;
 				@endif
 

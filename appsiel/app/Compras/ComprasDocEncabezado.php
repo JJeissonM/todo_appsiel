@@ -326,6 +326,7 @@ class ComprasDocEncabezado extends Model
                 'compras_doc_encabezados.valor_total',
                 'compras_doc_encabezados.doc_proveedor_prefijo',
                 'compras_doc_encabezados.doc_proveedor_consecutivo',
+                'compras_doc_encabezados.forma_pago',
                 'compras_doc_encabezados.forma_pago AS condicion_pago',
                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
                 'compras_doc_encabezados.consecutivo AS documento_transaccion_consecutivo',
