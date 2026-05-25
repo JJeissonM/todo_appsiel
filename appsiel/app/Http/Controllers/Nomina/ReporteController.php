@@ -265,9 +265,17 @@ class ReporteController extends Controller
 
         if ( $nom_contrato_id == 0 )
         {
-            $empleados =  NomContrato::whereIn( 'core_tercero_id', array_keys( $movimientos->groupBy('core_tercero_id')->toArray() ) )->get();
+            $ids_contrato_por_empleado = $movimientos->groupBy('core_tercero_id')->map(function ($registros) {
+                return $registros->first()->nom_contrato_id;
+            })->filter()->values()->toArray();
+
+            $empleados =  NomContrato::with('tercero', 'grupo_empleado', 'cargo')
+                            ->whereIn( 'id', $ids_contrato_por_empleado )
+                            ->get()
+                            ->unique('core_tercero_id')
+                            ->values();
         }else{
-            $empleados =  NomContrato::where( 'id', $nom_contrato_id )->get();
+            $empleados =  NomContrato::with('tercero', 'grupo_empleado', 'cargo')->where( 'id', $nom_contrato_id )->get();
         }
 
         $vista = View::make('nomina.reportes.listado_acumulados2', compact('movimientos','conceptos','empleados','detalla_empleados','agrupacion','fecha_desde', 'fecha_hasta','valores_a_mostrar', 'documento_nomina' ))->render();
