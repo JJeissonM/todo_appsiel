@@ -192,10 +192,11 @@ class CompraConfirmationService
 
             CompraController::contabilizar_movimiento_debito($datos + $linea_datos, $detalle_operacion);
 
-            $total_documento += (float)$linea->precio_total;
+            $total_documento += $this->getAccountingGrossFromLine($linea);
             $total_retenciones += (float)$linea->valor_retencion;
         }
 
+        $total_documento = round($total_documento, 2);
         $documento->valor_total = $total_documento;
         $documento->save();
 
@@ -203,9 +204,21 @@ class CompraConfirmationService
         if ($total_retenciones != 0) {
             $total_documento -= $total_retenciones;
         }
+        $total_documento = round($total_documento, 2);
 
         CompraController::contabilizar_movimiento_credito($documento->forma_pago, $datos, $total_documento, $detalle_operacion);
         CompraController::crear_registro_pago($documento->forma_pago, $datos, $total_documento, $detalle_operacion);
+    }
+
+    protected function getAccountingGrossFromLine($linea)
+    {
+        $valor_contable = (float)$linea->base_impuesto + (float)$linea->valor_impuesto;
+
+        if ($valor_contable == 0) {
+            return (float)$linea->precio_total;
+        }
+
+        return $valor_contable;
     }
 
     protected function ensureLinesHaveMotives(ComprasDocEncabezado $documento)

@@ -659,20 +659,19 @@ class CompraController extends TransaccionController
             $motivos_pago_confirmacion[$motivo_pago_contado->id . '-' . $motivo_pago_contado->descripcion] = $motivo_pago_contado->descripcion;
         }
 
-        $valor_total_confirmacion = (float) ComprasDocRegistro::where([
+        $lineas_confirmacion = ComprasDocRegistro::where([
             'compras_doc_encabezado_id' => $doc_encabezado->id,
             'estado' => 'Activo'
-        ])->sum('precio_total');
+        ])->get();
+
+        $valor_total_confirmacion = $this->get_total_contable_desde_lineas_documento($lineas_confirmacion);
 
         $valor_retenciones_confirmacion = 0;
         if (Schema::hasColumn('compras_doc_registros', 'valor_retencion')) {
-            $valor_retenciones_confirmacion = (float) ComprasDocRegistro::where([
-                'compras_doc_encabezado_id' => $doc_encabezado->id,
-                'estado' => 'Activo'
-            ])->sum('valor_retencion');
+            $valor_retenciones_confirmacion = (float) $lineas_confirmacion->sum('valor_retencion');
         }
 
-        $valor_neto_confirmacion = $valor_total_confirmacion - $valor_retenciones_confirmacion;
+        $valor_neto_confirmacion = round($valor_total_confirmacion - $valor_retenciones_confirmacion, 2);
         $factura_es_contado = strtolower((string)$doc_encabezado->forma_pago) == 'contado';
 
         $mostrar_boton_confirmar = false;
@@ -727,12 +726,14 @@ class CompraController extends TransaccionController
 
         $registros_medio_pago = [];
         if ($factura->forma_pago == 'contado') {
-            $lineas_registros = $factura->lineas_registros()->where('estado', 'Activo')->get()->toArray();
-            $total_documento = (float)$factura->lineas_registros()->where('estado', 'Activo')->sum('precio_total');
+            $lineas_registros_collection = $factura->lineas_registros()->where('estado', 'Activo')->get();
+            $lineas_registros = $lineas_registros_collection->toArray();
+            $total_documento = $this->get_total_contable_desde_lineas_documento($lineas_registros_collection);
 
             if (Schema::hasColumn('compras_doc_registros', 'valor_retencion')) {
-                $total_documento -= (float)$factura->lineas_registros()->where('estado', 'Activo')->sum('valor_retencion');
+                $total_documento -= (float)$lineas_registros_collection->sum('valor_retencion');
             }
+            $total_documento = round($total_documento, 2);
 
             $lineas_medios_pago = $request->lineas_registros_medios_recaudo;
             if (empty($lineas_medios_pago) || $lineas_medios_pago == '0') {
@@ -756,6 +757,25 @@ class CompraController extends TransaccionController
         }
 
         return redirect( 'compras/'.$factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('flash_message','Documento confirmado correctamente.');
+    }
+
+    protected function get_total_contable_desde_lineas_documento($lineas)
+    {
+        $total = 0;
+
+        foreach ($lineas as $linea) {
+            $base_impuesto = (float)$linea->base_impuesto;
+            $valor_impuesto = (float)$linea->valor_impuesto;
+            $valor_contable = $base_impuesto + $valor_impuesto;
+
+            if ($valor_contable == 0) {
+                $valor_contable = (float)$linea->precio_total;
+            }
+
+            $total += $valor_contable;
+        }
+
+        return round($total, 2);
     }
 
     /*
