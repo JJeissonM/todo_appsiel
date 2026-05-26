@@ -15,7 +15,7 @@ class TesoDocEncabezadoPago extends TesoDocEncabezado
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Tercero', 'Detalle', 'Valor total', 'Estado'];
 
-    public $urls_acciones = '{"create":"tesoreria/pagos/create","store":"tesoreria/pagos","show":"tesoreria/pagos/id_fila","edit":"tesoreria/pagos/id_fila/edit","update":"tesoreria/pagos/id_fila","imprimir":"tesoreria/pagos_imprimir/id_fila"}';
+    public $urls_acciones = '{"create":"tesoreria/pagos/create","store":"tesoreria/pagos","show":"tesoreria/pagos/id_fila","edit":"no","update":"tesoreria/pagos/id_fila","imprimir":"tesoreria/pagos_imprimir/id_fila"}';
     
     public function tipo_documento_app()
     {
