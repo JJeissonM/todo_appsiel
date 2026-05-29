@@ -72,9 +72,8 @@ class RegistroTurnoImportController extends Controller
                 continue;
             }
 
-            try {
-                $dt = Carbon::parse(str_replace('/', '-', $horaRaw));
-            } catch (\Throwable $e) {
+            $dt = $this->parseFechaHoraTurno($horaRaw);
+            if (is_null($dt)) {
                 continue;
             }
 
@@ -274,6 +273,32 @@ class RegistroTurnoImportController extends Controller
             ->delete();
 
         return redirect()->back()->with('flash_message', 'Registros de turnos borrados correctamente.');
+    }
+
+    private function parseFechaHoraTurno($fechaHora)
+    {
+        $fechaHora = trim((string)$fechaHora);
+        if ($fechaHora === '') {
+            return null;
+        }
+
+        $fechaHora = preg_replace('/\s+/', ' ', $fechaHora);
+        $formatos = [
+            'd/m/Y H:i:s',
+            'd-m-Y H:i:s',
+            'Y-m-d H:i:s',
+            'Y/m/d H:i:s',
+        ];
+
+        foreach ($formatos as $formato) {
+            try {
+                return Carbon::createFromFormat($formato, $fechaHora);
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+
+        return null;
     }
 
 }
