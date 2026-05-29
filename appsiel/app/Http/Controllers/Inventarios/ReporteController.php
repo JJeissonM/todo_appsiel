@@ -20,7 +20,6 @@ use App\Inventarios\InvBodega;
 use App\Inventarios\InvProducto;
 use App\Inventarios\InvGrupo;
 use App\Inventarios\InvMovimiento;
-use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\ItemMandatario;
 use App\Inventarios\MinStock;
 
@@ -248,22 +247,15 @@ class ReporteController extends Controller
         $productos[0]['costo_unit_saldo'] = $costo_unit_saldo;
         $productos[0]['costo_total_saldo'] = $costo_total_saldo;
         $productos[0]['core_tipo_transaccion_id'] = '';
+        $productos[0]['core_modelo_id'] = '';
 
         $i=1;
         foreach ($sql_productos as $fila)
         {
             $productos[$i]['fecha'] = $fila->fecha;
-            // Se obtinen las descripciones de los datos del encabezado
-            $sql_datos_encabezado_doc = InvDocEncabezado::get_registro2($fila->core_tipo_transaccion_id,$fila->core_tipo_doc_app_id,$fila->consecutivo);
-
-            if (!isset($sql_datos_encabezado_doc[0])) {
-                dd('Error en la línea del movimiento. No se pudo obtener los datos del encabezado: ','tipo_transaccion_id: ' . $fila->core_tipo_transaccion_id, 'tipo_doc_app_id: ' . $fila->core_tipo_doc_app_id, 'consecutivo: ' . $fila->consecutivo,$sql_datos_encabezado_doc);
-            }
-
-            $datos_encabezado_doc =  $sql_datos_encabezado_doc[0];
-            $productos[$i]['documento_id'] = $datos_encabezado_doc['campo9'];
-            $productos[$i]['documento'] = $datos_encabezado_doc['campo2'];
-            $productos[$i]['tercero'] = $datos_encabezado_doc['campo3'];
+            $productos[$i]['documento_id'] = $fila->documento_id;
+            $productos[$i]['documento'] = $fila->documento;
+            $productos[$i]['tercero'] = $fila->tercero;
 
             switch ($fila->movimiento) {
                 case 'entrada':
@@ -304,6 +296,7 @@ class ReporteController extends Controller
             $productos[$i]['costo_total_saldo'] = $costo_total_saldo;
 
             $productos[$i]['core_tipo_transaccion_id'] = $fila->core_tipo_transaccion_id;
+            $productos[$i]['core_modelo_id'] = $fila->core_modelo_id;
 
             $i++;
         }

@@ -250,16 +250,14 @@ class InvMovimiento extends Model
             [ 'inv_movimientos.core_empresa_id', '=', Auth::user()->empresa_id ],
             [ 'inv_movimientos.inv_bodega_id', '=', $id_bodega ],
             [ 'inv_movimientos.inv_producto_id', '=', $id_producto ],
-            [ 'inv_doc_encabezados.fecha','<',$fecha_inicial ]
+            [ 'inv_movimientos.fecha','<',$fecha_inicial ]
         ];
 
         if ($tercero_id != 0) {
             $array_wheres = array_merge($array_wheres, [ 'inv_movimientos.core_tercero_id' => $tercero_id ]);
         }
 
-        $sql_saldo_inicial = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
-                    ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
-                    ->where( $array_wheres )
+        $sql_saldo_inicial = InvMovimiento::where( $array_wheres )
                     ->select(DB::raw('sum(inv_movimientos.cantidad) as mCantidad'),DB::raw('sum(inv_movimientos.costo_total) as mCosto'))
                     ->get()
                     ->toArray();
@@ -407,6 +405,10 @@ class InvMovimiento extends Model
         }
 
         return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+                                ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
+                                ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_doc_encabezados.core_tipo_doc_app_id')
+                                ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_doc_encabezados.core_tercero_id')
+                                ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'inv_movimientos.core_tipo_transaccion_id')
                                 ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
                                 ->where( $array_wheres )
                                 ->whereBetween('inv_movimientos.fecha', [$fecha_inicial, $fecha_final])
@@ -419,7 +421,11 @@ class InvMovimiento extends Model
                                         'inv_movimientos.costo_unitario',
                                         'inv_movimientos.costo_total',
                                         'inv_movimientos.core_tipo_transaccion_id',
-                                        'inv_movimientos.consecutivo')
+                                        'inv_movimientos.consecutivo',
+                                        'inv_doc_encabezados.id AS documento_id',
+                                        DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS documento'),
+                                        DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero'),
+                                        'sys_tipos_transacciones.core_modelo_id')
                                 ->orderBy('inv_movimientos.fecha')
                                 ->orderBy('inv_movimientos.created_at')
                                 ->get();
