@@ -20,6 +20,23 @@ function ejecutar_acciones_con_item_sugerencia(
   item_sugerencia,
   obj_text_input
 ) {
+  if (
+    obj_text_input.attr("name") == "core_tercero_id_aux" &&
+    obj_text_input.closest("#form_registrar_ingresos_gastos").length > 0
+  ) {
+    var form_registro_ingresos_gastos = obj_text_input.closest(
+      "#form_registrar_ingresos_gastos"
+    );
+    var core_tercero_id = item_sugerencia.attr("data-registro_id");
+
+    form_registro_ingresos_gastos
+      .find("[name='cliente_proveedor_id']")
+      .val(core_tercero_id);
+    form_registro_ingresos_gastos
+      .find("[name='core_tercero_id']")
+      .val(core_tercero_id);
+  }
+
   $(".text_input_sugerencias").select();
 }
 

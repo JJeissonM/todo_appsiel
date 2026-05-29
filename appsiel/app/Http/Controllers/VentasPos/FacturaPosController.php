@@ -1372,6 +1372,9 @@ class FacturaPosController extends TransaccionController
     public function store_registro_ingresos_gastos(Request $request)
     {
         $core_tercero_id = (int)$request->cliente_proveedor_id;
+        if ($core_tercero_id <= 0) {
+            $core_tercero_id = (int)$request->core_tercero_id;
+        }
 
         if ($core_tercero_id <= 0) {
             return '<div class="alert alert-danger"><strong>Error:</strong> Debe seleccionar un Cliente/Proveedor válido antes de guardar el registro.</div>';
@@ -1384,6 +1387,7 @@ class FacturaPosController extends TransaccionController
 
         // $this->datos es una variable de 
         $this->datos = $request->all();
+        $this->datos['cliente_proveedor_id'] = $core_tercero_id;
         $this->datos['core_tercero_id'] = $core_tercero_id;
         $this->datos['descripcion'] = $request->detalle_operacion;
 
