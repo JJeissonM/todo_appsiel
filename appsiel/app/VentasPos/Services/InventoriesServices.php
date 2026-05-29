@@ -16,6 +16,7 @@ use App\Inventarios\InvBodega;
 use App\Inventarios\InvMotivo;
 use App\Inventarios\ItemDesarmeAutomatico;
 use App\Inventarios\InvMovimiento;
+use App\Ventas\RestauranteCocina;
 
 use App\VentasPos\FacturaPos;
 use App\VentasPos\DocRegistro;
@@ -28,6 +29,59 @@ class InventoriesServices
     const INV_DOC_HEADER_MODEL_ID = 25;
     const INV_APPLICATION_ID = 8;
     const INV_DOC_HEADER_MODEL_NAME = 'documentos_inventario';
+
+    protected $bodegas_por_producto = [];
+
+    public function get_bodega_id_producto( $inv_producto_id, $bodega_default_id )
+    {
+        $inv_producto_id = (int)$inv_producto_id;
+        $bodega_default_id = (int)$bodega_default_id;
+
+        if ( isset($this->bodegas_por_producto[$inv_producto_id]) )
+        {
+            return $this->bodegas_por_producto[$inv_producto_id];
+        }
+
+        $producto = InvProducto::find($inv_producto_id);
+        if ( is_null($producto) || (int)$producto->inv_grupo_id == 0 )
+        {
+            $this->bodegas_por_producto[$inv_producto_id] = $bodega_default_id;
+            return $bodega_default_id;
+        }
+
+        $cocina = RestauranteCocina::where('grupo_inventarios_id', (int)$producto->inv_grupo_id)
+                                    ->where('estado', 'Activo')
+                                    ->whereNotNull('bodega_default_id')
+                                    ->where('bodega_default_id', '<>', 0)
+                                    ->first();
+
+        if ( is_null($cocina) )
+        {
+            $cocina = RestauranteCocina::where('grupo_inventarios_id', (int)$producto->inv_grupo_id)
+                                        ->whereNotNull('bodega_default_id')
+                                        ->where('bodega_default_id', '<>', 0)
+                                        ->first();
+        }
+
+        $bodega_id = $bodega_default_id;
+        if ( !is_null($cocina) )
+        {
+            $bodega_id = (int)$cocina->bodega_default_id;
+        }
+
+        $this->bodegas_por_producto[$inv_producto_id] = $bodega_id;
+        return $bodega_id;
+    }
+
+    public function agregar_bodega_a_cantidades_facturadas( $cantidades_facturadas, $bodega_default_id )
+    {
+        foreach ($cantidades_facturadas as $linea)
+        {
+            $linea->inv_bodega_id = $this->get_bodega_id_producto($linea->inv_producto_id, $bodega_default_id);
+        }
+
+        return $cantidades_facturadas;
+    }
 
 	public static function tabla_items_existencias_negativas( $bodega_id, $fecha_corte, $lista_items )
 	{
@@ -80,9 +134,13 @@ class InventoriesServices
 
     // item_consumir_id: el que se compra
     // item_producir_id: el que se vende
-    public function get_lineas_registros_desarme( $pdv_id, $bodega_default_id, $parametros_config_inventarios, $fecha )
+    public function get_lineas_registros_desarme( $pdv_id, $bodega_default_id, $parametros_config_inventarios, $fecha, $cantidades_facturadas = null )
     {
-        $cantidades_facturadas = $this->resumen_cantidades_facturadas($pdv_id);
+        if ( $cantidades_facturadas == null )
+        {
+            $cantidades_facturadas = $this->resumen_cantidades_facturadas($pdv_id);
+        }
+
         $ids_items_facturados = $cantidades_facturadas->pluck('inv_producto_id')->all();
 
         // Para dar entradas en MK
@@ -155,13 +213,13 @@ class InventoriesServices
             $motivo_salida = InvMotivo::find( (int)$parametros_config_inventarios['motivo_salida_id'] );
             $motivo_entrada = InvMotivo::find( (int)$parametros_config_inventarios['motivo_entrada_id'] );
 
-            $lineas_desarme .= ',{"inv_producto_id":"' . $item_consumir->id . '","Producto":"' . $item_consumir->id . ' ' . $item_consumir->descripcion . ' (' . $item_consumir->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_item_a_consumir . '","cantidad":"' . $cantidad_a_sacar . ' UND","costo_total":"$' . ($cantidad_a_sacar * $costo_unitario_item_a_consumir) . '"}';
+            $lineas_desarme .= ',{"inv_bodega_id":"' . $bodega_default_id . '","inv_producto_id":"' . $item_consumir->id . '","Producto":"' . $item_consumir->id . ' ' . $item_consumir->descripcion . ' (' . $item_consumir->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_item_a_consumir . '","cantidad":"' . $cantidad_a_sacar . ' UND","costo_total":"$' . ($cantidad_a_sacar * $costo_unitario_item_a_consumir) . '"}';
 
             $costo_unitario_item_producir = $costo_unitario_item_a_consumir / $cantidad_proporcional;
 
             $lineas_desarme .= ',';
 
-            $lineas_desarme .= '{"inv_producto_id":"' . $item_producir->id . '","Producto":"' . $item_producir->id . ' ' . $item_producir->descripcion . ' (' . $item_producir->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_unitario_item_producir . '","cantidad":"' . $cantidad_a_ingresar . ' UND","costo_total":"$' . ($cantidad_a_ingresar * $costo_unitario_item_producir) . '"}';
+            $lineas_desarme .= '{"inv_bodega_id":"' . $bodega_default_id . '","inv_producto_id":"' . $item_producir->id . '","Producto":"' . $item_producir->id . ' ' . $item_producir->descripcion . ' (' . $item_producir->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_unitario_item_producir . '","cantidad":"' . $cantidad_a_ingresar . ' UND","costo_total":"$' . ($cantidad_a_ingresar * $costo_unitario_item_producir) . '"}';
 
             $hay_productos++;
         }
@@ -202,9 +260,9 @@ class InventoriesServices
         return $cantidades_facturadas;
     }
 
-    public function create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios, $detalle_operacion = '' )
+    public function create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios, $detalle_operacion = '', $cantidades_facturadas = null )
     {
-        $movimiento = $this->get_lineas_registros_desarme($pdv_id, $bodega_default_id, $parametros_config_inventarios, $fecha);
+        $movimiento = $this->get_lineas_registros_desarme($pdv_id, $bodega_default_id, $parametros_config_inventarios, $fecha, $cantidades_facturadas);
         
         if ( gettype($movimiento) == "integer" )
         {
@@ -252,9 +310,22 @@ class InventoriesServices
     {
         $datos_remision = $invoice->toArray();
         $datos_remision['invoice_doc_lines'] = $invoice->lineas_registros;
+        $datos_remision['invoice_doc_line_bodega_ids'] = [];
+
+        foreach ($datos_remision['invoice_doc_lines'] as $linea)
+        {
+            $datos_remision['invoice_doc_line_bodega_ids'][$linea->id] = $this->get_bodega_id_producto($linea->inv_producto_id, $bodega_default_id);
+        }
+
+        $bodegas_lineas = array_unique(array_values($datos_remision['invoice_doc_line_bodega_ids']));
+        $bodega_encabezado_id = $bodega_default_id;
+        if ( count($bodegas_lineas) == 1 )
+        {
+            $bodega_encabezado_id = (int)$bodegas_lineas[0];
+        }
         
         $obj_inv_docum_serv = new InvDocumentsService();
-        return $obj_inv_docum_serv->create_doc_delivery_note( self::INV_DOC_HEADER_MODEL_NAME, $datos_remision, $bodega_default_id, 'Facturada' );
+        return $obj_inv_docum_serv->create_doc_delivery_note( self::INV_DOC_HEADER_MODEL_NAME, $datos_remision, $bodega_encabezado_id, 'Facturada' );
     }
 
         

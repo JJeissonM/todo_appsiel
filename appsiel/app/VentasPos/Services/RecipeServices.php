@@ -66,7 +66,7 @@ class RecipeServices
                 $costo_total_ingredientes += $costo_unitario_ingrediente * $linea_receta->cantidad_porcion;
 
                 // Una linea de salida por cada ingrediente
-                $lineas_desarme .= ',{"inv_producto_id":"' . $linea_receta->item_ingrediente_id . '","Producto":"' . $linea_receta->item_ingrediente_id . ' ' . $linea_receta->item_ingrediente->descripcion . ' (' . $linea_receta->item_ingrediente->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_ingrediente . '","cantidad":"' . $cantidad_a_sacar_ingrediente . ' UND","costo_total":"$' . ($cantidad_a_sacar_ingrediente * $costo_unitario_ingrediente) . '"}';
+                $lineas_desarme .= ',{"inv_bodega_id":"' . $bodega_default_id . '","inv_producto_id":"' . $linea_receta->item_ingrediente_id . '","Producto":"' . $linea_receta->item_ingrediente_id . ' ' . $linea_receta->item_ingrediente->descripcion . ' (' . $linea_receta->item_ingrediente->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_ingrediente . '","cantidad":"' . $cantidad_a_sacar_ingrediente . ' UND","costo_total":"$' . ($cantidad_a_sacar_ingrediente * $costo_unitario_ingrediente) . '"}';
             }
 
             $lineas_desarme .= ',';
@@ -74,7 +74,7 @@ class RecipeServices
             // Un solo registro de entrada para el platillo
             $item_platillo = $lineas_receta_platillo->first()->item_platillo;
 
-            $lineas_desarme .= '{"inv_producto_id":"' . $item_platillo->id . '","Producto":"' . $item_platillo->id . ' ' . $item_platillo->descripcion . ' (' . $item_platillo->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_total_ingredientes . '","cantidad":"' . $cantidad_a_ingresar_platillo_facturado . ' UND","costo_total":"$' . ($cantidad_a_ingresar_platillo_facturado * $costo_total_ingredientes) . '"}';
+            $lineas_desarme .= '{"inv_bodega_id":"' . $bodega_default_id . '","inv_producto_id":"' . $item_platillo->id . '","Producto":"' . $item_platillo->id . ' ' . $item_platillo->descripcion . ' (' . $item_platillo->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_total_ingredientes . '","cantidad":"' . $cantidad_a_ingresar_platillo_facturado . ' UND","costo_total":"$' . ($cantidad_a_ingresar_platillo_facturado * $costo_total_ingredientes) . '"}';
 
             $hay_productos++;
         }

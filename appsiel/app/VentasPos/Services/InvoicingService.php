@@ -83,7 +83,7 @@ class InvoicingService
         if ($fecha == '') {
             $fecha = date('Y-m-d');
             if (!is_null($pdv) && config('ventas_pos.asignar_fecha_apertura_a_facturas')) {
-                $fecha = $pdv->ultima_fecha_apertura();
+                $fecha = $pdv->ultima_fecha_apertura(false);
             }
             $request->merge(['fecha' => $fecha]);
         }

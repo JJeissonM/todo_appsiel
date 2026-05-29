@@ -23,7 +23,11 @@ class InvDocumentsLinesService
         $cantidad = count($lineas_registros);
         for ($i = 0; $i < $cantidad; $i++)
         {
-            $lineas_registros[$i]->inv_bodega_id = $bodega_id;
+            if ( !isset($lineas_registros[$i]->inv_bodega_id) || (int)$lineas_registros[$i]->inv_bodega_id == 0 )
+            {
+                $lineas_registros[$i]->inv_bodega_id = $bodega_id;
+            }
+
             $lineas_registros[$i]->inv_producto_id = $lineas_registros[$i]->inv_producto_id;
             $lineas_registros[$i]->inv_motivo_id = explode( "-", $lineas_registros[$i]->motivo )[0];
             $lineas_registros[$i]->costo_unitario = (float) substr($lineas_registros[$i]->costo_unitario, 1);

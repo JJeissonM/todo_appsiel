@@ -147,7 +147,7 @@ class FacturaPosController extends TransaccionController
         $fecha = date('Y-m-d');
         if(config('ventas_pos.asignar_fecha_apertura_a_facturas'))
         {
-            $fecha = $pdv->ultima_fecha_apertura();
+            $fecha = $pdv->ultima_fecha_apertura(false);
         }
         $fecha_vencimiento = $pdv->cliente->fecha_vencimiento_pago( $fecha );
 
@@ -885,7 +885,7 @@ class FacturaPosController extends TransaccionController
         if ($fecha == '') {
             $fecha = date('Y-m-d');
             if (!is_null($pdv) && config('ventas_pos.asignar_fecha_apertura_a_facturas')) {
-                $fecha = $pdv->ultima_fecha_apertura();
+                $fecha = $pdv->ultima_fecha_apertura(false);
             }
             $request->merge(['fecha' => $fecha]);
         }
@@ -1212,15 +1212,34 @@ class FacturaPosController extends TransaccionController
         }
 
         $obj_invt_serv = new InventoriesServices();
-        $lista_items_aux = $obj_invt_serv->resumen_cantidades_facturadas($pdv_id)->toArray();
-        
-        $lista_items = [];
-        foreach( $lista_items_aux AS $linea )
+        $cantidades_facturadas = $obj_invt_serv->agregar_bodega_a_cantidades_facturadas(
+            $obj_invt_serv->resumen_cantidades_facturadas($pdv_id),
+            $obj_acumm_serv->pos->bodega_default_id
+        );
+
+        $resultado_validacion = 1;
+        foreach( $cantidades_facturadas->groupBy('inv_bodega_id') AS $bodega_id => $cantidades_bodega )
         {
-            $lista_items[$linea['inv_producto_id']] = $linea['cantidad_facturada'];
+            $lista_items = [];
+            foreach( $cantidades_bodega AS $linea )
+            {
+                $lista_items[$linea->inv_producto_id] = $linea->cantidad_facturada;
+            }
+
+            $validacion_bodega = $obj_invt_serv->tabla_items_existencias_negativas( (int)$bodega_id, $obj_acumm_serv->invoices->last()->fecha, $lista_items );
+
+            if ( $validacion_bodega != 1 )
+            {
+                if ( $resultado_validacion == 1 )
+                {
+                    $resultado_validacion = '';
+                }
+
+                $resultado_validacion .= $validacion_bodega;
+            }
         }
 
-        return $obj_invt_serv->tabla_items_existencias_negativas( $obj_acumm_serv->pos->bodega_default_id, $obj_acumm_serv->invoices->last()->fecha, $lista_items );
+        return $resultado_validacion;
 
     }
 

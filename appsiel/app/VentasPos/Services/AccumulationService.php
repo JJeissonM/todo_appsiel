@@ -54,7 +54,18 @@ class AccumulationService
         $parametros_config_inventarios = config('inventarios');
 
         $obj_inv_doc_serv = new InventoriesServices();
-        return $obj_inv_doc_serv->create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios, $detalle_operacion );
+        $cantidades_facturadas = $obj_inv_doc_serv->agregar_bodega_a_cantidades_facturadas(
+            $obj_inv_doc_serv->resumen_cantidades_facturadas($pdv_id),
+            $bodega_default_id
+        );
+
+        $resultado = 0;
+        foreach ($cantidades_facturadas->groupBy('inv_bodega_id') as $bodega_id => $cantidades_bodega)
+        {
+            $resultado = $obj_inv_doc_serv->create_document_making( $pdv_id, (int)$bodega_id, $fecha, $parametros_config_inventarios, $detalle_operacion, $cantidades_bodega );
+        }
+
+        return $resultado;
     }
 
     public function hacer_preparaciones_recetas( $detalle_operacion = '', $fecha = null, $factura_pos_id = null )
@@ -69,10 +80,18 @@ class AccumulationService
         $parametros_config_inventarios = config('inventarios');
 
         $obj_inv_doc_serv = new RecipeServices();
+        $obj_inv_serv = new InventoriesServices();
         
         $cantidades_facturadas = $obj_inv_doc_serv->resumen_cantidades_facturadas($pdv_id, null, $factura_pos_id);
+        $cantidades_facturadas = $obj_inv_serv->agregar_bodega_a_cantidades_facturadas($cantidades_facturadas, $bodega_default_id);
         
-        return $obj_inv_doc_serv->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios, $detalle_operacion, $factura_pos_id );
+        $resultado = 0;
+        foreach ($cantidades_facturadas->groupBy('inv_bodega_id') as $bodega_id => $cantidades_bodega)
+        {
+            $resultado = $obj_inv_doc_serv->create_document_making( $cantidades_bodega, (int)$bodega_id, $fecha, $parametros_config_inventarios, $detalle_operacion, $factura_pos_id );
+        }
+
+        return $resultado;
     }
 
     /**
@@ -126,6 +145,7 @@ class AccumulationService
 
         //if ($this->is_pending_accounting($array_wheres)) {
             $lineas_registros = $invoice->lineas_registros;
+            $obj_inv_serv = new InventoriesServices();
 
             foreach ($lineas_registros as $linea)
             {
@@ -133,8 +153,11 @@ class AccumulationService
                     continue;
                 }
                 
+                $datos_linea = $datos;
+                $datos_linea['inv_bodega_id'] = $obj_inv_serv->get_bodega_id_producto($linea->inv_producto_id, $bodega_default_id);
+
                 // Movimiento de Ventas
-                VtasMovimiento::create( $datos + $linea->toArray() );
+                VtasMovimiento::create( $datos_linea + $linea->toArray() );
                 
                 $linea->estado = 'Acumulado';
                 $linea->save();

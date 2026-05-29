@@ -51,9 +51,9 @@ class Pdv extends Model
         return $this->belongsTo( TipoDocApp::class,'tipo_doc_app_default_id');
     }
 
-    public function ultima_fecha_apertura()
+    public function ultima_fecha_apertura($validar_acumulacion_tiempo_real = true)
     {
-        if ((int)config('ventas_pos.acumular_facturas_en_tiempo_real') ) {
+        if ($validar_acumulacion_tiempo_real && (int)config('ventas_pos.acumular_facturas_en_tiempo_real') ) {
             return date('Y-m-d');
         }
 
