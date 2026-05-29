@@ -45,6 +45,11 @@ class Authenticate
         }
 
         $user = Auth::user();
+
+        if ( $request->is('tesoreria/pagos_imprimir/*') )
+        {
+            return $next($request);
+        }
         
         if( isset( $request->id ) && isset( $request->id_modelo ) )
         {
