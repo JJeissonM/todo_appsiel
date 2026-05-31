@@ -51,7 +51,7 @@ class AccumulationService
             $fecha = $this->pos->ultima_fecha_apertura();
         }
         
-        $parametros_config_inventarios = config('inventarios');
+        $parametros_config_inventarios = $this->get_parametros_inventarios_recetas();
 
         $obj_inv_doc_serv = new InventoriesServices();
         $cantidades_facturadas = $obj_inv_doc_serv->agregar_bodega_a_cantidades_facturadas(
@@ -77,7 +77,7 @@ class AccumulationService
             $fecha = $this->pos->ultima_fecha_apertura();
         }
 
-        $parametros_config_inventarios = config('inventarios');
+        $parametros_config_inventarios = $this->get_parametros_inventarios_recetas();
 
         $obj_inv_doc_serv = new RecipeServices();
         $obj_inv_serv = new InventoriesServices();
@@ -92,6 +92,28 @@ class AccumulationService
         }
 
         return $resultado;
+    }
+
+    public function get_parametros_inventarios_recetas()
+    {
+        $parametros_config_inventarios = config('inventarios');
+
+        $motivo_salida_id = config('ventas_pos.recetas_motivo_salida_id', 3);
+        if ( $motivo_salida_id == null || $motivo_salida_id === '' )
+        {
+            $motivo_salida_id = 3;
+        }
+
+        $motivo_entrada_id = config('ventas_pos.recetas_motivo_entrada_id', 4);
+        if ( $motivo_entrada_id == null || $motivo_entrada_id === '' )
+        {
+            $motivo_entrada_id = 4;
+        }
+
+        $parametros_config_inventarios['motivo_salida_id'] = $motivo_salida_id;
+        $parametros_config_inventarios['motivo_entrada_id'] = $motivo_entrada_id;
+
+        return $parametros_config_inventarios;
     }
 
     /**
