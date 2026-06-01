@@ -9,6 +9,10 @@
 @endsection
 
 @section('encabezado_datos_adicionales')
+    @if( isset($pdv) && !is_null($pdv) )
+        <br>
+        <b>Punto de ventas: &nbsp;&nbsp;</b> {{ $pdv->descripcion }}
+    @endif
     <br>
     <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
 @endsection

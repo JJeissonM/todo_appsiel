@@ -67,8 +67,13 @@ use App\Core\Tercero;
         <tr>
             <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
             <td>@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif</td>
-            <td> </td>
-            <td> </td>
+            @if( isset($pdv) && !is_null($pdv) )
+                <td><b>Punto de ventas:</b></td>
+                <td>{{ $pdv->descripcion }}</td>
+            @else
+                <td> </td>
+                <td> </td>
+            @endif
         </tr>
     </table>
 <br>

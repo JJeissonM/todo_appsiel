@@ -7,17 +7,24 @@ use Collective\Html\FormFacade as Form;
 
 class ComprasTransaccion
 {
-    public static function get_datos_tabla_ingreso_lineas_registros($tipo_transaccion, $motivos)
+    public static function get_datos_tabla_ingreso_lineas_registros($tipo_transaccion, $motivos, $opciones = [])
     {
         $campos_invisibles = app($tipo_transaccion->modelo_registros_documentos)->campos_invisibles_linea_registro;
         $campos_visibles = app($tipo_transaccion->modelo_registros_documentos)->campos_visibles_linea_registro;
         $retencion_service = new RetencionFuenteService();
         $aplica_retencion_fuente = in_array((int)$tipo_transaccion->id, [25, 48])
             && $retencion_service->maneja_retenciones_compras();
+        $ocultar_columna_motivo = !empty($opciones['ocultar_columna_motivo']);
 
         if (!$aplica_retencion_fuente) {
             $campos_visibles = array_values(array_filter($campos_visibles, function ($campo) {
                 return $campo[0] !== 'Ret. Fuente';
+            }));
+        }
+
+        if ($ocultar_columna_motivo) {
+            $campos_visibles = array_values(array_filter($campos_visibles, function ($campo) {
+                return $campo[0] !== 'Motivo';
             }));
         }
 
@@ -26,7 +33,12 @@ class ComprasTransaccion
         $columnas = [];
         $i = 0;
         foreach ($campos_invisibles as $value) {
-            $fila_controles_formulario .= '<td style="display: none;"><div class="' . $value . '"></div></td>';
+            $control_oculto = '';
+            if ($ocultar_columna_motivo && $value == 'inv_motivo_id') {
+                $control_oculto = Form::select('inv_motivo_id', $motivos, null, ['id' => 'inv_motivo_id']);
+            }
+
+            $fila_controles_formulario .= '<td style="display: none;"><div class="' . $value . '"></div>' . $control_oculto . '</td>';
             $columnas[$i] = ['name' => $value, 'display' => 'none', 'etiqueta' => '', 'width' => ''];
             $i++;
         }
@@ -41,12 +53,17 @@ class ComprasTransaccion
             $columna_retencion = '<td> <select id="contab_retencion_id" class="form-control"><option value="0" data-tasa="0">Sin retención</option></select> </td>';
         }
 
+        $columna_motivo = '';
+        if (!$ocultar_columna_motivo) {
+            $columna_motivo = '<td> ' . Form::select('inv_motivo_id', $motivos, null, ['id' => 'inv_motivo_id']) . ' </td>';
+        }
+
         $fila_controles_formulario .= '<td> &nbsp; </td>
                         <td> 
                             ' . Form::text('inv_producto_id', null, ['id' => 'inv_producto_id', 'data-toggle' => 'tooltip', 'autocomplete' => 'off', 'title' => 'Presione dos veces ESC para terminar.']) . '
                             <div id="suggestions"></div>
                         </td>
-                        <td> ' . Form::select('inv_motivo_id', $motivos, null, ['id' => 'inv_motivo_id']) . ' </td>
+                        ' . $columna_motivo . '
                         <td> ' . Form::text('existencia_actual', null, ['disabled' => 'disabled', 'id' => 'existencia_actual', 'width' => '15px']) . ' </td>
                         <td> ' . Form::text('cantidad', null, ['disabled' => 'disabled', 'id' => 'cantidad']) . ' </td>
                         <td> ' . Form::text('precio_unitario', null, ['id' => 'precio_unitario']) . Form::hidden('costo_unitario', null, ['disabled' => 'disabled', 'id' => 'costo_unitario']) . ' </td>
@@ -62,7 +79,8 @@ class ComprasTransaccion
             'titulo' => 'Líneas de registros',
             'columnas' => $columnas,
             'fila_body' => '',
-            'fila_foot' => $fila_controles_formulario
+            'fila_foot' => $fila_controles_formulario,
+            'ocultar_columna_motivo' => $ocultar_columna_motivo
         ];
     }
 }

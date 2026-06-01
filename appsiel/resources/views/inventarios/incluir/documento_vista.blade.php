@@ -14,7 +14,7 @@
             @foreach($doc_registros as $linea )
                 <?php
 
-                    $descripcion_item = $linea->item->get_value_to_show();
+                    $descripcion_item = $linea->item->get_value_to_show( true );
                     
                     $referencia = '';
                     if($linea->referencia != '')

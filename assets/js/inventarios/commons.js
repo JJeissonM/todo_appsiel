@@ -37,7 +37,7 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 	{
 		if ( !respuesta || typeof respuesta !== 'object' )
 		{
-			alert('Respuesta inv�lida del servidor.');
+			alert('Respuesta invalida del servidor.');
 			return false;
 		}
 
@@ -69,7 +69,7 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 		$('#unidad_medida1').val(respuesta.unidad_medida1);
 		$('#inv_producto_id_aux').val( respuesta.descripcion );
 
-		// Si la TRANSACCI�N es una Entrada Directa o Entrada por compras o el producto es tipo servicio, se puede modificar el costo unitario
+		// Si la TRANSACCION es una Entrada Directa o Entrada por compras o el producto es tipo servicio, se puede modificar el costo unitario
 		if ( $('#id_transaccion').val() == 1 || $('#id_transaccion').val() == 35 || respuesta.tipo == 'servicio' )
 		{
 			$('#costo_unitario').removeAttr('disabled');
@@ -85,7 +85,7 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 		return true;
 	}
 
-	// Enviar formulario de ingreso de productos v�a POST (InventarioController > post_ajax)
+	// Enviar formulario de ingreso de productos via POST (InventarioController > post_ajax)
 	$.ajax({
 		url: url,
 		type: 'POST',
@@ -127,7 +127,7 @@ function agregar_la_linea()
 {	
 	var costo_total = $('#costo_total').val(); // ya está asignado con la funcion calcular_costo_total
 	var producto = $('#inv_producto_id');
-	var nombre_producto = producto.val() + ' ' + $( "#inv_producto_id_aux" ).val();
+	var nombre_producto = $( "#inv_producto_id_aux" ).val();
 	var costo_unitario = $('#costo_unitario').val();
 	var cantidad = $('#cantidad').val();
 	var mov = $('#motivo').val().split('-');

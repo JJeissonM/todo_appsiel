@@ -62,6 +62,10 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 		<b>Condición de pago: &nbsp;&nbsp;</b> {{ ucfirst($doc_encabezado->condicion_pago) }}
 		<br />
 		<b>Fecha vencimiento: &nbsp;&nbsp;</b> {{ $doc_encabezado->fecha_vencimiento }}
+		@if($bodegas_ingreso_mercancia != '')
+			<br />
+			<b>Bodega ingreso mercancía: &nbsp;&nbsp;</b> {{ $bodegas_ingreso_mercancia }}
+		@endif
 
 	</td>
 </tr>

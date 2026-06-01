@@ -76,6 +76,7 @@ class RecaudoController extends TransaccionController
         $tipo_transaccion = TipoTransaccion::find($id_transaccion);
 
         $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create');
+        $lista_campos = $this->requerir_punto_venta($lista_campos);
 
         $form_create = [
                         'url' => $modelo->url_form_create,
@@ -112,6 +113,8 @@ class RecaudoController extends TransaccionController
      */
     public function store(Request $request)
     {
+        $this->validar_punto_venta($request);
+
         $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
         $this->datos = array_merge( $request->all(), 
@@ -243,6 +246,29 @@ class RecaudoController extends TransaccionController
         return redirect( 'tesoreria/recaudos/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
 
+    protected function requerir_punto_venta(array $lista_campos)
+    {
+        foreach ($lista_campos as $i => $campo) {
+            if ($campo['name'] != 'pdv_id') {
+                continue;
+            }
+
+            $lista_campos[$i]['requerido'] = true;
+            $lista_campos[$i]['atributos'] = array_merge($campo['atributos'], ['required' => 'required']);
+        }
+
+        return $lista_campos;
+    }
+
+    protected function validar_punto_venta(Request $request)
+    {
+        $this->validate(
+            $request,
+            ['pdv_id' => 'required|integer|min:1|exists:vtas_pos_puntos_de_ventas,id'],
+            ['pdv_id.required' => 'El campo Punto de Ventas es obligatorio.']
+        );
+    }
+
 
 
     /**
@@ -260,6 +286,7 @@ class RecaudoController extends TransaccionController
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
         $doc_registros = TesoDocRegistro::get_registros_impresion( $doc_encabezado->id );
         $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
+        $pdv = $this->get_pdv_documento($doc_encabezado);
 
         //dd($doc_registros);
 
@@ -273,7 +300,26 @@ class RecaudoController extends TransaccionController
                 ['url'=>'NO','etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo ]
             ];
 
-        return view( 'tesoreria.recaudos.show',compact('empresa','botones_anterior_siguiente','doc_encabezado','doc_registros','registros_contabilidad','miga_pan','id','id_transaccion','documento_vista') );
+        return view( 'tesoreria.recaudos.show',compact('empresa','botones_anterior_siguiente','doc_encabezado','doc_registros','registros_contabilidad','miga_pan','id','id_transaccion','documento_vista','pdv') );
+    }
+
+    protected function get_pdv_documento($doc_encabezado)
+    {
+        $movimiento = TesoMovimiento::where([
+                'core_empresa_id' => $doc_encabezado->core_empresa_id,
+                'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
+                'consecutivo' => $doc_encabezado->consecutivo
+            ])
+            ->whereNotNull('pdv_id')
+            ->with('pdv')
+            ->first();
+
+        if ( is_null($movimiento) ) {
+            return null;
+        }
+
+        return $movimiento->pdv;
     }
 
 
@@ -302,18 +348,19 @@ class RecaudoController extends TransaccionController
         $registros_contabilidad = [];//TransaccionController::get_registros_contabilidad( $doc_encabezado );
 
         $elaboro = $doc_encabezado->creado_por;
+        $pdv = $this->get_pdv_documento($doc_encabezado);
         
         if(Input::get('formato_impresion_id') == 'estandar'){
-            $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+            $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro', 'pdv' ) )->render();
         }
         if(Input::get('formato_impresion_id') == 'estandar2'){
-            $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir2', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+            $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir2', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro', 'pdv' ) )->render();
         }
         if(Input::get('formato_impresion_id') == 'pos'){
-            $documento_vista = View::make( 'tesoreria.recaudos.pos', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+            $documento_vista = View::make( 'tesoreria.recaudos.pos', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro', 'pdv' ) )->render();
         }
         if(Input::get('formato_impresion_id') == 'colegio'){
-            $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir_colegio', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+            $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir_colegio', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro', 'pdv' ) )->render();
         }
 
         return $documento_vista;

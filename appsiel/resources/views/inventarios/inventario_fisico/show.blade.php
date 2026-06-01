@@ -6,9 +6,12 @@
 
 @section('botones_acciones')
 	{{ Form::bsBtnCreate( 'inv_fisico/create'.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.$id_transaccion ) }}
-    <button type="button" class="btn-gmail" data-toggle="modal" data-target="#modal_clonar_documento" title="Clonar documento">
-        <i class="fa fa-clone"></i>
-    </button>
+
+    @can('inventarios.inventario_fisico.clonar_documento')
+        <button type="button" class="btn-gmail" data-toggle="modal" data-target="#modal_clonar_documento" title="Clonar documento">
+            <i class="fa fa-clone"></i>
+        </button>
+    @endcan
     
     @if( !$inventario_fisico_tiene_ajuste )
         {{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'inv_fisico/id_fila/edit'.$variables_url ),'Editar') }}

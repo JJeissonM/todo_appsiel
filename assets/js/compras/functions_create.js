@@ -44,6 +44,11 @@ function cargar_retenciones_fuente()
         });
 }
 
+function ocultar_columna_motivo_lineas_compra()
+{
+    return $('#ingreso_registros').attr('data-ocultar-columna-motivo') == '1';
+}
+
 function get_tasa_retencion_seleccionada()
 {
     var tasa = parseFloat($('#contab_retencion_id option:selected').attr('data-tasa'));
@@ -224,6 +229,7 @@ function seleccionar_proveedor(item_sugerencia)
     }
 
     $('#inv_bodega_id').val( bodega_id );
+    bloquear_bodega_por_proveedor_url();
 
     var forma_pago = 'contado';
     dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );
@@ -250,6 +256,21 @@ function seleccionar_proveedor(item_sugerencia)
     consultar_entradas_pendientes();
 
     $('#doc_proveedor_prefijo').focus();
+}
+
+function bloquear_bodega_por_proveedor_url()
+{
+    if ($('#url_proveedor_id').val() == '' || $('#url_proveedor_id').val() == undefined) {
+        return false;
+    }
+
+    $('#inv_bodega_id').attr('disabled', 'disabled');
+
+    if (!$('#inv_bodega_id_disabled_value').length) {
+        $('#inv_bodega_id').after('<input type="hidden" name="inv_bodega_id" id="inv_bodega_id_disabled_value">');
+    }
+
+    $('#inv_bodega_id_disabled_value').val($('#inv_bodega_id').val());
 }
 
 // Recibe objeto Date()
@@ -561,9 +582,11 @@ function generar_string_celdas( fila )
     
     num_celda++;
 
-    celdas[ num_celda ] = '<td>'+ $('#inv_motivo_id option:selected').text() + '</td>';
-    
-    num_celda++;
+    if (!ocultar_columna_motivo_lineas_compra()) {
+        celdas[ num_celda ] = '<td>'+ $('#inv_motivo_id option:selected').text() + '</td>';
+
+        num_celda++;
+    }
 
     celdas[ num_celda ] = '<td> '+ $('#existencia_actual').val() + '</td>';
     

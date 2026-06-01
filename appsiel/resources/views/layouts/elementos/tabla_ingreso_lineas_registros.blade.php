@@ -5,7 +5,7 @@
         <hr>
     @endif
     <div class="table-responsive" id="table_content">
-        <table class="table table-striped" id="ingreso_registros">
+        <table class="table table-striped" id="ingreso_registros" data-ocultar-columna-motivo="{{ !empty($datos['ocultar_columna_motivo']) ? 1 : 0 }}">
             <thead>
                 <tr>
                 	<?php 
