@@ -70,7 +70,7 @@ class PagoController extends TransaccionController
         $cantidad_campos = count($lista_campos);
 
         $lista_campos = ModeloController::personalizar_campos($id_transaccion,$this->transaccion,$lista_campos,$cantidad_campos,'create');
-        $lista_campos = $this->requerir_punto_venta($lista_campos);
+        $lista_campos = $this->aplicar_metadato_punto_venta($lista_campos);
 
         $form_create = [
                       'url' => json_decode( app( $this->modelo->name_space )->urls_acciones )->store,
@@ -125,15 +125,20 @@ class PagoController extends TransaccionController
         return redirect( 'tesoreria/pagos/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
 
-    protected function requerir_punto_venta(array $lista_campos)
+    protected function aplicar_metadato_punto_venta(array $lista_campos)
     {
         foreach ($lista_campos as $i => $campo) {
             if ($campo['name'] != 'pdv_id') {
                 continue;
             }
 
-            $lista_campos[$i]['requerido'] = true;
-            $lista_campos[$i]['atributos'] = array_merge($campo['atributos'], ['required' => 'required']);
+            $atributos = $campo['atributos'] ?? [];
+            if ($campo['requerido']) {
+                $lista_campos[$i]['atributos'] = array_merge($atributos, ['required' => 'required']);
+            } else {
+                unset($atributos['required']);
+                $lista_campos[$i]['atributos'] = $atributos;
+            }
         }
 
         return $lista_campos;
@@ -141,11 +146,25 @@ class PagoController extends TransaccionController
 
     protected function validar_punto_venta(Request $request)
     {
+        if (!$this->punto_venta_es_requerido($request->url_id_modelo)) {
+            return;
+        }
+
         $this->validate(
             $request,
             ['pdv_id' => 'required|integer|min:1|exists:vtas_pos_puntos_de_ventas,id'],
             ['pdv_id.required' => 'El campo Punto de Ventas es obligatorio.']
         );
+    }
+
+    protected function punto_venta_es_requerido($modelo_id)
+    {
+        return DB::table('sys_campos')
+            ->join('sys_modelo_tiene_campos', 'sys_modelo_tiene_campos.core_campo_id', '=', 'sys_campos.id')
+            ->where('sys_modelo_tiene_campos.core_modelo_id', (int)$modelo_id)
+            ->where('sys_campos.name', 'pdv_id')
+            ->where('sys_campos.requerido', 1)
+            ->exists();
     }
 
 
@@ -351,7 +370,7 @@ class PagoController extends TransaccionController
 
         $cantidad_campos = count( $lista_campos );
         $lista_campos = ModeloController::personalizar_campos($this->transaccion->id, $this->transaccion, $lista_campos, $cantidad_campos,'edit');
-        $lista_campos = $this->requerir_punto_venta($lista_campos);
+        $lista_campos = $this->aplicar_metadato_punto_venta($lista_campos);
 
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );

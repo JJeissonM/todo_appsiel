@@ -30,6 +30,10 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
         parent::boot();
 
         static::creating(function () {
+            if (!self::punto_venta_es_requerido()) {
+                return;
+            }
+
             $pdv_id = (int) request('pdv_id', 0);
 
             if ($pdv_id <= 0 || !Pdv::where('id', $pdv_id)->exists()) {
@@ -38,6 +42,22 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
                 ]);
             }
         });
+    }
+
+    protected static function punto_venta_es_requerido()
+    {
+        $modelo_id = (int) request('url_id_modelo', request('id_modelo', 0));
+
+        if ($modelo_id <= 0) {
+            return false;
+        }
+
+        return DB::table('sys_campos')
+            ->join('sys_modelo_tiene_campos', 'sys_modelo_tiene_campos.core_campo_id', '=', 'sys_campos.id')
+            ->where('sys_modelo_tiene_campos.core_modelo_id', $modelo_id)
+            ->where('sys_campos.name', 'pdv_id')
+            ->where('sys_campos.requerido', 1)
+            ->exists();
     }
 
     public function tipo_transaccion()
@@ -242,8 +262,13 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
                 continue;
             }
 
-            $lista_campos[$i]['requerido'] = true;
-            $lista_campos[$i]['atributos'] = array_merge($campo['atributos'] ?? [], ['required' => 'required']);
+            $atributos = $campo['atributos'] ?? [];
+            if ($campo['requerido']) {
+                $lista_campos[$i]['atributos'] = array_merge($atributos, ['required' => 'required']);
+            } else {
+                unset($atributos['required']);
+                $lista_campos[$i]['atributos'] = $atributos;
+            }
         }
 
         return $lista_campos;

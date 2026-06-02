@@ -375,6 +375,10 @@ use App\Http\Controllers\Sistema\VistaController;
 
             function validar_punto_venta_requerido()
             {
+                if (!$('#pdv_id').prop('required')) {
+                    return true;
+                }
+
                 var pdv_id = $('#pdv_id').val();
                 var pdv_id_numerico = parseInt(pdv_id, 10);
 
