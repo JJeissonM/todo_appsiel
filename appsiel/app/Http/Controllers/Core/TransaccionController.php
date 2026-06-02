@@ -482,6 +482,21 @@ class TransaccionController extends Controller
                 $id_doc_encabezado = $doc_encabezado->id;
                 break;
         
+            case '48': // Documento soporte en adquisiciones
+                $url = 'compras/';
+                $doc_encabezado = ComprasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en ComprasDocEncabezado::enlace_show_documento. No se encontró el documento soporte', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+        
             case '49': // Factura de estudiantes
                 $url = 'ventas/';
                 $doc_encabezado = VtasDocEncabezado::where( [ 
