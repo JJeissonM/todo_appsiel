@@ -96,7 +96,7 @@
 			$("#cliente_input").after('<div id="clientes_suggestions"> </div>');
 
 			// Al ingresar código, descripción o código de barras del producto
-		    $('#cliente_input').on('keyup',function(){
+		    $('#cliente_input').on('keyup',function(event){
 
 		    	var x = event.which || event.keyCode; // Capturar la tecla presionada
 
@@ -155,7 +155,7 @@
 
 		    	var url = "{{ url('core_consultar_terceros') }}";
 
-				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda, filtrar_por_cliente: 1 } )
 					.done(function( data ) {
 						// Se llena el DIV con las sugerencias que arroja la consulta
 		                $('#clientes_suggestions').show().html(data);

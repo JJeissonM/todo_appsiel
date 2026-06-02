@@ -195,6 +195,9 @@ class DocCruceController extends TransaccionController
 
   public function crear_transacciones_bd($doc_encabezado, $movimiento_cartera, $movimiento_afavor, $valor_abono, $detalle_operacion)
   {
+    $movimiento_cartera->validar_saldo_disponible_para_abono($valor_abono);
+    $movimiento_afavor->validar_saldo_disponible_para_abono($valor_abono * -1);
+
     $this->almacenar_abono_cxc($doc_encabezado, $movimiento_cartera, $movimiento_afavor, $valor_abono);
 
     // disminuir saldo pendiente y actualizar estados en los movimientos de cxc

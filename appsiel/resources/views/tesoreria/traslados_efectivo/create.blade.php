@@ -95,6 +95,9 @@ use App\Http\Controllers\Sistema\VistaController;
             */
             $("#btn_nuevo").click(function (event) {
                 event.preventDefault();
+                if (!validar_punto_venta_requerido()) {
+                    return false;
+                }
                 nueva_linea_ingreso_datos();
             });
 
@@ -350,7 +353,7 @@ use App\Http\Controllers\Sistema\VistaController;
                 }
 
 
-                if (validar_requeridos()) {
+                if (validar_punto_venta_requerido() && validar_requeridos()) {
                     // Desactivar el click del botón
                     $(this).off(event);
 
@@ -369,6 +372,20 @@ use App\Http\Controllers\Sistema\VistaController;
                 }
 
             });
+
+            function validar_punto_venta_requerido()
+            {
+                var pdv_id = $('#pdv_id').val();
+                var pdv_id_numerico = parseInt(pdv_id, 10);
+
+                if (pdv_id == '' || pdv_id == null || isNaN(pdv_id_numerico) || pdv_id_numerico <= 0) {
+                    alert('Este campo es requerido: Punto de Ventas (pdv_id)');
+                    $('#pdv_id').focus();
+                    return false;
+                }
+
+                return true;
+            }
 
 
             function reset_form_registro() {

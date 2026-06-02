@@ -5,12 +5,14 @@ namespace App\Tesoreria;
 use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
+use App\VentasPos\Pdv;
 
 use App\Contabilidad\ContabMovimiento;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class TesoDocEncabezadoTraslado extends TesoDocEncabezado
 {
@@ -22,6 +24,21 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Fecha', 'Tercero', 'Detalle', 'Valor total', 'Estado'];
 
     public $vistas = '{"create":"tesoreria.traslados_efectivo.create"}';
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function () {
+            $pdv_id = (int) request('pdv_id', 0);
+
+            if ($pdv_id <= 0 || !Pdv::where('id', $pdv_id)->exists()) {
+                throw ValidationException::withMessages([
+                    'pdv_id' => 'El campo Punto de Ventas es obligatorio.'
+                ]);
+            }
+        });
+    }
 
     public function tipo_transaccion()
     {
@@ -218,6 +235,20 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
             ->get()[0];
     }
 
+    public function get_campos_adicionales_create($lista_campos)
+    {
+        foreach ($lista_campos as $i => $campo) {
+            if ($campo['name'] != 'pdv_id') {
+                continue;
+            }
+
+            $lista_campos[$i]['requerido'] = true;
+            $lista_campos[$i]['atributos'] = array_merge($campo['atributos'] ?? [], ['required' => 'required']);
+        }
+
+        return $lista_campos;
+    }
+
     public function store_adicional($datos, $registro)
     {
         $datos['consecutivo'] = $registro->consecutivo;
@@ -260,6 +291,7 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
                 $movimiento->core_tercero_id = $registro->core_tercero_id;
                 $movimiento->core_tipo_transaccion_id = $registro->core_tipo_transaccion_id;
                 $movimiento->core_tipo_doc_app_id = $registro->core_tipo_doc_app_id;
+                $movimiento->teso_medio_recaudo_id = $teso_registro->teso_medio_recaudo_id;
                 $movimiento->teso_motivo_id = $teso_registro->teso_motivo_id;
                 $movimiento->teso_caja_id = $teso_registro->teso_caja_id;
                 $movimiento->teso_cuenta_bancaria_id = $teso_registro->teso_cuenta_bancaria_id;

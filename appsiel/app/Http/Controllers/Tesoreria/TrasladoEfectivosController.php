@@ -37,6 +37,7 @@ class TrasladoEfectivosController extends TransaccionController
         $doc_registros = TesoDocRegistro::get_registros_impresion($doc_encabezado->id);
         
         $registros_contabilidad = TransaccionController::get_registros_contabilidad($doc_encabezado);
+        $pdv = $this->get_pdv_documento($doc_encabezado);
         
         $empresa = $this->empresa;
         
@@ -50,7 +51,26 @@ class TrasladoEfectivosController extends TransaccionController
             ['url' => 'NO', 'etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo]
         ];
         
-        return view('tesoreria.traslados_efectivo.show', compact('empresa', 'botones_anterior_siguiente', 'doc_encabezado', 'doc_registros', 'registros_contabilidad', 'miga_pan', 'id', 'id_transaccion', 'documento_vista'));
+        return view('tesoreria.traslados_efectivo.show', compact('empresa', 'botones_anterior_siguiente', 'doc_encabezado', 'doc_registros', 'registros_contabilidad', 'miga_pan', 'id', 'id_transaccion', 'documento_vista', 'pdv'));
+    }
+
+    protected function get_pdv_documento($doc_encabezado)
+    {
+        $movimiento = TesoMovimiento::where([
+                'core_empresa_id' => $doc_encabezado->core_empresa_id,
+                'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
+                'consecutivo' => $doc_encabezado->consecutivo
+            ])
+            ->whereNotNull('pdv_id')
+            ->with('pdv')
+            ->first();
+
+        if (is_null($movimiento)) {
+            return null;
+        }
+
+        return $movimiento->pdv;
     }
 
     public function vista_preliminar($id)
@@ -61,8 +81,9 @@ class TrasladoEfectivosController extends TransaccionController
         $user = User::where('email', $registro->creado_por)->first();
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion($id);
         $doc_registros = TesoDocRegistro::get_registros_impresion($doc_encabezado->id);
+        $pdv = $this->get_pdv_documento($doc_encabezado);
        // dd($doc_registros);
-        $view = View::make('tesoreria.traslados_efectivo.print', compact('registro', 'empresa', 'doc_encabezado', 'user', 'doc_registros'))->render();
+        $view = View::make('tesoreria.traslados_efectivo.print', compact('registro', 'empresa', 'doc_encabezado', 'user', 'doc_registros', 'pdv'))->render();
 
         return $view;
     }

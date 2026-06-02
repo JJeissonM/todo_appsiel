@@ -27,6 +27,7 @@ class AccountsReceivableServices
         {
             $abono = (float)$arr_account_receivable_lines[$i]->abono;
             $accounts_receivable_record = CxcMovimiento::find( (int)$arr_account_receivable_lines[$i]->id_doc );
+            $accounts_receivable_record->validar_saldo_disponible_para_abono($abono);
 
             // Almacenar Abono
             $obj_ar_payment = new AccountsReceivablePayment();
