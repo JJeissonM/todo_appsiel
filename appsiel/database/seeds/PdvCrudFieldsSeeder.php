@@ -96,6 +96,7 @@ class PdvCrudFieldsSeeder extends Seeder
             $this->campo(16, 'Impresion directa en Caja (Factura)', 'select', 'imprimir_factura_automaticamente', '{"0":"No","1":"Si","2":"Preguntar"}', '0', '', 0),
             $this->campo(17, 'Impresion directa en cocina (Comanda)', 'select', 'enviar_impresion_directamente_a_la_impresora', '{"0":"No","1":"Si","2":"Preguntar"}', '0', '', 0),
             $this->campo(18, 'Usar complemento JSPrintManager', 'select', 'usar_complemento_JSPrintManager', '{"0":"No","1":"Si"}', '0', '', 0),
+            $this->campo(19, 'Crear ensamble de recetas en la acumulacion', 'select', 'crear_ensamble_de_recetas', '{"0":"No","1":"Si"}', '0', '', 0),
         ];
     }
 
@@ -109,6 +110,7 @@ class PdvCrudFieldsSeeder extends Seeder
             'usar_complemento_JSPrintManager',
             'plantilla_factura_pos_default',
             'maneja_impoconsumo',
+            'crear_ensamble_de_recetas',
         ]);
     }
 

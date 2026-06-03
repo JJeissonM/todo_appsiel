@@ -31,7 +31,9 @@ class InvoicingService
     public function almacenar_remision_factura( $encabezado_factura, $inv_bodega_id )
     {
         $obj_inv_serv = new InventoriesServices();
-        $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $encabezado_factura, $inv_bodega_id ); // Sin contabilizar
+        $buscar_bodega_cocina = !is_null($encabezado_factura->pdv)
+                                && (int)$encabezado_factura->pdv->crear_ensamble_de_recetas === 1;
+        $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $encabezado_factura, $inv_bodega_id, $buscar_bodega_cocina ); // Sin contabilizar
 
         $obj_inv_doc_serv = new InvDocumentsService();
         $obj_inv_doc_serv->store_accounting_doc_head( $doc_remision->id, '' );

@@ -1199,7 +1199,7 @@ class FacturaPosController extends TransaccionController
         $obj_acumm_serv->hacer_desarme_automatico();        
         
         // 2. Un documento de ENSAMBLE (MK) por cada Item Platillo vendido
-        if ( (int)config( 'ventas_pos.crear_ensamble_de_recetas' ) )
+        if ($obj_acumm_serv->debe_crear_ensamble_de_recetas())
         {
             foreach ($obj_acumm_serv->invoices as $invoice) {
                 $obj_acumm_serv->hacer_preparaciones_recetas('Creado por factura POS ' . $invoice->get_label_documento(), $invoice->fecha, $invoice->id);
@@ -1214,7 +1214,8 @@ class FacturaPosController extends TransaccionController
         $obj_invt_serv = new InventoriesServices();
         $cantidades_facturadas = $obj_invt_serv->agregar_bodega_a_cantidades_facturadas(
             $obj_invt_serv->resumen_cantidades_facturadas($pdv_id),
-            $obj_acumm_serv->pos->bodega_default_id
+            $obj_acumm_serv->pos->bodega_default_id,
+            $obj_acumm_serv->debe_crear_ensamble_de_recetas()
         );
 
         $resultado_validacion = 1;
@@ -1269,9 +1270,11 @@ class FacturaPosController extends TransaccionController
     {
         $invoice = FacturaPos::find($factura_id);
 
-        if (!is_null($invoice) && (int)config('ventas_pos.crear_ensamble_de_recetas')) {
+        if (!is_null($invoice)) {
             $obj_acumm_serv = new AccumulationService($invoice->pdv_id);
-            $obj_acumm_serv->hacer_preparaciones_recetas('Creado por factura POS ' . $invoice->get_label_documento(), $invoice->fecha, $invoice->id);
+            if ($obj_acumm_serv->debe_crear_ensamble_de_recetas()) {
+                $obj_acumm_serv->hacer_preparaciones_recetas('Creado por factura POS ' . $invoice->get_label_documento(), $invoice->fecha, $invoice->id);
+            }
         }
 
         $obj_acumm_serv = new AccumulationService( 0 );

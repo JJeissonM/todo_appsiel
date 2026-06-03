@@ -623,19 +623,6 @@
 						</div>
 					</div>
 
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php 
-								$crear_ensamble_de_recetas = '';
-								if( isset($parametros['crear_ensamble_de_recetas'] ) )
-								{
-									$crear_ensamble_de_recetas = $parametros['crear_ensamble_de_recetas'];
-								}
-							?>
-							{{ Form::bsSelect('crear_ensamble_de_recetas', $crear_ensamble_de_recetas, 'Crear ensamble de recetas en la acumulación', ['No','Sí'], ['class'=>'form-control', 'required'=>'required']) }}
-						</div>
-					</div>
-
 				</div>
 
 				<div class="row">

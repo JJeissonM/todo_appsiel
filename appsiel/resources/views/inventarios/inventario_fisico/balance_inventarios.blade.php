@@ -18,6 +18,10 @@
         text-align: center;
     }
 
+    .text-danger {
+        color: #c00000 !important;
+    }
+
     .resumen {
         width: 100%;
         text-align: center;
@@ -85,6 +89,7 @@
 <h3>Balance de inventarios</h3>
 
 @php
+    $motivos_entradas = $datos_balance['motivos_entradas'] ?? [];
     $motivos_salidas = $datos_balance['motivos_salidas'] ?? [];
 @endphp
 
@@ -94,7 +99,9 @@
             <th style="width: 6%;">Cód.</th>
             <th>Producto</th>
             <th>S. Inicial</th>
-            <th>Entradas</th>
+            @foreach( $motivos_entradas as $motivo_entrada )
+                <th>{{ $motivo_entrada->descripcion }}</th>
+            @endforeach
             @foreach( $motivos_salidas as $motivo_salida )
                 <th>{{ $motivo_salida->descripcion }}</th>
             @endforeach
@@ -110,13 +117,15 @@
                 <td class="text-center">{{ $item->id }}</td>
                 <td>{{ $item->descripcion }} ({{ $item->unidad_medida1 }})</td>
                 <td class="text-right">{{ number_format($item->saldo_ini, 2, ',', '.') }}</td>
-                <td class="text-right">{{ number_format($item->entradas, 2, ',', '.') }}</td>
+                @foreach( $motivos_entradas as $motivo_entrada )
+                    <td class="text-right">{{ number_format($item->entradas_por_motivo[$motivo_entrada->id] ?? 0, 2, ',', '.') }}</td>
+                @endforeach
                 @foreach( $motivos_salidas as $motivo_salida )
                     <td class="text-right">{{ number_format($item->salidas_por_motivo[$motivo_salida->id] ?? 0, 2, ',', '.') }}</td>
                 @endforeach
                 <td class="text-right">{{ number_format($item->saldo_fin, 2, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($item->cantidad_if, 2, ',', '.') }}</td>
-                <td class="text-right">{{ number_format($item->diferencia, 2, ',', '.') }}</td>
+                <td class="text-right{{ $item->diferencia < 0 ? ' text-danger' : '' }}">{{ number_format($item->diferencia, 2, ',', '.') }}</td>
                 <td>&nbsp;</td>
             </tr>
         @endforeach
@@ -125,13 +134,15 @@
         <tr>
             <td colspan="2"></td>
             <td class="text-right">{{ number_format($datos_balance['totales']->saldo_ini, 2, ',', '.') }}</td>
-            <td class="text-right">{{ number_format($datos_balance['totales']->entradas, 2, ',', '.') }}</td>
+            @foreach( $motivos_entradas as $motivo_entrada )
+                <td class="text-right">{{ number_format($datos_balance['totales']->entradas_por_motivo[$motivo_entrada->id] ?? 0, 2, ',', '.') }}</td>
+            @endforeach
             @foreach( $motivos_salidas as $motivo_salida )
                 <td class="text-right">{{ number_format($datos_balance['totales']->salidas_por_motivo[$motivo_salida->id] ?? 0, 2, ',', '.') }}</td>
             @endforeach
             <td class="text-right">{{ number_format($datos_balance['totales']->saldo_fin, 2, ',', '.') }}</td>
             <td class="text-right">{{ number_format($datos_balance['totales']->cantidad_if, 2, ',', '.') }}</td>
-            <td class="text-right">{{ number_format($datos_balance['totales']->diferencia, 2, ',', '.') }}</td>
+            <td class="text-right{{ $datos_balance['totales']->diferencia < 0 ? ' text-danger' : '' }}">{{ number_format($datos_balance['totales']->diferencia, 2, ',', '.') }}</td>
             <td>&nbsp;</td>
         </tr>
     </tfoot>
