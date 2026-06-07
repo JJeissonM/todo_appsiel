@@ -254,10 +254,38 @@ class TerceroController extends Controller
 
     public function get_datos_desdes_terceros($campo_busqueda,$operador,$texto_busqueda)
     {
-        $datos = Tercero::where('core_terceros.estado','Activo')
-                    //->where('core_terceros.core_empresa_id',Auth::user()->empresa_id)
-                    ->where('core_terceros.'.$campo_busqueda,$operador,$texto_busqueda)
-                    ->select('core_terceros.id AS tercero_id','core_terceros.descripcion','core_terceros.numero_identificacion')
+        $consulta = Tercero::query();
+
+        if (Input::get('filtrar_por_cliente')) {
+            $consulta->leftJoin('vtas_clientes', 'vtas_clientes.core_tercero_id', '=', 'core_terceros.id')
+                ->where('vtas_clientes.estado','Activo');
+        } else {
+            $consulta->where('core_terceros.estado','Activo');
+        }
+
+        $datos = $consulta
+                    ->where(function ($query) use ($campo_busqueda, $operador, $texto_busqueda) {
+                        $query->where('core_terceros.'.$campo_busqueda,$operador,$texto_busqueda);
+
+                        if ($campo_busqueda == 'descripcion') {
+                            $query->orWhere('core_terceros.razon_social',$operador,$texto_busqueda)
+                                ->orWhere('core_terceros.nombre1',$operador,$texto_busqueda)
+                                ->orWhere('core_terceros.otros_nombres',$operador,$texto_busqueda)
+                                ->orWhere('core_terceros.apellido1',$operador,$texto_busqueda)
+                                ->orWhere('core_terceros.apellido2',$operador,$texto_busqueda);
+                        }
+                    })
+                    ->select(
+                        'core_terceros.id',
+                        'core_terceros.id AS tercero_id',
+                        'core_terceros.descripcion',
+                        'core_terceros.razon_social',
+                        'core_terceros.nombre1',
+                        'core_terceros.otros_nombres',
+                        'core_terceros.apellido1',
+                        'core_terceros.apellido2',
+                        'core_terceros.numero_identificacion'
+                    )
                     ->get()
                     ->take(7);
 
@@ -271,9 +299,18 @@ class TerceroController extends Controller
                 $es_el_primero = false;
             }
 
+            $descripcion = $linea->descripcion;
+            if ($descripcion == '') {
+                $descripcion = trim($linea->nombre1.' '.$linea->otros_nombres.' '.$linea->apellido1.' '.$linea->apellido2);
+            }
+
+            if ($linea->razon_social != '' && $linea->razon_social != $descripcion) {
+                $descripcion .= ' ('.$linea->razon_social.')';
+            }
+
             $html .= '<a class="list-group-item list-group-item-autocompletar '.$clase.'" data-tipo_campo="tercero" data-id="'.$linea->id.
                                 '" data-tercero_id="'.$linea->tercero_id.
-                                '" > '.$linea->descripcion.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
+                                '" > '.$descripcion.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
         }
 
         $html .= '</div>';

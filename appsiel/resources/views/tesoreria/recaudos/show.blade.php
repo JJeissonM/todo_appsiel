@@ -53,6 +53,11 @@
             <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
             @include('layouts.elementos.label_show_email',['email' => $doc_encabezado->email])
         </td>
+        @if( isset($pdv) && !is_null($pdv) )
+            <td style="border: solid 1px #ddd;">
+                <b>Punto de ventas: &nbsp;&nbsp;</b> {{ $pdv->descripcion }}
+            </td>
+        @endif
     </tr>
     <tr>
         <td colspan="2" style="border: solid 1px #ddd;">

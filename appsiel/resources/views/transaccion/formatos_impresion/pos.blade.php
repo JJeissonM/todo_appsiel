@@ -31,7 +31,17 @@
 </head>
 <body @if(Input::get('no_auto_print') != '1') onload="window.print()" @endif>
     <?php        
-        $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
+        $url_img = '';
+        if ( !empty($empresa->imagen) )
+        {
+            $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
+            $local_path_img = storage_path('app/logos_empresas/'.$empresa->imagen);
+
+            if ( file_exists($local_path_img) )
+            {
+                $url_img = $local_path_img;
+            }
+        }
 
         $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
     ?>
@@ -39,7 +49,9 @@
         <table border="0" style="margin-top: 12px !important;" width="100%">
             <tr>
                 <td width="15%">
-                    <img src="{{ $url_img }}" width="80px;" />
+                    @if( $url_img != '' )
+                        <img src="{{ $url_img }}" width="80px" />
+                    @endif
                 </td>
                 <td>
                     <div style="text-align: center;">

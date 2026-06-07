@@ -169,6 +169,8 @@ class ControlChequeController extends Controller
             {
                 $cta_x_cobrar_id = config('configuracion.cta_cartera_default');
             }
+
+            $registro_documento_pendiente->validar_saldo_disponible_para_abono($abono);
             
             ContabilidadController::contabilizar_registro2( array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] ), $cta_x_cobrar_id, $detalle_operacion, 0, $abono);
 

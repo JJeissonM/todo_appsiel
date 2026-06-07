@@ -27,41 +27,50 @@ class Cuota implements Estrategia
         $valores_cuotas = [];
         foreach( $cuotas as $cuota )
         {
-            if( $cuota->estado == 'Activo' )
+            if ( $cuota->estado != 'Activo' )
             {
-                if ( $cuota->tope_maximo != '' ) // si la cuota maneja tope máximo 
-                {
-                    // El valor_acumulado no se puede pasar del tope_maximo
-                    $saldo_pendiente = $cuota->tope_maximo - $cuota->valor_acumulado;
-                    
-                    if ( $saldo_pendiente < $cuota->valor_cuota )
-                    {
-                        $cuota->valor_acumulado += $saldo_pendiente;
-                        $valor_real_cuota = $saldo_pendiente;
-                    }else{
-                        $cuota->valor_acumulado += $cuota->valor_cuota;
-                        $valor_real_cuota = $cuota->valor_cuota;
-                    }
+                continue;
+            }
 
-                    if ( $cuota->valor_acumulado >= $cuota->tope_maximo ) 
-                    {
-                        $cuota->estado = "Inactivo";
-                    }
+            if ( $cuota->tope_maximo != '' ) // si la cuota maneja tope máximo
+            {
+                // El valor_acumulado no se puede pasar del tope_maximo
+                $saldo_pendiente = $cuota->tope_maximo - $cuota->valor_acumulado;
+
+                if ( $saldo_pendiente <= 0 )
+                {
+                    $cuota->estado = "Inactivo";
+                    $cuota->save();
+                    continue;
+                }
+
+                if ( $saldo_pendiente < $cuota->valor_cuota )
+                {
+                    $cuota->valor_acumulado += $saldo_pendiente;
+                    $valor_real_cuota = $saldo_pendiente;
                 }else{
                     $cuota->valor_acumulado += $cuota->valor_cuota;
                     $valor_real_cuota = $cuota->valor_cuota;
                 }
-                
-                $cuota->save();
 
-                $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_real_cuota );
-                
-                $valores_cuotas[] = [
-                                        'valor_devengo' => $valores->devengo,
-                                        'valor_deduccion' => $valores->deduccion,
-                                        'nom_cuota_id' => $cuota->id 
-                                    ];
+                if ( $cuota->valor_acumulado >= $cuota->tope_maximo )
+                {
+                    $cuota->estado = "Inactivo";
+                }
+            }else{
+                $cuota->valor_acumulado += $cuota->valor_cuota;
+                $valor_real_cuota = $cuota->valor_cuota;
             }
+
+            $cuota->save();
+
+            $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_real_cuota );
+
+            $valores_cuotas[] = [
+                                    'valor_devengo' => $valores->devengo,
+                                    'valor_deduccion' => $valores->deduccion,
+                                    'nom_cuota_id' => $cuota->id
+                                ];
         }
 
         return $valores_cuotas;

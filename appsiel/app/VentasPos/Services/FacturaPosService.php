@@ -63,7 +63,7 @@ class FacturaPosService
         $cantidad_campos = count($lista_campos);
         $fecha_factura = date('Y-m-d');
         if (config('ventas_pos.asignar_fecha_apertura_a_facturas')) {
-            $fecha_factura = $pdv->ultima_fecha_apertura();
+            $fecha_factura = $pdv->ultima_fecha_apertura(false);
         }
 
         $lista_campos = (new ModeloService())->personalizar_campos($transaccion->id, $transaccion, $lista_campos, $cantidad_campos, 'create', null);

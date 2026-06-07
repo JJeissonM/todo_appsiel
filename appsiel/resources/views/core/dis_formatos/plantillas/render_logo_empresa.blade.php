@@ -4,6 +4,7 @@
     $img = '';
     $ancho_logo = $ancho_logo ?? 160;
     $alto_logo = $alto_logo ?? 100;
+    $src = $url;
 
     $image = false;
     $local_path = null;
@@ -33,11 +34,16 @@
 
     if ($local_path && file_exists($local_path)) {
         $image = @getimagesize($local_path);
+
+        if ($image !== false) {
+            $mime = $image['mime'] ?? 'image/'.pathinfo($local_path, PATHINFO_EXTENSION);
+            $src = 'data:'.$mime.';base64,'.base64_encode(file_get_contents($local_path));
+        }
     }
 
     if ($image === false) {
         if (!empty($url)) {
-            $img = '<img src="'.$url.'" style="margin-left: 10px; max-width: '.$ancho_logo.'px; max-height: '.$alto_logo.'px;" />';
+            $img = '<img src="'.$src.'" style="margin-left: 10px; max-width: '.$ancho_logo.'px; max-height: '.$alto_logo.'px;" />';
         }
     } else {
         $ancho = $image[0];            
@@ -50,14 +56,14 @@
             $ancho = $ancho_logo;
             $palto = ($alto_logo*100)/$alto;
             $ancho = $ancho*$palto/100;
-            $img = '<img src="'.$url.'" width="'.$ancho.'" height="'.$alto_logo.'" style="margin-left: 10px" />';
+            $img = '<img src="'.$src.'" width="'.$ancho.'" height="'.$alto_logo.'" style="margin-left: 10px" />';
         }else{
-            $img = '<img src="'.$url.'" height="'.$alto.'" width="'.$ancho_logo.'" style="margin-left: 10px" />';
+            $img = '<img src="'.$src.'" height="'.$alto.'" width="'.$ancho_logo.'" style="margin-left: 10px" />';
         }
         }else{
         $palto = ($alto_logo*100)/$alto;
         $ancho = $ancho*$palto/100;
-        $img = '<img src="'.$url.'" width="'.$ancho.'" height="'.$alto_logo.'" style="margin-left: 10px" />';
+        $img = '<img src="'.$src.'" width="'.$ancho.'" height="'.$alto_logo.'" style="margin-left: 10px" />';
         }
     }
 

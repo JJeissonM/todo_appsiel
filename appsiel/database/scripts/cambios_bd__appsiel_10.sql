@@ -651,4 +651,13 @@ UPDATE `permissions` SET `modelo_id` = '355' WHERE `permissions`.`id` = 215;
 INSERT INTO `sys_modelos` (`id`, `descripcion`, `modelo`, `name_space`, `modelo_relacionado`, `url_crear`, `url_edit`, `url_print`, `url_ver`, `enlaces`, `url_estado`, `url_eliminar`, `controller_complementario`, `url_form_create`, `home_miga_pan`, `ruta_storage_imagen`, `ruta_storage_archivo_adjunto`, `created_at`, `updated_at`) VALUES ('360', 'Planillas Fuec', 'FuecAdicional', 'App\\Contratotransporte\\FuecAdicional', '', '', '', '', '', '', '', '', '', '', '', '', '', '2026-05-25 15:31:07', NULL);
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (NULL, '19', '360', 'cte_fuec_adicional_index', 'Planillas FUEC', 'web', '356', '2', '1', '', '2026-05-25 15:32:29', NULL);
 
+-- Quitar campo "Documento soporte" de modelos de invetarios
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 25 AND `core_campo_id` = 92;
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 248 AND `core_campo_id` = 92;
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 249 AND `core_campo_id` = 92;
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 250 AND `core_campo_id` = 92;
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 251 AND `core_campo_id` = 92;
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 252 AND `core_campo_id` = 92;
 
+-- Permiso para clonar documento de inventario fisico
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES ('730', '8', '0', 'inventarios.inventario_fisico.clonar_documento', 'Clonar Inventario Fisico', '', '0', '0', '0', '', '2026-06-01 05:27:12', NULL);

@@ -19,6 +19,15 @@ class CxcMovimiento extends Model
 
   public $urls_acciones = '{"show":"no"}';
 
+  protected static function boot()
+  {
+    parent::boot();
+
+    static::saving(function ($movimiento) {
+      $movimiento->validar_valores_cartera();
+    });
+  }
+
   public function tercero()
   {
     return $this->belongsTo(Tercero::class,'core_tercero_id');
@@ -26,6 +35,8 @@ class CxcMovimiento extends Model
 
   public function actualizar_saldos($abono)
   {
+    $this->validar_saldo_disponible_para_abono($abono);
+
     $nuevo_saldo = $this->saldo_pendiente - $abono;
 
     $nuevo_valor_pagado = $this->valor_pagado + $abono;
@@ -42,6 +53,39 @@ class CxcMovimiento extends Model
     }
 
     $this->save();
+  }
+
+  public function validar_saldo_disponible_para_abono($abono)
+  {
+    $nuevo_valor_pagado = (float)$this->valor_pagado + (float)$abono;
+    $this->validar_valor_pagado_no_supera_documento($nuevo_valor_pagado);
+  }
+
+  public function validar_valores_cartera()
+  {
+    $this->validar_valor_pagado_no_supera_documento($this->valor_pagado);
+  }
+
+  public function validar_valor_pagado_no_supera_documento($valor_pagado)
+  {
+    $valor_documento = (float)$this->valor_documento;
+    $valor_pagado = (float)$valor_pagado;
+    $tolerancia = 0.01;
+
+    if (abs($valor_pagado) - abs($valor_documento) <= $tolerancia) {
+      return;
+    }
+
+    throw new \InvalidArgumentException(
+      'El valor pagado de CxC no puede superar el valor del documento. Documento: ' . $this->get_documento_label() .
+      '. Valor documento: ' . number_format($valor_documento, 2, ',', '.') .
+      '. Valor pagado intentado: ' . number_format($valor_pagado, 2, ',', '.') . '.'
+    );
+  }
+
+  public function get_documento_label()
+  {
+    return $this->core_tipo_transaccion_id . '-' . $this->core_tipo_doc_app_id . '-' . $this->consecutivo;
   }
 
   public function get_movement_document()
@@ -186,6 +230,7 @@ class CxcMovimiento extends Model
 
     //    -9.000        =          0                    + -9.000
     $nuevo_valor_pagado = $doc_encabezado->valor_pagado + $abono;
+    $doc_encabezado->validar_valor_pagado_no_supera_documento($nuevo_valor_pagado);
 
     $doc_encabezado->valor_pagado = $nuevo_valor_pagado; // -9.000
     $doc_encabezado->saldo_pendiente = $nuevo_saldo; // -3.000

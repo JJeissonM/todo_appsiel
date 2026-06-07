@@ -43,6 +43,12 @@
         <td><b>Teléfono:</b></td>
         <td>{{ $doc_encabezado->telefono1 }}</td>
     </tr>
+    @if( isset($pdv) && !is_null($pdv) )
+        <tr>
+            <td><b>Punto de ventas:</b></td>
+            <td colspan="3">{{ $pdv->descripcion }}</td>
+        </tr>
+    @endif
 </table>
 
 @include('matriculas.facturas.datos_estudiante_recaudo')

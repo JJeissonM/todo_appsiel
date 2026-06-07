@@ -77,7 +77,7 @@ class FacturaRestauranteController extends TransaccionController
         $fecha = date('Y-m-d');
         if(config('ventas_pos.asignar_fecha_apertura_a_facturas'))
         {
-            $fecha = $pdv->ultima_fecha_apertura();
+            $fecha = $pdv->ultima_fecha_apertura(false);
         }
         $fecha_vencimiento = $pdv->cliente->fecha_vencimiento_pago( $fecha );
 

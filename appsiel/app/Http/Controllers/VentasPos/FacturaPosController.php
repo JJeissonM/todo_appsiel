@@ -147,7 +147,7 @@ class FacturaPosController extends TransaccionController
         $fecha = date('Y-m-d');
         if(config('ventas_pos.asignar_fecha_apertura_a_facturas'))
         {
-            $fecha = $pdv->ultima_fecha_apertura();
+            $fecha = $pdv->ultima_fecha_apertura(false);
         }
         $fecha_vencimiento = $pdv->cliente->fecha_vencimiento_pago( $fecha );
 
@@ -885,7 +885,7 @@ class FacturaPosController extends TransaccionController
         if ($fecha == '') {
             $fecha = date('Y-m-d');
             if (!is_null($pdv) && config('ventas_pos.asignar_fecha_apertura_a_facturas')) {
-                $fecha = $pdv->ultima_fecha_apertura();
+                $fecha = $pdv->ultima_fecha_apertura(false);
             }
             $request->merge(['fecha' => $fecha]);
         }
@@ -1199,7 +1199,7 @@ class FacturaPosController extends TransaccionController
         $obj_acumm_serv->hacer_desarme_automatico();        
         
         // 2. Un documento de ENSAMBLE (MK) por cada Item Platillo vendido
-        if ( (int)config( 'ventas_pos.crear_ensamble_de_recetas' ) )
+        if ($obj_acumm_serv->debe_crear_ensamble_de_recetas())
         {
             foreach ($obj_acumm_serv->invoices as $invoice) {
                 $obj_acumm_serv->hacer_preparaciones_recetas('Creado por factura POS ' . $invoice->get_label_documento(), $invoice->fecha, $invoice->id);
@@ -1212,15 +1212,35 @@ class FacturaPosController extends TransaccionController
         }
 
         $obj_invt_serv = new InventoriesServices();
-        $lista_items_aux = $obj_invt_serv->resumen_cantidades_facturadas($pdv_id)->toArray();
-        
-        $lista_items = [];
-        foreach( $lista_items_aux AS $linea )
+        $cantidades_facturadas = $obj_invt_serv->agregar_bodega_a_cantidades_facturadas(
+            $obj_invt_serv->resumen_cantidades_facturadas($pdv_id),
+            $obj_acumm_serv->pos->bodega_default_id,
+            $obj_acumm_serv->debe_crear_ensamble_de_recetas()
+        );
+
+        $resultado_validacion = 1;
+        foreach( $cantidades_facturadas->groupBy('inv_bodega_id') AS $bodega_id => $cantidades_bodega )
         {
-            $lista_items[$linea['inv_producto_id']] = $linea['cantidad_facturada'];
+            $lista_items = [];
+            foreach( $cantidades_bodega AS $linea )
+            {
+                $lista_items[$linea->inv_producto_id] = $linea->cantidad_facturada;
+            }
+
+            $validacion_bodega = $obj_invt_serv->tabla_items_existencias_negativas( (int)$bodega_id, $obj_acumm_serv->invoices->last()->fecha, $lista_items );
+
+            if ( $validacion_bodega != 1 )
+            {
+                if ( $resultado_validacion == 1 )
+                {
+                    $resultado_validacion = '';
+                }
+
+                $resultado_validacion .= $validacion_bodega;
+            }
         }
 
-        return $obj_invt_serv->tabla_items_existencias_negativas( $obj_acumm_serv->pos->bodega_default_id, $obj_acumm_serv->invoices->last()->fecha, $lista_items );
+        return $resultado_validacion;
 
     }
 
@@ -1250,9 +1270,11 @@ class FacturaPosController extends TransaccionController
     {
         $invoice = FacturaPos::find($factura_id);
 
-        if (!is_null($invoice) && (int)config('ventas_pos.crear_ensamble_de_recetas')) {
+        if (!is_null($invoice)) {
             $obj_acumm_serv = new AccumulationService($invoice->pdv_id);
-            $obj_acumm_serv->hacer_preparaciones_recetas('Creado por factura POS ' . $invoice->get_label_documento(), $invoice->fecha, $invoice->id);
+            if ($obj_acumm_serv->debe_crear_ensamble_de_recetas()) {
+                $obj_acumm_serv->hacer_preparaciones_recetas('Creado por factura POS ' . $invoice->get_label_documento(), $invoice->fecha, $invoice->id);
+            }
         }
 
         $obj_acumm_serv = new AccumulationService( 0 );
@@ -1353,6 +1375,9 @@ class FacturaPosController extends TransaccionController
     public function store_registro_ingresos_gastos(Request $request)
     {
         $core_tercero_id = (int)$request->cliente_proveedor_id;
+        if ($core_tercero_id <= 0) {
+            $core_tercero_id = (int)$request->core_tercero_id;
+        }
 
         if ($core_tercero_id <= 0) {
             return '<div class="alert alert-danger"><strong>Error:</strong> Debe seleccionar un Cliente/Proveedor válido antes de guardar el registro.</div>';
@@ -1365,6 +1390,7 @@ class FacturaPosController extends TransaccionController
 
         // $this->datos es una variable de 
         $this->datos = $request->all();
+        $this->datos['cliente_proveedor_id'] = $core_tercero_id;
         $this->datos['core_tercero_id'] = $core_tercero_id;
         $this->datos['descripcion'] = $request->detalle_operacion;
 

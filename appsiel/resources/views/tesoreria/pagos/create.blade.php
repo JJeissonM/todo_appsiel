@@ -246,6 +246,11 @@
 				{
 					return false;	
 				}
+
+				if ( !validar_punto_venta_requerido() )
+				{
+					return false;
+				}
 				
 				var valor_total = parseFloat( $('#valor_total').val() );
 
@@ -273,6 +278,24 @@
 				$('#form_create').submit();	
 					
 			});
+
+			function validar_punto_venta_requerido()
+			{
+				if (!$('#pdv_id').prop('required')) {
+					return true;
+				}
+
+				var pdv_id = $('#pdv_id').val();
+				var pdv_id_numerico = parseInt(pdv_id, 10);
+
+				if (pdv_id == '' || pdv_id == null || isNaN(pdv_id_numerico) || pdv_id_numerico <= 0) {
+					alert('Este campo es requerido: Punto de Ventas (pdv_id)');
+					$('#pdv_id').focus();
+					return false;
+				}
+
+				return true;
+			}
 
 
 			function calcular_totales()

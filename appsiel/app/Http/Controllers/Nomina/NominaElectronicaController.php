@@ -128,11 +128,21 @@ class NominaElectronicaController extends TransaccionController
                 'fecha' => $lapso->fecha_final,
             ];
             
-            $ids_contratos_all_docs_generados = DocumentoSoporte::where( $data )->get()->pluck('nom_contrato_id')->toArray();
+            $ids_contratos_all_docs_generados = DocumentoSoporte::where( $data )->get()->pluck('nom_contrato_id')->unique()->values()->toArray();
 
             $empleados_con_movimiento = $lapso->get_empleados_con_movimiento();
+            $ids_contratos_empleados_con_movimiento = [];
+            foreach ( $empleados_con_movimiento as $registro_empleado )
+            {
+                $ids_contratos_empleados_con_movimiento[] = $registro_empleado->nom_contrato_id;
+            }
 
-            if( count($ids_contratos_all_docs_generados) == count($empleados_con_movimiento) )
+            if( empty($ids_contratos_empleados_con_movimiento) )
+            {
+                return '<div class="alert alert-warning">No hay registros de nómina para generar documentos de soporte en el periodo seleccionado.</div>';
+            }
+
+            if( count(array_intersect($ids_contratos_empleados_con_movimiento, $ids_contratos_all_docs_generados)) == count($ids_contratos_empleados_con_movimiento) )
             {
                 return '<h4>Ya se generaron los documentos de nómina electrónica para TODOS los empleados en el periodo seleccionado.</h4>';
             }

@@ -161,9 +161,13 @@
                                 <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
                             </td>
                             <td>
+                                @if( isset($pdv) && !is_null($pdv) )
+                                    <b>Punto de ventas: &nbsp;&nbsp;</b> {{ $pdv->descripcion }}
+                                    <br/>
+                                @endif
                                 @if($doc_encabezado->estado == 'Anulado')
                                     <b>Documento Anulado</b>
-                                    @endif
+                                @endif
                             </td>
                         </tr>
                         <tr>

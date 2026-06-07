@@ -27,7 +27,7 @@ class ComprasDocRegistro extends Model
     											['Stock','35px'],
                                                 ['Cantidad',''],
                                                 ['Precio Compra (IVA incluido)',''],
-                                                ['Dcto. (%)',''],
+                                                ['Dcto.',''],
                                                 ['Dcto. Tot. ($)',''],
                                                 ['Ret. Fuente',''],
                                                 ['IVA',''],

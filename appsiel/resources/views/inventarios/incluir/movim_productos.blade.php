@@ -61,7 +61,7 @@
                     $url = '/';
                     if( $productos[$i]['core_tipo_transaccion_id'] != '' )
                     {
-                        $modelo_crud_id = App\Sistema\TipoTransaccion::find( $productos[$i]['core_tipo_transaccion_id'] )->core_modelo_id;
+                        $modelo_crud_id = $productos[$i]['core_modelo_id'];
                         $url = 'inventarios/'.$productos[$i]['documento_id'].'?id=8&id_modelo='.$modelo_crud_id.'&id_transaccion='.$productos[$i]['core_tipo_transaccion_id'];
                     }
                         

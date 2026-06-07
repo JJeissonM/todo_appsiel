@@ -8,6 +8,7 @@
 	
 	<?php
 		$array_cuentas = App\Contabilidad\ContabCuenta::opciones_campo_select();
+		$arr_motivos_inventarios = App\Inventarios\InvMotivo::opciones_campo_select();
 	?>
 
 	<div class="container-fluid">
@@ -30,7 +31,7 @@
 				<div class="row">
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
+							<?php
 								$pdv_id_default = '1';
 								if( isset($parametros['pdv_id_default'] ) )
 								{
@@ -44,7 +45,7 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
+							<?php
 								$usar_modal_botones_medios_pago = '';
 								if( isset($parametros['usar_modal_botones_medios_pago'] ) )
 								{
@@ -76,7 +77,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<div class="row" style="padding:5px;">
-								<?php 
+								<?php
 									$asignar_fecha_apertura_a_facturas = '';
 									if( isset($parametros['asignar_fecha_apertura_a_facturas'] ) )
 									{
@@ -107,7 +108,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<div class="row" style="padding:5px;">
-								<?php 
+								<?php
 									$tiempo_espera_guardar_factura = '7';
 									if( isset($parametros['tiempo_espera_guardar_factura'] ) )
 									{
@@ -622,16 +623,32 @@
 						</div>
 					</div>
 
+				</div>
+
+				<div class="row">
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
-								$crear_ensamble_de_recetas = '';
-								if( isset($parametros['crear_ensamble_de_recetas'] ) )
+							<?php
+								$recetas_motivo_salida_id = 3;
+								if( isset($parametros['recetas_motivo_salida_id'] ) )
 								{
-									$crear_ensamble_de_recetas = $parametros['crear_ensamble_de_recetas'];
+									$recetas_motivo_salida_id = $parametros['recetas_motivo_salida_id'];
 								}
 							?>
-							{{ Form::bsSelect('crear_ensamble_de_recetas', $crear_ensamble_de_recetas, 'Crear ensamble de recetas en la acumulación', ['No','Sí'], ['class'=>'form-control', 'required'=>'required']) }}
+							{{ Form::bsSelect('recetas_motivo_salida_id', $recetas_motivo_salida_id, 'Motivo salida ensambles/desarmes de recetas', $arr_motivos_inventarios, ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$recetas_motivo_entrada_id = 4;
+								if( isset($parametros['recetas_motivo_entrada_id'] ) )
+								{
+									$recetas_motivo_entrada_id = $parametros['recetas_motivo_entrada_id'];
+								}
+							?>
+							{{ Form::bsSelect('recetas_motivo_entrada_id', $recetas_motivo_entrada_id, 'Motivo entrada ensambles/desarmes de recetas', $arr_motivos_inventarios, ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 

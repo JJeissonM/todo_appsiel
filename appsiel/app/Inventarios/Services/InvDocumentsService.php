@@ -173,6 +173,7 @@ class InvDocumentsService
     {
         $invoice_doc_lines = $data['invoice_doc_lines'];
         $inv_bodega_id = $data['inv_bodega_id'];
+        $invoice_doc_line_bodega_ids = $data['invoice_doc_line_bodega_ids'] ?? [];
 
         foreach( $invoice_doc_lines AS $invoice_line )
         {
@@ -186,14 +187,16 @@ class InvDocumentsService
                 continue;
             }
 
-            $costo_unitario = InvCostoPromProducto::get_costo_promedio(   $delivery_note_header->inv_bodega_id, $invoice_line->inv_producto_id );
+            $linea_bodega_id = $invoice_doc_line_bodega_ids[$invoice_line->id] ?? $inv_bodega_id;
+
+            $costo_unitario = InvCostoPromProducto::get_costo_promedio( $linea_bodega_id, $invoice_line->inv_producto_id );
             $cantidad = $invoice_line->cantidad * -1; // Salida de inventarios
             $costo_total = $cantidad * $costo_unitario;
 
             $delivery_note_line_data = $delivery_note_header->toArray();
             $delivery_note_line_data['inv_doc_encabezado_id'] = $delivery_note_header->id;
             $delivery_note_line_data['core_empresa_id'] = $delivery_note_header->core_empresa_id;
-            $delivery_note_line_data['inv_bodega_id'] = $inv_bodega_id;
+            $delivery_note_line_data['inv_bodega_id'] = $linea_bodega_id;
             $delivery_note_line_data['core_tercero_id'] = $delivery_note_header->core_tercero_id;
 
             $delivery_note_line_data[ 'inv_motivo_id' ] = $invoice_line->vtas_motivo_id; // Warning: $linea tiene un campo especifico

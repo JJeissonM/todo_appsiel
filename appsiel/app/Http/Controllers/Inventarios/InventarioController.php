@@ -1100,7 +1100,7 @@ class InventarioController extends TransaccionController
                                 '" data-accion="na" '.
                                 '" data-ultimo_item="'.$ultimo_item;
 
-            $descripcion_item = $linea->get_value_to_show_interno();
+            $descripcion_item = $linea->get_value_to_show_interno( true );
 
             $html .=            '" > ' . $descripcion_item . ' </a>';
 
@@ -1269,7 +1269,7 @@ class InventarioController extends TransaccionController
     {
         $producto = InvProducto::find($request->inv_producto_id);
 
-        $producto->descripcion = $producto->get_value_to_show();
+        $producto->descripcion = $producto->get_value_to_show(true);
 
         $producto->unidad_medida1 = $producto->get_unidad_medida1();
 

@@ -51,14 +51,29 @@ class AccumulationService
             $fecha = $this->pos->ultima_fecha_apertura();
         }
         
-        $parametros_config_inventarios = config('inventarios');
+        $parametros_config_inventarios = $this->get_parametros_inventarios_recetas();
 
         $obj_inv_doc_serv = new InventoriesServices();
-        return $obj_inv_doc_serv->create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios, $detalle_operacion );
+        $cantidades_facturadas = $obj_inv_doc_serv->agregar_bodega_a_cantidades_facturadas(
+            $obj_inv_doc_serv->resumen_cantidades_facturadas($pdv_id),
+            $bodega_default_id
+        );
+
+        $resultado = 0;
+        foreach ($cantidades_facturadas->groupBy('inv_bodega_id') as $bodega_id => $cantidades_bodega)
+        {
+            $resultado = $obj_inv_doc_serv->create_document_making( $pdv_id, (int)$bodega_id, $fecha, $parametros_config_inventarios, $detalle_operacion, $cantidades_bodega );
+        }
+
+        return $resultado;
     }
 
     public function hacer_preparaciones_recetas( $detalle_operacion = '', $fecha = null, $factura_pos_id = null )
     {
+        if (!$this->debe_crear_ensamble_de_recetas()) {
+            return 0;
+        }
+
         $pdv_id = $this->pos->id;
         $bodega_default_id = $this->pos->bodega_default_id;
         
@@ -66,13 +81,48 @@ class AccumulationService
             $fecha = $this->pos->ultima_fecha_apertura();
         }
 
-        $parametros_config_inventarios = config('inventarios');
+        $parametros_config_inventarios = $this->get_parametros_inventarios_recetas();
 
         $obj_inv_doc_serv = new RecipeServices();
+        $obj_inv_serv = new InventoriesServices();
         
         $cantidades_facturadas = $obj_inv_doc_serv->resumen_cantidades_facturadas($pdv_id, null, $factura_pos_id);
+        $cantidades_facturadas = $obj_inv_serv->agregar_bodega_a_cantidades_facturadas($cantidades_facturadas, $bodega_default_id);
         
-        return $obj_inv_doc_serv->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios, $detalle_operacion, $factura_pos_id );
+        $resultado = 0;
+        foreach ($cantidades_facturadas->groupBy('inv_bodega_id') as $bodega_id => $cantidades_bodega)
+        {
+            $resultado = $obj_inv_doc_serv->create_document_making( $cantidades_bodega, (int)$bodega_id, $fecha, $parametros_config_inventarios, $detalle_operacion, $factura_pos_id );
+        }
+
+        return $resultado;
+    }
+
+    public function debe_crear_ensamble_de_recetas()
+    {
+        return !is_null($this->pos) && (int)$this->pos->crear_ensamble_de_recetas === 1;
+    }
+
+    public function get_parametros_inventarios_recetas()
+    {
+        $parametros_config_inventarios = config('inventarios');
+
+        $motivo_salida_id = config('ventas_pos.recetas_motivo_salida_id', 3);
+        if ( $motivo_salida_id == null || $motivo_salida_id === '' )
+        {
+            $motivo_salida_id = 3;
+        }
+
+        $motivo_entrada_id = config('ventas_pos.recetas_motivo_entrada_id', 4);
+        if ( $motivo_entrada_id == null || $motivo_entrada_id === '' )
+        {
+            $motivo_entrada_id = 4;
+        }
+
+        $parametros_config_inventarios['motivo_salida_id'] = $motivo_salida_id;
+        $parametros_config_inventarios['motivo_entrada_id'] = $motivo_entrada_id;
+
+        return $parametros_config_inventarios;
     }
 
     /**
@@ -99,10 +149,11 @@ class AccumulationService
 
         // Crear remisión si no existe
         $bodega_default_id = $invoice->pdv->bodega_default_id;
+        $buscar_bodega_cocina = (int)$invoice->pdv->crear_ensamble_de_recetas === 1;
 
         if ($invoice->remision_doc_encabezado_id == 0) {
             $obj_inv_serv = new InventoriesServices();
-            $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $invoice, $bodega_default_id );
+            $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $invoice, $bodega_default_id, $buscar_bodega_cocina );
             
             $invoice->remision_doc_encabezado_id = $doc_remision->id;
             $invoice->save();
@@ -126,6 +177,7 @@ class AccumulationService
 
         //if ($this->is_pending_accounting($array_wheres)) {
             $lineas_registros = $invoice->lineas_registros;
+            $obj_inv_serv = new InventoriesServices();
 
             foreach ($lineas_registros as $linea)
             {
@@ -133,8 +185,11 @@ class AccumulationService
                     continue;
                 }
                 
+                $datos_linea = $datos;
+                $datos_linea['inv_bodega_id'] = $obj_inv_serv->get_bodega_id_producto($linea->inv_producto_id, $bodega_default_id, $buscar_bodega_cocina);
+
                 // Movimiento de Ventas
-                VtasMovimiento::create( $datos + $linea->toArray() );
+                VtasMovimiento::create( $datos_linea + $linea->toArray() );
                 
                 $linea->estado = 'Acumulado';
                 $linea->save();

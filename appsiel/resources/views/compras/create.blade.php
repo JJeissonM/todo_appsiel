@@ -85,6 +85,7 @@
 				{{ Form::hidden('url_id', Input::get('id'), ['id'=>'url_id']) }}
 				{{ Form::hidden('url_id_modelo', Input::get('id_modelo'), ['id'=>'url_id_modelo']) }}
 				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion'), ['id'=>'url_id_transaccion'] ) }}
+				{{ Form::hidden('url_proveedor_id', Input::get('proveedor_id'), ['id'=>'url_proveedor_id']) }}
 
 				<input type="hidden" name="proveedor_id" id="proveedor_id" value="" required="required">
 				<input type="hidden" name="clase_proveedor_id" id="clase_proveedor_id" value="" required="required">
@@ -235,6 +236,7 @@
 			{
 				$('#item_sugerencia_cliente').after( $('#item_sugerencia_cliente').val() );
 				seleccionar_proveedor( $('#item_sugerencia_cliente').next() );
+				bloquear_bodega_por_proveedor_url();
 			}
 
 			$('#forma_pago').on('change',function (event){

@@ -59,7 +59,11 @@
                 <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
             </td>
             <td style="border: solid 1px #ddd;">
-                &nbsp;
+                @if( isset($pdv) && !is_null($pdv) )
+                    <b>Punto de ventas: &nbsp;&nbsp;</b> {{ $pdv->descripcion }}
+                @else
+                    &nbsp;
+                @endif
             </td>
         </tr>
         <tr>        

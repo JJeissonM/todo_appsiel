@@ -79,7 +79,9 @@ class CompraController extends TransaccionController
         $motivos = ['11-entrada' => 'Compras nacionales'];
 
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
-        $tabla = new TablaIngresoLineaRegistros(ComprasTransaccion::get_datos_tabla_ingreso_lineas_registros($this->transaccion, $motivos));
+        $tabla = new TablaIngresoLineaRegistros(ComprasTransaccion::get_datos_tabla_ingreso_lineas_registros($this->transaccion, $motivos, [
+            'ocultar_columna_motivo' => true
+        ]));
 
         $item_sugerencia_proveedor = '';
         if (Input::get('proveedor_id') != null) {
@@ -618,6 +620,7 @@ class CompraController extends TransaccionController
 
         // EAs asignadas a esta factura (IDs separados por coma en entrada_almacen_id)
         $ea_asignadas = collect([]);
+        $bodegas_ingreso_mercancia = '';
         $entrada_almacen_id = is_null($doc_encabezado->entrada_almacen_id) ? '' : $doc_encabezado->entrada_almacen_id;
         $ea_ids = array_filter(
             array_map('intval', explode(',', $entrada_almacen_id)),
@@ -629,6 +632,13 @@ class CompraController extends TransaccionController
             // Cargar con totales usando el método existente
             $ea_asignadas = InvDocEncabezado::get_documentos_por_transaccion(35, $tercero_id, 'Facturada')
                 ->whereIn('id', $ea_ids);
+
+            $bodegas_ingreso_mercancia = InvDocEncabezado::whereIn('inv_doc_encabezados.id', $ea_ids)
+                ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_doc_encabezados.inv_bodega_id')
+                ->whereNotNull('inv_bodegas.descripcion')
+                ->pluck('inv_bodegas.descripcion')
+                ->unique()
+                ->implode(', ');
         }
 
 
@@ -704,6 +714,7 @@ class CompraController extends TransaccionController
             'pivot_items_xml',
             'productos_para_select',
             'ea_asignadas',
+            'bodegas_ingreso_mercancia',
             'mensaje_advertencia_retencion',
             'mostrar_boton_confirmar',
             'medios_recaudo_confirmacion',

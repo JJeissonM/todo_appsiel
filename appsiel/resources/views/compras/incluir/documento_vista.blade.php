@@ -1,6 +1,6 @@
 <div class="table-responsive">
     <table class="table table-bordered table-striped" style="font-size: 13px;">
-        {{ Form::bsTableHeader(['Cód.','Producto','U.M.','Cantidad','Precio','Total bruto','Sub-total <br> (Sin IVA)','% Dcto.','Total Dcto.','IVA','Total IVA','Total','Acción']) }}
+        {{ Form::bsTableHeader(['Cód.','Producto','U.M.','Cantidad','Precio','Total bruto','Sub-total <br> (Sin IVA)','Dcto.','Total Dcto.','IVA','Total IVA','Total','Acción']) }}
         <tbody>
             <?php            
                 $total_cantidad = 0;

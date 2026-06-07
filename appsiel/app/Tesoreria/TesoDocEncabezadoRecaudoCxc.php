@@ -201,6 +201,7 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
         {
             $abono = (float)$lineas_registros[$i]->abono;
             $registro_documento_pendiente = CxcMovimiento::find( (int)$lineas_registros[$i]->id_doc );
+            $registro_documento_pendiente->validar_saldo_disponible_para_abono($abono);
             
             // Almacenar registro de abono
             $datos = ['core_tipo_transaccion_id' => $this->core_tipo_transaccion_id]+

@@ -70,6 +70,7 @@ class PagoController extends TransaccionController
         $cantidad_campos = count($lista_campos);
 
         $lista_campos = ModeloController::personalizar_campos($id_transaccion,$this->transaccion,$lista_campos,$cantidad_campos,'create');
+        $lista_campos = $this->aplicar_metadato_punto_venta($lista_campos);
 
         $form_create = [
                       'url' => json_decode( app( $this->modelo->name_space )->urls_acciones )->store,
@@ -108,6 +109,8 @@ class PagoController extends TransaccionController
      */
     public function store(Request $request)
     {
+        $this->validar_punto_venta($request);
+
         $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
         $tabla_registros_documento = json_decode($request->tabla_registros_documento);
@@ -120,6 +123,48 @@ class PagoController extends TransaccionController
 
         // se llama la vista de PagoController@show
         return redirect( 'tesoreria/pagos/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+    }
+
+    protected function aplicar_metadato_punto_venta(array $lista_campos)
+    {
+        foreach ($lista_campos as $i => $campo) {
+            if ($campo['name'] != 'pdv_id') {
+                continue;
+            }
+
+            $atributos = $campo['atributos'] ?? [];
+            if ($campo['requerido']) {
+                $lista_campos[$i]['atributos'] = array_merge($atributos, ['required' => 'required']);
+            } else {
+                unset($atributos['required']);
+                $lista_campos[$i]['atributos'] = $atributos;
+            }
+        }
+
+        return $lista_campos;
+    }
+
+    protected function validar_punto_venta(Request $request)
+    {
+        if (!$this->punto_venta_es_requerido($request->url_id_modelo)) {
+            return;
+        }
+
+        $this->validate(
+            $request,
+            ['pdv_id' => 'required|integer|min:1|exists:vtas_pos_puntos_de_ventas,id'],
+            ['pdv_id.required' => 'El campo Punto de Ventas es obligatorio.']
+        );
+    }
+
+    protected function punto_venta_es_requerido($modelo_id)
+    {
+        return DB::table('sys_campos')
+            ->join('sys_modelo_tiene_campos', 'sys_modelo_tiene_campos.core_campo_id', '=', 'sys_campos.id')
+            ->where('sys_modelo_tiene_campos.core_modelo_id', (int)$modelo_id)
+            ->where('sys_campos.name', 'pdv_id')
+            ->where('sys_campos.requerido', 1)
+            ->exists();
     }
 
 
@@ -270,6 +315,7 @@ class PagoController extends TransaccionController
         $encabezado_documento = TesoDocEncabezado::find( $id );
 
         $doc_registros = TesoDocRegistro::get_registros_impresion( $doc_encabezado->id );
+        $pdv = $this->get_pdv_documento($doc_encabezado);
 
         $empresa = $this->empresa;
 
@@ -284,7 +330,26 @@ class PagoController extends TransaccionController
                 ['url'=>'NO','etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo]
             ];
         
-        return view( 'tesoreria.pagos.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado','doc_registros','registros_contabilidad','empresa', 'encabezado_documento') );
+        return view( 'tesoreria.pagos.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado','doc_registros','registros_contabilidad','empresa', 'encabezado_documento', 'pdv') );
+    }
+
+    protected function get_pdv_documento($doc_encabezado)
+    {
+        $movimiento = TesoMovimiento::where([
+                'core_empresa_id' => $doc_encabezado->core_empresa_id,
+                'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
+                'consecutivo' => $doc_encabezado->consecutivo
+            ])
+            ->whereNotNull('pdv_id')
+            ->with('pdv')
+            ->first();
+
+        if ( is_null($movimiento) ) {
+            return null;
+        }
+
+        return $movimiento->pdv;
     }
 
     /**
@@ -305,6 +370,7 @@ class PagoController extends TransaccionController
 
         $cantidad_campos = count( $lista_campos );
         $lista_campos = ModeloController::personalizar_campos($this->transaccion->id, $this->transaccion, $lista_campos, $cantidad_campos,'edit');
+        $lista_campos = $this->aplicar_metadato_punto_venta($lista_campos);
 
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
@@ -375,7 +441,9 @@ class PagoController extends TransaccionController
 
     public function update(Request $request, $id)
     {
-       $modelo = Modelo::find( $request->url_id_modelo );
+        $this->validar_punto_venta($request);
+
+        $modelo = Modelo::find( $request->url_id_modelo );
 
         $doc_encabezado = app( $modelo->name_space )->find($id);
 
@@ -438,8 +506,9 @@ class PagoController extends TransaccionController
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad( $this->doc_encabezado );
         $doc_encabezado = $this->doc_encabezado;
+        $pdv = $this->get_pdv_documento($doc_encabezado);
 
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad' ) )->render();
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'pdv' ) )->render();
     }
 
 
