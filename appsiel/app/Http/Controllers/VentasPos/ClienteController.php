@@ -48,8 +48,9 @@ class ClienteController extends ModeloController
                         ];
 
         $datos_columnas = true;
+        $archivo_js = 'assets/js/ventas/clientes.js';
 
-        return View::make( 'layouts.modelo_form_create_sin_botones', compact('form_create','datos_columnas') )->render();
+        return View::make( 'layouts.modelo_form_create_sin_botones', compact('form_create','datos_columnas','archivo_js') )->render();
     }
 
     public function store(Request $request)

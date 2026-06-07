@@ -22,6 +22,8 @@ class Cliente extends Model
 
     public $urls_acciones = '{"eliminar":"eliminar_cliente/id_fila"}';
 
+    public $archivo_js = 'assets/js/ventas/clientes.js';
+
     public static function get_cuenta_cartera( $cliente_id )
     {
         $clase_cliente_id = Cliente::where( 'id', $cliente_id )->value( 'clase_cliente_id' );

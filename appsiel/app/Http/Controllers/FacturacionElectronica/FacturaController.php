@@ -189,7 +189,7 @@ class FacturaController extends TransaccionController
             $this->contabilizar_factura($vtas_doc_encabezado);
             $mensaje = (object)[
                 'tipo' => 'flash_message',
-                'contenido' => "<h3>Documento ya fue enviado correctamente a la DIAN. </h3>"
+                'contenido' => "<h3>Envío exitoso a la DIAN y al correo registrado del cliente. </h3>"
             ];
 
             return redirect($ruta_show)->with($mensaje->tipo, $mensaje->contenido);

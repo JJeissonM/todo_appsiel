@@ -18,15 +18,9 @@
         <i class="fa fa-link" style="color:#5bc0de;"></i>
         &nbsp; Mapeo de Productos XML &rarr; Productos Appsiel
     </h4>
-    <p class="text-muted small">
-        Asocie cada producto del XML del proveedor con su equivalente en Appsiel.
-        Las asociaciones quedan guardadas por proveedor y se aplican automáticamente
-        en futuras sincronizaciones. Si el proveedor factura en una unidad distinta
-        (ej. cajas/docenas) y usted la maneja en otra (ej. unidades), configure la
-        <strong>cantidad convertida</strong> y/o el <strong>factor de conversión</strong>
-        con su <strong>operación</strong>.
-        El <em>total XML</em> siempre se respeta; el <em>precio unitario</em> se sugiere como
-        <code>total_xml / cantidad_convertida</code>, pero queda editable.
+    <p class="text-muted small" style="color: #31708f !important;background-color: #d1ecf1 !important;">
+        Asocie cada producto XML del proveedor con su equivalente en Appsiel. Las asociaciones se guardan por proveedor y se aplican automáticamente en futuras sincronizaciones. Si maneja unidades distintas (ej. cajas/docenas), configure la cantidad convertida y/o el factor de conversión según su operación. 
+        <strong>NO modificable total del XML y el precio unitario es editable.</strong>
     </p>
 
     @if($solo_lectura)
