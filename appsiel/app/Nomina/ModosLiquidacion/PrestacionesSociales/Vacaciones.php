@@ -134,6 +134,7 @@ class Vacaciones implements Estrategia
         $this->tabla_resumen['valor_total_vacaciones'] = $this->tabla_resumen['vlr_dias_habiles'] + $this->tabla_resumen['vlr_dias_no_habiles'];
 
         $this->set_periodo_causacion_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'] );
+        $this->actualizar_causacion_segun_programacion( $libro_vacaciones, $parametros_prestacion );
 
         $cantidad_dias_amortizar = $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $liquidacion['documento_nomina'] );
         $cantidad_dias_amortizar = max( 0, min( $cantidad_dias_amortizar, $programacion_vacaciones->cantidad_dias_pendientes_amortizar ) );
@@ -386,6 +387,21 @@ class Vacaciones implements Estrategia
         return $dias_pendientes;
     }
 
+    protected function actualizar_causacion_segun_programacion( $libro_vacaciones, $parametros_prestacion )
+    {
+        $dias_vacaciones_programados = (float)$libro_vacaciones->dias_pagados;
+
+        if ( $dias_vacaciones_programados <= 0 || (float)$parametros_prestacion->dias_a_liquidar <= 0 )
+        {
+            return;
+        }
+
+        $this->tabla_resumen['dias_totales_laborados'] = $dias_vacaciones_programados * self::DIAS_BASE_LEGALES / (float)$parametros_prestacion->dias_a_liquidar;
+        $this->tabla_resumen['dias_totales_no_laborados'] = 0;
+        $this->tabla_resumen['dias_totales_vacaciones'] = $this->tabla_resumen['dias_pagados_vacaciones'] + $dias_vacaciones_programados;
+        $this->tabla_resumen['dias_pendientes'] = $dias_vacaciones_programados;
+    }
+
     public function set_periodo_causacion_vacaciones( $empleado, $documento_nomina )
     {            
         $periodo_pagado_desde = $empleado->fecha_ingreso;
@@ -408,8 +424,24 @@ class Vacaciones implements Estrategia
             $periodo_pagado_hasta = $this->sumar_dias_calendario_a_fecha( $periodo_pagado_desde, ($dias_calendario_vacaciones ) );
         }
 
+        $fecha_final_contrato = $this->get_fecha_final_contrato( $empleado );
+        if ( !is_null( $fecha_final_contrato ) && $periodo_pagado_hasta > $fecha_final_contrato )
+        {
+            $periodo_pagado_hasta = $fecha_final_contrato;
+        }
+
         $this->tabla_resumen['periodo_pagado_desde'] = $periodo_pagado_desde;
         $this->tabla_resumen['periodo_pagado_hasta'] = $periodo_pagado_hasta;
+    }
+
+    protected function get_fecha_final_contrato( $empleado )
+    {
+        if ( !empty( $empleado->contrato_hasta ) && $empleado->contrato_hasta != '0000-00-00' )
+        {
+            return $empleado->contrato_hasta;
+        }
+
+        return $empleado->fecha_liquidacion_contrato();
     }
 
     protected function get_fecha_final_promedios( $documento_nomina )
