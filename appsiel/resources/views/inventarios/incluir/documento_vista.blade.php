@@ -1,15 +1,17 @@
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Cód.','Producto','Bodega','Motivo','Costo unitario','Cantidad','Costo Total','']) }}
+
+        @if($doc_encabezado->core_tipo_transaccion_id == 35)
+            {{ Form::bsTableHeader(['Cód.','Producto','Bodega','Costo unitario','Cantidad','Costo Total','']) }}
+        @else
+            {{ Form::bsTableHeader(['Cód.','Producto','Bodega','Motivo','Costo unitario','Cantidad','Costo Total','']) }}
+        @endif
         <tbody>
             <?php 
-            
-            $total_cantidad = 0;
-            $subtotal = 0;
-            $total_impuestos = 0;
-            $total_factura = 0;
-
-            //print_r($doc_registros);
+                $total_cantidad = 0;
+                $subtotal = 0;
+                $total_impuestos = 0;
+                $total_factura = 0;
             ?>
             @foreach($doc_registros as $linea )
                 <?php
@@ -28,7 +30,9 @@
                     <td class="text-center"> {{ $linea->producto_id }} </td>
                     <td> {{ $descripcion_item }} </td>
                     <td> {{ $linea->bodega_descripcion }} </td>
-                    <td> {{ $linea->inv_motivo_id }} -  {{ $linea->motivo_descripcion }} </td>
+                    @if($doc_encabezado->core_tipo_transaccion_id != 35)
+                        <td> {{ $linea->inv_motivo_id }} -  {{ $linea->motivo_descripcion }} </td>
+                    @endif
                     <td style="text-align: right;"> $ {{ number_format( $linea->costo_unitario, 2, ',', '.') }} </td>
                     <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->item->get_unidad_medida1() }} </td>
                     <td style="text-align: right;"> $ {{ number_format( $linea->costo_total, 2, ',', '.') }} </td>

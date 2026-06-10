@@ -658,6 +658,7 @@ DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 249 AND `core_cam
 DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 250 AND `core_campo_id` = 92;
 DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 251 AND `core_campo_id` = 92;
 DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 252 AND `core_campo_id` = 92;
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 187 AND `core_campo_id` = 92; -- Traslado de efectivo
 
 -- Permiso para clonar documento de inventario fisico
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES ('730', '8', '0', 'inventarios.inventario_fisico.clonar_documento', 'Clonar Inventario Fisico', '', '0', '0', '0', '', '2026-06-01 05:27:12', NULL);
