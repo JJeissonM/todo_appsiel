@@ -46,7 +46,12 @@ class Authenticate
 
         $user = Auth::user();
 
-        if ( $request->is('tesoreria/pagos_imprimir/*') )
+        $excludedPermissionRoutes = [
+            'tesoreria/pagos_imprimir/*',
+            'fe_actualizar_fecha_y_enviar/*',
+        ];
+
+        if ( $request->is(...$excludedPermissionRoutes) )
         {
             return $next($request);
         }

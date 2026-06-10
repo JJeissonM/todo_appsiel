@@ -688,9 +688,26 @@ class NotaCreditoController extends TransaccionController
         $ruta_show = 'fe_nota_credito/'.$id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion');
 
         $encabezado_nota_credito = NotaCredito::find( $id );
+
+        if ( is_null($encabezado_nota_credito) ) {
+            return redirect( $ruta_show )->with( 'mensaje_error', 'No se encontro la nota credito electronica que intenta enviar.' );
+        }
+
         $factura = Factura::find( $encabezado_nota_credito->ventas_doc_relacionado_id );
 
+        if ( is_null($factura) ) {
+            return redirect( $ruta_show )->with( 'mensaje_error', 'No se encontro la factura relacionada para enviar la nota credito electronica.' );
+        }
+
         $mensaje = $this->enviar_nota_credito_electronica( $id, $factura );
+
+        if (is_array($mensaje)) {
+            $mensaje = (object) $mensaje;
+        }
+
+        if (config('facturacion_electronica.proveedor_tecnologico_default') == 'OSEI') {
+            return redirect( $ruta_show )->with( $mensaje->tipo, $mensaje->contenido);
+        }
         
         $documento_electronico = new FacturaGeneral( $encabezado_nota_credito, 'nota_credito' );
 
