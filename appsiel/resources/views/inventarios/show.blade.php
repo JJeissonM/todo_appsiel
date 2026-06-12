@@ -19,6 +19,14 @@
     ?>
 @endcan
 
+@can('inv_bloqueo_modificar_salidas_transferencias')
+    <?php
+        // 2 = Transferencias, 3 = Salidas de almacen
+        $transaccion_no_editar[] = 2;
+        $transaccion_no_editar[] = 3;
+    ?>
+@endcan
+
 @extends('transaccion.show') 
 
 @section('botones_acciones')

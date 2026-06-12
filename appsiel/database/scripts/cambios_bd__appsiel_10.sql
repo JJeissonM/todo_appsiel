@@ -662,3 +662,10 @@ DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 187 AND `core_cam
 
 -- Permiso para clonar documento de inventario fisico
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES ('730', '8', '0', 'inventarios.inventario_fisico.clonar_documento', 'Clonar Inventario Fisico', '', '0', '0', '0', '', '2026-06-01 05:27:12', NULL);
+
+-- Permiso para bloquear el boton editar de salidas y transferencias de inventarios
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
+SELECT NULL, '8', '0', 'inv_bloqueo_modificar_salidas_transferencias', 'Bloquear modificar salidas y transferencias de inventarios', 'web', '0', '99', '0', '', '2026-06-12 00:00:00', NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM `permissions` WHERE `name` = 'inv_bloqueo_modificar_salidas_transferencias'
+);
