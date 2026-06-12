@@ -16,6 +16,16 @@
         $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
 
         $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
+
+        $lineas_a_imprimir = $doc_registros;
+
+        if ( (int)$doc_encabezado->core_tipo_transaccion_id === 2 )
+        {
+            $lineas_a_imprimir = $doc_registros->filter(function ($linea) use ($doc_encabezado) {
+                return (int)$linea->inv_bodega_id === (int)$doc_encabezado->bodega_destino_id
+                    && $linea->motivo_movimiento === 'entrada';
+            });
+        }
     ?>
 <div class="headempresap">
     <table border="0" style="margin-top: 12px !important;" width="100%">
@@ -43,7 +53,7 @@
     <table border="0" style="margin: 6px 0 !important;" width="100%">
         <tr>
             <td>
-                <b>{{ $doc_encabezado->documento_transaccion_descripcion }} No.</b> @yield('documento_transaccion_prefijo_consecutivo')               
+                <b>{{ $doc_encabezado->documento_transaccion_descripcion }} No.</b> {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
             </td>
             <td>
                 <b>Fecha:</b> {{ $doc_encabezado->fecha }}
@@ -56,15 +66,12 @@
 <div class="subheadp">
     <div >
         <b>Tercero:</b> {{ $doc_encabezado->tercero_nombre_completo }}
-        <br>
-        <b>{{ config("configuracion.tipo_identificador") }}: </b>
-        @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}
-        <br>
-        <b>Dirección:</b> {{ $doc_encabezado->direccion1 }}
-        <br>
-        <b>Teléfono:</b> {{ $doc_encabezado->telefono1 }}
-        <br>
-        
+        @if ( (int)$doc_encabezado->core_tipo_transaccion_id === 2 )
+            <br>
+            <b>Bodega origen:</b> {{ $doc_encabezado->bodega_origen_descripcion }}
+            <br>
+            <b>Bodega destino:</b> {{ $doc_encabezado->bodega_destino_descripcion }}
+        @endif
     </div>
 </div>
     <br>
@@ -75,27 +82,19 @@
         <tbody>
 
             <?php
-                $total_cantidad = 0;
                 $numero = 1;
             ?>
-            @foreach($doc_registros as $linea )
+            @foreach($lineas_a_imprimir as $linea )
                 <tr>
                     <td style="text-align: center;"> {{ $numero }} </td>
                     <td> {{ $linea->item->get_value_to_show(true) }} </td>
                     <td style="text-align: center;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }} </td>
                 </tr>
                 <?php 
-                    $total_cantidad += $linea->cantidad;
                     $numero++;
                 ?>
             @endforeach
         </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="2">&nbsp;</td>
-                <td style="text-align: center;"> {{ number_format( abs($total_cantidad), 2, ',', '.') }} </td>
-            </tr>
-        </tfoot>            
     </table>
 
     <br/><br/>
@@ -114,7 +113,7 @@
     <br><br><br>
     _______________________ 
     <br>
-    <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+    <b>Detalle: &nbsp;&nbsp;</b> {{ strip_tags($doc_encabezado->descripcion) }}
 
 </body>
 </html>
