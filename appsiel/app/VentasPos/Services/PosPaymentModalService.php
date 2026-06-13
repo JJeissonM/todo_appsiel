@@ -16,14 +16,17 @@ class PosPaymentModalService
         $cajas = TesoCaja::opciones_campo_select();
         $cuentasBancarias = TesoCuentaBancaria::opciones_campo_select();
         $usarModalBotones = $this->usarModalBotones();
+        $filtrarDestinosPorMedioRecaudo = $this->filtrarDestinosPorMedioRecaudo();
 
         return [
             'medios_recaudo' => $mediosRecaudo,
             'cajas' => $cajas,
             'cuentas_bancarias' => $cuentasBancarias,
             'usar_modal_botones' => $usarModalBotones,
+            'filtrar_destinos_por_medio_recaudo' => $filtrarDestinosPorMedioRecaudo,
+            'destinos_medios_recaudo_data' => $this->buildDestinationsData($mediosRecaudo, $cajas, $cuentasBancarias, $filtrarDestinosPorMedioRecaudo),
             'modal_botones_data' => $usarModalBotones
-                ? $this->getModalButtonsData($mediosRecaudo, $cajas, $cuentasBancarias)
+                ? $this->getModalButtonsData($mediosRecaudo, $cajas, $cuentasBancarias, $filtrarDestinosPorMedioRecaudo)
                 : ['medios' => [], 'destinos' => []]
         ];
     }
@@ -33,7 +36,46 @@ class PosPaymentModalService
         return (int)config('ventas_pos.usar_modal_botones_medios_pago') === 1;
     }
 
-    public function getModalButtonsData(array $mediosRecaudo, array $cajas, array $cuentasBancarias)
+    public function filtrarDestinosPorMedioRecaudo()
+    {
+        if (!Schema::hasTable('teso_medios_recaudo_destinos')) {
+            return false;
+        }
+
+        return TesoMedioRecaudoDestino::where('estado', 'Activo')->count() > 0;
+    }
+
+    public function buildDestinationsData(array $mediosRecaudo, array $cajas, array $cuentasBancarias, $filtrarDestinosPorMedioRecaudo = null)
+    {
+        $filtrar = is_null($filtrarDestinosPorMedioRecaudo) ?
+            $this->filtrarDestinosPorMedioRecaudo() :
+            (bool)$filtrarDestinosPorMedioRecaudo;
+
+        $mapaCajas = $this->buildOptionsMap($cajas);
+        $mapaCuentas = $this->buildOptionsMap($cuentasBancarias);
+        $mapaDestinos = $filtrar ? $this->getDestinationsMap($mapaCajas, $mapaCuentas) : [];
+        $data = [
+            'activo' => $filtrar,
+            'destinos' => []
+        ];
+
+        foreach ($mediosRecaudo as $value => $label) {
+            if ($value === '') {
+                continue;
+            }
+
+            $partes = explode('-', $value, 2);
+            $medioId = (int)$partes[0];
+
+            $data['destinos'][$medioId] = isset($mapaDestinos[$medioId]) ?
+                $mapaDestinos[$medioId] :
+                ['cajas' => [], 'cuentas' => []];
+        }
+
+        return $data;
+    }
+
+    public function getModalButtonsData(array $mediosRecaudo, array $cajas, array $cuentasBancarias, $filtrarDestinosPorMedioRecaudo = null)
     {
         $data = [
             'medios' => [],
@@ -42,8 +84,10 @@ class PosPaymentModalService
 
         $mapaCajas = $this->buildOptionsMap($cajas);
         $mapaCuentas = $this->buildOptionsMap($cuentasBancarias);
-        $tablaRelacionesDisponible = Schema::hasTable('teso_medios_recaudo_destinos');
-        $mapaDestinos = $this->getDestinationsMap($mapaCajas, $mapaCuentas);
+        $filtrar = is_null($filtrarDestinosPorMedioRecaudo) ?
+            $this->filtrarDestinosPorMedioRecaudo() :
+            (bool)$filtrarDestinosPorMedioRecaudo;
+        $mapaDestinos = $filtrar ? $this->getDestinationsMap($mapaCajas, $mapaCuentas) : [];
 
         foreach ($mediosRecaudo as $value => $label) {
             if ($value === '') {
@@ -60,7 +104,7 @@ class PosPaymentModalService
                 'label' => $label
             ];
 
-            if ($tablaRelacionesDisponible) {
+            if ($filtrar) {
                 $data['destinos'][$medioId] = isset($mapaDestinos[$medioId]) ?
                     $mapaDestinos[$medioId] :
                     ['cajas' => [], 'cuentas' => []];
