@@ -182,6 +182,34 @@
 
 				<br><br>
 
+				<h4> Parámetros de pago </h4>
+				<hr>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$teso_caja_id_default = '';
+								if( isset($parametros['teso_caja_id_default'] ) )
+								{
+									$teso_caja_id_default = $parametros['teso_caja_id_default'];
+								}
+							?>
+							{{ Form::bsSelect('teso_caja_id_default', $teso_caja_id_default, 'Caja por defecto en Facturas de contado', App\Tesoreria\TesoCaja::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<br><br>
+
 				<div style="width: 100%; text-align: center;">
 					<div class="row" style="margin: 5px;"> {{ Form::bsButtonsForm( url()->previous() ) }} </div>
 

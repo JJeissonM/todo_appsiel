@@ -3,7 +3,10 @@
 <?php
 	use App\Http\Controllers\Sistema\VistaController;
 	use App\Compras\Services\RetencionFuenteService;
+	use App\Tesoreria\TesoCaja;
 	$maneja_retenciones_compras = (new RetencionFuenteService())->maneja_retenciones_compras();
+	$teso_caja_id_default_compras = (int)config('compras.teso_caja_id_default');
+	$caja_default_compras = $teso_caja_id_default_compras > 0 ? TesoCaja::find($teso_caja_id_default_compras) : null;
 ?>
 
 @section('estilos_1')
@@ -110,6 +113,7 @@
 				<div id="popup_alerta"> </div>
 
 				<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
+				<input type="hidden" id="compras_teso_caja_id_default" value="{{ !is_null($caja_default_compras) ? $caja_default_compras->id : 0 }}">
 
 				<input type="hidden" name="items_mandatarios_por_proveedor" id="items_mandatarios_por_proveedor" value="{{config('inventarios.items_mandatarios_por_proveedor')}}">
 
@@ -717,12 +721,15 @@
 				if($('#forma_pago').val() == 'contado'){
 					if( parseFloat( valor_total_recaudos.substring(1) ) === 0 )
 					{
-						Swal.fire({
-							icon: 'warning',
-							title: '¡Atención!',
-							text: 'Debe ingresar un medio de pago cuando la factura es de contado.'
-						});
-						return false;
+						if ( parseInt($('#compras_teso_caja_id_default').val()) === 0 )
+						{
+							Swal.fire({
+								icon: 'warning',
+								title: '¡Atención!',
+								text: 'Debe ingresar un medio de pago cuando la factura es de contado.'
+							});
+							return false;
+						}
 					}
 				}
 				

@@ -701,3 +701,10 @@ ALTER TABLE `compras_proveedores` MODIFY `codigo` VARCHAR(10) NOT NULL DEFAULT '
 ALTER TABLE `compras_proveedores` MODIFY `estado` VARCHAR(255) NOT NULL DEFAULT 'Activo';
 ALTER TABLE `compras_proveedores` MODIFY `declarante_renta` VARCHAR(40) NOT NULL DEFAULT 'declarante';
 ALTER TABLE `compras_proveedores` MODIFY `retencion_fuente_concepto_default_id` INT(10) UNSIGNED NOT NULL DEFAULT 0;
+
+-- Permiso para ingresar a la configuración de Compras
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
+SELECT NULL, '9', '0', 'compras_configuracion', 'Configuración', 'config', '0', '99', '1', '', '2026-06-13 00:00:00', NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM `permissions` WHERE `name` = 'compras_configuracion'
+);

@@ -82,7 +82,13 @@ class RegistrosMediosPago
             }
 
             $teso_caja_id = '1-Caja general';
-            $caja = TesoCaja::find((int)config('tesoreria.caja_default_id'));
+            $caja_default_id = (int)config('tesoreria.caja_default_id');
+
+            if ( $tipo_transaccion == 'compras' && (int)config('compras.teso_caja_id_default') > 0 ) {
+                $caja_default_id = (int)config('compras.teso_caja_id_default');
+            }
+
+            $caja = TesoCaja::find($caja_default_id);
             if ($caja != null) {
                 $teso_caja_id = $caja->id . '-' . $caja->descripcion;
             }
