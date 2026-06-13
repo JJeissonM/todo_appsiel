@@ -9,6 +9,29 @@
           margin: 15px;
         }
 
+        .datos-doc-pos,
+        .datos-tercero-pos {
+            width: 100%;
+            line-height: 1.15;
+        }
+
+        .datos-doc-pos td,
+        .datos-tercero-pos td {
+            vertical-align: top;
+            padding: 1px 3px;
+        }
+
+        .datos-doc-pos .label-pos,
+        .datos-tercero-pos .label-pos {
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        .datos-doc-pos .valor-pos,
+        .datos-tercero-pos .valor-pos {
+            word-break: normal;
+        }
+
     </style>
 </head>
 <body>
@@ -18,6 +41,14 @@
         $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
 
         $lineas_a_imprimir = $doc_registros;
+        $mostrar_trazabilidad_pos = in_array( (int)$doc_encabezado->core_tipo_transaccion_id, [2, 3] );
+        $hora_trazabilidad = '';
+
+        if ( !empty($doc_encabezado->created_at) )
+        {
+            $hora_trazabilidad = strtolower(date('h:i a', strtotime($doc_encabezado->created_at)));
+            $hora_trazabilidad = str_replace(['am', 'pm'], ['a.m.', 'p.m.'], $hora_trazabilidad);
+        }
 
         if ( (int)$doc_encabezado->core_tipo_transaccion_id === 2 )
         {
@@ -50,35 +81,73 @@
 </div>
     
 <div class="headdocp">
-    <table border="0" style="margin: 6px 0 !important;" width="100%">
+    <table border="0" class="datos-doc-pos" style="margin: 4px 0 !important;">
         <tr>
-            <td>
-                <b>{{ $doc_encabezado->documento_transaccion_descripcion }} No.</b> {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
-            </td>
-            <td>
-                <b>Fecha:</b> {{ $doc_encabezado->fecha }}
+            <td class="valor-pos" colspan="2">
+                <span class="label-pos">{{ $doc_encabezado->documento_transaccion_descripcion }} No.</span>
+                {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
             </td>
         </tr>
-
+        <tr>
+            <td class="label-pos" width="28%">
+                Fecha:
+            </td>
+            <td class="valor-pos" width="72%">
+                {{ $doc_encabezado->fecha }}
+            </td>
+        </tr>
+        @if ( $mostrar_trazabilidad_pos && $hora_trazabilidad != '' )
+            <tr>
+                <td class="label-pos">
+                    Hora:
+                </td>
+                <td class="valor-pos">
+                    {{ $hora_trazabilidad }}
+                </td>
+            </tr>
+        @endif
     </table>
 </div>
     
 <div class="subheadp">
-    <div >
-        <b>Tercero:</b> {{ $doc_encabezado->tercero_nombre_completo }}
+    <table border="0" class="datos-tercero-pos">
+        <tr>
+            <td class="label-pos" width="28%">
+                Tercero:
+            </td>
+            <td class="valor-pos" width="72%">
+                {{ $doc_encabezado->tercero_nombre_completo }}
+            </td>
+        </tr>
         @if ( (int)$doc_encabezado->core_tipo_transaccion_id === 2 )
-            <br>
-            <b>Bodega origen:</b> {{ $doc_encabezado->bodega_origen_descripcion }}
-            <br>
-            <b>Bodega destino:</b> {{ $doc_encabezado->bodega_destino_descripcion }}
+            <tr>
+                <td class="label-pos">
+                    Bodega origen:
+                </td>
+                <td class="valor-pos">
+                    {{ $doc_encabezado->bodega_origen_descripcion }}
+                </td>
+            </tr>
+            <tr>
+                <td class="label-pos">
+                    Bodega destino:
+                </td>
+                <td class="valor-pos">
+                    {{ $doc_encabezado->bodega_destino_descripcion }}
+                </td>
+            </tr>
         @endif
-    </div>
+    </table>
 </div>
     <br>
 
 
     <table style="width: 100%;" class="table">
-        {{ Form::bsTableHeader(['línea','Producto','Cantidad']) }}
+        @if ( $mostrar_trazabilidad_pos )
+            {{ Form::bsTableHeader(['Producto','Cantidad']) }}
+        @else
+            {{ Form::bsTableHeader(['línea','Producto','Cantidad']) }}
+        @endif
         <tbody>
 
             <?php
@@ -86,7 +155,9 @@
             ?>
             @foreach($lineas_a_imprimir as $linea )
                 <tr>
-                    <td style="text-align: center;"> {{ $numero }} </td>
+                    @if ( !$mostrar_trazabilidad_pos )
+                        <td style="text-align: center;"> {{ $numero }} </td>
+                    @endif
                     <td> {{ $linea->item->get_value_to_show(true) }} </td>
                     <td style="text-align: center;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }} </td>
                 </tr>

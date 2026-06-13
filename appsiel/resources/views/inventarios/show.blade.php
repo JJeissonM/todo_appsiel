@@ -67,9 +67,13 @@
 @endsection
 
 @section('botones_imprimir_email')
-	Formato: {{ Form::select('formato_impresion_id',['1'=>'Estándar','2'=>'Estándar (Sin costo)','4'=>'POS (Sin costo)'], null, [ 'id' =>'formato_impresion_id' ] ) }}
-	{{ Form::bsBtnPrint( 'transaccion_print/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
-	{{ Form::bsBtnEmail( 'inventarios_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
+
+    <?php
+        $default_formato_impresion_id = 4;
+    ?>
+	Formato: {{ Form::select('formato_impresion_id',['4'=>'POS','1'=>'Estándar','2'=>'Estándar (Sin costo)'], null, [ 'id' =>'formato_impresion_id' ] ) }}
+	{{ Form::bsBtnPrint( 'transaccion_print/'.$id.$variables_url.'&formato_impresion_id=' . $default_formato_impresion_id ) }}
+	{{ Form::bsBtnEmail( 'inventarios_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=' . $default_formato_impresion_id ) }}
 @endsection
 
 @section('botones_anterior_siguiente')
