@@ -677,3 +677,9 @@ SELECT NULL, '8', '0', 'inv_bloqueo_modificar_salidas_transferencias', 'Bloquear
 WHERE NOT EXISTS (
     SELECT 1 FROM `permissions` WHERE `name` = 'inv_bloqueo_modificar_salidas_transferencias'
 );
+
+-- Estado por defecto para documentos de inventarios al retirar el campo Estado Doc. del create/edit
+UPDATE `inv_doc_encabezados` SET `estado` = 'Activo' WHERE `estado` IS NULL OR `estado` = '';
+UPDATE `inv_doc_registros` SET `estado` = 'Activo' WHERE `estado` IS NULL OR `estado` = '';
+ALTER TABLE `inv_doc_encabezados` MODIFY `estado` VARCHAR(255) NOT NULL DEFAULT 'Activo';
+ALTER TABLE `inv_doc_registros` MODIFY `estado` VARCHAR(255) NOT NULL DEFAULT 'Activo';

@@ -315,6 +315,11 @@ class InventarioController extends TransaccionController
     public static function crear_documento(Request $request, array $lineas_registros, $modelo_id)
     {
         $request['creado_por'] = Auth::user()->email;
+        if ( !isset($request['estado']) || trim((string)$request['estado']) == '' )
+        {
+            $request['estado'] = 'Activo';
+        }
+
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $modelo_id );
         
         $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );

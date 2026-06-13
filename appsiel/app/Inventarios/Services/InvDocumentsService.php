@@ -27,6 +27,11 @@ class InvDocumentsService
     public function store_document(Request $request, array $lineas_registros, $modelo_id)
     {
         $request['creado_por'] = Auth::user()->email;
+        if ( !isset($request['estado']) || trim((string)$request['estado']) == '' )
+        {
+            $request['estado'] = 'Activo';
+        }
+
         $obj_tran_docu_serv = new TransactionDocumentsService( $modelo_id );
         
         $doc_encabezado = $obj_tran_docu_serv->store_document_header( $request->all() );

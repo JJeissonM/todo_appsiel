@@ -41,7 +41,6 @@
         $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
 
         $lineas_a_imprimir = $doc_registros;
-        $mostrar_trazabilidad_pos = in_array( (int)$doc_encabezado->core_tipo_transaccion_id, [2, 3] );
         $hora_trazabilidad = '';
 
         if ( !empty($doc_encabezado->created_at) )
@@ -96,7 +95,7 @@
                 {{ $doc_encabezado->fecha }}
             </td>
         </tr>
-        @if ( $mostrar_trazabilidad_pos && $hora_trazabilidad != '' )
+        @if ( $hora_trazabilidad != '' )
             <tr>
                 <td class="label-pos">
                     Hora:
@@ -143,27 +142,14 @@
 
 
     <table style="width: 100%;" class="table">
-        @if ( $mostrar_trazabilidad_pos )
-            {{ Form::bsTableHeader(['Producto','Cantidad']) }}
-        @else
-            {{ Form::bsTableHeader(['línea','Producto','Cantidad']) }}
-        @endif
+        {{ Form::bsTableHeader(['Producto','Cantidad']) }}
         <tbody>
 
-            <?php
-                $numero = 1;
-            ?>
             @foreach($lineas_a_imprimir as $linea )
                 <tr>
-                    @if ( !$mostrar_trazabilidad_pos )
-                        <td style="text-align: center;"> {{ $numero }} </td>
-                    @endif
                     <td> {{ $linea->item->get_value_to_show(true) }} </td>
                     <td style="text-align: center;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }} </td>
                 </tr>
-                <?php 
-                    $numero++;
-                ?>
             @endforeach
         </tbody>
     </table>
