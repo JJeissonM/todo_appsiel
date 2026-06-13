@@ -683,3 +683,21 @@ UPDATE `inv_doc_encabezados` SET `estado` = 'Activo' WHERE `estado` IS NULL OR `
 UPDATE `inv_doc_registros` SET `estado` = 'Activo' WHERE `estado` IS NULL OR `estado` = '';
 ALTER TABLE `inv_doc_encabezados` MODIFY `estado` VARCHAR(255) NOT NULL DEFAULT 'Activo';
 ALTER TABLE `inv_doc_registros` MODIFY `estado` VARCHAR(255) NOT NULL DEFAULT 'Activo';
+
+-- Valores por defecto para Proveedores al simplificar el formulario create/edit
+UPDATE `compras_proveedores` SET `clase_proveedor_id` = 1 WHERE `clase_proveedor_id` IS NULL OR `clase_proveedor_id` = 0;
+UPDATE `compras_proveedores` SET `inv_bodega_id` = 1 WHERE `inv_bodega_id` IS NULL OR `inv_bodega_id` = 0;
+UPDATE `compras_proveedores` SET `liquida_impuestos` = 1 WHERE `liquida_impuestos` IS NULL;
+UPDATE `compras_proveedores` SET `condicion_pago_id` = 1 WHERE `condicion_pago_id` IS NULL OR `condicion_pago_id` = 0;
+UPDATE `compras_proveedores` SET `codigo` = '' WHERE `codigo` IS NULL;
+UPDATE `compras_proveedores` SET `estado` = 'Activo' WHERE `estado` IS NULL OR `estado` = '';
+UPDATE `compras_proveedores` SET `declarante_renta` = 'declarante' WHERE `declarante_renta` IS NULL OR `declarante_renta` = '';
+UPDATE `compras_proveedores` SET `retencion_fuente_concepto_default_id` = 0 WHERE `retencion_fuente_concepto_default_id` IS NULL;
+ALTER TABLE `compras_proveedores` MODIFY `clase_proveedor_id` INT(10) UNSIGNED NOT NULL DEFAULT 1;
+ALTER TABLE `compras_proveedores` MODIFY `inv_bodega_id` INT(10) UNSIGNED NOT NULL DEFAULT 1;
+ALTER TABLE `compras_proveedores` MODIFY `liquida_impuestos` TINYINT(1) NOT NULL DEFAULT 1;
+ALTER TABLE `compras_proveedores` MODIFY `condicion_pago_id` INT(10) UNSIGNED NOT NULL DEFAULT 1;
+ALTER TABLE `compras_proveedores` MODIFY `codigo` VARCHAR(10) NOT NULL DEFAULT '';
+ALTER TABLE `compras_proveedores` MODIFY `estado` VARCHAR(255) NOT NULL DEFAULT 'Activo';
+ALTER TABLE `compras_proveedores` MODIFY `declarante_renta` VARCHAR(40) NOT NULL DEFAULT 'declarante';
+ALTER TABLE `compras_proveedores` MODIFY `retencion_fuente_concepto_default_id` INT(10) UNSIGNED NOT NULL DEFAULT 0;

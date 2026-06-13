@@ -36,9 +36,10 @@ class ProveedorController extends ModeloController
     public function store(Request $request)
     {
         // Almacenar datos básicos (Tercero)        
+        $datos_tercero = $this->prepararDatosTerceroProveedor($request);
 
         $tercero = new Tercero;
-        $tercero->fill( $request->all() );
+        $tercero->fill( $datos_tercero );
         $tercero->save();
         
         // Datos del Proveedor
@@ -47,6 +48,77 @@ class ProveedorController extends ModeloController
         $Proveedor->save();
 
         return redirect( 'compras_proveedores/'.$Proveedor->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
+    }
+
+    protected function prepararDatosTerceroProveedor(Request $request)
+    {
+        $datos = $request->all();
+        $descripcion = isset($datos['descripcion']) ? trim($datos['descripcion']) : '';
+
+        if ($descripcion == '') {
+            $descripcion = $this->resolverDescripcionTercero($datos);
+        }
+
+        if ($descripcion == '') {
+            $identificacion = isset($datos['numero_identificacion']) ? trim($datos['numero_identificacion']) : '';
+            $descripcion = 'Proveedor' . ($identificacion == '' ? '' : ' ' . $identificacion);
+        }
+
+        $usuario = Auth::user();
+        $defaults = [
+            'descripcion' => $descripcion,
+            'core_empresa_id' => $usuario ? $usuario->empresa_id : 1,
+            'imagen' => '',
+            'tipo' => 'Persona natural',
+            'razon_social' => '',
+            'nombre1' => $descripcion,
+            'otros_nombres' => '',
+            'apellido1' => '',
+            'apellido2' => '',
+            'id_tipo_documento_id' => 13,
+            'numero_identificacion' => 0,
+            'digito_verificacion' => 0,
+            'direccion1' => '',
+            'direccion2' => '',
+            'barrio' => '',
+            'codigo_ciudad' => 16920001,
+            'codigo_postal' => 0,
+            'telefono1' => '',
+            'telefono2' => '',
+            'email' => '',
+            'pagina_web' => '',
+            'estado' => 'Activo',
+            'user_id' => $usuario ? $usuario->id : 0,
+            'contab_anticipo_cta_id' => 0,
+            'contab_cartera_cta_id' => 0,
+            'contab_cxp_cta_id' => 0,
+            'creado_por' => $usuario ? $usuario->email : '',
+            'modificado_por' => ''
+        ];
+
+        foreach ($defaults as $campo => $valor) {
+            if (!isset($datos[$campo]) || $datos[$campo] === '') {
+                $datos[$campo] = $valor;
+            }
+        }
+
+        return $datos;
+    }
+
+    protected function resolverDescripcionTercero(array $datos)
+    {
+        if (isset($datos['razon_social']) && trim($datos['razon_social']) != '') {
+            return trim($datos['razon_social']);
+        }
+
+        $partes_nombre = [];
+        foreach (['nombre1', 'otros_nombres', 'apellido1', 'apellido2'] as $campo) {
+            if (isset($datos[$campo]) && trim($datos[$campo]) != '') {
+                $partes_nombre[] = trim($datos[$campo]);
+            }
+        }
+
+        return trim(implode(' ', $partes_nombre));
     }
 
     public function tercero_a_proveedor_store(Request $request)
