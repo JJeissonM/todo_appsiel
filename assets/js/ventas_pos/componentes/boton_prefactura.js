@@ -63,16 +63,23 @@ $(document).ready(function () {
             data += "&valor_datafono=" + $("#valor_datafono").val();
         }
 
-        $("title").append('PRE-FACTURA');
+        var titulo_original = $("title").text();
+        var celda_documento = $(".lbl_consecutivo_doc_encabezado").parent('td');
+        var labels_documento = [];
 
-        //var label_documento = $(".lbl_consecutivo_doc_encabezado").parent('td').html();
-        //$(".lbl_consecutivo_doc_encabezado").parent('td').text('-- PRE-FACTURA --');
-
-        $(".lbl_consecutivo_doc_encabezado").text('-- PRE-FACTURA --');
+        $("title").text('PRE-FACTURA');
+        celda_documento.each(function () {
+            labels_documento.push($(this).html());
+            $(this).html('<b>PRE-FACTURA</b>');
+        });
 
         $("#tabla_productos_facturados").find("tbody").html('');
+        $("#tabla_resumen_impuestos").find("tbody").html('');
 
         llenar_tabla_productos_facturados( false );
+
+        $("#div_resumen_impuestos").hide();
+        $("#tabla_resumen_impuestos").find("tbody").html('');
         
         $('#tr_total_recibido').hide();
         $('#tr_total_cambio').hide();
@@ -83,8 +90,13 @@ $(document).ready(function () {
         $('#tr_total_recibido').show();
         $('#tr_total_cambio').show();
         $('#tabla_resumen_medios_pago').show();
-        //$(".lbl_consecutivo_doc_encabezado").parent('td').text( label_documento );
+        $("title").text(titulo_original);
+        celda_documento.each(function (index) {
+            $(this).html(labels_documento[index]);
+        });
         $("#tabla_productos_facturados").find("tbody").html('');
+        $("#tabla_resumen_impuestos").find("tbody").html('');
+        $("#div_resumen_impuestos").hide();
         
         $('#msj_ventana_impresion_abierta').hide();
     });

@@ -447,21 +447,71 @@ class FacturaGeneralOsei
         $numberFE = (string) $factura_doc_encabezado->consecutivo;
 
         $endpointGetCufe = "https://osei.com.co/api/v1/invoices/get_cufe/{$prefixFE}/{$numberFE}/{$auth_token}";
-        $cURL = curl_init();
-        curl_setopt($cURL, CURLOPT_URL, $endpointGetCufe);
-        curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
-        $response_dian = curl_exec($cURL);
-        curl_close($cURL);
-        $response_dian = json_decode($response_dian, true);
 
-        if ($response_dian['tipo'] == 'mensaje_error') {
+        try {
+            $client = new \GuzzleHttp\Client([
+                'timeout' => 30,
+                'connect_timeout' => 10,
+            ]);
+
+            $response = $client->get($endpointGetCufe, [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'auth-token' => $auth_token,
+                ],
+            ]);
+
+            $responseBody = (string) $response->getBody();
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            $statusCode = $e->getResponse() ? $e->getResponse()->getStatusCode() : null;
+            $responseBody = $e->getResponse() ? (string) $e->getResponse()->getBody() : '';
+            $errorMessage = $this->decodeErrorResponseBody($responseBody);
+
+            if ($errorMessage === '') {
+                $errorMessage = $e->getMessage();
+            }
+
             return [
                 'tipo' => 'mensaje_error',
-                'contenido' => $response_dian['contenido']
+                'contenido' => 'No se pudo consultar el CUFE de la factura relacionada en OSEI. HTTP ' . $statusCode . ': ' . $errorMessage
             ];
-        } else {
+        }
+
+        $response_dian = json_decode($responseBody, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($response_dian)) {
+            Log::error('Respuesta invalida de OSEI al consultar CUFE.', [
+                'endpoint' => $endpointGetCufe,
+                'respuesta' => $responseBody,
+                'json_error' => json_last_error_msg(),
+                'documento_id' => $this->doc_encabezado->id ?? null,
+            ]);
+
+            return [
+                'tipo' => 'mensaje_error',
+                'contenido' => 'OSEI retorno una respuesta invalida al consultar el CUFE de la factura relacionada.'
+            ];
+        }
+
+        if (isset($response_dian['tipo']) && $response_dian['tipo'] == 'mensaje_error') {
+            return [
+                'tipo' => 'mensaje_error',
+                'contenido' => isset($response_dian['contenido']) ? $response_dian['contenido'] : 'OSEI no retorno el CUFE de la factura relacionada.'
+            ];
+        } elseif (isset($response_dian['contenido']['cufe'])) {
             $invoice_id = $response_dian['contenido']['cufe'];
             $billing_reference_issue_date = $this->normalizeDateToDmy($response_dian['contenido']['issue_date'] ?? '', $this->normalizeDateToDmy($factura_doc_encabezado->fecha));
+        } else {
+            Log::warning('OSEI no retorno CUFE para la factura relacionada.', [
+                'endpoint' => $endpointGetCufe,
+                'respuesta' => $response_dian,
+                'documento_id' => $this->doc_encabezado->id ?? null,
+            ]);
+
+            return [
+                'tipo' => 'mensaje_error',
+                'contenido' => 'OSEI no retorno el CUFE de la factura relacionada. Verifique que la factura ' . $prefixFE . ' ' . $numberFE . ' este aceptada por la DIAN en OSEI.'
+            ];
         }
 
         return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": ' . $this->jsonString($lista_emails) . '},"credit_note": {' . $this->get_encabezado_nota_credito($auth_token, $invoice_id, $prefixFE, $numberFE, $billing_reference_issue_date) . ',"customer": ' . $this->get_datos_cliente() . ',"items": ' . $this->get_lineas_registros() . ',"charges": []},"aditional_info": ' . $this->get_aditional_info() . '}';

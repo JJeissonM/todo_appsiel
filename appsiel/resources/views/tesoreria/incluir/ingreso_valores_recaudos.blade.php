@@ -2,6 +2,11 @@
 	$estilo_text=' style="border: none;border-color: transparent;border-bottom: 1px solid gray;"';
     $usar_modal_botones_medios_pago = (bool)($usar_modal_botones_medios_pago ?? false);
     $modal_botones_medios_pago_data = $modal_botones_medios_pago_data ?? ['medios' => [], 'destinos' => []];
+    if (!isset($destinos_medios_recaudo_data)) {
+        $destinos_medios_recaudo_data = (new App\VentasPos\Services\PosPaymentModalService())
+            ->buildDestinationsData($medios_recaudo, $cajas, $cuentas_bancarias);
+    }
+    $filtrar_destinos_por_medio_recaudo = (bool)($filtrar_destinos_por_medio_recaudo ?? ($destinos_medios_recaudo_data['activo'] ?? false));
 ?>
 
 <div id="recaudoModal" class="modal fade" role="dialog">
@@ -145,6 +150,8 @@
             </div>
 
             <input id="id_transaccion" type="hidden" name="id_transaccion" value="{{$id_transaccion}}">
+            <input type="hidden" id="filtrar_destinos_por_medio_recaudo" value="{{ $filtrar_destinos_por_medio_recaudo ? 1 : 0 }}">
+            <script type="application/json" id="destinos_medios_recaudo_data_json">{!! json_encode($destinos_medios_recaudo_data) !!}</script>
             @if(!$usar_modal_botones_medios_pago)
             <input type="hidden" id="usar_modal_botones_medios_pago" value="0">
             @endif

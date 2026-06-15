@@ -110,9 +110,6 @@ class TiempoLaborado implements Estrategia
                 }
             }
 
-			if ( $registro->concepto->id == (int)config('nomina.concepto_vacaciones_dias_no_habiles') ) {
-				$horas_liquidadas_empleado += $registro->cantidad_horas;
-			}
         }
 
         return $horas_liquidadas_empleado;

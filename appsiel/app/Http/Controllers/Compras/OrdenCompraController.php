@@ -157,7 +157,7 @@ class OrdenCompraController extends TransaccionController
 
 
     /*
-    /    Permite crear una entrada de almacen a partir de la orden de compra
+     * Permite crear una entrada de almacen a partir de la orden de compra
     */
     public function entrada_almacen(Request $request)
     {

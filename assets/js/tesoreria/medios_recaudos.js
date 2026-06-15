@@ -18,12 +18,53 @@ function get_modal_botones_medios_pago_data() {
   }
 }
 
-function get_destinos_medio_seleccionado() {
-  if (!usa_modal_botones_medios_pago()) {
+function usa_filtro_destinos_por_medio_recaudo() {
+  return $("#filtrar_destinos_por_medio_recaudo").val() === "1";
+}
+
+function get_destinos_medios_recaudo_data() {
+  var raw = $("#destinos_medios_recaudo_data_json").text();
+
+  if (raw === undefined || raw === "") {
+    return { activo: false, destinos: {} };
+  }
+
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    return { activo: false, destinos: {} };
+  }
+}
+
+function get_medio_recaudo_id_seleccionado() {
+  return ($("#teso_medio_recaudo_id").val() || "").split("-")[0];
+}
+
+function get_destinos_configurados_medio_seleccionado() {
+  var data = get_destinos_medios_recaudo_data();
+  var medioSeleccionado = get_medio_recaudo_id_seleccionado();
+
+  if (
+    medioSeleccionado === "" ||
+    data.destinos === undefined ||
+    data.destinos[medioSeleccionado] === undefined
+  ) {
     return { cajas: [], cuentas: [] };
   }
 
-  var medioSeleccionado = $("#teso_medio_recaudo_id").val().split("-")[0];
+  return data.destinos[medioSeleccionado];
+}
+
+function get_destinos_medio_seleccionado() {
+  if (!usa_modal_botones_medios_pago() && !usa_filtro_destinos_por_medio_recaudo()) {
+    return { cajas: [], cuentas: [] };
+  }
+
+  if (!usa_modal_botones_medios_pago()) {
+    return get_destinos_configurados_medio_seleccionado();
+  }
+
+  var medioSeleccionado = get_medio_recaudo_id_seleccionado();
   var data = get_modal_botones_medios_pago_data();
 
   if (
@@ -35,6 +76,107 @@ function get_destinos_medio_seleccionado() {
   }
 
   return data.destinos[medioSeleccionado];
+}
+
+function cache_opciones_destinos_select() {
+  ["#teso_caja_id", "#teso_cuenta_bancaria_id"].forEach(function (selector) {
+    var $select = $(selector);
+    if (!$select.length || $select.data("opciones-originales")) {
+      return;
+    }
+
+    $select.data("opciones-originales", $select.find("option").clone());
+  });
+}
+
+function filtrar_opciones_destino_select(selector, opciones) {
+  var $select = $(selector);
+  var originales = $select.data("opciones-originales");
+  var idsPermitidos = {};
+
+  if (!$select.length || !originales) {
+    return;
+  }
+
+  opciones.forEach(function (opcion) {
+    idsPermitidos[String(opcion.id)] = true;
+  });
+
+  $select.empty();
+  originales.each(function () {
+    var value = String($(this).val() || "");
+    if (value === "" || idsPermitidos[value]) {
+      $select.append($(this).clone());
+    }
+  });
+
+  $select.val("");
+}
+
+function seleccionar_primer_option_destino(selector) {
+  var $select = $(selector);
+  var $primera = $select.find("option").filter(function () {
+    return ($(this).val() || "") !== "";
+  }).first();
+
+  if ($primera.length) {
+    $select.val($primera.val());
+  }
+}
+
+function hay_destino_visible_seleccionado() {
+  return (
+    ($("#div_caja").is(":visible") && ($("#teso_caja_id").val() || "") !== "") ||
+    ($("#div_cuenta_bancaria").is(":visible") &&
+      ($("#teso_cuenta_bancaria_id").val() || "") !== "")
+  );
+}
+
+function actualizar_destinos_select_por_medio() {
+  if (!usa_filtro_destinos_por_medio_recaudo()) {
+    return true;
+  }
+
+  cache_opciones_destinos_select();
+
+  var destinos = get_destinos_configurados_medio_seleccionado();
+  var tieneCajas = destinos.cajas.length > 0;
+  var tieneCuentas = destinos.cuentas.length > 0;
+
+  $("#div_caja").hide();
+  $("#div_cuenta_bancaria").hide();
+  $("#teso_caja_id").val("");
+  $("#teso_cuenta_bancaria_id").val("");
+
+  filtrar_opciones_destino_select("#teso_caja_id", destinos.cajas);
+  filtrar_opciones_destino_select("#teso_cuenta_bancaria_id", destinos.cuentas);
+
+  if (tieneCajas) {
+    $("#div_caja").show();
+    seleccionar_primer_option_destino("#teso_caja_id");
+  }
+
+  if (tieneCuentas) {
+    $("#div_cuenta_bancaria").show();
+    if (!tieneCajas) {
+      seleccionar_primer_option_destino("#teso_cuenta_bancaria_id");
+    }
+  }
+
+  if (tieneCajas || tieneCuentas) {
+    habilitar_text($("#valor_total"));
+    $("#valor_total").focus();
+    return true;
+  }
+
+  deshabilitar_text($("#valor_total"));
+  Swal.fire({
+    icon: "warning",
+    title: "Alerta",
+    text: "El medio de pago seleccionado no tiene cajas o cuentas bancarias configuradas."
+  });
+
+  return false;
 }
 
 function get_primer_medio_recaudo_por_texto(textoBuscado) {
@@ -114,8 +256,12 @@ function reset_destinos_medio_pago() {
 }
 
 function validar_destino_medio_pago_seleccionado() {
-  if (!usa_modal_botones_medios_pago()) {
+  if (!usa_modal_botones_medios_pago() && !usa_filtro_destinos_por_medio_recaudo()) {
     return true;
+  }
+
+  if (!usa_modal_botones_medios_pago()) {
+    return hay_destino_visible_seleccionado();
   }
 
   var destinos = get_destinos_medio_seleccionado();
@@ -224,6 +370,14 @@ function on_change_medio_recaudo_select() {
     );
     $("#teso_tipo_motivo").focus();
   } else {
+    if (usa_filtro_destinos_por_medio_recaudo()) {
+      if (actualizar_destinos_select_por_medio()) {
+        return true;
+      }
+
+      return false;
+    }
+
     $("#div_cuenta_bancaria").hide();
     $("#div_caja").show();
 
@@ -257,6 +411,37 @@ function validar_valor_y_destino() {
 
   if (usa_modal_botones_medios_pago()) {
     if (!validar_destino_medio_pago_seleccionado()) {
+      $("#btn_agregar").hide();
+      return false;
+    }
+
+    return ok;
+  }
+
+  if (usa_filtro_destinos_por_medio_recaudo()) {
+    var destinoOk = false;
+
+    $("#teso_caja_id").attr("style", "background-color:white;");
+    $("#teso_cuenta_bancaria_id").attr("style", "background-color:white;");
+
+    if ($("#div_caja").is(":visible") && $("#teso_caja_id").val() !== "") {
+      destinoOk = true;
+    }
+
+    if (
+      $("#div_cuenta_bancaria").is(":visible") &&
+      $("#teso_cuenta_bancaria_id").val() !== ""
+    ) {
+      destinoOk = true;
+    }
+
+    if (!destinoOk) {
+      if ($("#div_caja").is(":visible")) {
+        $("#teso_caja_id").attr("style", "background-color:#FF8C8C;");
+      }
+      if ($("#div_cuenta_bancaria").is(":visible")) {
+        $("#teso_cuenta_bancaria_id").attr("style", "background-color:#FF8C8C;");
+      }
       $("#btn_agregar").hide();
       return false;
     }
@@ -325,6 +510,24 @@ function get_textos_medios_pago() {
     $("#teso_medio_recaudo_id option:selected").text()
   ];
 
+  if (usa_filtro_destinos_por_medio_recaudo()) {
+    return {
+      medio: textoMedioRecaudo,
+      caja:
+        $("#div_caja").is(":visible") && $("#teso_caja_id").val() !== ""
+          ? [$("#teso_caja_id").val(), $("#teso_caja_id option:selected").text()]
+          : [0, ""],
+      cuenta:
+        $("#div_cuenta_bancaria").is(":visible") &&
+        $("#teso_cuenta_bancaria_id").val() !== ""
+          ? [
+              $("#teso_cuenta_bancaria_id").val(),
+              $("#teso_cuenta_bancaria_id option:selected").text()
+            ]
+          : [0, ""]
+    };
+  }
+
   if (medioRecaudo[1] == "Tarjeta bancaria") {
     return {
       medio: textoMedioRecaudo,
@@ -384,15 +587,23 @@ $("#recaudoModal").on("hidden.bs.modal", function () {
 });
 
 if (!usa_modal_botones_medios_pago()) {
+  cache_opciones_destinos_select();
+
   $("#teso_medio_recaudo_id").change(function () {
     on_change_medio_recaudo_select();
   });
 
   $("#teso_cuenta_bancaria_id").change(function () {
+    if (usa_filtro_destinos_por_medio_recaudo() && $(this).val() !== "") {
+      $("#teso_caja_id").val("");
+    }
     $("#valor_total").focus();
   });
 
   $("#teso_caja_id").change(function () {
+    if (usa_filtro_destinos_por_medio_recaudo() && $(this).val() !== "") {
+      $("#teso_cuenta_bancaria_id").val("");
+    }
     $("#valor_total").focus();
   });
 }

@@ -325,6 +325,7 @@ class ComprasDocEncabezado extends Model
                 'compras_doc_encabezados.creado_por',
                 'compras_doc_encabezados.modificado_por',
                 'compras_doc_encabezados.created_at',
+                'compras_doc_encabezados.updated_at',
                 'compras_doc_encabezados.valor_total',
                 'compras_doc_encabezados.doc_proveedor_prefijo',
                 'compras_doc_encabezados.doc_proveedor_consecutivo',

@@ -658,6 +658,53 @@ DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 249 AND `core_cam
 DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 250 AND `core_campo_id` = 92;
 DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 251 AND `core_campo_id` = 92;
 DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 252 AND `core_campo_id` = 92;
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 187 AND `core_campo_id` = 92; -- Traslado de efectivo
+
+-- Quitar campo "Estado Doc.""
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 25 AND `core_campo_id` = 122;
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 248 AND `core_campo_id` = 122;
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 249 AND `core_campo_id` = 122;
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 250 AND `core_campo_id` = 122;
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 251 AND `core_campo_id` = 122;
+DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 252 AND `core_campo_id` = 122;
 
 -- Permiso para clonar documento de inventario fisico
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES ('730', '8', '0', 'inventarios.inventario_fisico.clonar_documento', 'Clonar Inventario Fisico', '', '0', '0', '0', '', '2026-06-01 05:27:12', NULL);
+
+-- Permiso para bloquear el boton editar de salidas y transferencias de inventarios
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
+SELECT NULL, '8', '0', 'inv_bloqueo_modificar_salidas_transferencias', 'Bloquear modificar salidas y transferencias de inventarios', 'web', '0', '99', '0', '', '2026-06-12 00:00:00', NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM `permissions` WHERE `name` = 'inv_bloqueo_modificar_salidas_transferencias'
+);
+
+-- Estado por defecto para documentos de inventarios al retirar el campo Estado Doc. del create/edit
+UPDATE `inv_doc_encabezados` SET `estado` = 'Activo' WHERE `estado` IS NULL OR `estado` = '';
+UPDATE `inv_doc_registros` SET `estado` = 'Activo' WHERE `estado` IS NULL OR `estado` = '';
+ALTER TABLE `inv_doc_encabezados` MODIFY `estado` VARCHAR(255) NOT NULL DEFAULT 'Activo';
+ALTER TABLE `inv_doc_registros` MODIFY `estado` VARCHAR(255) NOT NULL DEFAULT 'Activo';
+
+-- Valores por defecto para Proveedores al simplificar el formulario create/edit
+UPDATE `compras_proveedores` SET `clase_proveedor_id` = 1 WHERE `clase_proveedor_id` IS NULL OR `clase_proveedor_id` = 0;
+UPDATE `compras_proveedores` SET `inv_bodega_id` = 1 WHERE `inv_bodega_id` IS NULL OR `inv_bodega_id` = 0;
+UPDATE `compras_proveedores` SET `liquida_impuestos` = 1 WHERE `liquida_impuestos` IS NULL;
+UPDATE `compras_proveedores` SET `condicion_pago_id` = 1 WHERE `condicion_pago_id` IS NULL OR `condicion_pago_id` = 0;
+UPDATE `compras_proveedores` SET `codigo` = '' WHERE `codigo` IS NULL;
+UPDATE `compras_proveedores` SET `estado` = 'Activo' WHERE `estado` IS NULL OR `estado` = '';
+UPDATE `compras_proveedores` SET `declarante_renta` = 'declarante' WHERE `declarante_renta` IS NULL OR `declarante_renta` = '';
+UPDATE `compras_proveedores` SET `retencion_fuente_concepto_default_id` = 0 WHERE `retencion_fuente_concepto_default_id` IS NULL;
+ALTER TABLE `compras_proveedores` MODIFY `clase_proveedor_id` INT(10) UNSIGNED NOT NULL DEFAULT 1;
+ALTER TABLE `compras_proveedores` MODIFY `inv_bodega_id` INT(10) UNSIGNED NOT NULL DEFAULT 1;
+ALTER TABLE `compras_proveedores` MODIFY `liquida_impuestos` TINYINT(1) NOT NULL DEFAULT 1;
+ALTER TABLE `compras_proveedores` MODIFY `condicion_pago_id` INT(10) UNSIGNED NOT NULL DEFAULT 1;
+ALTER TABLE `compras_proveedores` MODIFY `codigo` VARCHAR(10) NOT NULL DEFAULT '';
+ALTER TABLE `compras_proveedores` MODIFY `estado` VARCHAR(255) NOT NULL DEFAULT 'Activo';
+ALTER TABLE `compras_proveedores` MODIFY `declarante_renta` VARCHAR(40) NOT NULL DEFAULT 'declarante';
+ALTER TABLE `compras_proveedores` MODIFY `retencion_fuente_concepto_default_id` INT(10) UNSIGNED NOT NULL DEFAULT 0;
+
+-- Permiso para ingresar a la configuración de Compras
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
+SELECT NULL, '9', '0', 'compras_configuracion', 'Configuración', 'config', '0', '99', '1', '', '2026-06-13 00:00:00', NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM `permissions` WHERE `name` = 'compras_configuracion'
+);

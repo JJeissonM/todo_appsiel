@@ -19,8 +19,36 @@ class Proveedor extends Model
         parent::boot();
 
         static::saving(function ($proveedor) {
+            if (empty($proveedor->clase_proveedor_id)) {
+                $proveedor->clase_proveedor_id = static::getDefaultClaseProveedorId();
+            }
+
             if (empty($proveedor->inv_bodega_id)) {
                 $proveedor->inv_bodega_id = static::getDefaultInvBodegaId();
+            }
+
+            if (static::isBlank($proveedor->liquida_impuestos)) {
+                $proveedor->liquida_impuestos = 1;
+            }
+
+            if (empty($proveedor->condicion_pago_id)) {
+                $proveedor->condicion_pago_id = static::getDefaultCondicionPagoId();
+            }
+
+            if (static::isBlank($proveedor->codigo)) {
+                $proveedor->codigo = '';
+            }
+
+            if (static::isBlank($proveedor->declarante_renta)) {
+                $proveedor->declarante_renta = 'declarante';
+            }
+
+            if (static::isBlank($proveedor->retencion_fuente_concepto_default_id)) {
+                $proveedor->retencion_fuente_concepto_default_id = 0;
+            }
+
+            if (static::isBlank($proveedor->estado)) {
+                $proveedor->estado = 'Activo';
             }
         });
     }
@@ -44,6 +72,37 @@ class Proveedor extends Model
         $inv_bodega_id = (int) config('inventarios.item_bodega_principal_id');
 
         return $inv_bodega_id > 0 ? $inv_bodega_id : 1;
+    }
+
+    public static function getDefaultClaseProveedorId()
+    {
+        $clase_proveedor_id = (int) config('compras.clase_proveedor_id');
+
+        if ($clase_proveedor_id > 0) {
+            return $clase_proveedor_id;
+        }
+
+        $clase_proveedor_id = (int) ClaseProveedor::where('estado', 'Activo')->orderBy('id')->value('id');
+
+        return $clase_proveedor_id > 0 ? $clase_proveedor_id : 1;
+    }
+
+    public static function getDefaultCondicionPagoId()
+    {
+        $condicion_pago_id = (int) config('compras.condicion_pago_id');
+
+        if ($condicion_pago_id > 0) {
+            return $condicion_pago_id;
+        }
+
+        $condicion_pago_id = (int) CondicionPagoProv::where('estado', 'Activo')->orderBy('id')->value('id');
+
+        return $condicion_pago_id > 0 ? $condicion_pago_id : 1;
+    }
+
+    protected static function isBlank($value)
+    {
+        return is_null($value) || $value === '';
     }
 
     public static function consultar_registros($nro_registros, $search)

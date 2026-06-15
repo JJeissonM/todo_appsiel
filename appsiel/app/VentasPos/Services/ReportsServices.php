@@ -92,6 +92,8 @@ class ReportsServices
             ];
         }
 
+        $emails_filtro_creado_por = [];
+
         $documentos_pdv = FacturaPos::where([
                                         ['pdv_id','=',$pdv->id],
                                         ['estado', '<>', 'Anulado']
@@ -100,15 +102,22 @@ class ReportsServices
 
         if ( !is_null($creado_por) ) {
             $empresa_id = auth()->check() ? auth()->user()->empresa_id : null;
-            $emails = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
-            $documentos_pdv->whereIn('creado_por', $emails);
+            $emails_filtro_creado_por = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
+            $documentos_pdv->whereIn('creado_por', $emails_filtro_creado_por);
         }
 
         $documentos_pdv = $documentos_pdv->get();
 
         $total_credito = $documentos_pdv->where( 'forma_pago', 'credito' )->sum('valor_total');
                 
-        $movimientos_tesoreria_para_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $fecha, $fecha);
+        $movimientos_tesoreria_para_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $pdv->id);
+        if ( !empty($emails_filtro_creado_por) ) {
+            $movimientos_tesoreria_para_pdv = $movimientos_tesoreria_para_pdv
+                ->filter(function ($movimiento) use ($emails_filtro_creado_por) {
+                    return in_array($movimiento->creado_por, $emails_filtro_creado_por);
+                })
+                ->values();
+        }
         
         $total_contado = 0;
         $movimiento_propinas = collect([]);
@@ -175,6 +184,8 @@ class ReportsServices
             ];
         }
 
+        $emails_filtro_creado_por = [];
+
         $documentos_pdv = FacturaPos::where([
                                         ['pdv_id','=',$pdv->id],
                                         ['estado', '<>', 'Anulado']
@@ -183,13 +194,20 @@ class ReportsServices
 
         if ( !is_null($creado_por) ) {
             $empresa_id = auth()->check() ? auth()->user()->empresa_id : null;
-            $emails = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
-            $documentos_pdv->whereIn('creado_por', $emails);
+            $emails_filtro_creado_por = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
+            $documentos_pdv->whereIn('creado_por', $emails_filtro_creado_por);
         }
 
         $documentos_pdv = $documentos_pdv->get();
                 
-        $movimientos_tesoreria_propinas = $this->get_movimiento_tesoreria_propinas($documentos_pdv, $fecha, $fecha);
+        $movimientos_tesoreria_propinas = $this->get_movimiento_tesoreria_propinas($documentos_pdv, $pdv->id);
+        if ( !empty($emails_filtro_creado_por) ) {
+            $movimientos_tesoreria_propinas = $movimientos_tesoreria_propinas
+                ->filter(function ($movimiento) use ($emails_filtro_creado_por) {
+                    return in_array($movimiento->creado_por, $emails_filtro_creado_por);
+                })
+                ->values();
+        }
         
         $cuentas_bancarias = TesoCuentaBancaria::where('estado','Activo')->get();
 
@@ -265,7 +283,7 @@ class ReportsServices
     /**
      * 
      */
-    public function get_movimiento_tesoreria_pdv($documentos_pdv)
+    public function get_movimiento_tesoreria_pdv($documentos_pdv, $pdv_id = null)
     {
         $arr_consecutivos = [];
         $arr_core_tipo_transaccion_id = [];
@@ -287,20 +305,28 @@ class ReportsServices
             }
         }
 
-        return TesoMovimiento::where([
+        $movimientos = TesoMovimiento::where([
                                     ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ],
                                     ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono') ]
                                 ])
                                 ->whereIn('core_tipo_transaccion_id', $arr_core_tipo_transaccion_id)->whereIn('core_tipo_doc_app_id', $arr_core_tipo_doc_app_id)
                                 ->whereIn('consecutivo', $arr_consecutivos)
-                                ->whereIn('fecha', $arr_fechas)
-                                ->get();
+                                ->whereIn('fecha', $arr_fechas);
+
+        if ( !is_null($pdv_id) ) {
+            $movimientos->where(function ($query) use ($pdv_id) {
+                $query->where('pdv_id', (int)$pdv_id)
+                    ->orWhereNull('pdv_id');
+            });
+        }
+
+        return $movimientos->get();
     }
 
     /**
      * 
      */
-    public function get_movimiento_tesoreria_propinas($documentos_pdv)
+    public function get_movimiento_tesoreria_propinas($documentos_pdv, $pdv_id = null)
     {
         $arr_consecutivos = [];
         $arr_core_tipo_transaccion_id = [];
@@ -322,13 +348,21 @@ class ReportsServices
             }
         }
 
-        return TesoMovimiento::where([
+        $movimientos = TesoMovimiento::where([
                                     ['teso_motivo_id', '=', (int)config('ventas_pos.motivo_tesoreria_propinas') ]
                                 ])
                                 ->whereIn('core_tipo_transaccion_id', $arr_core_tipo_transaccion_id)->whereIn('core_tipo_doc_app_id', $arr_core_tipo_doc_app_id)
                                 ->whereIn('consecutivo', $arr_consecutivos)
-                                ->whereIn('fecha', $arr_fechas)
-                                ->get();
+                                ->whereIn('fecha', $arr_fechas);
+
+        if ( !is_null($pdv_id) ) {
+            $movimientos->where(function ($query) use ($pdv_id) {
+                $query->where('pdv_id', (int)$pdv_id)
+                    ->orWhereNull('pdv_id');
+            });
+        }
+
+        return $movimientos->get();
     }
 
     /**
@@ -343,7 +377,7 @@ class ReportsServices
                                     ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                                     ->get();
 
-        $movimiento_tesoreria_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $fecha_desde, $fecha_hasta);
+        $movimiento_tesoreria_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $pdv_id);
     
         $movin_por_medio_recaudo = $movimiento_tesoreria_pdv->groupBy('teso_medio_recaudo_id');
 
@@ -381,7 +415,7 @@ class ReportsServices
                                     ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                                     ->get();
 
-        $movimiento_tesoreria_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $fecha_desde, $fecha_hasta);
+        $movimiento_tesoreria_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $pdv_id);
         
         $ventas_por_medios_pago_con_iva  = collect([]);
 
@@ -464,20 +498,39 @@ class ReportsServices
             return collect([]);
         }
 
+        $emails_filtro_creado_por = [];
+        if ( !is_null($creado_por) ) {
+            $empresa_id = auth()->check() ? auth()->user()->empresa_id : null;
+            $emails_filtro_creado_por = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
+        }
+
         $documentos_pdv = FacturaPos::where([
                                     ['pdv_id', '=', $pdv->id],
                                     ['estado', '<>', 'Anulado']
                                 ])
-                            ->whereBetween('fecha', [$fecha, $fecha])
-                            ->get();
+                            ->whereBetween('fecha', [$fecha, $fecha]);
+
+        if ( !empty($emails_filtro_creado_por) ) {
+            $documentos_pdv->whereIn('creado_por', $emails_filtro_creado_por);
+        }
+
+        $documentos_pdv = $documentos_pdv->get();
 
         $movimientos_documentos_pos = collect([]);
         if ( $documentos_pdv->count() > 0 ) {
-            $movimientos_documentos_pos = $this->get_movimiento_tesoreria_pdv($documentos_pdv)
+            $movimientos_documentos_pos = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $pdv->id)
                 ->filter(function ($movimiento) {
                     return (int)$movimiento->teso_caja_id === 0 && (int)$movimiento->teso_cuenta_bancaria_id > 0;
                 })
                 ->values();
+
+            if ( !empty($emails_filtro_creado_por) ) {
+                $movimientos_documentos_pos = $movimientos_documentos_pos
+                    ->filter(function ($movimiento) use ($emails_filtro_creado_por) {
+                        return in_array($movimiento->creado_por, $emails_filtro_creado_por);
+                    })
+                    ->values();
+            }
         }
 
         $movimientos_externos_pdv = TesoMovimiento::where([
@@ -488,8 +541,13 @@ class ReportsServices
                                     ['teso_cuenta_bancaria_id', '>', 0],
                                     ['pdv_id', '=', $pdv->id]
                                 ])
-                                ->orderBy('valor_movimiento', 'DESC')
-                                ->get();
+                                ->orderBy('valor_movimiento', 'DESC');
+
+        if ( !empty($emails_filtro_creado_por) ) {
+            $movimientos_externos_pdv->whereIn('creado_por', $emails_filtro_creado_por);
+        }
+
+        $movimientos_externos_pdv = $movimientos_externos_pdv->get();
 
         return $movimientos_documentos_pos->merge($movimientos_externos_pdv)
                     ->unique('id')

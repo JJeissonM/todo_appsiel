@@ -121,7 +121,12 @@
                     <td class="text-right">{{ number_format($item->entradas_por_motivo[$motivo_entrada->id] ?? 0, 2, ',', '.') }}</td>
                 @endforeach
                 @foreach( $motivos_salidas as $motivo_salida )
-                    <td class="text-right">{{ number_format($item->salidas_por_motivo[$motivo_salida->id] ?? 0, 2, ',', '.') }}</td>
+                    @if( $motivo_salida->id == (int)config('inventarios.ai_motivo_salida_id') )
+                    
+                        <td class="text-right text-danger">{{ number_format($item->salidas_por_motivo[$motivo_salida->id] ?? 0, 2, ',', '.') }}</td>
+                    @else                    
+                        <td class="text-right">{{ number_format($item->salidas_por_motivo[$motivo_salida->id] ?? 0, 2, ',', '.') }}</td>
+                    @endif
                 @endforeach
                 <td class="text-right">{{ number_format($item->saldo_fin, 2, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($item->cantidad_if, 2, ',', '.') }}</td>

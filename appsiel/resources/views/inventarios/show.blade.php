@@ -19,6 +19,14 @@
     ?>
 @endcan
 
+@can('inv_bloqueo_modificar_salidas_transferencias')
+    <?php
+        // 2 = Transferencias, 3 = Salidas de almacen
+        $transaccion_no_editar[] = 2;
+        $transaccion_no_editar[] = 3;
+    ?>
+@endcan
+
 @extends('transaccion.show') 
 
 @section('botones_acciones')
@@ -59,9 +67,13 @@
 @endsection
 
 @section('botones_imprimir_email')
-	Formato: {{ Form::select('formato_impresion_id',['1'=>'Estándar','2'=>'Estándar (Sin costo)','3'=>'Estándar v2','4'=>'POS (Sin costo)','5'=>'Estandar (CEOF)','6'=>'Estandar (CEM)'], null, [ 'id' =>'formato_impresion_id' ] ) }}
-	{{ Form::bsBtnPrint( 'transaccion_print/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
-	{{ Form::bsBtnEmail( 'inventarios_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
+
+    <?php
+        $default_formato_impresion_id = 4;
+    ?>
+	Formato: {{ Form::select('formato_impresion_id',['4'=>'POS','1'=>'Estándar','2'=>'Estándar (Sin costo)'], null, [ 'id' =>'formato_impresion_id' ] ) }}
+	{{ Form::bsBtnPrint( 'transaccion_print/'.$id.$variables_url.'&formato_impresion_id=' . $default_formato_impresion_id ) }}
+	{{ Form::bsBtnEmail( 'inventarios_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=' . $default_formato_impresion_id ) }}
 @endsection
 
 @section('botones_anterior_siguiente')

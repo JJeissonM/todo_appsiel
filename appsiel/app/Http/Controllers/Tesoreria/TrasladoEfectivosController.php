@@ -82,7 +82,7 @@ class TrasladoEfectivosController extends TransaccionController
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion($id);
         $doc_registros = TesoDocRegistro::get_registros_impresion($doc_encabezado->id);
         $pdv = $this->get_pdv_documento($doc_encabezado);
-       // dd($doc_registros);
+        // dd($doc_registros);
         $view = View::make('tesoreria.traslados_efectivo.print', compact('registro', 'empresa', 'doc_encabezado', 'user', 'doc_registros', 'pdv'))->render();
 
         return $view;

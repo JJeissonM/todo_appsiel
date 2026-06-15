@@ -45,6 +45,9 @@
         $nit_tercero_anterior = $linea->numero_identificacion;
     ?>
 @endforeach
-<div class="row" align="center">
-    <b>{{ $lbl_total }}: </b> $ {{ number_format($total_abono, 0, ',', '.') }}
-</div>
+
+@if( $doc_encabezado->core_tipo_transaccion_id != 43 ) {{-- Si no es un traslado de efectivo, se muestra el total del recaudo --}}
+    <div class="row" align="center">
+        <b>{{ $lbl_total }}: </b> $ {{ number_format($total_abono, 0, ',', '.') }}
+    </div>
+@endif

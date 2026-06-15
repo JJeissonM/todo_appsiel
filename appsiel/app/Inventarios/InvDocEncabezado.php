@@ -349,6 +349,7 @@ class InvDocEncabezado extends Model
                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_doc_encabezados.core_tercero_id')
                     ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_doc_encabezados.inv_bodega_id')
+                    ->leftJoin('inv_bodegas as bodega_destino', 'bodega_destino.id', '=', 'inv_doc_encabezados.bodega_destino_id')
                     ->select(
                                 'inv_doc_encabezados.id',
                                 'inv_doc_encabezados.core_empresa_id',
@@ -360,12 +361,14 @@ class InvDocEncabezado extends Model
                                 'inv_doc_encabezados.descripcion',
                                 'inv_doc_encabezados.hora_inicio',
                                 'inv_doc_encabezados.inv_bodega_id',
+                                'inv_doc_encabezados.bodega_destino_id',
                                 'inv_doc_encabezados.documento_soporte',
                                 'inv_doc_encabezados.vtas_doc_encabezado_origen_id',
                                 'inv_doc_encabezados.estado',
                                 'inv_doc_encabezados.creado_por',
                                 'inv_doc_encabezados.modificado_por',
                                 'inv_doc_encabezados.created_at',
+                                'inv_doc_encabezados.updated_at',
                                 'inv_doc_encabezados.hora_finalizacion',
                                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS documento_transaccion_prefijo_consecutivo' ),
@@ -375,7 +378,9 @@ class InvDocEncabezado extends Model
                                 'core_terceros.direccion1',
                                 'core_terceros.codigo_ciudad',
                                 'core_terceros.telefono1',
-                                'inv_bodegas.descripcion AS bodega_descripcion'
+                                'inv_bodegas.descripcion AS bodega_descripcion',
+                                'inv_bodegas.descripcion AS bodega_origen_descripcion',
+                                'bodega_destino.descripcion AS bodega_destino_descripcion'
                             )
                     ->get()
                     ->first();
