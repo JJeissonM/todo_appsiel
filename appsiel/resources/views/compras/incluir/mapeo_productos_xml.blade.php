@@ -21,6 +21,7 @@
     <p class="text-muted small" style="color: #31708f !important;background-color: #d1ecf1 !important;">
         Asocie cada producto XML del proveedor con su equivalente en Appsiel. Las asociaciones se guardan por proveedor y se aplican automáticamente en futuras sincronizaciones. Si maneja unidades distintas (ej. cajas/docenas), configure la cantidad convertida y/o el factor de conversión según su operación. 
         <strong>NO modificable total del XML y el precio unitario es editable.</strong>
+        <br><em>Nota: utilizar únicamente para facturas directas (sin EA).</em>
     </p>
 
     @if($solo_lectura)
@@ -46,28 +47,27 @@
             <table class="table table-bordered table-condensed">
                 <thead style="background-color: #f5f5f5;">
                     <tr>
-                        <th>#</th>
+                        <th style="text-align:center;">#</th>
                         <th>Descripción en XML (Proveedor)</th>
                         <th style="display:none;">SKU / Código XML</th>
-                        <th style="text-align:right; min-width:80px;">Cant. XML</th>
-                        <th style="text-align:right; min-width:120px;">Precio Unit. XML</th>
-                        <th style="text-align:right;">IVA %</th>
-                        <th style="text-align:right; min-width:100px;">Total XML</th>
-                        <th style="min-width:280px;">Producto en Appsiel</th>
-                        <th style="text-align:center; min-width:80px;">U.M. Appsiel</th>
-                        <th style="text-align:right; min-width:110px;" title="Cantidad convertida (en la U.M. del producto Appsiel).">
+                        <th style="text-align:center; width:80px;">Cant. XML</th>
+                        <th style="text-align:center; width:120px;">Precio Unit. XML</th>
+                        <th style="text-align:center; width:60px;">IVA %</th>
+                        <th style="text-align:center; width:110px;">Total XML</th>
+                        <th style="text-align:left; min-width:220px;">Producto en Appsiel <span style="font-weight:normal;">(U.M.)</span></th>
+                        <th style="text-align:center; width:110px;" title="Cantidad convertida (en la U.M. del producto Appsiel).">
                             Cant. convertida
                         </th>
-                        <th style="text-align:right; min-width:90px;" title="Factor de conversión configurado para este código XML y proveedor.">
+                        <th style="text-align:center; width:80px;" title="Factor de conversión configurado para este código XML y proveedor.">
                             Factor
                         </th>
-                        <th style="min-width:130px;" title="Operación del factor para convertir la cantidad.">
+                        <th style="text-align:center; width:120px;" title="Operación del factor para convertir la cantidad.">
                             Operación
                         </th>
-                        <th style="text-align:right; min-width:140px;" title="Sugerido: total_xml / cantidad_convertida (editable).">
+                        <th style="text-align:center; width:140px;" title="Sugerido: total_xml / cantidad_convertida (editable).">
                             Precio Unit. (calculado)
                         </th>
-                        <th>Estado</th>
+                        <th style="text-align:center;">Estado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -128,12 +128,12 @@
                                 {{ $registro->xml_codigo ?: '—' }}
                             </small>
                         </td>
-                        <td style="text-align:right;">{{ $cantidad_xml }}</td>
-                        <td style="text-align:right;">
-                            $ {{ number_format($precio_unitario_xml, 4, ',', '.') }}
+                        <td style="text-align:center;">{{ $cantidad_xml }}</td>
+                        <td style="text-align:center;">
+                            $ {{ number_format($precio_unitario_xml, 2, ',', '.') }}
                         </td>
-                        <td style="text-align:right;">{{ $registro->tasa_impuesto }}%</td>
-                        <td style="text-align:right;">
+                        <td style="text-align:center;">{{ $registro->tasa_impuesto }}%</td>
+                        <td style="text-align:center;">
                             $ {{ number_format($total_xml, 2, ',', '.') }}
                         </td>
                         <td>
@@ -147,43 +147,44 @@
                             <input type="hidden" name="mapeos[{{ $i }}][xml_cantidad]" value="{{ $cantidad_xml }}">
                             <input type="hidden" name="mapeos[{{ $i }}][xml_precio_unitario]" value="{{ $precio_unitario_xml }}">
 
-                            <select name="mapeos[{{ $i }}][inv_producto_id]"
-                                    class="form-control select2 select2-mapeo" {{ $solo_lectura ? 'disabled' : '' }}>
-                                <option value="">-- Seleccionar producto --</option>
-                                @foreach($productos_para_select as $prod)
-                                    <option value="{{ $prod->id }}"
-                                        {{ ($ya_mapeado && $pivot->inv_producto_id == $prod->id)
-                                            ? 'selected' : '' }}>
-                                        {{ $prod->descripcion }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <div style="display:flex; align-items:center; gap:4px;">
+                                <select name="mapeos[{{ $i }}][inv_producto_id]"
+                                        class="form-control select2 select2-mapeo" {{ $solo_lectura ? 'disabled' : '' }}
+                                        style="flex:1;">
+                                    <option value="">-- Seleccionar producto --</option>
+                                    @foreach($productos_para_select as $prod)
+                                        <option value="{{ $prod->id }}"
+                                            {{ ($ya_mapeado && $pivot->inv_producto_id == $prod->id)
+                                                ? 'selected' : '' }}>
+                                            {{ $prod->descripcion }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <span class="label label-info label-um-appsiel" style="font-size:1em; white-space:nowrap;">—</span>
+                            </div>
                         </td>
                         <td style="text-align:center;">
-                            <span class="label label-info label-um-appsiel" style="font-size: 1.1em;">—</span>
-                        </td>
-                        <td>
                             <input type="number"
                                    name="mapeos[{{ $i }}][cantidad_convertida]"
                                    class="form-control input-sm cantidad-convertida"
                                    min="0.000001"
                                    step="any"
                                    value="{{ $cantidad_convertida }}"
-                                   style="width:110px;" {{ $solo_lectura ? 'readonly' : '' }}>
+                                   style="width:100px; text-align:center;" {{ $solo_lectura ? 'readonly' : '' }}>
                         </td>
-                        <td>
+                        <td style="text-align:center;">
                             <input type="number"
                                    name="mapeos[{{ $i }}][factor_conversion]"
                                    class="form-control input-sm factor-conversion"
                                    min="0.000001"
                                    step="any"
                                    value="{{ $factor_guardado }}"
-                                   style="width:90px;" {{ $solo_lectura ? 'readonly' : '' }}>
+                                   style="width:80px; text-align:center;" {{ $solo_lectura ? 'readonly' : '' }}>
                         </td>
-                        <td>
+                        <td style="text-align:center;">
                             <select name="mapeos[{{ $i }}][tipo_factor]"
                                     class="form-control input-sm tipo-factor"
-                                    style="min-width:120px;" {{ $solo_lectura ? 'disabled' : '' }}>
+                                    style="width:120px; text-align:center;" {{ $solo_lectura ? 'disabled' : '' }}>
                                 <option value="multiplicacion" {{ $tipo_factor_guardado === 'multiplicacion' ? 'selected' : '' }}>
                                     Multiplicación
                                 </option>
@@ -192,18 +193,19 @@
                                 </option>
                             </select>
                         </td>
-                        <td>
-                            <div class="input-group input-group-sm" style="min-width:140px;">
+                        <td style="text-align:center;">
+                            <div class="input-group input-group-sm" style="width:140px; margin:0 auto;">
                                 <span class="input-group-addon">$</span>
                                 <input type="number"
                                        name="mapeos[{{ $i }}][precio_unitario_final]"
                                        class="form-control precio-unitario-final"
                                        step="any"
                                        value="{{ $precio_unitario_sugerido }}"
+                                       style="text-align:center;"
                                        title="Sugerido: total_xml/cantidad_convertida. Editable." {{ $solo_lectura ? 'readonly' : '' }}>
                             </div>
                         </td>
-                        <td>
+                        <td style="text-align:center;">
                             @if($ya_mapeado)
                                 <span class="label label-success">
                                     <i class="fa fa-check"></i> Vinculado

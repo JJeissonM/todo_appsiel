@@ -119,7 +119,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 						<div class="alert alert-warning">
 							<strong>Advertencia!</strong>
 							<br>
-							Se validará la entrada de almacén vinculada o se generará una nueva si no existe; además se crearán los movimientos de compras, las contabilizaciones y los registros de pago del documento actual.
+							Se validará la entrada de almacén vinculada o se generará una nueva si no existe.
 							<br><br>
 							Esta operación debe ejecutarse una sola vez.
 						</div>

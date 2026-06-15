@@ -40,7 +40,7 @@ $(document).ready(function () {
         if (cantidadConvertida > 0) {
             var precio = totalXml / cantidadConvertida;
             // Sugerimos el valor pero el usuario puede editarlo después.
-            $fila.find('.precio-unitario-final').val(precio.toFixed(6));
+            $fila.find('.precio-unitario-final').val(precio.toFixed(2));
         }
     }
 

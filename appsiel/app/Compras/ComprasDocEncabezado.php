@@ -153,6 +153,7 @@ class ComprasDocEncabezado extends Model
                 'compras_doc_encabezados.id AS campo9'
             )
             ->orderBy('compras_doc_encabezados.fecha', 'DESC')
+            ->orderBy('compras_doc_encabezados.id', 'DESC')
             ->get();
 
         //hacemos el filtro de $search si $search tiene contenido
@@ -266,6 +267,7 @@ class ComprasDocEncabezado extends Model
         END
     )'), "LIKE", "%$search%")
             ->orderBy('compras_doc_encabezados.fecha', 'DESC')
+            ->orderBy('compras_doc_encabezados.id', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
