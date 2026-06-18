@@ -62,7 +62,7 @@ class PrestacionesSocialesController extends TransaccionController
                 continue;
             }
 
-            if ( $empleado->clase_contrato != 'normal' ) {
+            if ( $empleado->clase_contrato == 'por_turnos' ) {
                 continue;
             }
 
