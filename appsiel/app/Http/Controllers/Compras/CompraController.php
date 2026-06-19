@@ -304,18 +304,13 @@ class CompraController extends TransaccionController
             $detalle_operacion = '';
             foreach ($registros_entrada as $un_registro) {
                 // Nota: $un_registro contiene datos de inventarios 
-                $cantidad = $un_registro->cantidad;
-                $total_base_impuesto = $un_registro->costo_total;
+                $datos_linea_entrada = self::get_datos_factura_desde_registro_entrada($un_registro, $doc_encabezado->proveedor_id);
 
-                $tasa_impuesto = Impuesto::get_tasa($un_registro->inv_producto_id, $doc_encabezado->proveedor_id, 0);
-                if ((int)config('configuracion.liquidacion_impuestos')) {
-                    $tasa_impuesto = $un_registro->item->impuesto->tasa_impuesto;
-                }
-
-                // El costo_unitario se guardó con los descuentos restados
-                $precio_unitario = $un_registro->costo_unitario * (1 + $tasa_impuesto  / 100);
-
-                $precio_total = $precio_unitario * $cantidad;
+                $cantidad = $datos_linea_entrada['cantidad'];
+                $total_base_impuesto = $datos_linea_entrada['base_impuesto'];
+                $tasa_impuesto = $datos_linea_entrada['tasa_impuesto'];
+                $precio_unitario = $datos_linea_entrada['precio_unitario'];
+                $precio_total = $datos_linea_entrada['precio_total'];
 
                 $tasa_descuento = 0;
                 $valor_total_descuento = 0;
@@ -369,7 +364,7 @@ class CompraController extends TransaccionController
                     }
                 }
 
-                $valor_impuesto = $precio_total - $total_base_impuesto;
+                $valor_impuesto = $datos_linea_entrada['valor_impuesto'];
 
                 if (!(int)$doc_encabezado->proveedor->liquida_impuestos) {
                     $valor_impuesto = 0;
@@ -458,6 +453,32 @@ class CompraController extends TransaccionController
         CompraController::crear_registro_pago($forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion);
 
         return true;
+    }
+
+    public static function get_datos_factura_desde_registro_entrada($registro_entrada, $proveedor_id)
+    {
+        $cantidad = (float)$registro_entrada->cantidad;
+        $total_base_impuesto = (float)$registro_entrada->costo_total;
+
+        $tasa_impuesto = Impuesto::get_tasa($registro_entrada->inv_producto_id, $proveedor_id, 0);
+        if ((int)config('configuracion.liquidacion_impuestos')) {
+            $tasa_impuesto = $registro_entrada->item->impuesto->tasa_impuesto;
+        }
+
+        $precio_total = $total_base_impuesto * (1 + $tasa_impuesto / 100);
+        $precio_unitario = 0;
+        if ($cantidad != 0) {
+            $precio_unitario = $precio_total / $cantidad;
+        }
+
+        return [
+            'cantidad' => $cantidad,
+            'base_impuesto' => $total_base_impuesto,
+            'tasa_impuesto' => $tasa_impuesto,
+            'valor_impuesto' => $precio_total - $total_base_impuesto,
+            'precio_unitario' => $precio_unitario,
+            'precio_total' => $precio_total,
+        ];
     }
 
     public static function contabilizar_movimiento_debito($datos, $detalle_operacion)
