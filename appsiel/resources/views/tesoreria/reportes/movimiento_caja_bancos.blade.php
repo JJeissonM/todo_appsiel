@@ -1,29 +1,29 @@
 <style>
-    body {
+    .teso-movimiento-caja-bancos-report {
         color: #1f2933;
         font-family: DejaVu Sans, Arial, sans-serif;
         font-size: 8px;
         line-height: 1.22;
     }
 
-    .report-actions {
+    .teso-movimiento-caja-bancos-report .report-actions {
         margin-bottom: 8px;
     }
 
     @media print {
-        .report-actions {
+        .teso-movimiento-caja-bancos-report .report-actions {
             display: none;
         }
     }
 
-    .report-header {
+    .teso-movimiento-caja-bancos-report .report-header {
         border-bottom: 2px solid #2f3f4f;
         margin-bottom: 9px;
         padding-bottom: 7px;
         text-align: center;
     }
 
-    .report-title {
+    .teso-movimiento-caja-bancos-report .report-title {
         color: #1f2933;
         font-size: 16px;
         font-weight: bold;
@@ -31,37 +31,37 @@
         text-transform: uppercase;
     }
 
-    .company-name {
+    .teso-movimiento-caja-bancos-report .company-name {
         font-size: 11px;
         font-weight: bold;
         margin-bottom: 2px;
     }
 
-    .company-data {
+    .teso-movimiento-caja-bancos-report .company-data {
         color: #52606d;
         font-size: 8px;
     }
 
-    .meta-box {
+    .teso-movimiento-caja-bancos-report .meta-box {
         background-color: #f3f6f8;
         border: 1px solid #cbd5dc;
         margin-bottom: 9px;
         padding: 6px 8px;
     }
 
-    .meta-box table {
+    .teso-movimiento-caja-bancos-report .meta-box table {
         border-collapse: collapse;
         width: 100%;
     }
 
-    .meta-box td {
+    .teso-movimiento-caja-bancos-report .meta-box td {
         border: none;
         color: #334e68;
         padding: 1px 4px;
         vertical-align: top;
     }
 
-    .meta-label {
+    .teso-movimiento-caja-bancos-report .meta-label {
         color: #52606d;
         font-size: 7px;
         font-weight: bold;
@@ -69,7 +69,7 @@
         width: 70px;
     }
 
-    .warning-box {
+    .teso-movimiento-caja-bancos-report .warning-box {
         background-color: #fff8e1;
         border: 1px solid #f0c36d;
         color: #6f4e00;
@@ -77,18 +77,18 @@
         padding: 5px 7px;
     }
 
-    .summary-table {
+    .teso-movimiento-caja-bancos-report .summary-table {
         border-collapse: collapse;
         margin-bottom: 9px;
         width: 100%;
     }
 
-    .summary-table td {
+    .teso-movimiento-caja-bancos-report .summary-table td {
         border: 1px solid #cbd5dc;
         padding: 5px 6px;
     }
 
-    .summary-label {
+    .teso-movimiento-caja-bancos-report .summary-label {
         background-color: #edf2f7;
         color: #52606d;
         font-size: 7px;
@@ -96,20 +96,20 @@
         text-transform: uppercase;
     }
 
-    .summary-value {
+    .teso-movimiento-caja-bancos-report .summary-value {
         color: #102a43;
         font-size: 10px;
         font-weight: bold;
         text-align: right;
     }
 
-    .report-table {
+    .teso-movimiento-caja-bancos-report .report-table {
         border-collapse: collapse;
         table-layout: fixed;
         width: 100%;
     }
 
-    .report-table th {
+    .teso-movimiento-caja-bancos-report .report-table th {
         background-color: #e8edf1;
         border: 1px solid #9aa6b2;
         color: #1f2933;
@@ -121,7 +121,7 @@
         vertical-align: middle;
     }
 
-    .report-table td {
+    .teso-movimiento-caja-bancos-report .report-table td {
         border-bottom: 1px solid #d9e2ec;
         color: #243b53;
         font-size: 7px;
@@ -130,11 +130,11 @@
         word-wrap: break-word;
     }
 
-    .report-table tbody tr:nth-child(even) td {
+    .teso-movimiento-caja-bancos-report .report-table tbody tr:nth-child(even) td {
         background-color: #f8fafc;
     }
 
-    .report-table tfoot td {
+    .teso-movimiento-caja-bancos-report .report-table tfoot td {
         background-color: #dfe7ed;
         border-bottom: 1px solid #9aa6b2;
         border-top: 2px solid #2f3f4f;
@@ -144,56 +144,56 @@
         padding: 5px 3px;
     }
 
-    .text-right {
+    .teso-movimiento-caja-bancos-report .text-right {
         text-align: right;
     }
 
-    .text-center {
+    .teso-movimiento-caja-bancos-report .text-center {
         text-align: center;
     }
 
-    .muted {
+    .teso-movimiento-caja-bancos-report .muted {
         color: #697a8a;
     }
 
-    .date-col {
+    .teso-movimiento-caja-bancos-report .date-col {
         width: 7%;
     }
 
-    .doc-col {
+    .teso-movimiento-caja-bancos-report .doc-col {
         width: 10%;
     }
 
-    .third-col {
+    .teso-movimiento-caja-bancos-report .third-col {
         width: 15%;
     }
 
-    .account-col {
+    .teso-movimiento-caja-bancos-report .account-col {
         width: 14%;
     }
 
-    .detail-col {
+    .teso-movimiento-caja-bancos-report .detail-col {
         width: 18%;
     }
 
-    .reason-col {
+    .teso-movimiento-caja-bancos-report .reason-col {
         width: 10%;
     }
 
-    .user-col {
+    .teso-movimiento-caja-bancos-report .user-col {
         width: 8%;
     }
 
-    .money-col {
+    .teso-movimiento-caja-bancos-report .money-col {
         width: 6%;
     }
 
-    .initial-row td {
+    .teso-movimiento-caja-bancos-report .initial-row td {
         background-color: #eef4f8;
         font-weight: bold;
     }
 
-    .empty-row td {
+    .teso-movimiento-caja-bancos-report .empty-row td {
         color: #697a8a;
         padding: 13px 4px;
         text-align: center;
@@ -212,6 +212,8 @@
     $empresa = isset($empresa) ? $empresa : null;
     $usuario_tiene_restriccion_movimientos = isset($usuario_tiene_restriccion_movimientos) ? $usuario_tiene_restriccion_movimientos : false;
 @endphp
+
+<div class="teso-movimiento-caja-bancos-report">
 
 <div class="report-actions">
     {{ Form::bsBtnExcel('movimiento_tesoreria') }}
@@ -412,3 +414,5 @@
         </tr>
     </tfoot>
 </table>
+
+</div>

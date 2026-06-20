@@ -1,19 +1,19 @@
 <style>
-    body {
+    .vtas-documentos-facturacion-report {
         color: #1f2933;
         font-family: DejaVu Sans, Arial, sans-serif;
         font-size: 9px;
         line-height: 1.25;
     }
 
-    .report-header {
+    .vtas-documentos-facturacion-report .report-header {
         border-bottom: 2px solid #34495e;
         margin-bottom: 10px;
         padding-bottom: 8px;
         text-align: center;
     }
 
-    .report-title {
+    .vtas-documentos-facturacion-report .report-title {
         color: #1f2933;
         font-size: 17px;
         font-weight: bold;
@@ -21,37 +21,37 @@
         text-transform: uppercase;
     }
 
-    .company-name {
+    .vtas-documentos-facturacion-report .company-name {
         font-size: 12px;
         font-weight: bold;
         margin-bottom: 2px;
     }
 
-    .company-data {
+    .vtas-documentos-facturacion-report .company-data {
         color: #52606d;
         font-size: 9px;
     }
 
-    .report-meta {
+    .vtas-documentos-facturacion-report .report-meta {
         background-color: #f3f6f8;
         border: 1px solid #cbd5dc;
         margin: 0 0 10px;
         padding: 6px 8px;
     }
 
-    .report-meta table {
+    .vtas-documentos-facturacion-report .report-meta table {
         border-collapse: collapse;
         width: 100%;
     }
 
-    .report-meta td {
+    .vtas-documentos-facturacion-report .report-meta td {
         border: none;
         color: #334e68;
         padding: 1px 4px;
         vertical-align: top;
     }
 
-    .meta-label {
+    .vtas-documentos-facturacion-report .meta-label {
         color: #52606d;
         font-size: 8px;
         font-weight: bold;
@@ -59,19 +59,19 @@
         width: 76px;
     }
 
-    .report-message {
+    .vtas-documentos-facturacion-report .report-message {
         color: #52606d;
         font-size: 9px;
         margin-bottom: 6px;
     }
 
-    .report-table {
+    .vtas-documentos-facturacion-report .report-table {
         border-collapse: collapse;
         table-layout: fixed;
         width: 100%;
     }
 
-    .report-table th {
+    .vtas-documentos-facturacion-report .report-table th {
         background-color: #e8edf1;
         border: 1px solid #9aa6b2;
         color: #1f2933;
@@ -83,7 +83,7 @@
         vertical-align: middle;
     }
 
-    .report-table td {
+    .vtas-documentos-facturacion-report .report-table td {
         border-bottom: 1px solid #d9e2ec;
         color: #243b53;
         font-size: 8px;
@@ -92,11 +92,11 @@
         word-wrap: break-word;
     }
 
-    .report-table tbody tr:nth-child(even) td {
+    .vtas-documentos-facturacion-report .report-table tbody tr:nth-child(even) td {
         background-color: #f8fafc;
     }
 
-    .report-table tfoot td {
+    .vtas-documentos-facturacion-report .report-table tfoot td {
         background-color: #dfe7ed;
         border-bottom: 1px solid #9aa6b2;
         border-top: 2px solid #34495e;
@@ -106,71 +106,71 @@
         padding: 6px 4px;
     }
 
-    .text-right {
+    .vtas-documentos-facturacion-report .text-right {
         text-align: right;
     }
 
-    .text-center {
+    .vtas-documentos-facturacion-report .text-center {
         text-align: center;
     }
 
-    .transaction-col {
+    .vtas-documentos-facturacion-report .transaction-col {
         width: 16%;
     }
 
-    .date-col {
+    .vtas-documentos-facturacion-report .date-col {
         width: 8%;
     }
 
-    .doc-col {
+    .vtas-documentos-facturacion-report .doc-col {
         width: 9%;
     }
 
-    .id-col {
+    .vtas-documentos-facturacion-report .id-col {
         width: 10%;
     }
 
-    .client-col {
+    .vtas-documentos-facturacion-report .client-col {
         width: 24%;
     }
 
-    .money-col {
+    .vtas-documentos-facturacion-report .money-col {
         width: 11%;
     }
 
-    .product-col {
+    .vtas-documentos-facturacion-report .product-col {
         width: 19%;
     }
 
-    .qty-col {
+    .vtas-documentos-facturacion-report .qty-col {
         width: 7%;
     }
 
-    .with-products .transaction-col {
+    .vtas-documentos-facturacion-report .with-products .transaction-col {
         width: 12%;
     }
 
-    .with-products .date-col {
+    .vtas-documentos-facturacion-report .with-products .date-col {
         width: 7%;
     }
 
-    .with-products .doc-col {
+    .vtas-documentos-facturacion-report .with-products .doc-col {
         width: 8%;
     }
 
-    .with-products .id-col {
+    .vtas-documentos-facturacion-report .with-products .id-col {
         width: 9%;
     }
 
-    .with-products .client-col {
+    .vtas-documentos-facturacion-report .with-products .client-col {
         width: 16%;
     }
 
-    .with-products .money-col {
+    .vtas-documentos-facturacion-report .with-products .money-col {
         width: 8%;
     }
 
-    .empty-row td {
+    .vtas-documentos-facturacion-report .empty-row td {
         color: #697a8a;
         padding: 14px 4px;
         text-align: center;
@@ -183,6 +183,8 @@
     $gran_valor_iva = 0;
     $cantidad_documentos = count($documentos_ventas) + count($documentos_ventas_pos);
 @endphp
+
+<div class="vtas-documentos-facturacion-report">
 
 <div class="report-header">
     <h1 class="report-title">Documentos de Facturación</h1>
@@ -375,3 +377,5 @@
         </tr>
     </tfoot>
 </table>
+
+</div>
