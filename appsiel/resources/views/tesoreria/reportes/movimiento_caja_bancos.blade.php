@@ -256,7 +256,7 @@
             <td class="meta-label">Periodo</td>
             <td>{{ $fecha_desde }} hasta {{ $fecha_hasta }}</td>
             <td class="meta-label">Registros</td>
-            <td class="text-right">{{ number_format($cantidad_movimientos, 0, ',', '.') }}</td>
+            <td>{{ number_format($cantidad_movimientos, 0, ',', '.') }}</td>
             <td class="meta-label">PDV</td>
             <td>{{ !is_null($pdv) ? $pdv->descripcion : 'Todos' }}</td>
         </tr>
