@@ -1,6 +1,6 @@
 <style>
     .teso-movimiento-caja-bancos-report {
-        color: #1f2933;
+        color: #111111;
         font-family: DejaVu Sans, Arial, sans-serif;
         font-size: 8px;
         line-height: 1.22;
@@ -17,14 +17,14 @@
     }
 
     .teso-movimiento-caja-bancos-report .report-header {
-        border-bottom: 2px solid #2f3f4f;
+        border-bottom: 2px solid #111111;
         margin-bottom: 9px;
         padding-bottom: 7px;
         text-align: center;
     }
 
     .teso-movimiento-caja-bancos-report .report-title {
-        color: #1f2933;
+        color: #111111;
         font-size: 16px;
         font-weight: bold;
         margin: 0 0 3px;
@@ -38,13 +38,13 @@
     }
 
     .teso-movimiento-caja-bancos-report .company-data {
-        color: #52606d;
+        color: #333333;
         font-size: 8px;
     }
 
     .teso-movimiento-caja-bancos-report .meta-box {
-        background-color: #f3f6f8;
-        border: 1px solid #cbd5dc;
+        background-color: #ffffff;
+        border: 1px solid #777777;
         margin-bottom: 9px;
         padding: 6px 8px;
     }
@@ -56,13 +56,13 @@
 
     .teso-movimiento-caja-bancos-report .meta-box td {
         border: none;
-        color: #334e68;
+        color: #111111;
         padding: 1px 4px;
         vertical-align: top;
     }
 
     .teso-movimiento-caja-bancos-report .meta-label {
-        color: #52606d;
+        color: #222222;
         font-size: 7px;
         font-weight: bold;
         text-transform: uppercase;
@@ -70,9 +70,9 @@
     }
 
     .teso-movimiento-caja-bancos-report .warning-box {
-        background-color: #fff8e1;
-        border: 1px solid #f0c36d;
-        color: #6f4e00;
+        background-color: #ffffff;
+        border: 1px solid #777777;
+        color: #111111;
         margin-bottom: 8px;
         padding: 5px 7px;
     }
@@ -84,20 +84,20 @@
     }
 
     .teso-movimiento-caja-bancos-report .summary-table td {
-        border: 1px solid #cbd5dc;
+        border: 1px solid #777777;
         padding: 5px 6px;
     }
 
     .teso-movimiento-caja-bancos-report .summary-label {
-        background-color: #edf2f7;
-        color: #52606d;
+        background-color: #ffffff;
+        color: #111111;
         font-size: 7px;
         font-weight: bold;
         text-transform: uppercase;
     }
 
     .teso-movimiento-caja-bancos-report .summary-value {
-        color: #102a43;
+        color: #000000;
         font-size: 10px;
         font-weight: bold;
         text-align: right;
@@ -110,9 +110,10 @@
     }
 
     .teso-movimiento-caja-bancos-report .report-table th {
-        background-color: #e8edf1;
-        border: 1px solid #9aa6b2;
-        color: #1f2933;
+        background-color: #ffffff;
+        border-bottom: 1px solid #333333;
+        border-top: 1px solid #333333;
+        color: #000000;
         font-size: 7px;
         font-weight: bold;
         padding: 4px 3px;
@@ -122,8 +123,8 @@
     }
 
     .teso-movimiento-caja-bancos-report .report-table td {
-        border-bottom: 1px solid #d9e2ec;
-        color: #243b53;
+        border-bottom: 1px solid #b5b5b5;
+        color: #111111;
         font-size: 7px;
         padding: 3px;
         vertical-align: top;
@@ -131,14 +132,14 @@
     }
 
     .teso-movimiento-caja-bancos-report .report-table tbody tr:nth-child(even) td {
-        background-color: #f8fafc;
+        background-color: #ffffff;
     }
 
     .teso-movimiento-caja-bancos-report .report-table tfoot td {
-        background-color: #dfe7ed;
-        border-bottom: 1px solid #9aa6b2;
-        border-top: 2px solid #2f3f4f;
-        color: #102a43;
+        background-color: #ffffff;
+        border-bottom: 1px solid #333333;
+        border-top: 2px solid #111111;
+        color: #000000;
         font-size: 7px;
         font-weight: bold;
         padding: 5px 3px;
@@ -153,7 +154,7 @@
     }
 
     .teso-movimiento-caja-bancos-report .muted {
-        color: #697a8a;
+        color: #333333;
     }
 
     .teso-movimiento-caja-bancos-report .date-col {
@@ -165,7 +166,7 @@
     }
 
     .teso-movimiento-caja-bancos-report .third-col {
-        width: 15%;
+        width: 13%;
     }
 
     .teso-movimiento-caja-bancos-report .account-col {
@@ -173,7 +174,7 @@
     }
 
     .teso-movimiento-caja-bancos-report .detail-col {
-        width: 18%;
+        width: 13%;
     }
 
     .teso-movimiento-caja-bancos-report .reason-col {
@@ -189,12 +190,12 @@
     }
 
     .teso-movimiento-caja-bancos-report .initial-row td {
-        background-color: #eef4f8;
+        background-color: #ffffff;
         font-weight: bold;
     }
 
     .teso-movimiento-caja-bancos-report .empty-row td {
-        color: #697a8a;
+        color: #333333;
         padding: 13px 4px;
         text-align: center;
     }
