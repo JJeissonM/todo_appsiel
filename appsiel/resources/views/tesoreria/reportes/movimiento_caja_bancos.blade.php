@@ -2,7 +2,7 @@
     .teso-movimiento-caja-bancos-report {
         color: #111111;
         font-family: DejaVu Sans, Arial, sans-serif;
-        font-size: 8px;
+        font-size: 10px;
         line-height: 1.22;
     }
 
@@ -32,14 +32,14 @@
     }
 
     .teso-movimiento-caja-bancos-report .company-name {
-        font-size: 11px;
+        font-size: 13px;
         font-weight: bold;
         margin-bottom: 2px;
     }
 
     .teso-movimiento-caja-bancos-report .company-data {
         color: #333333;
-        font-size: 8px;
+        font-size: 10px;
     }
 
     .teso-movimiento-caja-bancos-report .meta-box {
@@ -63,7 +63,7 @@
 
     .teso-movimiento-caja-bancos-report .meta-label {
         color: #222222;
-        font-size: 7px;
+        font-size: 9px;
         font-weight: bold;
         text-transform: uppercase;
         width: 70px;
@@ -91,14 +91,14 @@
     .teso-movimiento-caja-bancos-report .summary-label {
         background-color: #ffffff;
         color: #111111;
-        font-size: 7px;
+        font-size: 9px;
         font-weight: bold;
         text-transform: uppercase;
     }
 
     .teso-movimiento-caja-bancos-report .summary-value {
         color: #000000;
-        font-size: 10px;
+        font-size: 12px;
         font-weight: bold;
         text-align: right;
     }
@@ -114,7 +114,7 @@
         border-bottom: 1px solid #333333;
         border-top: 1px solid #333333;
         color: #000000;
-        font-size: 7px;
+        font-size: 9px;
         font-weight: bold;
         padding: 4px 3px;
         text-align: left;
@@ -125,7 +125,7 @@
     .teso-movimiento-caja-bancos-report .report-table td {
         border-bottom: 1px solid #b5b5b5;
         color: #111111;
-        font-size: 7px;
+        font-size: 9px;
         padding: 3px;
         vertical-align: top;
         word-wrap: break-word;
@@ -140,7 +140,7 @@
         border-bottom: 1px solid #333333;
         border-top: 2px solid #111111;
         color: #000000;
-        font-size: 7px;
+        font-size: 9px;
         font-weight: bold;
         padding: 5px 3px;
     }
