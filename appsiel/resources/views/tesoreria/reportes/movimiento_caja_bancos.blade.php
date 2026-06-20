@@ -324,7 +324,7 @@
             <th class="doc-col">Documento</th>
             <th class="third-col">Tercero</th>
             <th class="account-col">Caja/Banco</th>
-            <th class="detail-col">Concepto</th>
+            <th class="detail-col">Detalle</th>
             <th class="reason-col">Motivo</th>
             <th class="user-col">Creado por</th>
             <th class="money-col text-right">Entradas</th>
@@ -371,6 +371,17 @@
                     $detalle_operacion = trim($fila->descripcion . ' ' . $registro_linea->detalle_operacion);
                 }
 
+                if($fila->core_tipo_transaccion_id == 43 ) { // Traslado de efectivo
+
+                    if($detalle_operacion == 0 || is_null($detalle_operacion) ) {
+                        $detalle_operacion = '';
+                    }
+
+                    if( $fila->pdv_id > 0 && !is_null($fila->pdv) ) {
+                        $detalle_operacion .= ' - ' . $fila->pdv->descripcion;
+                    }
+                }
+
                 $referencia_tercero = $fila->get_datos_referencia_tercero();
             @endphp
 
@@ -406,11 +417,6 @@
             <td class="text-right">${{ number_format( $total_entradas, 0, ',','.') }}</td>
             <td class="text-right">${{ number_format( $total_salidas, 0, ',','.') }}</td>
             <td class="text-right">${{ number_format( $saldo_final_resumen, 0, ',','.') }}</td>
-        </tr>
-        <tr>
-            <td colspan="8" class="text-right">Total diferencia</td>
-            <td class="text-right">${{ number_format( $total_entradas - $total_salidas, 0, ',','.') }}</td>
-            <td></td>
         </tr>
     </tfoot>
 </table>
