@@ -26,6 +26,7 @@ use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMovimiento;
 use App\Inventarios\InvProducto;
 use App\VentasPos\Pdv;
+use App\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -1177,6 +1178,11 @@ class ReporteController extends TesoreriaController
         $caja = TesoCaja::find( $teso_caja_id );
         $cuenta_bancaria = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id );
         $pdv = Pdv::find( $pdv_id );
+        $motivo = TesoMotivo::find( $teso_motivo_id );
+        $tercero = Tercero::find( $core_tercero_id );
+        $medio_recaudo = TesoMedioRecaudo::find( $teso_medio_recaudo_id );
+        $usuario_filtro = User::find( $user_id );
+        $empresa = Auth::user()->empresa;
 
         $saldo_inicial = TesoMovimiento::get_saldo_inicial2( $fecha_desde, $array_wheres_saldo, 0, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id );
 
@@ -1184,7 +1190,7 @@ class ReporteController extends TesoreriaController
 
         $usuario_tiene_restriccion_movimientos = TesoMovimiento::usuario_tiene_restriccion_movimientos();
         
-        $vista = View::make( 'tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'movimiento','caja', 'cuenta_bancaria', 'pdv', 'usuario_tiene_restriccion_movimientos') )->render();
+        $vista = View::make( 'tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'movimiento','caja', 'cuenta_bancaria', 'pdv', 'motivo', 'tercero', 'medio_recaudo', 'usuario_filtro', 'empresa', 'usuario_tiene_restriccion_movimientos') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
