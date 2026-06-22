@@ -235,7 +235,12 @@ $(document).ready(function () {
 		event.preventDefault();
 
 		var nombre_listado = $(this).attr('title');
-		var tT = new XMLSerializer().serializeToString(document.querySelector('table')); //Serialised table
+		var tabla = document.querySelector('#resultado_consulta table.report-table') || document.querySelector('#resultado_consulta table') || document.querySelector('table');
+		if (!tabla) {
+			alert('No hay datos para exportar.');
+			return false;
+		}
+		var tT = new XMLSerializer().serializeToString(tabla); //Serialised table
 		var tF = nombre_listado + '.xls'; //Filename
 		var tB = new Blob([tT]); //Blub
 
@@ -339,4 +344,3 @@ $(document).ready(function () {
 		}
 	});
 });
-
