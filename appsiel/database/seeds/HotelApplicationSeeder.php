@@ -14,6 +14,7 @@ class HotelApplicationSeeder extends Seeder
     {
         $this->appId = $this->seedApplication();
         $this->modelIds = $this->seedModels();
+        $this->seedFields();
         $this->seedPermissions();
         $this->seedReports();
         $this->forgetPermissionCache();
@@ -26,7 +27,7 @@ class HotelApplicationSeeder extends Seeder
         }
 
         $now = date('Y-m-d H:i:s');
-        $appQuery = DB::table('sys_aplicaciones')->whereIn('descripcion', array('Gestión Hotelera', 'Gestion Hotelera'));
+        $appQuery = DB::table('sys_aplicaciones')->whereIn('descripcion', array('Gestion Hotelera', 'Gestión Hotelera'));
         if (Schema::hasColumn('sys_aplicaciones', 'app')) {
             $appQuery->orWhere('app', 'hotel')->orWhere('app', 'hotel/stays');
         }
@@ -34,13 +35,13 @@ class HotelApplicationSeeder extends Seeder
 
         $data = array(
             'ambito' => 'Core',
-            'descripcion' => 'Gestión Hotelera',
+            'descripcion' => 'Gestion Hotelera',
             'app' => 'hotel',
             'definicion' => 'Modulo inicial para administrar habitaciones, estadias, huespedes, pedidos hoteleros y facturacion.',
             'tipo_precio' => 'Gratis',
             'precio' => 0,
             'orden' => 60,
-            'nombre_imagen' => 'gestion_hotelera.png',
+            'nombre_imagen' => 'hotel.png',
             'mostrar_en_pag_web' => 0,
             'estado' => 'Activo',
             'updated_at' => $now,
@@ -64,11 +65,11 @@ class HotelApplicationSeeder extends Seeder
         }
 
         $models = array(
-            'rooms' => array('Habitaciones hoteleras', 'hotel_rooms', 'App\\Hotel\\HotelRoom', 'hotel/rooms/create', 'hotel/rooms/id_fila/edit', 'hotel/rooms/id_fila'),
-            'stays' => array('Estadias hoteleras', 'hotel_stays', 'App\\Hotel\\HotelStay', 'hotel/stays/check-in', '', 'hotel/stays/id_fila'),
-            'guests' => array('Huespedes de estadia hotelera', 'hotel_stay_guests', 'App\\Hotel\\HotelStayGuest', '', '', ''),
-            'orders' => array('Pedidos hoteleros', 'hotel_order_headers', 'App\\Hotel\\HotelOrderHeader', '', '', 'hotel/orders/id_fila'),
-            'lines' => array('Lineas de pedidos hoteleros', 'hotel_order_lines', 'App\\Hotel\\HotelOrderLine', '', '', ''),
+            'rooms' => array('Habitaciones hoteleras', 'hotel_rooms', 'App\\Hotel\\HotelRoom', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
+            'stays' => array('Estadias hoteleras', 'hotel_stays', 'App\\Hotel\\HotelStay', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
+            'guests' => array('Huespedes de estadia hotelera', 'hotel_stay_guests', 'App\\Hotel\\HotelStayGuest', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
+            'orders' => array('Pedidos hoteleros', 'hotel_order_headers', 'App\\Hotel\\HotelOrderHeader', 'web/create', 'web/id_fila/edit', 'hotel/orders/id_fila'),
+            'lines' => array('Lineas de pedidos hoteleros', 'hotel_order_lines', 'App\\Hotel\\HotelOrderLine', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
         );
 
         $ids = array();
@@ -98,7 +99,7 @@ class HotelApplicationSeeder extends Seeder
             'url_eliminar' => '',
             'controller_complementario' => '',
             'url_form_create' => '',
-            'home_miga_pan' => 'hotel,Gestión Hotelera',
+            'home_miga_pan' => 'hotel,Gestion Hotelera',
             'ruta_storage_imagen' => '',
             'ruta_storage_archivo_adjunto' => '',
             'updated_at' => $now,
@@ -115,6 +116,162 @@ class HotelApplicationSeeder extends Seeder
         return (int)DB::table('sys_modelos')->insertGetId($data);
     }
 
+    private function seedFields()
+    {
+        if (!Schema::hasTable('sys_campos') || !Schema::hasTable('sys_modelo_tiene_campos')) {
+            return;
+        }
+
+        $roomTypes = '{"SENCILLA":"SENCILLA","DOBLE":"DOBLE","TRIPLE":"TRIPLE","FAMILIAR":"FAMILIAR","SUITE":"SUITE"}';
+        $roomStatuses = '{"DISPONIBLE":"DISPONIBLE","OCUPADA":"OCUPADA","LIMPIEZA":"LIMPIEZA","MANTENIMIENTO":"MANTENIMIENTO","BLOQUEADA":"BLOQUEADA"}';
+        $stayStatuses = '{"ACTIVA":"ACTIVA","CERRADA":"CERRADA","ANULADA":"ANULADA"}';
+        $orderStatuses = '{"ABIERTO":"ABIERTO","FACTURADO":"FACTURADO","ANULADO":"ANULADO"}';
+        $invoiceTypes = '{"":"Sin factura","STANDARD":"STANDARD","POS":"POS"}';
+        $sourceTypes = '{"ROOM":"ROOM","PRODUCT":"PRODUCT","SERVICE":"SERVICE","MANUAL":"MANUAL"}';
+        $yesNo = '{"1":"Si","0":"No"}';
+        $textAttrs = '{"class":"form-control"}';
+        $comboAttrs = '{"class":"combobox"}';
+
+        $this->seedModelFields('rooms', array(
+            $this->field(1, 'Numero', 'bsText', 'room_number', '', 'null', $textAttrs, 1),
+            $this->field(2, 'Tipo', 'select', 'room_type', $roomTypes, 'SENCILLA', $comboAttrs, 1),
+            $this->field(3, 'Producto/servicio', 'select', 'inv_producto_id', 'model_App\\Inventarios\\InvProducto', 'null', $comboAttrs, 1),
+            $this->field(4, 'Piso', 'bsText', 'floor', '', 'null', $textAttrs, 0),
+            $this->field(5, 'Capacidad', 'bsText', 'capacity', '', '1', $textAttrs, 1),
+            $this->field(6, 'Estado', 'select', 'status', $roomStatuses, 'DISPONIBLE', $comboAttrs, 1),
+            $this->field(7, 'Descripcion', 'bsTextArea', 'description', '', 'null', $textAttrs, 0),
+            $this->field(8, 'Activa', 'select', 'is_active', $yesNo, '1', $comboAttrs, 1),
+        ));
+
+        $this->seedModelFields('stays', array(
+            $this->field(1, 'Cliente principal', 'select', 'main_cliente_id', 'model_App\\Ventas\\Cliente', 'null', $comboAttrs, 1),
+            $this->field(2, 'Habitacion', 'select', 'room_id', 'model_App\\Hotel\\HotelRoom', 'null', $comboAttrs, 1),
+            $this->field(3, 'Check-in', 'bsText', 'check_in_at', '', 'null', $textAttrs, 1),
+            $this->field(4, 'Salida esperada', 'bsText', 'expected_check_out_at', '', 'null', $textAttrs, 0),
+            $this->field(5, 'Check-out', 'bsText', 'check_out_at', '', 'null', $textAttrs, 0),
+            $this->field(6, 'Adultos', 'bsText', 'adults_count', '', '1', $textAttrs, 1),
+            $this->field(7, 'Ninos', 'bsText', 'children_count', '', '0', $textAttrs, 0),
+            $this->field(8, 'Estado', 'select', 'status', $stayStatuses, 'ACTIVA', $comboAttrs, 1),
+            $this->field(9, 'Notas', 'bsTextArea', 'notes', '', 'null', $textAttrs, 0),
+        ));
+
+        $this->seedModelFields('guests', array(
+            $this->field(1, 'Estadia', 'select', 'stay_id', 'model_App\\Hotel\\HotelStay', 'null', $comboAttrs, 1),
+            $this->field(2, 'Cliente', 'select', 'cliente_id', 'model_App\\Ventas\\Cliente', 'null', $comboAttrs, 1),
+            $this->field(3, 'Principal', 'select', 'is_main_guest', $yesNo, '0', $comboAttrs, 1),
+            $this->field(4, 'Relacion', 'bsText', 'relationship', '', 'null', $textAttrs, 0),
+        ));
+
+        $this->seedModelFields('orders', array(
+            $this->field(1, 'Estadia', 'select', 'stay_id', 'model_App\\Hotel\\HotelStay', 'null', $comboAttrs, 1),
+            $this->field(2, 'Cliente', 'select', 'cliente_id', 'model_App\\Ventas\\Cliente', 'null', $comboAttrs, 1),
+            $this->field(3, 'Numero documento', 'bsText', 'document_number', '', 'null', $textAttrs, 0),
+            $this->field(4, 'Fecha pedido', 'bsText', 'order_date', '', 'null', $textAttrs, 1),
+            $this->field(5, 'Estado', 'select', 'status', $orderStatuses, 'ABIERTO', $comboAttrs, 1),
+            $this->field(6, 'Tipo factura', 'select', 'invoice_type', $invoiceTypes, 'null', $comboAttrs, 0),
+            $this->field(7, 'Factura estandar', 'bsText', 'sales_doc_id', '', 'null', $textAttrs, 0),
+            $this->field(8, 'Factura POS', 'bsText', 'pos_doc_id', '', 'null', $textAttrs, 0),
+            $this->field(9, 'Notas', 'bsTextArea', 'notes', '', 'null', $textAttrs, 0),
+        ));
+
+        $this->seedModelFields('lines', array(
+            $this->field(1, 'Pedido hotelero', 'select', 'hotel_order_id', 'model_App\\Hotel\\HotelOrderHeader', 'null', $comboAttrs, 1),
+            $this->field(2, 'Producto', 'select', 'producto_id', 'model_App\\Inventarios\\InvProducto', 'null', $comboAttrs, 1),
+            $this->field(3, 'Habitacion', 'select', 'room_id', 'model_App\\Hotel\\HotelRoom', 'null', $comboAttrs, 0),
+            $this->field(4, 'Descripcion', 'bsText', 'description', '', 'null', $textAttrs, 0),
+            $this->field(5, 'Cantidad', 'bsText', 'quantity', '', '1', $textAttrs, 1),
+            $this->field(6, 'Precio unitario', 'bsText', 'unit_price', '', '0', $textAttrs, 1),
+            $this->field(7, 'Descuento', 'bsText', 'discount', '', '0', $textAttrs, 0),
+            $this->field(8, 'Impuesto', 'bsText', 'tax_value', '', '0', $textAttrs, 0),
+            $this->field(9, 'Tipo origen', 'select', 'source_type', $sourceTypes, 'MANUAL', $comboAttrs, 1),
+            $this->field(10, 'Origen ID', 'bsText', 'source_id', '', 'null', $textAttrs, 0),
+        ));
+    }
+
+    private function seedModelFields($modelKey, $fields)
+    {
+        if (!isset($this->modelIds[$modelKey]) || $this->modelIds[$modelKey] == 0) {
+            return;
+        }
+
+        $modelId = (int)$this->modelIds[$modelKey];
+        foreach ($fields as $field) {
+            $order = $field['orden'];
+            unset($field['orden']);
+
+            $fieldId = $this->getOrCreateModelField($modelId, $field);
+            $this->attachModelField($modelId, $fieldId, $order);
+        }
+    }
+
+    private function getOrCreateModelField($modelId, $field)
+    {
+        $fieldId = (int)DB::table('sys_modelo_tiene_campos')
+            ->join('sys_campos', 'sys_campos.id', '=', 'sys_modelo_tiene_campos.core_campo_id')
+            ->where('sys_modelo_tiene_campos.core_modelo_id', $modelId)
+            ->where('sys_campos.name', $field['name'])
+            ->value('sys_campos.id');
+
+        if ($fieldId == 0) {
+            $fieldId = (int)DB::table('sys_campos')
+                ->where('name', $field['name'])
+                ->where('descripcion', $field['descripcion'])
+                ->value('id');
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $field['updated_at'] = $now;
+        $field = $this->onlyExistingColumns('sys_campos', $field);
+
+        if ($fieldId > 0) {
+            DB::table('sys_campos')->where('id', $fieldId)->update($field);
+            return $fieldId;
+        }
+
+        $field['created_at'] = $now;
+        $field = $this->onlyExistingColumns('sys_campos', $field);
+        return (int)DB::table('sys_campos')->insertGetId($field);
+    }
+
+    private function attachModelField($modelId, $fieldId, $order)
+    {
+        if ($fieldId == 0) {
+            return;
+        }
+
+        $relation = DB::table('sys_modelo_tiene_campos')
+            ->where('core_modelo_id', $modelId)
+            ->where('core_campo_id', $fieldId);
+
+        if ($relation->exists()) {
+            $relation->update(array('orden' => $order));
+            return;
+        }
+
+        DB::table('sys_modelo_tiene_campos')->insert(array(
+            'core_modelo_id' => $modelId,
+            'core_campo_id' => $fieldId,
+            'orden' => $order,
+        ));
+    }
+
+    private function field($order, $description, $type, $name, $options, $value, $attributes, $required)
+    {
+        return array(
+            'orden' => $order,
+            'descripcion' => $description,
+            'tipo' => $type,
+            'name' => $name,
+            'opciones' => $options,
+            'value' => $value,
+            'atributos' => $attributes,
+            'definicion' => '',
+            'requerido' => $required,
+            'editable' => 1,
+            'unico' => 0,
+        );
+    }
+
     private function seedPermissions()
     {
         if ($this->appId == 0 || !Schema::hasTable('permissions')) {
@@ -122,8 +279,8 @@ class HotelApplicationSeeder extends Seeder
         }
 
         $parentId = $this->upsertPermission(array(
-            'name' => 'Gestión Hotelera',
-            'descripcion' => 'Gestión Hotelera',
+            'name' => 'Gestion Hotelera',
+            'descripcion' => 'Gestion Hotelera',
             'url' => 'hotel',
             'modelo_id' => isset($this->modelIds['stays']) ? $this->modelIds['stays'] : 0,
             'parent' => 0,
@@ -132,18 +289,32 @@ class HotelApplicationSeeder extends Seeder
             'fa_icon' => 'building',
         ));
 
+        $catalogParentId = $this->upsertPermission(array(
+            'name' => 'hotel.catalogos',
+            'descripcion' => 'Catalogos',
+            'url' => 'web',
+            'modelo_id' => isset($this->modelIds['rooms']) ? $this->modelIds['rooms'] : 0,
+            'parent' => $parentId,
+            'orden' => 2,
+            'enabled' => 0,
+            'fa_icon' => 'list',
+        ));
+
         $permissions = array(
-            array('hotel.menu', 'Gestión hotelera', 'hotel', 'stays', 0, 1, 0, 'building'),
-            array('hotel.rooms', 'Habitaciones', 'hotel/rooms', 'rooms', $parentId, 1, 1, 'bed'),
-            array('hotel.stays', 'Estadias', 'hotel/stays', 'stays', $parentId, 2, 1, 'calendar'),
-            array('hotel.stays.active', 'Estadias activas', 'hotel/stays/active', 'stays', $parentId, 3, 1, 'check'),
-            array('hotel.checkin', 'Check-in', 'hotel/stays/check-in', 'stays', $parentId, 4, 1, 'sign-in'),
-            array('hotel.orders', 'Pedidos hoteleros', 'hotel/orders', 'orders', $parentId, 5, 0, 'shopping-cart'),
-            array('hotel.invoices.standard', 'Generar factura estandar hotelera', 'hotel/orders/id_fila/generate-standard-invoice', 'orders', $parentId, 6, 0, 'file-text'),
-            array('hotel.invoices.pos', 'Generar factura POS hotelera', 'hotel/orders/id_fila/generate-pos-invoice', 'orders', $parentId, 7, 0, 'print'),
+            array('hotel.dashboard', 'Panel hotelero', 'hotel', 'stays', $parentId, 1, 1, 'building'),
+            array('hotel.rooms', 'Habitaciones', 'web', 'rooms', $parentId, 2, 1, 'bed'),
+            array('hotel.stays.catalog', 'Estadias', 'web', 'stays', $parentId, 3, 1, 'calendar'),
+            array('hotel.stay_guests', 'Huespedes', 'web', 'guests', $parentId, 4, 1, 'users'),
+            array('hotel.orders.catalog', 'Pedidos hoteleros', 'web', 'orders', $parentId, 5, 1, 'shopping-cart'),
+            array('hotel.order_lines', 'Lineas de pedidos', 'web', 'lines', $parentId, 6, 1, 'list-alt'),
+            array('hotel.stays.active', 'Estadias activas', 'hotel/stays/active', 'stays', $parentId, 7, 1, 'check'),
+            array('hotel.checkin', 'Check-in', 'hotel/stays/check-in', 'stays', $parentId, 8, 1, 'sign-in'),
+            array('hotel.stays', 'Estadias operativas', 'hotel/stays', 'stays', $parentId, 9, 0, 'calendar'),
+            array('hotel.invoices.standard', 'Generar factura estandar hotelera', 'hotel/orders/id_fila/generate-standard-invoice', 'orders', $parentId, 10, 0, 'file-text'),
+            array('hotel.invoices.pos', 'Generar factura POS hotelera', 'hotel/orders/id_fila/generate-pos-invoice', 'orders', $parentId, 11, 0, 'print'),
         );
 
-        $permissionIds = array($parentId);
+        $permissionIds = array($parentId, $catalogParentId);
         foreach ($permissions as $permission) {
             $permissionIds[] = $this->upsertPermission(array(
                 'name' => $permission[0],
@@ -164,6 +335,9 @@ class HotelApplicationSeeder extends Seeder
     {
         $now = date('Y-m-d H:i:s');
         $permissionId = DB::table('permissions')->where('name', $data['name'])->value('id');
+        if (!$permissionId && $data['name'] == 'Gestion Hotelera') {
+            $permissionId = DB::table('permissions')->where('name', 'Gestión Hotelera')->value('id');
+        }
 
         $data = array_merge(array(
             'core_app_id' => $this->appId,
