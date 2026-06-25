@@ -1,0 +1,275 @@
+@extends('layouts.principal')
+
+@section('estilos_2')
+    <style>
+        .hotel-topbar {
+            background: #34464c;
+            color: #fff;
+            padding: 12px 18px;
+            margin: -15px -15px 20px -15px;
+            font-size: 18px;
+        }
+
+        .hotel-filters {
+            margin-bottom: 18px;
+        }
+
+        .hotel-summary {
+            margin-bottom: 18px;
+        }
+
+        .hotel-summary-item {
+            display: inline-block;
+            min-width: 118px;
+            margin: 0 8px 8px 0;
+            padding: 8px 12px;
+            color: #fff;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .hotel-grid {
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-wrap: wrap;
+            flex-wrap: wrap;
+            margin-left: -12px;
+            margin-right: -12px;
+        }
+
+        .hotel-room-wrap {
+            width: 25%;
+            padding: 12px;
+        }
+
+        .hotel-room {
+            color: #fff;
+            min-height: 158px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .18);
+            overflow: hidden;
+        }
+
+        .hotel-room-main {
+            min-height: 116px;
+            padding: 18px 16px 12px 16px;
+            position: relative;
+        }
+
+        .hotel-room-number {
+            font-size: 34px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .hotel-room-type {
+            font-size: 16px;
+            margin-top: 12px;
+        }
+
+        .hotel-room-meta {
+            font-size: 12px;
+            margin-top: 8px;
+            opacity: .95;
+        }
+
+        .hotel-room-icon {
+            position: absolute;
+            right: 18px;
+            top: 42px;
+            font-size: 48px;
+            opacity: .85;
+        }
+
+        .hotel-room-status {
+            min-height: 42px;
+            padding: 10px 12px;
+            text-align: center;
+            font-weight: bold;
+            background: rgba(0, 0, 0, .16);
+        }
+
+        .hotel-room-actions {
+            background: rgba(255, 255, 255, .96);
+            padding: 8px;
+            min-height: 45px;
+        }
+
+        .hotel-room-actions .btn {
+            margin: 0 4px 4px 0;
+        }
+
+        .hotel-room-disponible,
+        .hotel-summary-disponible {
+            background: #07945d;
+        }
+
+        .hotel-room-ocupada,
+        .hotel-summary-ocupada {
+            background: #dd5b3f;
+        }
+
+        .hotel-room-limpieza,
+        .hotel-summary-limpieza {
+            background: #3b8fc0;
+        }
+
+        .hotel-room-mantenimiento,
+        .hotel-summary-mantenimiento {
+            background: #d49a28;
+        }
+
+        .hotel-room-bloqueada,
+        .hotel-summary-bloqueada {
+            background: #606873;
+        }
+
+        @media (max-width: 1199px) {
+            .hotel-room-wrap {
+                width: 33.3333%;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .hotel-room-wrap {
+                width: 100%;
+            }
+
+            .hotel-room-number {
+                font-size: 30px;
+            }
+        }
+    </style>
+@endsection
+
+@section('content')
+    {{ Form::bsMigaPan($miga_pan) }}
+    @include('layouts.mensajes')
+
+    <?php $returnTo = \Illuminate\Support\Facades\Request::fullUrl(); ?>
+
+    <div class="container-fluid">
+        <div class="hotel-topbar">
+            <i class="fa fa-h-square"></i>&nbsp;&nbsp;Se muestran todas las habitaciones
+        </div>
+
+        <div class="hotel-filters">
+            <form method="GET" action="{{ url('hotel') }}" class="form-inline">
+                @if(Input::get('id') != '')
+                    <input type="hidden" name="id" value="{{ Input::get('id') }}">
+                @endif
+                @if(Input::get('id_modelo') != '')
+                    <input type="hidden" name="id_modelo" value="{{ Input::get('id_modelo') }}">
+                @endif
+
+                <select name="floor" class="form-control" style="min-width: 260px;">
+                    <option value="">Seleccione el nivel/piso</option>
+                    @foreach($floors as $floor => $label)
+                        <option value="{{ $floor }}" {{ Input::get('floor') == $floor ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+
+                <select name="status" class="form-control" style="min-width: 210px;">
+                    <option value="">Todos los estados</option>
+                    @foreach($statuses as $status => $label)
+                        <option value="{{ $status }}" {{ Input::get('status') == $status ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+
+                <button class="btn btn-primary"><i class="fa fa-filter"></i></button>
+                <a href="{{ url('hotel') }}" class="btn btn-default"><i class="fa fa-refresh"></i></a>
+                <a href="{{ url('hotel/rooms/create') }}" class="btn btn-success"><i class="fa fa-plus"></i> Habitacion</a>
+                <a href="{{ url('hotel/stays/check-in') }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a>
+            </form>
+        </div>
+
+        <div class="hotel-summary">
+            @foreach($summary as $status => $count)
+                <span class="hotel-summary-item hotel-summary-{{ strtolower($status) }}">{{ $status }}: {{ $count }}</span>
+            @endforeach
+        </div>
+
+        <div class="hotel-grid">
+            @foreach($rooms as $room)
+                <?php
+                    $statusClass = 'hotel-room-' . strtolower($room->status);
+                    $stay = $room->activeStay->first();
+                    $guestName = '';
+                    if ($stay && $stay->mainGuest && $stay->mainGuest->tercero) {
+                        $guestName = $stay->mainGuest->tercero->descripcion;
+                    }
+                ?>
+                <div class="hotel-room-wrap">
+                    <div class="hotel-room {{ $statusClass }}">
+                        <div class="hotel-room-main">
+                            <div class="hotel-room-number">Nro:{{ $room->room_number }}</div>
+                            <div class="hotel-room-type">Habitacion {{ ucfirst(strtolower($room->room_type)) }}</div>
+                            <div class="hotel-room-meta">
+                                Piso: {{ $room->floor ? $room->floor : 'N/A' }} &nbsp; Cap: {{ $room->capacity }}
+                                @if($guestName != '')
+                                    <br>{{ substr($guestName, 0, 34) }}
+                                @endif
+                            </div>
+                            <i class="fa fa-bed hotel-room-icon"></i>
+                        </div>
+                        <div class="hotel-room-status">
+                            {{ $room->status }} <i class="fa fa-arrow-circle-right"></i>
+                        </div>
+                        <div class="hotel-room-actions">
+                            <a href="{{ url('hotel/rooms/'.$room->id) }}" class="btn btn-default btn-xs" title="Ver habitacion"><i class="fa fa-eye"></i></a>
+
+                            @if($room->status == App\Hotel\HotelRoom::STATUS_DISPONIBLE && $room->is_active)
+                                <a href="{{ url('hotel/stays/check-in?room_id='.$room->id) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
+                                <form method="POST" action="{{ url('hotel/rooms/'.$room->id.'/status') }}" style="display:inline-block;">
+                                    {{ csrf_field() }}
+                                    <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_MANTENIMIENTO }}">
+                                    <input type="hidden" name="return_to" value="{{ $returnTo }}">
+                                    <button class="btn btn-warning btn-xs" title="Mantenimiento"><i class="fa fa-wrench"></i></button>
+                                </form>
+                                <form method="POST" action="{{ url('hotel/rooms/'.$room->id.'/status') }}" style="display:inline-block;">
+                                    {{ csrf_field() }}
+                                    <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_BLOQUEADA }}">
+                                    <input type="hidden" name="return_to" value="{{ $returnTo }}">
+                                    <button class="btn btn-danger btn-xs" title="Bloquear"><i class="fa fa-lock"></i></button>
+                                </form>
+                            @elseif($room->status == App\Hotel\HotelRoom::STATUS_OCUPADA && $stay)
+                                <a href="{{ url('hotel/stays/'.$stay->id) }}" class="btn btn-danger btn-xs"><i class="fa fa-user"></i> Estadia</a>
+                                @if($stay->order)
+                                    <a href="{{ url('hotel/orders/'.$stay->order->id) }}" class="btn btn-primary btn-xs"><i class="fa fa-shopping-cart"></i> Pedido</a>
+                                @endif
+                                <form method="POST" action="{{ url('hotel/stays/'.$stay->id.'/check-out') }}" style="display:inline-block;">
+                                    {{ csrf_field() }}
+                                    <button class="btn btn-success btn-xs" onclick="return confirm('Registrar check-out de esta habitacion?')"><i class="fa fa-sign-out"></i> Check-out</button>
+                                </form>
+                            @elseif($room->status == App\Hotel\HotelRoom::STATUS_LIMPIEZA)
+                                <form method="POST" action="{{ url('hotel/rooms/'.$room->id.'/status') }}" style="display:inline-block;">
+                                    {{ csrf_field() }}
+                                    <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_DISPONIBLE }}">
+                                    <input type="hidden" name="return_to" value="{{ $returnTo }}">
+                                    <button class="btn btn-success btn-xs"><i class="fa fa-check"></i> Disponible</button>
+                                </form>
+                                <form method="POST" action="{{ url('hotel/rooms/'.$room->id.'/status') }}" style="display:inline-block;">
+                                    {{ csrf_field() }}
+                                    <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_MANTENIMIENTO }}">
+                                    <input type="hidden" name="return_to" value="{{ $returnTo }}">
+                                    <button class="btn btn-warning btn-xs"><i class="fa fa-wrench"></i></button>
+                                </form>
+                            @else
+                                <form method="POST" action="{{ url('hotel/rooms/'.$room->id.'/status') }}" style="display:inline-block;">
+                                    {{ csrf_field() }}
+                                    <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_DISPONIBLE }}">
+                                    <input type="hidden" name="return_to" value="{{ $returnTo }}">
+                                    <button class="btn btn-success btn-xs"><i class="fa fa-check"></i> Disponible</button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        @if(count($rooms) == 0)
+            <div class="alert alert-info">No hay habitaciones para los filtros seleccionados.</div>
+        @endif
+    </div>
+@endsection
