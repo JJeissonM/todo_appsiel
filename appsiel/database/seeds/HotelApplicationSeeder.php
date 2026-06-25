@@ -34,13 +34,13 @@ class HotelApplicationSeeder extends Seeder
 
         $data = array(
             'ambito' => 'Core',
-            'descripcion' => 'Gestion Hotelera',
+            'descripcion' => 'Gestión Hotelera',
             'app' => 'hotel',
             'definicion' => 'Modulo inicial para administrar habitaciones, estadias, huespedes, pedidos hoteleros y facturacion.',
             'tipo_precio' => 'Gratis',
             'precio' => 0,
             'orden' => 60,
-            'nombre_imagen' => 'hotel.png',
+            'nombre_imagen' => 'gestion_hotelera.png',
             'mostrar_en_pag_web' => 0,
             'estado' => 'Activo',
             'updated_at' => $now,
@@ -98,7 +98,7 @@ class HotelApplicationSeeder extends Seeder
             'url_eliminar' => '',
             'controller_complementario' => '',
             'url_form_create' => '',
-            'home_miga_pan' => 'hotel,Gestion Hotelera',
+            'home_miga_pan' => 'hotel,Gestión Hotelera',
             'ruta_storage_imagen' => '',
             'ruta_storage_archivo_adjunto' => '',
             'updated_at' => $now,
@@ -122,8 +122,8 @@ class HotelApplicationSeeder extends Seeder
         }
 
         $parentId = $this->upsertPermission(array(
-            'name' => 'Gestion Hotelera',
-            'descripcion' => 'Gestion Hotelera',
+            'name' => 'Gestión Hotelera',
+            'descripcion' => 'Gestión Hotelera',
             'url' => 'hotel',
             'modelo_id' => isset($this->modelIds['stays']) ? $this->modelIds['stays'] : 0,
             'parent' => 0,
@@ -133,7 +133,7 @@ class HotelApplicationSeeder extends Seeder
         ));
 
         $permissions = array(
-            array('hotel.menu', 'Gestion hotelera', 'hotel', 'stays', 0, 1, 0, 'building'),
+            array('hotel.menu', 'Gestión hotelera', 'hotel', 'stays', 0, 1, 0, 'building'),
             array('hotel.rooms', 'Habitaciones', 'hotel/rooms', 'rooms', $parentId, 1, 1, 'bed'),
             array('hotel.stays', 'Estadias', 'hotel/stays', 'stays', $parentId, 2, 1, 'calendar'),
             array('hotel.stays.active', 'Estadias activas', 'hotel/stays/active', 'stays', $parentId, 3, 1, 'check'),
