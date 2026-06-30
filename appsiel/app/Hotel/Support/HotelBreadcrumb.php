@@ -8,6 +8,32 @@ use Illuminate\Support\Facades\Input;
 
 class HotelBreadcrumb
 {
+    public static function appId()
+    {
+        return self::appIdFromModel(self::application());
+    }
+
+    public static function modelId($namespace)
+    {
+        $model = self::model($namespace);
+        return !is_null($model) ? (int)$model->id : 0;
+    }
+
+    public static function crudIndexUrl($namespace)
+    {
+        return 'web?id=' . self::appId() . '&id_modelo=' . self::modelId($namespace);
+    }
+
+    public static function crudCreateUrl($namespace)
+    {
+        return 'web/create?id=' . self::appId() . '&id_modelo=' . self::modelId($namespace);
+    }
+
+    public static function crudShowUrl($namespace, $recordId)
+    {
+        return 'web/' . $recordId . '?id=' . self::appId() . '&id_modelo=' . self::modelId($namespace);
+    }
+
     public static function make($modelNamespace, $label)
     {
         $app = self::application();
@@ -19,7 +45,7 @@ class HotelBreadcrumb
 
         if (!is_null($model)) {
             $breadcrumb[] = array(
-                'url' => 'web?id=' . self::appId($app) . '&id_modelo=' . $model->id,
+                'url' => 'web?id=' . self::appIdFromModel($app) . '&id_modelo=' . $model->id,
                 'etiqueta' => $model->descripcion,
             );
         }
@@ -60,7 +86,7 @@ class HotelBreadcrumb
     private static function appUrl($app)
     {
         $appPath = !is_null($app) && $app->app != '' ? $app->app : 'hotel';
-        return $appPath . '?id=' . self::appId($app);
+        return $appPath . '?id=' . self::appIdFromModel($app);
     }
 
     private static function appLabel($app)
@@ -68,7 +94,7 @@ class HotelBreadcrumb
         return !is_null($app) && $app->descripcion != '' ? $app->descripcion : 'Gestion Hotelera';
     }
 
-    private static function appId($app)
+    private static function appIdFromModel($app)
     {
         if (!is_null($app) && (int)$app->id > 0) {
             return (int)$app->id;

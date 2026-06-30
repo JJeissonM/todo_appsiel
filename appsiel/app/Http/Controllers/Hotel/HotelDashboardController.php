@@ -40,8 +40,14 @@ class HotelDashboardController extends Controller
         $statuses = HotelRoom::options(HotelRoom::statuses());
         $summary = $this->summary($empresaId);
         $miga_pan = HotelBreadcrumb::dashboard('Habitaciones');
+        $appId = HotelBreadcrumb::appId();
+        $roomModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelRoom');
+        $stayModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelStay');
+        $orderModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelOrderHeader');
+        $roomIndexUrl = HotelBreadcrumb::crudIndexUrl('App\\Hotel\\HotelRoom');
+        $roomCreateUrl = HotelBreadcrumb::crudCreateUrl('App\\Hotel\\HotelRoom');
 
-        return view('hotel.index', compact('rooms', 'floors', 'statuses', 'summary', 'miga_pan'));
+        return view('hotel.index', compact('rooms', 'floors', 'statuses', 'summary', 'miga_pan', 'appId', 'roomModelId', 'stayModelId', 'orderModelId', 'roomIndexUrl', 'roomCreateUrl'));
     }
 
     private function summary($empresaId)
