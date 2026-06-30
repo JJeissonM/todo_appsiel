@@ -1,0 +1,376 @@
+<?php
+
+namespace App\Hotel\Services;
+
+use App\Core\TipoDocApp;
+use App\Hotel\HotelOrderHeader;
+use App\Hotel\HotelOrderLine;
+use App\Hotel\HotelRoom;
+use App\Hotel\HotelStay;
+use App\Hotel\HotelStayGuest;
+use App\Inventarios\InvProducto;
+use App\Ventas\Cliente;
+use App\Ventas\Services\PricesServices;
+use App\Ventas\VtasDocEncabezado;
+use App\Ventas\VtasDocRegistro;
+use App\VentasPos\DocRegistro;
+use App\VentasPos\FacturaPos;
+use App\VentasPos\Pdv;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+class HotelService
+{
+    public function empresaId()
+    {
+        return Auth::user()->empresa_id;
+    }
+
+    public function userId()
+    {
+        return Auth::check() ? Auth::user()->id : null;
+    }
+
+    public function checkIn($data)
+    {
+        $service = $this;
+
+        return DB::transaction(function () use ($data, $service) {
+            $empresaId = $service->empresaId();
+            $room = HotelRoom::where('empresa_id', $empresaId)->where('id', (int)$data['room_id'])->lockForUpdate()->first();
+            if (is_null($room) || !$service->roomIsAvailable($room)) {
+                throw new \Exception('La habitacion no esta disponible para check-in.');
+            }
+
+            $cliente = Cliente::find((int)$data['main_cliente_id']);
+            if (is_null($cliente)) {
+                throw new \Exception('El huesped principal no existe.');
+            }
+
+            if ($service->hasActiveStay($empresaId, $room->id)) {
+                throw new \Exception('La habitacion ya tiene una estadia activa.');
+            }
+
+            $adults = isset($data['adults_count']) ? (int)$data['adults_count'] : 1;
+            $children = isset($data['children_count']) ? (int)$data['children_count'] : 0;
+
+            $stay = HotelStay::create(array(
+                'empresa_id' => $empresaId,
+                'main_cliente_id' => $cliente->id,
+                'room_id' => $room->id,
+                'check_in_at' => isset($data['check_in_at']) && $data['check_in_at'] != '' ? $data['check_in_at'] : date('Y-m-d H:i:s'),
+                'expected_check_out_at' => isset($data['expected_check_out_at']) && $data['expected_check_out_at'] != '' ? $data['expected_check_out_at'] : null,
+                'adults_count' => $adults,
+                'children_count' => $children,
+                'total_guests' => max(1, $adults + $children),
+                'status' => HotelStay::STATUS_ACTIVA,
+                'notes' => isset($data['notes']) ? $data['notes'] : null,
+                'created_by' => $service->userId(),
+            ));
+
+            HotelStayGuest::create(array(
+                'empresa_id' => $empresaId,
+                'stay_id' => $stay->id,
+                'cliente_id' => $cliente->id,
+                'is_main_guest' => 1,
+            ));
+
+            $room->status = HotelRoom::STATUS_OCUPADA;
+            $room->save();
+
+            $order = HotelOrderHeader::create(array(
+                'empresa_id' => $empresaId,
+                'stay_id' => $stay->id,
+                'cliente_id' => $cliente->id,
+                'document_number' => 'HOT-' . $stay->id,
+                'order_date' => date('Y-m-d H:i:s'),
+                'status' => HotelOrderHeader::STATUS_ABIERTO,
+                'created_by' => $service->userId(),
+            ));
+
+            $service->createLine($order, array(
+                'producto_id' => $room->inv_producto_id,
+                'room_id' => $room->id,
+                'quantity' => 1,
+                'source_type' => HotelOrderLine::SOURCE_ROOM,
+                'source_id' => $room->id,
+            ));
+
+            return $stay;
+        });
+    }
+
+    public function checkOut(HotelStay $stay)
+    {
+        $service = $this;
+
+        return DB::transaction(function () use ($stay, $service) {
+            $stay = HotelStay::where('empresa_id', $service->empresaId())->where('id', $stay->id)->lockForUpdate()->first();
+            if (is_null($stay) || $stay->status != HotelStay::STATUS_ACTIVA) {
+                throw new \Exception('Solo se puede hacer check-out a estadias activas.');
+            }
+
+            $stay->check_out_at = date('Y-m-d H:i:s');
+            $stay->status = HotelStay::STATUS_CERRADA;
+            $stay->closed_by = $service->userId();
+            $stay->save();
+
+            $room = $stay->room;
+            if (!is_null($room)) {
+                $room->status = HotelRoom::STATUS_LIMPIEZA;
+                $room->save();
+            }
+
+            return $stay;
+        });
+    }
+
+    public function cancelStay(HotelStay $stay)
+    {
+        $service = $this;
+
+        return DB::transaction(function () use ($stay, $service) {
+            $stay = HotelStay::where('empresa_id', $service->empresaId())->where('id', $stay->id)->lockForUpdate()->first();
+            if (is_null($stay) || $stay->status == HotelStay::STATUS_CERRADA) {
+                throw new \Exception('No se puede anular una estadia cerrada.');
+            }
+
+            $stay->status = HotelStay::STATUS_ANULADA;
+            $stay->save();
+
+            if (!is_null($stay->room) && $stay->room->status == HotelRoom::STATUS_OCUPADA) {
+                $stay->room->status = HotelRoom::STATUS_LIMPIEZA;
+                $stay->room->save();
+            }
+
+            if (!is_null($stay->order) && $stay->order->status == HotelOrderHeader::STATUS_ABIERTO) {
+                $stay->order->status = HotelOrderHeader::STATUS_ANULADO;
+                $stay->order->save();
+            }
+
+            return $stay;
+        });
+    }
+
+    public function createLine(HotelOrderHeader $order, $data)
+    {
+        if (!$order->canEditLines()) {
+            throw new \Exception('El pedido no permite modificar lineas.');
+        }
+
+        $producto = InvProducto::find((int)$data['producto_id']);
+        if (is_null($producto)) {
+            throw new \Exception('El producto no existe.');
+        }
+
+        $quantity = isset($data['quantity']) ? (float)$data['quantity'] : 1;
+        $unitPrice = isset($data['unit_price']) && $data['unit_price'] !== '' ? (float)$data['unit_price'] : $this->getProductPrice($producto->id, $order->cliente_id);
+        $discount = isset($data['discount']) ? (float)$data['discount'] : 0;
+        $taxValue = isset($data['tax_value']) ? (float)$data['tax_value'] : 0;
+
+        return HotelOrderLine::create(array(
+            'empresa_id' => $order->empresa_id,
+            'hotel_order_id' => $order->id,
+            'producto_id' => $producto->id,
+            'room_id' => isset($data['room_id']) && $data['room_id'] != '' ? (int)$data['room_id'] : null,
+            'description' => isset($data['description']) && $data['description'] != '' ? $data['description'] : $producto->descripcion,
+            'quantity' => $quantity,
+            'unit_price' => $unitPrice,
+            'discount' => $discount,
+            'tax_value' => $taxValue,
+            'line_total' => HotelOrderLine::calculateTotal($quantity, $unitPrice, $discount, $taxValue),
+            'source_type' => isset($data['source_type']) ? $data['source_type'] : HotelOrderLine::SOURCE_MANUAL,
+            'source_id' => isset($data['source_id']) && $data['source_id'] != '' ? (int)$data['source_id'] : null,
+        ));
+    }
+
+    public function updateLine(HotelOrderHeader $order, HotelOrderLine $line, $data)
+    {
+        if (!$order->canEditLines()) {
+            throw new \Exception('El pedido no permite modificar lineas.');
+        }
+
+        $quantity = isset($data['quantity']) ? (float)$data['quantity'] : $line->quantity;
+        $unitPrice = isset($data['unit_price']) ? (float)$data['unit_price'] : $line->unit_price;
+        $discount = isset($data['discount']) ? (float)$data['discount'] : $line->discount;
+        $taxValue = isset($data['tax_value']) ? (float)$data['tax_value'] : $line->tax_value;
+
+        $line->description = isset($data['description']) ? $data['description'] : $line->description;
+        $line->quantity = $quantity;
+        $line->unit_price = $unitPrice;
+        $line->discount = $discount;
+        $line->tax_value = $taxValue;
+        $line->line_total = HotelOrderLine::calculateTotal($quantity, $unitPrice, $discount, $taxValue);
+        $line->save();
+
+        return $line;
+    }
+
+    public function deleteLine(HotelOrderHeader $order, HotelOrderLine $line)
+    {
+        if (!$order->canEditLines()) {
+            throw new \Exception('El pedido no permite modificar lineas.');
+        }
+
+        $line->delete();
+    }
+
+    public function generateStandardInvoice(HotelOrderHeader $order)
+    {
+        $service = $this;
+
+        return DB::transaction(function () use ($order, $service) {
+            $order = $service->loadOpenOrder($order->id);
+            $cliente = Cliente::find($order->cliente_id);
+            if (is_null($cliente) || count($order->lines) == 0) {
+                throw new \Exception('El pedido no tiene cliente valido o lineas para facturar.');
+            }
+
+            $tipoTransaccionId = (int)config('ventas.factura_ventas_tipo_transaccion_id', 23);
+            $tipoDocAppId = (int)config('ventas.factura_ventas_tipo_doc_app_id', 18);
+            $consecutivo = TipoDocApp::get_consecutivo_actual($order->empresa_id, $tipoDocAppId) + 1;
+            TipoDocApp::aumentar_consecutivo($order->empresa_id, $tipoDocAppId);
+
+            // Integracion minima: crea encabezado y registros en tablas de ventas.
+            // La contabilizacion, cartera e inventario quedan para el flujo oficial si se requiere ampliar.
+            $doc = VtasDocEncabezado::create(array(
+                'core_empresa_id' => $order->empresa_id,
+                'core_tipo_transaccion_id' => $tipoTransaccionId,
+                'core_tipo_doc_app_id' => $tipoDocAppId,
+                'consecutivo' => $consecutivo,
+                'fecha' => date('Y-m-d'),
+                'core_tercero_id' => $cliente->core_tercero_id,
+                'cliente_id' => $cliente->id,
+                'descripcion' => 'Factura generada desde pedido hotelero ' . $order->document_number,
+                'estado' => 'Activo',
+                'creado_por' => Auth::user()->email,
+                'forma_pago' => $cliente->forma_pago(),
+                'fecha_vencimiento' => $cliente->fecha_vencimiento_pago(date('Y-m-d')),
+                'valor_total' => $order->lines->sum('line_total'),
+            ));
+
+            foreach ($order->lines as $line) {
+                $service->createStandardInvoiceLine($doc->id, $line);
+            }
+
+            $order->status = HotelOrderHeader::STATUS_FACTURADO;
+            $order->invoice_type = HotelOrderHeader::INVOICE_STANDARD;
+            $order->sales_doc_id = $doc->id;
+            $order->save();
+
+            return $doc;
+        });
+    }
+
+    public function generatePosInvoice(HotelOrderHeader $order)
+    {
+        $service = $this;
+
+        return DB::transaction(function () use ($order, $service) {
+            $order = $service->loadOpenOrder($order->id);
+            $cliente = Cliente::find($order->cliente_id);
+            if (is_null($cliente) || count($order->lines) == 0) {
+                throw new \Exception('El pedido no tiene cliente valido o lineas para facturar.');
+            }
+
+            $pdv = Pdv::find((int)config('ventas_pos.pdv_id_default', 1));
+            $tipoDocAppId = !is_null($pdv) ? (int)$pdv->tipo_doc_app_default_id : (int)config('ventas.factura_ventas_tipo_doc_app_id', 18);
+            $consecutivo = TipoDocApp::get_consecutivo_actual($order->empresa_id, $tipoDocAppId) + 1;
+            TipoDocApp::aumentar_consecutivo($order->empresa_id, $tipoDocAppId);
+
+            // Integracion minima POS: se respetan tablas POS y consecutivo; procesos de caja/acumulacion quedan externos.
+            $doc = FacturaPos::create(array(
+                'uniqid' => uniqid(),
+                'core_empresa_id' => $order->empresa_id,
+                'core_tipo_transaccion_id' => 47,
+                'core_tipo_doc_app_id' => $tipoDocAppId,
+                'consecutivo' => $consecutivo,
+                'fecha' => date('Y-m-d'),
+                'core_tercero_id' => $cliente->core_tercero_id,
+                'cliente_id' => $cliente->id,
+                'pdv_id' => !is_null($pdv) ? $pdv->id : 0,
+                'forma_pago' => $cliente->forma_pago(),
+                'fecha_vencimiento' => $cliente->fecha_vencimiento_pago(date('Y-m-d')),
+                'descripcion' => 'Factura POS generada desde pedido hotelero ' . $order->document_number,
+                'valor_total' => $order->lines->sum('line_total'),
+                'estado' => 'Activo',
+                'creado_por' => Auth::user()->email,
+            ));
+
+            foreach ($order->lines as $line) {
+                $service->createPosInvoiceLine($doc->id, $line);
+            }
+
+            $order->status = HotelOrderHeader::STATUS_FACTURADO;
+            $order->invoice_type = HotelOrderHeader::INVOICE_POS;
+            $order->pos_doc_id = $doc->id;
+            $order->save();
+
+            return $doc;
+        });
+    }
+
+    private function createStandardInvoiceLine($docId, HotelOrderLine $line)
+    {
+        VtasDocRegistro::create($this->invoiceLineData($line, array('vtas_doc_encabezado_id' => $docId)));
+    }
+
+    private function createPosInvoiceLine($docId, HotelOrderLine $line)
+    {
+        DocRegistro::create($this->invoiceLineData($line, array('vtas_pos_doc_encabezado_id' => $docId)));
+    }
+
+    private function invoiceLineData(HotelOrderLine $line, $header)
+    {
+        $producto = $line->product;
+        $tasa = (!is_null($producto) && !is_null($producto->impuesto)) ? (float)$producto->impuesto->tasa_impuesto : 0;
+
+        return $header + array(
+            'vtas_motivo_id' => (int)config('ventas_pos.recetas_motivo_salida_id', 10),
+            'inv_producto_id' => $line->producto_id,
+            'impuesto_id' => !is_null($producto) ? $producto->impuesto_id : null,
+            'precio_unitario' => $line->unit_price,
+            'cantidad' => $line->quantity,
+            'cantidad_pendiente' => $line->quantity,
+            'cantidad_devuelta' => 0,
+            'precio_total' => $line->line_total,
+            'base_impuesto' => $line->unit_price,
+            'tasa_impuesto' => $tasa,
+            'valor_impuesto' => $line->tax_value,
+            'base_impuesto_total' => ($line->quantity * $line->unit_price) - $line->discount,
+            'tasa_descuento' => 0,
+            'valor_total_descuento' => $line->discount,
+            'creado_por' => Auth::user()->email,
+            'estado' => 'Activo',
+        );
+    }
+
+    private function getProductPrice($productoId, $clienteId)
+    {
+        $cliente = Cliente::find($clienteId);
+        $listaPreciosId = !is_null($cliente) ? $cliente->lista_precios_id : (int)config('ventas.lista_precios_id', 1);
+
+        $price = (new PricesServices())->get_item_price($listaPreciosId, date('Y-m-d'), $productoId, $clienteId);
+        return is_null($price) ? 0 : $price;
+    }
+
+    private function roomIsAvailable(HotelRoom $room)
+    {
+        return $room->status == HotelRoom::STATUS_DISPONIBLE && (int)$room->is_active == 1 && (int)$room->inv_producto_id > 0;
+    }
+
+    private function hasActiveStay($empresaId, $roomId)
+    {
+        return HotelStay::where('empresa_id', $empresaId)->where('room_id', $roomId)->where('status', HotelStay::STATUS_ACTIVA)->count() > 0;
+    }
+
+    private function loadOpenOrder($orderId)
+    {
+        $order = HotelOrderHeader::where('empresa_id', $this->empresaId())->where('id', $orderId)->with('lines.product.impuesto')->lockForUpdate()->first();
+        if (is_null($order) || $order->status != HotelOrderHeader::STATUS_ABIERTO) {
+            throw new \Exception('El pedido no esta abierto para facturar.');
+        }
+
+        return $order;
+    }
+}

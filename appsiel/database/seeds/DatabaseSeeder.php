@@ -49,6 +49,14 @@ class DatabaseSeeder extends Seeder
                 'any_tables' => ['vtas_restaurante_cocinas', 'sys_modelos', 'sys_campos', 'permissions'],
             ],
             [
+                'class' => HotelApplicationSeeder::class,
+                'any_tables' => ['sys_aplicaciones', 'sys_modelos', 'permissions', 'sys_reportes'],
+            ],
+            [
+                'class' => HotelRoomsTableSeeder::class,
+                'tables' => ['hotel_rooms', 'inv_productos'],
+            ],
+            [
                 'class' => PdvCrudFieldsSeeder::class,
                 'tables' => ['vtas_pos_puntos_de_ventas', 'sys_modelos', 'sys_campos', 'sys_modelo_tiene_campos'],
             ],

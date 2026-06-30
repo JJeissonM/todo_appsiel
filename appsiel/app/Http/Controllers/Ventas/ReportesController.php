@@ -556,6 +556,12 @@ class ReportesController extends Controller
         $fecha_hasta  = $request->fecha_hasta;
 
         $detalla_productos = $request->detalla_productos;
+        $cliente_id = $request->cliente_id;
+        $cliente_filtro = null;
+
+        if ($cliente_id != null && $cliente_id != '') {
+            $cliente_filtro = Cliente::find($cliente_id);
+        }
 
         if ( $request->transacciones_a_mostrar == null) {
             return '<h4>Error. No se envio el parametro transacciones_a_mostrar.</h4>';
@@ -586,15 +592,15 @@ class ReportesController extends Controller
                 break;
         }
 
-        $documentos_ventas = VtasMovimiento::get_documentos_ventas_por_transaccion_arr_estados($fecha_desde, $fecha_hasta, $arr_ids, ['Enviada','Activo']);
+        $documentos_ventas = VtasMovimiento::get_documentos_ventas_por_transaccion_arr_estados($fecha_desde, $fecha_hasta, $arr_ids, ['Enviada','Activo'], $cliente_id);
 
-        $documentos_ventas_pos = Movimiento::get_documentos_ventas_por_transaccion_arr_estados($fecha_desde, $fecha_hasta, $arr_ids, ['Contabilizado']);
+        $documentos_ventas_pos = Movimiento::get_documentos_ventas_por_transaccion_arr_estados($fecha_desde, $fecha_hasta, $arr_ids, ['Contabilizado'], $cliente_id);
 
         $mensaje = '';
 
         $empresa = Empresa::find( Auth::user()->empresa_id );
         
-        $vista = View::make('ventas.reportes.documentos_de_facturacion', compact( 'documentos_ventas',  'mensaje','detalla_productos','empresa','documentos_ventas_pos') )->render();
+        $vista = View::make('ventas.reportes.documentos_de_facturacion', compact( 'documentos_ventas',  'mensaje','detalla_productos','empresa','documentos_ventas_pos','fecha_desde','fecha_hasta','cliente_filtro') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

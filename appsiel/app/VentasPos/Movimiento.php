@@ -391,12 +391,16 @@ class Movimiento extends Model
         return $movimiento;
     }
 
-    public static function get_documentos_ventas_por_transaccion_arr_estados( $fecha_desde, $fecha_hasta, array $arr_tipo_transaccion_id, array $arr_estado )
+    public static function get_documentos_ventas_por_transaccion_arr_estados( $fecha_desde, $fecha_hasta, array $arr_tipo_transaccion_id, array $arr_estado, $cliente_id = null )
     {
-        return FacturaPos::whereIn('core_tipo_transaccion_id',$arr_tipo_transaccion_id)
+        $query = FacturaPos::whereIn('core_tipo_transaccion_id',$arr_tipo_transaccion_id)
                         ->whereIn('estado', $arr_estado)
-                        ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-                        ->orderBy('fecha')
-                        ->get();
+                        ->whereBetween('fecha', [$fecha_desde, $fecha_hasta]);
+
+        if ($cliente_id != null && $cliente_id != '') {
+            $query->where('cliente_id', $cliente_id);
+        }
+
+        return $query->orderBy('fecha')->get();
     }
 }

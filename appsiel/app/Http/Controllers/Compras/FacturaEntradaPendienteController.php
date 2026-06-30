@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Compras;
 
-use App\Contabilidad\Impuesto;
 use Illuminate\Http\Request;
 
 use App\Core\EncabezadoDocumentoTransaccion;
@@ -57,18 +56,8 @@ class FacturaEntradaPendienteController extends CompraController
 
             foreach ($registros_entrada as $un_registro)
             {
-                // Nota: $un_registro contiene datos de inventarios 
-                $cantidad = $un_registro->cantidad;
-
-                $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, $doc_encabezado->proveedor_id, 0 );
-
-                // El costo_unitario se guardó con los descuentos restados
-                $precio_unitario = $un_registro->costo_unitario * ( 1 + $tasa_impuesto  / 100 );
-
-                $precio_total = $precio_unitario * $cantidad;                
-
-                $total_documento += $precio_total;
-
+                $datos_linea_entrada = CompraController::get_datos_factura_desde_registro_entrada($un_registro, $doc_encabezado->proveedor_id);
+                $total_documento += $datos_linea_entrada['precio_total'];
             } // Fin por cada registro de la entrada
         }
 

@@ -85,7 +85,7 @@
 				<?php
 					$url = $fila['app'] . '?id=' . $fila['id'];
 				?>
-				@can($fila['descripcion'])
+				@if(Auth::user()->hasRole('SuperAdmin') || Auth::user()->can($fila['descripcion']))
 					<div class="col-sm-{{12/$cant_cols}} col-xs-{{12/$cant_cols}}" style="padding: 5px; text-align: center;">
 						<a href="{{url($url)}}">
 							<img class="img-responsive" src="https://appsiel.com/el_software/assets/iconos_2021/{{$fila['nombre_imagen'] . '?random=123' }}" width="{{$tam_iconos}}" title="{{$fila['descripcion']}}" style="display: inline;" />
@@ -95,7 +95,7 @@
 
 						</a>
 					</div>
-				@endcan
+				@endif
 				<?php
 					$i++;
 				?>

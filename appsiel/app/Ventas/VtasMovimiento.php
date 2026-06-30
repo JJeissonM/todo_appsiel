@@ -532,11 +532,15 @@ class VtasMovimiento extends Model
                             ->get();
     }
 
-    public static function get_documentos_ventas_por_transaccion_arr_estados( $fecha_desde, $fecha_hasta, array $arr_tipo_transaccion_id, array $arr_estado )
+    public static function get_documentos_ventas_por_transaccion_arr_estados( $fecha_desde, $fecha_hasta, array $arr_tipo_transaccion_id, array $arr_estado, $cliente_id = null )
     {        
         $array_wheres = [
             ['vtas_doc_encabezados.core_empresa_id','=', Auth::user()->empresa_id]
         ];
+
+        if ($cliente_id != null && $cliente_id != '') {
+            $array_wheres = array_merge($array_wheres,[['vtas_doc_encabezados.cliente_id','=', $cliente_id]]);
+        }
 
         return VtasDocEncabezado::where($array_wheres)
                         ->whereIn('vtas_doc_encabezados.core_tipo_transaccion_id',$arr_tipo_transaccion_id)

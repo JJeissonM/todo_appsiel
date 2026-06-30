@@ -62,6 +62,10 @@ class PrestacionesSocialesController extends TransaccionController
                 continue;
             }
 
+            if ( $empleado->clase_contrato == 'por_turnos' ) {
+                continue;
+            }
+
             $array_prestaciones_liquidadas->nom_doc_encabezado_id = $documento_nomina->id;
             $array_prestaciones_liquidadas->nom_contrato_id = $empleado->id;
             $array_prestaciones_liquidadas->fecha_final_promedios = $request->fecha_final_promedios;
