@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Hotel;
 
 use App\Hotel\HotelRoom;
+use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,10 +39,7 @@ class HotelDashboardController extends Controller
 
         $statuses = HotelRoom::options(HotelRoom::statuses());
         $summary = $this->summary($empresaId);
-        $miga_pan = array(
-            array('url' => 'hotel', 'etiqueta' => 'Gestion Hotelera'),
-            array('url' => 'NO', 'etiqueta' => 'Habitaciones'),
-        );
+        $miga_pan = HotelBreadcrumb::dashboard('Habitaciones');
 
         return view('hotel.index', compact('rooms', 'floors', 'statuses', 'summary', 'miga_pan'));
     }

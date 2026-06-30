@@ -23,10 +23,10 @@ class HotelRoomsTableSeeder extends Seeder
 
         $productIds = array(
             'SENCILLA' => $this->getOrCreateService($empresaId, $grupoId, 'HOT-SENCILLA', 'Hospedaje habitacion sencilla', 80000),
-            'DOBLE' => $this->getOrCreateService($empresaId, $grupoId, 'HOT-DOBLE', 'Hospedaje habitacion doble', 80000),
-            'TRIPLE' => $this->getOrCreateService($empresaId, $grupoId, 'HOT-TRIPLE', 'Hospedaje habitacion triple', 80000),
-            'FAMILIAR' => $this->getOrCreateService($empresaId, $grupoId, 'HOT-FAMILIAR', 'Hospedaje habitacion familiar', 80000),
-            'SUITE' => $this->getOrCreateService($empresaId, $grupoId, 'HOT-SUITE', 'Hospedaje suite', 80000),
+            'DOBLE' => $this->getOrCreateService($empresaId, $grupoId, 'HOT-DOBLE', 'Hospedaje habitacion doble', 120000),
+            'TRIPLE' => $this->getOrCreateService($empresaId, $grupoId, 'HOT-TRIPLE', 'Hospedaje habitacion triple', 150000),
+            'FAMILIAR' => $this->getOrCreateService($empresaId, $grupoId, 'HOT-FAMILIAR', 'Hospedaje habitacion familiar', 220000),
+            'SUITE' => $this->getOrCreateService($empresaId, $grupoId, 'HOT-SUITE', 'Hospedaje suite', 350000),
         );
 
         $rooms = array(
@@ -35,6 +35,16 @@ class HotelRoomsTableSeeder extends Seeder
             array('201', 'TRIPLE', '2', 3),
             array('202', 'FAMILIAR', '2', 4),
             array('301', 'SUITE', '3', 2),
+            array('103', 'SENCILLA', '1', 1),
+            array('104', 'DOBLE', '1', 2),
+            array('105', 'SENCILLA', '1', 1),
+            array('106', 'DOBLE', '1', 2),
+            array('107', 'SENCILLA', '1', 1),
+            array('108', 'DOBLE', '1', 2),
+            array('109', 'SENCILLA', '1', 1),
+            array('110', 'DOBLE', '1', 2),
+            array('203', 'TRIPLE', '2', 3),
+            array('204', 'TRIPLE', '2', 3),
         );
 
         foreach ($rooms as $room) {

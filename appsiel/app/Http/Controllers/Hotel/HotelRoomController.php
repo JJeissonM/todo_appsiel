@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Hotel;
 
 use App\Hotel\HotelRoom;
+use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
 use App\Inventarios\InvProducto;
 use Illuminate\Http\Request;
@@ -133,9 +134,6 @@ class HotelRoomController extends Controller
 
     private function breadcrumb($label)
     {
-        return array(
-            array('url' => 'hotel/rooms', 'etiqueta' => 'Hotel'),
-            array('url' => 'NO', 'etiqueta' => $label),
-        );
+        return HotelBreadcrumb::make('App\\Hotel\\HotelRoom', $label);
     }
 }

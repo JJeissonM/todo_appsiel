@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Hotel;
 use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelOrderLine;
 use App\Hotel\Services\HotelService;
+use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
 use App\Inventarios\InvProducto;
 use Illuminate\Http\Request;
@@ -16,10 +17,7 @@ class HotelOrderController extends Controller
     {
         $order = $this->findOrder($id);
         $products = $this->productsList();
-        $miga_pan = array(
-            array('url' => 'hotel/stays', 'etiqueta' => 'Hotel'),
-            array('url' => 'NO', 'etiqueta' => 'Pedido ' . $order->document_number),
-        );
+        $miga_pan = HotelBreadcrumb::make('App\\Hotel\\HotelOrderHeader', 'Pedido ' . $order->document_number);
 
         return view('hotel.orders.show', compact('order', 'products', 'miga_pan'));
     }

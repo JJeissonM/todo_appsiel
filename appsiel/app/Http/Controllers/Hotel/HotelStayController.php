@@ -6,6 +6,7 @@ use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelRoom;
 use App\Hotel\HotelStay;
 use App\Hotel\Services\HotelService;
+use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
 use App\Ventas\Cliente;
 use Illuminate\Http\Request;
@@ -115,9 +116,6 @@ class HotelStayController extends Controller
 
     private function breadcrumb($label)
     {
-        return array(
-            array('url' => 'hotel/stays', 'etiqueta' => 'Hotel'),
-            array('url' => 'NO', 'etiqueta' => $label),
-        );
+        return HotelBreadcrumb::make('App\\Hotel\\HotelStay', $label);
     }
 }
