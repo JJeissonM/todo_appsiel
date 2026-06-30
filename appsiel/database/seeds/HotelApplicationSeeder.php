@@ -35,7 +35,7 @@ class HotelApplicationSeeder extends Seeder
 
         $data = array(
             'ambito' => 'Core',
-            'descripcion' => 'Gestion Hotelera',
+            'descripcion' => 'Gestión Hotelera',
             'app' => 'hotel',
             'definicion' => 'Modulo inicial para administrar habitaciones, estadias, huespedes, pedidos hoteleros y facturacion.',
             'tipo_precio' => 'Gratis',
@@ -65,9 +65,9 @@ class HotelApplicationSeeder extends Seeder
         }
 
         $models = array(
-            'rooms' => array('Habitaciones hoteleras', 'hotel_rooms', 'App\\Hotel\\HotelRoom', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
-            'stays' => array('Estadias hoteleras', 'hotel_stays', 'App\\Hotel\\HotelStay', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
-            'guests' => array('Huespedes de estadia hotelera', 'hotel_stay_guests', 'App\\Hotel\\HotelStayGuest', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
+            'rooms' => array('Habitaciones', 'hotel_rooms', 'App\\Hotel\\HotelRoom', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
+            'stays' => array('Estadias', 'hotel_stays', 'App\\Hotel\\HotelStay', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
+            'guests' => array('Huespedes', 'hotel_stay_guests', 'App\\Hotel\\HotelStayGuest', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
             'orders' => array('Pedidos hoteleros', 'hotel_order_headers', 'App\\Hotel\\HotelOrderHeader', 'web/create', 'web/id_fila/edit', 'hotel/orders/id_fila'),
             'lines' => array('Lineas de pedidos hoteleros', 'hotel_order_lines', 'App\\Hotel\\HotelOrderLine', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
         );
@@ -112,7 +112,7 @@ class HotelApplicationSeeder extends Seeder
             'url_eliminar' => '',
             'controller_complementario' => '',
             'url_form_create' => '',
-            'home_miga_pan' => 'hotel,Gestion Hotelera',
+            'home_miga_pan' => 'hotel,Gestión Hotelera',
             'ruta_storage_imagen' => '',
             'ruta_storage_archivo_adjunto' => '',
             'updated_at' => $now,
@@ -292,8 +292,8 @@ class HotelApplicationSeeder extends Seeder
         }
 
         $parentId = $this->upsertPermission(array(
-            'name' => 'Gestion Hotelera',
-            'descripcion' => 'Gestion Hotelera',
+            'name' => 'Gestión Hotelera',
+            'descripcion' => 'Gestión Hotelera',
             'url' => 'hotel',
             'modelo_id' => isset($this->modelIds['stays']) ? $this->modelIds['stays'] : 0,
             'parent' => 0,
@@ -364,7 +364,7 @@ class HotelApplicationSeeder extends Seeder
     {
         $now = date('Y-m-d H:i:s');
         $permissionId = DB::table('permissions')->where('name', $data['name'])->value('id');
-        if (!$permissionId && $data['name'] == 'Gestion Hotelera') {
+        if (!$permissionId && $data['name'] == 'Gestión Hotelera') {
             $permissionId = DB::table('permissions')->where('name', 'Gestión Hotelera')->value('id');
         }
 
