@@ -75,7 +75,7 @@ class SyncFacturaCompraService
                     return [
                         'cufe'                      => $cufe,
                         'estado'                    => 'procesado',
-                        'compras_doc_encabezado_id' => $encabezado->id,
+                        'compras_doc_encabezado_id' => $encabezado->consecutivo,
                         'proveedor_encontrado'      => !is_null($proveedor),
                     ];
                 });
