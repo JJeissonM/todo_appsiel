@@ -77,7 +77,11 @@ class HotelApplicationSeeder extends Seeder
             $ids[$key] = $this->seedModel($model[0], $model[1], $model[2], $model[3], $model[4], $model[5]);
         }
 
-        $ids['services'] = $this->getExistingModelId('App\\Inventarios\\InvProducto');
+        $ids['services'] = $this->getExistingModelId('App\\Inventarios\\Servicio');
+        if ($ids['services'] == 0) {
+            $ids['services'] = $this->seedModel('Servicios hoteleros', 'inv_productos', 'App\\Inventarios\\Servicio', 'web/create', 'web/id_fila/edit', 'web/id_fila');
+        }
+
         $ids['clients'] = $this->getExistingModelId('App\\Ventas\\Cliente');
         $ids['sales_invoices'] = $this->getExistingModelId('App\\Ventas\\VtasDocEncabezado');
 
