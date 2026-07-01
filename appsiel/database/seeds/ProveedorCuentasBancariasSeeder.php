@@ -18,8 +18,7 @@ class ProveedorCuentasBancariasSeeder extends Seeder
             !Schema::hasTable('compras_proveedores_cuentas_bancarias') ||
             !Schema::hasTable('compras_proveedores') ||
             !Schema::hasTable('core_terceros') ||
-            !Schema::hasTable('teso_entidades_financieras') ||
-            !Schema::hasTable('siesa_proveedores_enterprise')
+            !Schema::hasTable('teso_entidades_financieras')
         ) {
             return;
         }
@@ -35,7 +34,6 @@ class ProveedorCuentasBancariasSeeder extends Seeder
 
         $registros = DB::table('compras_proveedores as p')
             ->join('core_terceros as t', 't.id', '=', 'p.core_tercero_id')
-            ->join('siesa_proveedores_enterprise as s', 's.codigo', '=', 'p.codigo')
             ->whereNotNull('s.numero_cuenta')
             ->where('s.numero_cuenta', '<>', '')
             ->select(
