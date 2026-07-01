@@ -147,21 +147,31 @@
     </div>
 
     <div style="border: solid 1px #ddd;">
+        <?php
+            $tercero_cliente = !is_null($cliente) ? $cliente->tercero : null;
+            $vendedor_cliente = !is_null($cliente) ? $cliente->vendedor : null;
+            $tercero_vendedor = !is_null($vendedor_cliente) ? $vendedor_cliente->tercero : null;
+            $cliente_descripcion = !is_null($tercero_cliente) ? $tercero_cliente->descripcion : '';
+            $cliente_identificacion = !is_null($tercero_cliente) ? $tercero_cliente->numero_identificacion : '';
+            $cliente_direccion = !is_null($tercero_cliente) ? $tercero_cliente->direccion1 : '';
+            $cliente_telefono = !is_null($tercero_cliente) ? $tercero_cliente->telefono1 : '';
+            $vendedor_descripcion = !is_null($tercero_vendedor) ? $tercero_vendedor->descripcion : '';
+        ?>
         <table width="100%" style=" font-size: {{ $tamanino_fuente_2 }};">
             <tr>
                 <td>
-                    <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $cliente->tercero->descripcion }} </div> 
+                    <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $cliente_descripcion }} </div>
                     <br>
                     <b>{{ config("configuracion.tipo_identificador") }}/CC:</b> <div class="lbl_cliente_nit" style="display: inline;">
 					@if( config("configuracion.tipo_identificador") == 'NIT') 
-                    {{ number_format( $cliente->tercero->numero_identificacion, 0, ',', '.') }}	
-                    @else {{ $cliente->tercero->numero_identificacion}} @endif </div> 
+                    {{ $cliente_identificacion != '' ? number_format( $cliente_identificacion, 0, ',', '.') : '' }}
+                    @else {{ $cliente_identificacion }} @endif </div>
                     <br>
-                    <b>Dirección:</b> <div class="lbl_cliente_direccion" style="display: inline;"> {{ $cliente->tercero->direccion1 }} </div>
+                    <b>Dirección:</b> <div class="lbl_cliente_direccion" style="display: inline;"> {{ $cliente_direccion }} </div>
                     <br>
-                    <b>Teléfono:</b> <div class="lbl_cliente_telefono" style="display: inline;"> {{ $cliente->tercero->telefono1 }} </div>
+                    <b>Teléfono:</b> <div class="lbl_cliente_telefono" style="display: inline;"> {{ $cliente_telefono }} </div>
                     <br>
-                    <b>Atendido por: &nbsp;&nbsp;</b> <div class="lbl_atendido_por" style="display: inline;"> {{ $cliente->vendedor->tercero->descripcion }} </div>
+                    <b>Atendido por: &nbsp;&nbsp;</b> <div class="lbl_atendido_por" style="display: inline;"> {{ $vendedor_descripcion }} </div>
                     <br>
                     <span style="font-size: 1.1em; font-weight: bold;">
                         <b>Detalle: &nbsp;&nbsp;</b> <div class="lbl_descripcion_doc_encabezado" style="display: inline;"> {{$datos_factura->lbl_descripcion_doc_encabezado}} </div>

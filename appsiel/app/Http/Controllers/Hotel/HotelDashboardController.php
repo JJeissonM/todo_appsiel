@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Hotel;
 use App\Hotel\HotelRoom;
 use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Sistema\ModeloController;
+use App\Sistema\Modelo;
+use App\Sistema\Services\ModeloService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,11 +52,13 @@ class HotelDashboardController extends Controller
         $roomModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelRoom');
         $stayModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelStay');
         $orderModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelOrderHeader');
+        $guestModelId = 138;
         $roomIndexUrl = HotelBreadcrumb::crudIndexUrl('App\\Hotel\\HotelRoom');
         $roomCreateUrl = HotelBreadcrumb::crudCreateUrl('App\\Hotel\\HotelRoom');
         $guestCreateUrl = HotelBreadcrumb::crudCreateUrl('App\\Ventas\\Cliente');
+        $guestFormCreate = $this->guestFormCreate($guestModelId);
 
-        return view('hotel.index', compact('rooms', 'floors', 'statuses', 'summary', 'miga_pan', 'appId', 'roomModelId', 'stayModelId', 'orderModelId', 'roomIndexUrl', 'roomCreateUrl','guestCreateUrl'));
+        return view('hotel.index', compact('rooms', 'floors', 'statuses', 'summary', 'miga_pan', 'appId', 'roomModelId', 'stayModelId', 'orderModelId', 'guestModelId', 'roomIndexUrl', 'roomCreateUrl','guestCreateUrl', 'guestFormCreate'));
     }
 
     private function summary($empresaId)
@@ -64,5 +69,26 @@ class HotelDashboardController extends Controller
         }
 
         return $summary;
+    }
+
+    private function guestFormCreate($guestModelId)
+    {
+        $modelo = Modelo::find($guestModelId);
+        if (is_null($modelo)) {
+            return array('url' => 'vtas_clientes', 'campos' => array());
+        }
+
+        $listaCampos = ModeloController::get_campos_modelo($modelo, '', 'create');
+
+        if (method_exists(app($modelo->name_space), 'get_campos_adicionales_create')) {
+            $listaCampos = app($modelo->name_space)->get_campos_adicionales_create($listaCampos);
+        }
+
+        $acciones = (new ModeloService())->acciones_basicas_modelo($modelo, '');
+
+        return array(
+            'url' => $acciones->store,
+            'campos' => $listaCampos,
+        );
     }
 }

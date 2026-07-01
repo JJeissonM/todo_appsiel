@@ -33,10 +33,17 @@
     </table>
 
     <div class="subheadp" >
-        <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $cliente->tercero->descripcion }} </div> 
+        <?php
+            $tercero_cliente = !is_null($cliente) ? $cliente->tercero : null;
+            $vendedor_cliente = !is_null($cliente) ? $cliente->vendedor : null;
+            $tercero_vendedor = !is_null($vendedor_cliente) ? $vendedor_cliente->tercero : null;
+            $cliente_descripcion = !is_null($tercero_cliente) ? $tercero_cliente->descripcion : '';
+            $vendedor_descripcion = !is_null($tercero_vendedor) ? $tercero_vendedor->descripcion : '';
+        ?>
+        <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $cliente_descripcion }} </div>
         <br>
         <b>Atendido por: &nbsp;&nbsp;</b> 
-        <div class="lbl_atendido_por" style="display: inline;"> {{ $cliente->vendedor->tercero->descripcion }} </div>
+        <div class="lbl_atendido_por" style="display: inline;"> {{ $vendedor_descripcion }} </div>
         <br>
     </div>
 

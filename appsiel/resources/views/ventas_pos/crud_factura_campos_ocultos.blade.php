@@ -1,6 +1,21 @@
 @php
         $formulario_tiene_campo_fecha = isset($formulario_tiene_campo_fecha) ? $formulario_tiene_campo_fecha : false;
         $formulario_tiene_campo_fecha_vencimiento = isset($formulario_tiene_campo_fecha_vencimiento) ? $formulario_tiene_campo_fecha_vencimiento : false;
+        $cliente = isset($cliente) ? $cliente : null;
+        $vendedor = isset($vendedor) ? $vendedor : null;
+        $tercero_cliente = !is_null($cliente) ? $cliente->tercero : null;
+        $tercero_vendedor = !is_null($vendedor) ? $vendedor->tercero : null;
+        $cliente_id = !is_null($cliente) ? $cliente->id : 0;
+        $cliente_zona_id = !is_null($cliente) ? $cliente->zona_id : 0;
+        $cliente_clase_id = !is_null($cliente) ? $cliente->clase_cliente_id : 0;
+        $cliente_core_tercero_id = !is_null($cliente) ? $cliente->core_tercero_id : 0;
+        $cliente_descripcion = !is_null($tercero_cliente) ? $tercero_cliente->descripcion : '';
+        $cliente_lista_precios_id = !is_null($cliente) ? $cliente->lista_precios_id : 0;
+        $cliente_lista_descuentos_id = !is_null($cliente) ? $cliente->lista_descuentos_id : 0;
+        $cliente_liquida_impuestos = !is_null($cliente) ? $cliente->liquida_impuestos : 0;
+        $vendedor_id = !is_null($vendedor) ? $vendedor->id : 0;
+        $vendedor_descripcion = !is_null($tercero_vendedor) ? $tercero_vendedor->descripcion : '';
+        $vendedor_equipo_ventas_id = !is_null($vendedor) ? $vendedor->equipo_ventas_id : 0;
 
         if (!$formulario_tiene_campo_fecha || !$formulario_tiene_campo_fecha_vencimiento) {
                 $campos_formulario = isset($form_create['campos']) ? $form_create['campos'] : [];
@@ -44,15 +59,15 @@
 
 <input type="hidden" name="pdv_label" id="pdv_label" value="{{$pdv->descripcion}}" required="required">
 
-<input type="hidden" name="cliente_id" id="cliente_id" value="{{$cliente->id}}" required="required">
+<input type="hidden" name="cliente_id" id="cliente_id" value="{{$cliente_id}}" required="required">
 
 <input type="hidden" name="aux_cliente_input" id="aux_cliente_input">
 
-<input type="hidden" name="zona_id" id="zona_id" value="{{$cliente->zona_id}}" required="required">
-<input type="hidden" name="clase_cliente_id" id="clase_cliente_id" value="{{$cliente->clase_cliente_id}}"
+<input type="hidden" name="zona_id" id="zona_id" value="{{$cliente_zona_id}}" required="required">
+<input type="hidden" name="clase_cliente_id" id="clase_cliente_id" value="{{$cliente_clase_id}}"
         required="required">
 
-<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$cliente->core_tercero_id}}"
+<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$cliente_core_tercero_id}}"
         required="required">
 
 <input type="hidden" name="caja_pdv_default_id" id="caja_pdv_default_id" value="{{$pdv->caja_default_id}}">
@@ -64,20 +79,20 @@
 @endif
 
 
-<input type="hidden" name="vendedor_id" id="vendedor_id" data-vendedor_descripcion="{{$vendedor->tercero->descripcion}}"
-        value="{{$vendedor->id}}">
+<input type="hidden" name="vendedor_id" id="vendedor_id" data-vendedor_descripcion="{{$vendedor_descripcion}}"
+        value="{{$vendedor_id}}">
 
-<input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="{{$vendedor->equipo_ventas_id}}"
-        required="required">
-
-<input type="hidden" name="cliente_descripcion" id="cliente_descripcion" value="{{$cliente->tercero->descripcion}}"
+<input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="{{$vendedor_equipo_ventas_id}}"
         required="required">
 
-<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="{{$cliente->lista_precios_id}}"
+<input type="hidden" name="cliente_descripcion" id="cliente_descripcion" value="{{$cliente_descripcion}}"
         required="required">
-<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id" value="{{$cliente->lista_descuentos_id}}"
+
+<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="{{$cliente_lista_precios_id}}"
         required="required">
-<input type="hidden" name="liquida_impuestos" id="liquida_impuestos" value="{{$cliente->liquida_impuestos}}"
+<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id" value="{{$cliente_lista_descuentos_id}}"
+        required="required">
+<input type="hidden" name="liquida_impuestos" id="liquida_impuestos" value="{{$cliente_liquida_impuestos}}"
         required="required">
 
 <input type="hidden" name="inv_motivo_id" id="inv_motivo_id" value="{{$inv_motivo_id}}">

@@ -72,8 +72,14 @@
 
             @include('ventas_pos.crud_factura_campos_ocultos')
 
-            <span id="lbl_mesa_seleccionada" style="color: white;">{{$cliente->tercero->descripcion}}</span>
-            <span id="lbl_vendedor_mesero" style="color: white;">{{$vendedor->tercero->descripcion}}</span>
+            <?php
+                $tercero_cliente = !is_null($cliente) ? $cliente->tercero : null;
+                $tercero_vendedor = !is_null($vendedor) ? $vendedor->tercero : null;
+                $cliente_descripcion = !is_null($tercero_cliente) ? $tercero_cliente->descripcion : '';
+                $vendedor_descripcion = !is_null($tercero_vendedor) ? $tercero_vendedor->descripcion : '';
+            ?>
+            <span id="lbl_mesa_seleccionada" style="color: white;">{{$cliente_descripcion}}</span>
+            <span id="lbl_vendedor_mesero" style="color: white;">{{$vendedor_descripcion}}</span>
 
             <div id="popup_alerta"></div>         
 

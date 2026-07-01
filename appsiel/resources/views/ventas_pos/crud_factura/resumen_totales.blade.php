@@ -1,4 +1,9 @@
 <div id="div_resumen_totales" style="font-size:13px;">
+    <?php
+        $cliente = isset($cliente) ? $cliente : null;
+        $tercero_cliente = !is_null($cliente) ? $cliente->tercero : null;
+        $cliente_descripcion = !is_null($tercero_cliente) ? $tercero_cliente->descripcion : '';
+    ?>
     
     <hr>    
 
@@ -18,7 +23,7 @@
             <td colspan="2">
                 <label class="control-label col-sm-3 col-md-3" for="cliente_input">Cliente:</label>              
                 <div class="col-sm-9 col-md-9">
-                    <input class="form-control" id="cliente_input" autocomplete="off" required="required" name="cliente_input" type="text" value="{{ $cliente->tercero->descripcion }}">
+                    <input class="form-control" id="cliente_input" autocomplete="off" required="required" name="cliente_input" type="text" value="{{ $cliente_descripcion }}">
                 </div>
             </td>
         </tr>

@@ -147,44 +147,53 @@
     @include('layouts.mensajes')
 
     <?php $hotelUrl = 'App\\Hotel\\Support\\HotelBreadcrumb'; ?>
+    <?php $vistaController = 'App\\Http\\Controllers\\Sistema\\VistaController'; ?>
     <?php $returnTo = \Illuminate\Support\Facades\Request::fullUrl(); ?>
 
     <div class="container-fluid">
-        <div class="hotel-topbar">
-            <i class="fa fa-h-square"></i>&nbsp;&nbsp;Se muestran todas las habitaciones
-        </div>
 
-        <div class="hotel-filters">
-            <form method="GET" action="{{ url('hotel') }}" class="form-inline">
-                @if(Input::get('id') != '')
-                    <input type="hidden" name="id" value="{{ Input::get('id') }}">
-                @endif
-                @if(Input::get('id_modelo') != '')
-                    <input type="hidden" name="id_modelo" value="{{ Input::get('id_modelo') }}">
-                @endif
-                @if(Input::get('id_transaccion') != '')
-                    <input type="hidden" name="id_transaccion" value="{{ Input::get('id_transaccion') }}">
-                @endif
 
-                <select name="floor" class="form-control" style="min-width: 260px;">
-                    <option value="">Seleccione el nivel/piso</option>
-                    @foreach($floors as $floor => $label)
-                        <option value="{{ $floor }}" {{ Input::get('floor') == $floor ? 'selected' : '' }}>{{ $label }}</option>
-                    @endforeach
-                </select>
+        <div class="marco_formulario">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="hotel-filters">
+                        <h4>Filtros</h4>
+                        <form method="GET" action="{{ url('hotel') }}" class="form-inline">
+                            @if(Input::get('id') != '')
+                                <input type="hidden" name="id" value="{{ Input::get('id') }}">
+                            @endif
+                            @if(Input::get('id_modelo') != '')
+                                <input type="hidden" name="id_modelo" value="{{ Input::get('id_modelo') }}">
+                            @endif
+                            @if(Input::get('id_transaccion') != '')
+                                <input type="hidden" name="id_transaccion" value="{{ Input::get('id_transaccion') }}">
+                            @endif
 
-                <select name="status" class="form-control" style="min-width: 210px;">
-                    <option value="">Todos los estados</option>
-                    @foreach($statuses as $status => $label)
-                        <option value="{{ $status }}" {{ Input::get('status') == $status ? 'selected' : '' }}>{{ $label }}</option>
-                    @endforeach
-                </select>
+                            <select name="floor" class="form-control" style="min-width: 260px;">
+                                <option value="">Seleccione el nivel/piso</option>
+                                @foreach($floors as $floor => $label)
+                                    <option value="{{ $floor }}" {{ Input::get('floor') == $floor ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
 
-                <button class="btn btn-primary"><i class="fa fa-filter"></i></button>
-                <a href="{{ url($hotelUrl::url('hotel')) }}" class="btn btn-default"><i class="fa fa-refresh"></i></a>
-                <a href="{{ url($guestCreateUrl) }}" class="btn btn-success"><i class="fa fa-plus"></i> Huesped</a>
-                <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId))) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a>
-            </form>
+                            <select name="status" class="form-control" style="min-width: 210px;">
+                                <option value="">Todos los estados</option>
+                                @foreach($statuses as $status => $label)
+                                    <option value="{{ $status }}" {{ Input::get('status') == $status ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+
+                            <button class="btn btn-primary"><i class="fa fa-filter"></i></button>
+                            <a href="{{ url($hotelUrl::url('hotel')) }}" class="btn btn-default"><i class="fa fa-refresh"></i></a>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-4 text-right">
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#hotelGuestCreateModal"><i class="fa fa-plus"></i> Huesped</button>
+                    <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId))) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a>
+                </div>
+            </div>
+
         </div>
 
         <div class="hotel-summary">
@@ -206,7 +215,7 @@
                 <div class="hotel-room-wrap">
                     <div class="hotel-room {{ $statusClass }}">
                         <div class="hotel-room-main">
-                            <div class="hotel-room-number">Nro:{{ $room->room_number }}</div>
+                            <div class="hotel-room-number">Nro: {{ $room->room_number }}</div>
                             <div class="hotel-room-type">Habitacion {{ ucfirst(strtolower($room->room_type)) }}</div>
                             <div class="hotel-room-meta">
                                 Piso: {{ $room->floor ? $room->floor : 'N/A' }} &nbsp; Cap: {{ $room->capacity }}
@@ -275,5 +284,34 @@
         @if(count($rooms) == 0)
             <div class="alert alert-info">No hay habitaciones para los filtros seleccionados.</div>
         @endif
+
+        <div class="modal fade" id="hotelGuestCreateModal" tabindex="-1" role="dialog" aria-labelledby="hotelGuestCreateModalLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    {{ Form::open(array('url' => $guestFormCreate['url'], 'id' => 'hotel_guest_create_form', 'files' => true)) }}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="hotelGuestCreateModalLabel">Nuevo huésped</h4>
+                        </div>
+                        <div class="modal-body">
+                            @if(count($guestFormCreate['campos']) > 0)
+                                {{ $vistaController::campos_dos_colummnas($guestFormCreate['campos']) }}
+                            @else
+                                <div class="alert alert-warning">No se encontraron campos configurados para el modelo Cliente.</div>
+                            @endif
+
+                            {{ Form::hidden('url_id', $appId) }}
+                            {{ Form::hidden('url_id_modelo', $guestModelId) }}
+                            {{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
+                            {{ Form::hidden('return_to', $returnTo) }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Guardar huésped</button>
+                        </div>
+                    {{ Form::close() }}
+                </div>
+            </div>
+        </div>
     </div>
 @endsection

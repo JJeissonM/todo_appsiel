@@ -34,6 +34,10 @@ class ClienteController extends ModeloController
     {
         $Cliente = (new CustomerServices())->store_new_customer($request->all());
 
+        if ($request->return_to != '') {
+            return redirect($request->return_to)->with('flash_message', 'Huésped CREADO correctamente.');
+        }
+
         $acciones = $this->acciones_basicas_modelo( Modelo::find( 138 ), '' );
         
         $url_ver = str_replace('id_fila', $Cliente->id, $acciones->show);

@@ -66,6 +66,9 @@ class FacturaPosService
             $fecha_factura = $pdv->ultima_fecha_apertura(false);
         }
 
+        $cliente = $this->getClientePdv($pdv);
+        $tercero_cliente = $this->getTerceroCliente($cliente);
+
         $lista_campos = (new ModeloService())->personalizar_campos($transaccion->id, $transaccion, $lista_campos, $cantidad_campos, 'create', null);
 
         //Personalización de la lista de campos
@@ -78,7 +81,7 @@ class FacturaPosService
                     break;
 
                 case 'cliente_input':
-                    $lista_campos[$i]['value'] = $pdv->cliente->tercero->descripcion;
+                    $lista_campos[$i]['value'] = !is_null($tercero_cliente) ? $tercero_cliente->descripcion : '';
                     break;
 
                 case 'vendedor_id':
@@ -86,7 +89,7 @@ class FacturaPosService
                     break;
 
                 case 'forma_pago':
-                    $lista_campos[$i]['value'] = $pdv->cliente->forma_pago( date('Y-m-d') );
+                    $lista_campos[$i]['value'] = !is_null($cliente) ? $cliente->forma_pago(date('Y-m-d')) : 'contado';
                     break;
 
                 case 'fecha':
@@ -94,7 +97,7 @@ class FacturaPosService
                     break;
 
                 case 'fecha_vencimiento':
-                    $lista_campos[$i]['value'] = $pdv->cliente->fecha_vencimiento_pago( $fecha_factura );
+                    $lista_campos[$i]['value'] = !is_null($cliente) ? $cliente->fecha_vencimiento_pago($fecha_factura) : $fecha_factura;
                     break;
 
                 case 'inv_bodega_id':
@@ -225,12 +228,35 @@ class FacturaPosService
             'saldo_pendiente_cxc' => 0
         ];
 
-        $cliente = $pdv->cliente;
+        $cliente = $this->getClientePdv($pdv);
         $tipo_doc_app = $pdv->tipo_doc_app;
         $pdv_descripcion = $pdv->descripcion;
 
         return View::make('ventas_pos.formatos_impresion.' . $plantilla_factura_pos_default, compact('empresa', 'resolucion', 'etiquetas', 'pdv_descripcion', 'cliente', 'tipo_doc_app', 'plantilla_factura_pos_default','datos_factura'))->render();
     } 
+
+    private function getClientePdv($pdv)
+    {
+        if (is_null($pdv)) {
+            return null;
+        }
+
+        $cliente = $pdv->cliente;
+        if (!is_null($cliente)) {
+            return $cliente;
+        }
+
+        return null;
+    }
+
+    private function getTerceroCliente($cliente)
+    {
+        if (is_null($cliente)) {
+            return null;
+        }
+
+        return $cliente->tercero;
+    }
 
     public function get_parametros_complemento_JSPrintManager($pdv)
     {
