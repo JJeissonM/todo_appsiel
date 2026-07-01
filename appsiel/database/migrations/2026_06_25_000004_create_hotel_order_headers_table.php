@@ -18,6 +18,7 @@ class CreateHotelOrderHeadersTable extends Migration
             $table->string('invoice_type', 20)->nullable();
             $table->integer('sales_doc_id')->unsigned()->nullable();
             $table->integer('pos_doc_id')->unsigned()->nullable();
+            $table->text('lineas_registros_medios_recaudos')->nullable();
             $table->text('notes')->nullable();
             $table->integer('created_by')->unsigned()->nullable();
             $table->timestamps();

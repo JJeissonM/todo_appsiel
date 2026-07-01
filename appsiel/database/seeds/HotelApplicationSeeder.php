@@ -176,7 +176,7 @@ class HotelApplicationSeeder extends Seeder
             $this->field(1, 'Estadia', 'select', 'stay_id', 'model_App\\Hotel\\HotelStay', 'null', $comboAttrs, 1),
             $this->field(2, 'Cliente', 'select', 'cliente_id', 'model_App\\Ventas\\Cliente', 'null', $comboAttrs, 1),
             $this->field(3, 'Principal', 'select', 'is_main_guest', $yesNo, '0', $comboAttrs, 1),
-            $this->field(4, 'Relacion', 'bsText', 'relationship', '', 'null', $textAttrs, 0),
+            $this->field(4, 'Parentezco', 'bsText', 'relationship', '', 'null', $textAttrs, 0),
         ));
 
         $this->seedModelFields('orders', array(

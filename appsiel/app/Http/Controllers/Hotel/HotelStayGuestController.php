@@ -40,7 +40,7 @@ class HotelStayGuestController extends Controller
         $stay = $this->findStay($id);
         $guest = HotelStayGuest::where('empresa_id', Auth::user()->empresa_id)->where('stay_id', $stay->id)->where('id', $guestId)->firstOrFail();
 
-        if ((int)$guest->is_main_guest == 1) {
+        if ((int)$guest->is_main_guest == 1 || (int)$guest->cliente_id == (int)$stay->main_cliente_id) {
             return redirect()->back()->with('mensaje_error', 'No se puede eliminar el huesped principal.');
         }
 

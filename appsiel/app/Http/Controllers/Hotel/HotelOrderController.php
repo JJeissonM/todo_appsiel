@@ -8,6 +8,8 @@ use App\Hotel\Services\HotelService;
 use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
 use App\Inventarios\InvProducto;
+use App\VentasPos\Services\FacturaPosService;
+use App\VentasPos\Services\PosPaymentModalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,8 +25,9 @@ class HotelOrderController extends Controller
         $order = $this->findOrder($id);
         $products = $this->productsList();
         $miga_pan = HotelBreadcrumb::make('App\\Hotel\\HotelOrderHeader', 'Pedido ' . $order->document_number);
+        $paymentData = $this->paymentData($order);
 
-        return view('hotel.orders.show', compact('order', 'products', 'miga_pan'));
+        return view('hotel.orders.show', compact('order', 'products', 'miga_pan') + $paymentData);
     }
 
     public function addLine(Request $request, $id)
@@ -94,12 +97,12 @@ class HotelOrderController extends Controller
         return redirect('ventas/' . $doc->id . '?id=13&id_modelo=' . config('ventas.factura_ventas_modelo_id', 139) . '&id_transaccion=' . config('ventas.factura_ventas_tipo_transaccion_id', 23))->with('flash_message', 'Factura estandar generada correctamente.');
     }
 
-    public function generatePosInvoice($id)
+    public function generatePosInvoice(Request $request, $id)
     {
         $order = $this->findOrder($id);
 
         try {
-            $doc = (new HotelService())->generatePosInvoice($order);
+            $doc = (new HotelService())->generatePosInvoice($order, $request->lineas_registros_medios_recaudos);
         } catch (\Exception $e) {
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }
@@ -125,5 +128,61 @@ class HotelOrderController extends Controller
             $options[$row->id] = $row->id . ' - ' . $row->descripcion;
         }
         return $options;
+    }
+
+    private function paymentData(HotelOrderHeader $order)
+    {
+        $id_transaccion = 8;
+        $motivos = (new FacturaPosService())->get_motivos_tesoreria();
+        $paymentModalService = new PosPaymentModalService();
+        $paymentModalData = $paymentModalService->buildData();
+
+        return array(
+            'id_transaccion' => $id_transaccion,
+            'motivos' => $motivos,
+            'medios_recaudo' => $paymentModalData['medios_recaudo'],
+            'cajas' => $paymentModalData['cajas'],
+            'cuentas_bancarias' => $paymentModalData['cuentas_bancarias'],
+            'cuerpo_tabla_medios_recaudos' => $this->paymentRows($order->lineas_registros_medios_recaudos),
+            'usar_modal_botones_medios_pago' => $paymentModalData['usar_modal_botones'],
+            'modal_botones_medios_pago_data' => $paymentModalData['modal_botones_data'],
+            'filtrar_destinos_por_medio_recaudo' => $paymentModalData['filtrar_destinos_por_medio_recaudo'],
+            'destinos_medios_recaudo_data' => $paymentModalData['destinos_medios_recaudo_data'],
+        );
+    }
+
+    private function paymentRows($lineasRegistrosMediosRecaudos)
+    {
+        $lineas = json_decode((string)$lineasRegistrosMediosRecaudos);
+        if (!is_array($lineas)) {
+            return '';
+        }
+
+        $html = '';
+        foreach ($lineas as $linea) {
+            if (!is_object($linea)) {
+                continue;
+            }
+
+            $html .= '<tr>';
+            $html .= $this->paymentCell(isset($linea->teso_medio_recaudo_id) ? $linea->teso_medio_recaudo_id : '');
+            $html .= $this->paymentCell(isset($linea->teso_motivo_id) ? $linea->teso_motivo_id : '');
+            $html .= $this->paymentCell(isset($linea->teso_caja_id) ? $linea->teso_caja_id : '');
+            $html .= $this->paymentCell(isset($linea->teso_cuenta_bancaria_id) ? $linea->teso_cuenta_bancaria_id : '');
+            $html .= '<td class="valor_total">' . e(isset($linea->valor) ? $linea->valor : '') . '</td>';
+            $html .= '<td><button type="button" class="btn btn-danger btn-xs btn_eliminar_linea_medio_recaudo"><i class="fa fa-btn fa-trash"></i></button></td>';
+            $html .= '</tr>';
+        }
+
+        return $html;
+    }
+
+    private function paymentCell($value)
+    {
+        $parts = explode('-', (string)$value, 2);
+        $id = isset($parts[0]) ? $parts[0] : '0';
+        $label = isset($parts[1]) ? $parts[1] : '';
+
+        return '<td><span style="color:white;">' . e($id) . '-</span><span>' . e($label) . '</span></td>';
     }
 }

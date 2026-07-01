@@ -52,6 +52,8 @@ use App\Inventarios\Services\RecipeServices;
 use App\Nomina\OrdenDeTrabajo;
 use App\Sistema\Aplicacion;
 use App\Ventas\ListaPrecioDetalle;
+use App\Ventas\Cliente;
+use App\Ventas\Services\PricesServices;
 use App\VentasPos\FacturaPos;
 
 class InventarioController extends TransaccionController
@@ -983,6 +985,11 @@ class InventarioController extends TransaccionController
     // Parámetro enviados por GET
     public function consultar_productos()
     {
+        $producto_id = (int)Input::get('producto_id');
+        if ($producto_id > 0) {
+            return $this->consultar_producto_por_id($producto_id);
+        }
+
         $campo_busqueda = Input::get('campo_busqueda');
 
         $cantidad_a_mostrar = 15;
@@ -1132,6 +1139,53 @@ class InventarioController extends TransaccionController
         $html .= '</div>';
 
         return $html;
+    }
+
+    private function consultar_producto_por_id($producto_id)
+    {
+        $producto = InvProducto::where('id', $producto_id)
+                                ->where('estado', 'Activo')
+                                ->where('core_empresa_id', Auth::user()->empresa_id)
+                                ->first();
+
+        if (is_null($producto)) {
+            return response()->json(array(
+                'error' => 'Producto no encontrado.'
+            ), 404);
+        }
+
+        $cliente_id = (int)Input::get('cliente_id');
+        $lista_precios_id = (int)Input::get('lista_precios_id');
+        $fecha = Input::get('fecha');
+
+        if ($fecha == '') {
+            $fecha = date('Y-m-d');
+        }
+
+        if ($lista_precios_id <= 0 && $cliente_id > 0) {
+            $cliente = Cliente::find($cliente_id);
+            if (!is_null($cliente)) {
+                $lista_precios_id = (int)$cliente->lista_precios_id;
+            }
+        }
+
+        if ($lista_precios_id <= 0) {
+            $lista_precios_id = (int)config('ventas.lista_precios_id', 1);
+        }
+
+        $precio = (new PricesServices())->get_item_price($lista_precios_id, $fecha, $producto->id, $cliente_id);
+        if (is_null($precio)) {
+            $precio = $producto->precio_venta;
+        }
+
+        return response()->json(array(
+            'id' => $producto->id,
+            'descripcion' => $producto->descripcion,
+            'tipo' => $producto->tipo,
+            'precio_venta' => $precio,
+            'unit_price' => $precio,
+            'precio_unitario' => $precio
+        ));
     }
     
     // Parámetro enviados por GET

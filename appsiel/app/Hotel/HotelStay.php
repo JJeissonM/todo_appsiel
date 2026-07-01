@@ -2,6 +2,7 @@
 
 namespace App\Hotel;
 
+use App\Hotel\Services\HotelService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +34,7 @@ class HotelStay extends Model
                 $stay->created_by = Auth::user()->id;
             }
 
-            if (empty($stay->status)) {
+            if (empty($stay->status) || !in_array($stay->status, self::statuses())) {
                 $stay->status = self::STATUS_ACTIVA;
             }
 
@@ -52,6 +53,85 @@ class HotelStay extends Model
     public static function statuses()
     {
         return array(self::STATUS_ACTIVA, self::STATUS_CERRADA, self::STATUS_ANULADA);
+    }
+
+    public function store_adicional($datos, $registro)
+    {
+        $registro->ensureCheckInRecords();
+
+        return null;
+    }
+
+    public function ensureCheckInRecords()
+    {
+        if ($this->status != self::STATUS_ACTIVA && !in_array($this->status, self::statuses())) {
+            $this->status = self::STATUS_ACTIVA;
+            $this->save();
+        }
+
+        $stayId = $this->id;
+
+        DB::transaction(function () use ($stayId) {
+            $stay = self::where('id', $stayId)->lockForUpdate()->first();
+            if (is_null($stay)) {
+                return;
+            }
+
+            if ($stay->status != self::STATUS_ACTIVA && !in_array($stay->status, self::statuses())) {
+                $stay->status = self::STATUS_ACTIVA;
+                $stay->save();
+            }
+
+            $mainGuest = HotelStayGuest::firstOrCreate(array(
+                'empresa_id' => $stay->empresa_id,
+                'stay_id' => $stay->id,
+                'cliente_id' => $stay->main_cliente_id,
+            ), array(
+                'is_main_guest' => 1,
+            ));
+
+            if ((int)$mainGuest->is_main_guest != 1) {
+                $mainGuest->is_main_guest = 1;
+                $mainGuest->save();
+            }
+
+            $room = HotelRoom::where('empresa_id', $stay->empresa_id)->where('id', $stay->room_id)->first();
+            if (!is_null($room) && $stay->status == self::STATUS_ACTIVA && $room->status == HotelRoom::STATUS_DISPONIBLE) {
+                $room->status = HotelRoom::STATUS_OCUPADA;
+                $room->save();
+            }
+
+            $order = HotelOrderHeader::where('empresa_id', $stay->empresa_id)->where('stay_id', $stay->id)->first();
+            if (is_null($order)) {
+                $order = HotelOrderHeader::create(array(
+                    'empresa_id' => $stay->empresa_id,
+                    'stay_id' => $stay->id,
+                    'cliente_id' => $stay->main_cliente_id,
+                    'document_number' => 'HOT-' . $stay->id,
+                    'order_date' => date('Y-m-d H:i:s'),
+                    'status' => HotelOrderHeader::STATUS_ABIERTO,
+                    'created_by' => Auth::check() ? Auth::user()->id : $stay->created_by,
+                ));
+            }
+
+            if (!is_null($room) && !empty($room->inv_producto_id)) {
+                $roomLine = HotelOrderLine::where('empresa_id', $stay->empresa_id)
+                    ->where('hotel_order_id', $order->id)
+                    ->where('source_type', HotelOrderLine::SOURCE_ROOM)
+                    ->where('source_id', $room->id)
+                    ->first();
+
+                if (is_null($roomLine)) {
+                    (new HotelService())->createLine($order, array(
+                        'producto_id' => $room->inv_producto_id,
+                        'room_id' => $room->id,
+                        'quantity' => 1,
+                        'source_type' => HotelOrderLine::SOURCE_ROOM,
+                        'source_id' => $room->id,
+                    ));
+                }
+            }
+        });
     }
 
     public function setCheckInAtAttribute($value)

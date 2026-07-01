@@ -12,7 +12,7 @@ class HotelStayGuest extends Model
 
     protected $fillable = array('empresa_id', 'stay_id', 'cliente_id', 'is_main_guest', 'relationship');
 
-    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Estadia', 'Habitacion', 'Cliente', 'Principal', 'Relacion');
+    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Estadia', 'Habitacion', 'Cliente', 'Principal', 'Parentezco');
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
 

@@ -11,11 +11,15 @@ use App\Hotel\HotelStayGuest;
 use App\Inventarios\InvProducto;
 use App\Ventas\Cliente;
 use App\Ventas\Services\PricesServices;
+use App\Ventas\Vendedor;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\VentasPos\DocRegistro;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\Pdv;
+use App\VentasPos\Services\AccumulationService;
+use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoMotivo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -262,11 +266,11 @@ class HotelService
         });
     }
 
-    public function generatePosInvoice(HotelOrderHeader $order)
+    public function generatePosInvoice(HotelOrderHeader $order, $lineasRegistrosMediosRecaudos = null)
     {
         $service = $this;
 
-        return DB::transaction(function () use ($order, $service) {
+        return DB::transaction(function () use ($order, $service, $lineasRegistrosMediosRecaudos) {
             $order = $service->loadOpenOrder($order->id);
             $cliente = Cliente::find($order->cliente_id);
             if (is_null($cliente) || count($order->lines) == 0) {
@@ -274,11 +278,28 @@ class HotelService
             }
 
             $pdv = Pdv::find((int)config('ventas_pos.pdv_id_default', 1));
-            $tipoDocAppId = !is_null($pdv) ? (int)$pdv->tipo_doc_app_default_id : (int)config('ventas.factura_ventas_tipo_doc_app_id', 18);
+            if (is_null($pdv)) {
+                throw new \Exception('No existe un punto de venta POS por defecto para generar y contabilizar la factura.');
+            }
+
+            $tipoDocAppId = (int)$pdv->tipo_doc_app_default_id;
+            if ($tipoDocAppId <= 0) {
+                throw new \Exception('El punto de venta POS por defecto no tiene tipo de documento configurado.');
+            }
+
+            $vendedorId = (int)$cliente->vendedor_id;
+            if ($vendedorId <= 0) {
+                $vendedorId = (int)config('ventas.vendedor_id');
+            }
+            if (is_null(Vendedor::find($vendedorId))) {
+                throw new \Exception('No existe un vendedor valido para generar y contabilizar la factura POS.');
+            }
+
             $consecutivo = TipoDocApp::get_consecutivo_actual($order->empresa_id, $tipoDocAppId) + 1;
             TipoDocApp::aumentar_consecutivo($order->empresa_id, $tipoDocAppId);
+            $totalOrder = $order->lines->sum('line_total');
+            $lineasRegistrosMediosRecaudos = $service->normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $pdv);
 
-            // Integracion minima POS: se respetan tablas POS y consecutivo; procesos de caja/acumulacion quedan externos.
             $doc = FacturaPos::create(array(
                 'uniqid' => uniqid(),
                 'core_empresa_id' => $order->empresa_id,
@@ -288,12 +309,19 @@ class HotelService
                 'fecha' => date('Y-m-d'),
                 'core_tercero_id' => $cliente->core_tercero_id,
                 'cliente_id' => $cliente->id,
-                'pdv_id' => !is_null($pdv) ? $pdv->id : 0,
-                'forma_pago' => $cliente->forma_pago(),
+                'vendedor_id' => $vendedorId,
+                'pdv_id' => $pdv->id,
+                'cajero_id' => Auth::check() ? Auth::user()->id : null,
+                'forma_pago' => 'contado',
                 'fecha_vencimiento' => $cliente->fecha_vencimiento_pago(date('Y-m-d')),
+                'lineas_registros_medios_recaudos' => $lineasRegistrosMediosRecaudos,
                 'descripcion' => 'Factura POS generada desde pedido hotelero ' . $order->document_number,
-                'valor_total' => $order->lines->sum('line_total'),
-                'estado' => 'Activo',
+                'valor_total' => $totalOrder,
+                'valor_ajuste_al_peso' => 0,
+                'valor_total_cambio' => 0,
+                'valor_total_bolsas' => 0,
+                'total_efectivo_recibido' => $service->paymentLinesTotal($lineasRegistrosMediosRecaudos),
+                'estado' => 'Pendiente',
                 'creado_por' => Auth::user()->email,
             ));
 
@@ -301,9 +329,15 @@ class HotelService
                 $service->createPosInvoiceLine($doc->id, $line);
             }
 
+            $accumulationService = new AccumulationService($pdv->id);
+            $accumulationService->hacer_preparaciones_recetas('Creado por factura POS hotelera ' . $doc->get_label_documento(), $doc->fecha, $doc->id);
+            $accumulationService->hacer_desarme_automatico('Creado por factura POS hotelera ' . $doc->get_label_documento(), $doc->fecha);
+            $accumulationService->accumulate_one_invoice($doc->id);
+
             $order->status = HotelOrderHeader::STATUS_FACTURADO;
             $order->invoice_type = HotelOrderHeader::INVOICE_POS;
             $order->pos_doc_id = $doc->id;
+            $order->lineas_registros_medios_recaudos = $lineasRegistrosMediosRecaudos;
             $order->save();
 
             return $doc;
@@ -372,5 +406,114 @@ class HotelService
         }
 
         return $order;
+    }
+
+    private function normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $pdv)
+    {
+        $lineas = json_decode((string)$lineasRegistrosMediosRecaudos, true);
+        if (!is_array($lineas) || count($lineas) == 0) {
+            return $this->defaultPaymentLines($totalOrder, $pdv);
+        }
+
+        $lineasValidas = array();
+        foreach ($lineas as $linea) {
+            if (!is_array($linea)) {
+                continue;
+            }
+
+            $valor = isset($linea['valor']) ? $linea['valor'] : '';
+            if ($this->parsePaymentValue($valor) <= 0) {
+                continue;
+            }
+
+            $lineasValidas[] = array(
+                'teso_medio_recaudo_id' => isset($linea['teso_medio_recaudo_id']) ? $linea['teso_medio_recaudo_id'] : '1-Efectivo',
+                'teso_motivo_id' => isset($linea['teso_motivo_id']) ? $linea['teso_motivo_id'] : $this->defaultPaymentReason(),
+                'teso_caja_id' => isset($linea['teso_caja_id']) ? $linea['teso_caja_id'] : $this->defaultCashBox($pdv),
+                'teso_cuenta_bancaria_id' => isset($linea['teso_cuenta_bancaria_id']) ? $linea['teso_cuenta_bancaria_id'] : '0-',
+                'valor' => '$' . $this->parsePaymentValue($valor),
+            );
+        }
+
+        if (count($lineasValidas) == 0) {
+            return $this->defaultPaymentLines($totalOrder, $pdv);
+        }
+
+        $totalPayments = 0;
+        foreach ($lineasValidas as $lineaValida) {
+            $totalPayments += $this->parsePaymentValue($lineaValida['valor']);
+        }
+
+        if (abs($totalPayments - (float)$totalOrder) > 1) {
+            throw new \Exception('El valor total de los medios de pago debe ser igual al total del pedido hotelero.');
+        }
+
+        return json_encode($lineasValidas);
+    }
+
+    private function defaultPaymentLines($totalOrder, $pdv)
+    {
+        return json_encode(array(array(
+            'teso_medio_recaudo_id' => '1-Efectivo',
+            'teso_motivo_id' => $this->defaultPaymentReason(),
+            'teso_caja_id' => $this->defaultCashBox($pdv),
+            'teso_cuenta_bancaria_id' => '0-',
+            'valor' => '$' . (float)$totalOrder,
+        )));
+    }
+
+    private function defaultPaymentReason()
+    {
+        $motivo = TesoMotivo::find((int)config('tesoreria.motivo_tesoreria_ventas_contado'));
+        if (!is_null($motivo)) {
+            return $motivo->id . '-' . $motivo->descripcion;
+        }
+
+        return '1-Recaudo clientes';
+    }
+
+    private function defaultCashBox($pdv)
+    {
+        if (!is_null($pdv) && (int)$pdv->caja_default_id > 0 && !is_null($pdv->caja)) {
+            return $pdv->caja_default_id . '-' . $pdv->caja->descripcion;
+        }
+
+        $caja = TesoCaja::find(1);
+        if (!is_null($caja)) {
+            return $caja->id . '-' . $caja->descripcion;
+        }
+
+        return '1-Caja general';
+    }
+
+    private function paymentLinesTotal($lineasRegistrosMediosRecaudos)
+    {
+        $lineas = json_decode((string)$lineasRegistrosMediosRecaudos, true);
+        if (!is_array($lineas)) {
+            return 0;
+        }
+
+        $total = 0;
+        foreach ($lineas as $linea) {
+            $total += $this->parsePaymentValue(isset($linea['valor']) ? $linea['valor'] : 0);
+        }
+
+        return $total;
+    }
+
+    private function parsePaymentValue($value)
+    {
+        $value = trim((string)$value);
+        $value = str_replace('$', '', $value);
+        $value = str_replace(' ', '', $value);
+
+        if (strpos($value, ',') !== false && strpos($value, '.') !== false) {
+            $value = str_replace('.', '', $value);
+            $value = str_replace(',', '.', $value);
+        } else {
+            $value = str_replace(',', '', $value);
+        }
+
+        return (float)$value;
     }
 }

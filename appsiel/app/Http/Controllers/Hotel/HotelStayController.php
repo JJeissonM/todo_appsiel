@@ -38,6 +38,8 @@ class HotelStayController extends Controller
     public function show($id)
     {
         $stay = $this->findStay($id);
+        $stay->ensureCheckInRecords();
+        $stay = $this->findStay($id);
         $clients = $this->clientsList();
         $miga_pan = $this->breadcrumb('Estadia #' . $stay->id);
         return view('hotel.stays.show', compact('stay', 'clients', 'miga_pan'));

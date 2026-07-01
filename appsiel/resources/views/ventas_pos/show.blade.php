@@ -72,6 +72,14 @@
 @endsection
 
 @section('filas_adicionales_encabezado')
+    <?php
+        $vendedorDescripcion = '';
+        if (!is_null($doc_encabezado->vendedor) && !is_null($doc_encabezado->vendedor->tercero)) {
+            $vendedorDescripcion = $doc_encabezado->vendedor->tercero->descripcion;
+        } elseif (isset($doc_encabezado->vendedor_nombre_completo)) {
+            $vendedorDescripcion = $doc_encabezado->vendedor_nombre_completo;
+        }
+    ?>
     <tr>
         <td style="border: solid 1px #ddd;">
             <b>Cliente:</b> {{ $doc_encabezado->tercero_nombre_completo }}
@@ -84,7 +92,7 @@
             <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
         </td>
         <td style="border: solid 1px #ddd;">
-            <b>Vendedor: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
+            <b>Vendedor: &nbsp;&nbsp;</b> {{ $vendedorDescripcion }}
             <br/>
             <b>Condición de pago: &nbsp;&nbsp;</b> {{ ucfirst($doc_encabezado->condicion_pago) }}
             <br/>

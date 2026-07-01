@@ -17,7 +17,7 @@ class HotelOrderHeader extends Model
 
     protected $table = 'hotel_order_headers';
 
-    protected $fillable = array('empresa_id', 'stay_id', 'cliente_id', 'document_number', 'order_date', 'status', 'invoice_type', 'sales_doc_id', 'pos_doc_id', 'notes', 'created_by');
+    protected $fillable = array('empresa_id', 'stay_id', 'cliente_id', 'document_number', 'order_date', 'status', 'invoice_type', 'sales_doc_id', 'pos_doc_id', 'lineas_registros_medios_recaudos', 'notes', 'created_by');
 
     public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Estadia', 'Habitacion', 'Cliente', 'Fecha', 'Estado', 'Factura');
 
