@@ -21,17 +21,87 @@ class HotelBreadcrumb
 
     public static function crudIndexUrl($namespace)
     {
-        return 'web?id=' . self::appId() . '&id_modelo=' . self::modelId($namespace);
+        return self::url('web', array('id_modelo' => self::modelId($namespace)));
     }
 
     public static function crudCreateUrl($namespace)
     {
-        return 'web/create?id=' . self::appId() . '&id_modelo=' . self::modelId($namespace);
+        return self::url('web/create', array('id_modelo' => self::modelId($namespace)));
     }
 
     public static function crudShowUrl($namespace, $recordId)
     {
-        return 'web/' . $recordId . '?id=' . self::appId() . '&id_modelo=' . self::modelId($namespace);
+        return self::url('web/' . $recordId, array('id_modelo' => self::modelId($namespace)));
+    }
+
+    public static function url($path, array $overrides = array())
+    {
+        $params = self::contextParams($overrides);
+        if (count($params) == 0) {
+            return $path;
+        }
+
+        return $path . (strpos($path, '?') === false ? '?' : '&') . http_build_query($params);
+    }
+
+    public static function contextQuery(array $overrides = array())
+    {
+        $params = self::contextParams($overrides);
+        return count($params) > 0 ? http_build_query($params) : '';
+    }
+
+    public static function contextParams(array $overrides = array())
+    {
+        $params = array();
+
+        $appId = isset($overrides['id']) ? (int)$overrides['id'] : self::appId();
+        if ($appId > 0) {
+            $params['id'] = $appId;
+        }
+
+        $modelId = isset($overrides['id_modelo']) ? (int)$overrides['id_modelo'] : (int)Input::get('id_modelo');
+        if ($modelId > 0) {
+            $params['id_modelo'] = $modelId;
+        }
+
+        $transactionId = isset($overrides['id_transaccion']) ? (int)$overrides['id_transaccion'] : (int)Input::get('id_transaccion');
+        if ($transactionId > 0) {
+            $params['id_transaccion'] = $transactionId;
+        }
+
+        foreach ($overrides as $key => $value) {
+            if (in_array($key, array('id', 'id_modelo', 'id_transaccion'))) {
+                continue;
+            }
+
+            if (!is_null($value) && $value !== '') {
+                $params[$key] = $value;
+            }
+        }
+
+        return $params;
+    }
+
+    public static function ensureContext($modelNamespace = null)
+    {
+        $params = array();
+
+        if ((int)Input::get('id') <= 0) {
+            $params['id'] = self::appId();
+        }
+
+        if (!is_null($modelNamespace) && (int)Input::get('id_modelo') <= 0) {
+            $modelId = self::modelId($modelNamespace);
+            if ($modelId > 0) {
+                $params['id_modelo'] = $modelId;
+            }
+        }
+
+        if (count($params) > 0) {
+            request()->merge($params);
+        }
+
+        return $params;
     }
 
     public static function make($modelNamespace, $label)
@@ -45,7 +115,7 @@ class HotelBreadcrumb
 
         if (!is_null($model)) {
             $breadcrumb[] = array(
-                'url' => 'web?id=' . self::appIdFromModel($app) . '&id_modelo=' . $model->id,
+                'url' => self::url('web', array('id' => self::appIdFromModel($app), 'id_modelo' => $model->id)),
                 'etiqueta' => $model->descripcion,
             );
         }

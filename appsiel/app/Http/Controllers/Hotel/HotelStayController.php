@@ -14,9 +14,15 @@ use Illuminate\Support\Facades\Auth;
 
 class HotelStayController extends Controller
 {
+    public function __construct()
+    {
+        HotelBreadcrumb::ensureContext('App\\Hotel\\HotelStay');
+    }
+
     public function index()
     {
         $stays = HotelStay::where('empresa_id', Auth::user()->empresa_id)->with('room', 'mainGuest.tercero')->orderBy('check_in_at', 'DESC')->paginate(20);
+        $stays->appends(request()->except('page'));
         $miga_pan = $this->breadcrumb('Estadias');
         return view('hotel.stays.index', compact('stays', 'miga_pan'));
     }
@@ -24,6 +30,7 @@ class HotelStayController extends Controller
     public function active()
     {
         $stays = HotelStay::where('empresa_id', Auth::user()->empresa_id)->where('status', HotelStay::STATUS_ACTIVA)->with('room', 'mainGuest.tercero')->orderBy('check_in_at', 'DESC')->paginate(20);
+        $stays->appends(request()->except('page'));
         $miga_pan = $this->breadcrumb('Estadias activas');
         return view('hotel.stays.active', compact('stays', 'miga_pan'));
     }
@@ -60,7 +67,7 @@ class HotelStayController extends Controller
             return redirect()->back()->withInput()->with('mensaje_error', $e->getMessage());
         }
 
-        return redirect('hotel/stays/' . $stay->id)->with('flash_message', 'Check-in registrado correctamente.');
+        return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('flash_message', 'Check-in registrado correctamente.');
     }
 
     public function checkOut($id)
@@ -75,10 +82,10 @@ class HotelStayController extends Controller
 
         $message = 'Check-out registrado correctamente.';
         if (!is_null($stay->order) && $stay->order->status == HotelOrderHeader::STATUS_ABIERTO) {
-            return redirect('hotel/stays/' . $stay->id)->with('mensaje_error', 'La estadia fue cerrada, pero el pedido hotelero aun no ha sido facturado.');
+            return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('mensaje_error', 'La estadia fue cerrada, pero el pedido hotelero aun no ha sido facturado.');
         }
 
-        return redirect('hotel/stays/' . $stay->id)->with('flash_message', $message);
+        return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('flash_message', $message);
     }
 
     public function cancel($id)
@@ -91,7 +98,7 @@ class HotelStayController extends Controller
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }
 
-        return redirect('hotel/stays/' . $stay->id)->with('flash_message', 'Estadia anulada correctamente.');
+        return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('flash_message', 'Estadia anulada correctamente.');
     }
 
     private function findStay($id)

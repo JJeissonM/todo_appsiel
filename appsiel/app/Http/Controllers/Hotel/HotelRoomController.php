@@ -12,10 +12,16 @@ use Illuminate\Support\Facades\DB;
 
 class HotelRoomController extends Controller
 {
+    public function __construct()
+    {
+        HotelBreadcrumb::ensureContext('App\\Hotel\\HotelRoom');
+    }
+
     public function index()
     {
         $empresaId = Auth::user()->empresa_id;
         $rooms = HotelRoom::where('empresa_id', $empresaId)->with('product')->orderBy('room_number')->paginate(20);
+        $rooms->appends(request()->except('page'));
         $miga_pan = $this->breadcrumb('Habitaciones');
 
         return view('hotel.rooms.index', compact('rooms', 'miga_pan'));
@@ -49,7 +55,7 @@ class HotelRoomController extends Controller
 
         $room = HotelRoom::create($data);
 
-        return redirect('hotel/rooms/' . $room->id)->with('flash_message', 'Habitacion creada correctamente.');
+        return redirect(HotelBreadcrumb::url('hotel/rooms/' . $room->id))->with('flash_message', 'Habitacion creada correctamente.');
     }
 
     public function show($id)
@@ -88,7 +94,7 @@ class HotelRoomController extends Controller
         $room->fill($data);
         $room->save();
 
-        return redirect('hotel/rooms/' . $room->id)->with('flash_message', 'Habitacion actualizada correctamente.');
+        return redirect(HotelBreadcrumb::url('hotel/rooms/' . $room->id))->with('flash_message', 'Habitacion actualizada correctamente.');
     }
 
     public function changeStatus(Request $request, $id)
@@ -105,7 +111,7 @@ class HotelRoomController extends Controller
             return redirect($request->return_to)->with('flash_message', 'Estado actualizado correctamente.');
         }
 
-        return redirect('hotel/rooms/' . $room->id)->with('flash_message', 'Estado actualizado correctamente.');
+        return redirect(HotelBreadcrumb::url('hotel/rooms/' . $room->id))->with('flash_message', 'Estado actualizado correctamente.');
     }
 
     public function deactivate($id)
@@ -114,7 +120,7 @@ class HotelRoomController extends Controller
         $room->is_active = 0;
         $room->save();
 
-        return redirect('hotel/rooms')->with('flash_message', 'Habitacion desactivada correctamente.');
+        return redirect(HotelBreadcrumb::url('hotel/rooms'))->with('flash_message', 'Habitacion desactivada correctamente.');
     }
 
     private function findRoom($id)

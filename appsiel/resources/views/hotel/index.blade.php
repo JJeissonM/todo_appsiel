@@ -146,6 +146,7 @@
     {{ Form::bsMigaPan($miga_pan) }}
     @include('layouts.mensajes')
 
+    <?php $hotelUrl = 'App\\Hotel\\Support\\HotelBreadcrumb'; ?>
     <?php $returnTo = \Illuminate\Support\Facades\Request::fullUrl(); ?>
 
     <div class="container-fluid">
@@ -160,6 +161,9 @@
                 @endif
                 @if(Input::get('id_modelo') != '')
                     <input type="hidden" name="id_modelo" value="{{ Input::get('id_modelo') }}">
+                @endif
+                @if(Input::get('id_transaccion') != '')
+                    <input type="hidden" name="id_transaccion" value="{{ Input::get('id_transaccion') }}">
                 @endif
 
                 <select name="floor" class="form-control" style="min-width: 260px;">
@@ -177,9 +181,9 @@
                 </select>
 
                 <button class="btn btn-primary"><i class="fa fa-filter"></i></button>
-                <a href="{{ url('hotel?id='.$appId) }}" class="btn btn-default"><i class="fa fa-refresh"></i></a>
-                <a href="{{ url($roomCreateUrl) }}" class="btn btn-success"><i class="fa fa-plus"></i> Habitacion</a>
-                <a href="{{ url('hotel/stays/check-in?id='.$appId.'&id_modelo='.$stayModelId) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a>
+                <a href="{{ url($hotelUrl::url('hotel')) }}" class="btn btn-default"><i class="fa fa-refresh"></i></a>
+                <a href="{{ url($guestCreateUrl) }}" class="btn btn-success"><i class="fa fa-plus"></i> Huesped</a>
+                <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId))) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a>
             </form>
         </div>
 
@@ -216,17 +220,17 @@
                             {{ $room->status }} <i class="fa fa-arrow-circle-right"></i>
                         </div>
                         <div class="hotel-room-actions">
-                            <a href="{{ url('web/'.$room->id.'?id='.$appId.'&id_modelo='.$roomModelId) }}" class="btn btn-default btn-xs" title="Ver habitacion"><i class="fa fa-eye"></i></a>
+                            <!-- <a href="{ { url('web/'.$room->id.'?id='.$appId.'&id_modelo='.$roomModelId) }}" class="btn btn-default btn-xs" title="Ver habitacion"><i class="fa fa-eye"></i></a> -->
 
                             @if($room->status == App\Hotel\HotelRoom::STATUS_DISPONIBLE && $room->is_active)
-                                <a href="{{ url('hotel/stays/check-in?id='.$appId.'&id_modelo='.$stayModelId.'&room_id='.$room->id) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
-                                <form method="POST" action="{{ url('hotel/rooms/'.$room->id.'/status') }}" style="display:inline-block;">
+                                <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
+                                <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
                                     {{ csrf_field() }}
                                     <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_MANTENIMIENTO }}">
                                     <input type="hidden" name="return_to" value="{{ $returnTo }}">
                                     <button class="btn btn-warning btn-xs" title="Mantenimiento"><i class="fa fa-wrench"></i></button>
                                 </form>
-                                <form method="POST" action="{{ url('hotel/rooms/'.$room->id.'/status') }}" style="display:inline-block;">
+                                <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
                                     {{ csrf_field() }}
                                     <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_BLOQUEADA }}">
                                     <input type="hidden" name="return_to" value="{{ $returnTo }}">
@@ -237,25 +241,25 @@
                                 @if($stay->order)
                                     <a href="{{ url('web/'.$stay->order->id.'?id='.$appId.'&id_modelo='.$orderModelId) }}" class="btn btn-primary btn-xs"><i class="fa fa-shopping-cart"></i> Pedido</a>
                                 @endif
-                                <form method="POST" action="{{ url('hotel/stays/'.$stay->id.'/check-out') }}" style="display:inline-block;">
+                                <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/check-out', array('id_modelo' => $stayModelId))) }}" style="display:inline-block;">
                                     {{ csrf_field() }}
                                     <button class="btn btn-success btn-xs" onclick="return confirm('Registrar check-out de esta habitacion?')"><i class="fa fa-sign-out"></i> Check-out</button>
                                 </form>
                             @elseif($room->status == App\Hotel\HotelRoom::STATUS_LIMPIEZA)
-                                <form method="POST" action="{{ url('hotel/rooms/'.$room->id.'/status') }}" style="display:inline-block;">
+                                <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
                                     {{ csrf_field() }}
                                     <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_DISPONIBLE }}">
                                     <input type="hidden" name="return_to" value="{{ $returnTo }}">
                                     <button class="btn btn-success btn-xs"><i class="fa fa-check"></i> Disponible</button>
                                 </form>
-                                <form method="POST" action="{{ url('hotel/rooms/'.$room->id.'/status') }}" style="display:inline-block;">
+                                <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
                                     {{ csrf_field() }}
                                     <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_MANTENIMIENTO }}">
                                     <input type="hidden" name="return_to" value="{{ $returnTo }}">
                                     <button class="btn btn-warning btn-xs"><i class="fa fa-wrench"></i></button>
                                 </form>
                             @else
-                                <form method="POST" action="{{ url('hotel/rooms/'.$room->id.'/status') }}" style="display:inline-block;">
+                                <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
                                     {{ csrf_field() }}
                                     <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_DISPONIBLE }}">
                                     <input type="hidden" name="return_to" value="{{ $returnTo }}">

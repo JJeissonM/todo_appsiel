@@ -1,4 +1,8 @@
 <?php
+	$tercero = $registro->tercero;
+	$ciudad = !is_null($tercero) ? $tercero->ciudad : null;
+	$departamento = !is_null($ciudad) ? $ciudad->departamento : null;
+
 	$color = 'orange';
 	if ($registro->estado == 'Activo') {
 		$color = 'green';
@@ -30,38 +34,40 @@
 
 				{!! $imagen !!}
 			</td>
-		</tr>
-		<tr>
-			<td colspan="3">
-				<b>Tipo:</b> {{ $registro->tercero->tipo }}
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<b>Cliente:</b> {{ $registro->tercero->descripcion }}
-			</td>
-			<td>
-				<b>Razón social:</b> 
-				@if( $registro->tercero->razon_social == '' )
-					{{ $registro->tercero->nombre1 }} {{ $registro->tercero->otros_nombres }} {{ $registro->tercero->apellido1 }} {{ $registro->tercero->apellido2 }}
-				@else
-					{{ $registro->tercero->razon_social }}
-				@endif
-			</td>
-			<td>
-				<b>Identificación:</b> {{ number_format( $registro->tercero->numero_identificacion, 0, ',', '.' ) }}
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<b>Dirección:</b> {{ $registro->tercero->direccion1 }}, {{ $registro->tercero->ciudad->descripcion }} - {{ $registro->tercero->ciudad->departamento->descripcion }}
-			</td>
-			<td>
-				<b>Teléfono:</b> {{ $registro->tercero->telefono1 }}
-			</td>
-			<td>
-				<b>Email:</b> {{ $registro->tercero->email }}
-			</td>
-		</tr>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<b>Tipo:</b> {{ !is_null($tercero) ? $tercero->tipo : '' }}
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<b>Cliente:</b> {{ !is_null($tercero) ? $tercero->descripcion : '' }}
+				</td>
+				<td>
+					<b>Razón social:</b>
+					@if( is_null($tercero) )
+						Sin tercero
+					@elseif( $tercero->razon_social == '' )
+						{{ $tercero->nombre1 }} {{ $tercero->otros_nombres }} {{ $tercero->apellido1 }} {{ $tercero->apellido2 }}
+					@else
+						{{ $tercero->razon_social }}
+					@endif
+				</td>
+				<td>
+					<b>Identificación:</b> {{ !is_null($tercero) ? number_format( $tercero->numero_identificacion, 0, ',', '.' ) : '' }}
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<b>Dirección:</b> {{ !is_null($tercero) ? $tercero->direccion1 : '' }}{{ !is_null($ciudad) ? ', '.$ciudad->descripcion : '' }}{{ !is_null($departamento) ? ' - '.$departamento->descripcion : '' }}
+				</td>
+				<td>
+					<b>Teléfono:</b> {{ !is_null($tercero) ? $tercero->telefono1 : '' }}
+				</td>
+				<td>
+					<b>Email:</b> {{ !is_null($tercero) ? $tercero->email : '' }}
+				</td>
+			</tr>
 	</table>
 </div>

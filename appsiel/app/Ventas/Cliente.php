@@ -200,7 +200,8 @@ class Cliente extends Model
 
     public function forma_pago()
     {
-        if ( $this->condicion_pago->dias_plazo > 0 )
+        $condicion_pago = $this->condicion_pago;
+        if ( !is_null($condicion_pago) && $condicion_pago->dias_plazo > 0 )
         {
             return 'credito';
         }else{
@@ -210,7 +211,10 @@ class Cliente extends Model
 
     public function fecha_vencimiento_pago( $fecha )
     {        
-        return $this->sumar_dias_calendario_a_fecha( $fecha, $this->condicion_pago->dias_plazo );
+        $condicion_pago = $this->condicion_pago;
+        $dias_plazo = !is_null($condicion_pago) ? (int)$condicion_pago->dias_plazo : 0;
+
+        return $this->sumar_dias_calendario_a_fecha( $fecha, $dias_plazo );
     }
         
     public function vendedor()
@@ -339,7 +343,8 @@ class Cliente extends Model
             $aux['telefono1'] = $opcion->tercero->telefono1;
             $aux['numero_identificacion'] = $opcion->tercero->numero_identificacion;
             $aux['email'] = $opcion->tercero->email;
-            $aux['dias_plazo'] = $opcion->condicion_pago->dias_plazo;
+            $condicion_pago = $opcion->condicion_pago;
+            $aux['dias_plazo'] = !is_null($condicion_pago) ? (int)$condicion_pago->dias_plazo : 0;
             
             //$aux[''] = $opcion->tercero->razon_social;           
 

@@ -36,6 +36,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsRadioBtn', 'components.form.radio', ['name', 'value', 'lbl', 'opciones', 'attributes']);
 
         Form::component('bsFecha', 'components.form.fecha', ['name', 'value', 'lbl', 'opciones', 'attributes']);
+        Form::component('bsFechaHora', 'components.form.fecha_hora', ['name', 'value', 'lbl', 'opciones', 'attributes']);
         Form::component('bsHora', 'components.form.hora', ['name', 'value', 'lbl', 'opciones', 'attributes']);
 
         Form::component('bsHidden', 'components.form.hidden', ['name', 'value']);

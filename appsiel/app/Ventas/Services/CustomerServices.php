@@ -27,9 +27,15 @@ class CustomerServices
 
         $cliente_creado = (object)array_merge( $Cliente->toArray(), $array_tercero );
 
-        $cliente_creado->vendedor_descripcion = $Cliente->vendedor->tercero->descripcion;
+        $vendedor = $Cliente->vendedor;
+        $cliente_creado->vendedor_descripcion = 'Sin vendedor';
+        if ( !is_null($vendedor) && !is_null($vendedor->tercero) ) {
+            $cliente_creado->vendedor_descripcion = $vendedor->tercero->descripcion;
+        }
+
         $cliente_creado->nombre_cliente = $tercero->descripcion;
-        $cliente_creado->dias_plazo = (int)$Cliente->condicion_pago->dias_plazo;
+        $condicion_pago = $Cliente->condicion_pago;
+        $cliente_creado->dias_plazo = !is_null($condicion_pago) ? (int)$condicion_pago->dias_plazo : 0;
         
         $cliente_creado->condicion_pago_id = (int)$cliente_creado->condicion_pago_id;
         $cliente_creado->zona_id = (int)$cliente_creado->zona_id;
@@ -165,7 +171,7 @@ class CustomerServices
 
         $vendedor = $linea->vendedor;
             $vendedor_descripcion = 'Sin vendedor';
-        if ( !is_null( $vendedor ) ) {
+        if ( !is_null( $vendedor ) && !is_null($vendedor->tercero) ) {
             $vendedor_descripcion = $vendedor->tercero->descripcion;
         }
 

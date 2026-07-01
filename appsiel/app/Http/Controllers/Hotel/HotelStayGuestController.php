@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Hotel;
 
 use App\Hotel\HotelStay;
 use App\Hotel\HotelStayGuest;
+use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +32,7 @@ class HotelStayGuestController extends Controller
             return redirect()->back()->with('mensaje_error', 'No se pudo agregar el huesped. Verifique si ya esta registrado.');
         }
 
-        return redirect('hotel/stays/' . $stay->id)->with('flash_message', 'Huesped agregado correctamente.');
+        return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('flash_message', 'Huesped agregado correctamente.');
     }
 
     public function destroy($id, $guestId)
@@ -44,7 +45,7 @@ class HotelStayGuestController extends Controller
         }
 
         $guest->delete();
-        return redirect('hotel/stays/' . $stay->id)->with('flash_message', 'Huesped eliminado correctamente.');
+        return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('flash_message', 'Huesped eliminado correctamente.');
     }
 
     private function findStay($id)

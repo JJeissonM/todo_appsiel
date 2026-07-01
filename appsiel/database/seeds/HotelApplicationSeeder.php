@@ -163,11 +163,11 @@ class HotelApplicationSeeder extends Seeder
         $this->seedModelFields('stays', array(
             $this->field(1, 'Cliente principal', 'select', 'main_cliente_id', 'model_App\\Ventas\\Cliente', 'null', $comboAttrs, 1),
             $this->field(2, 'Habitacion', 'select', 'room_id', 'model_App\\Hotel\\HotelRoom', 'null', $comboAttrs, 1),
-            $this->field(3, 'Check-in', 'bsText', 'check_in_at', '', 'null', $textAttrs, 1),
-            $this->field(4, 'Salida esperada', 'bsText', 'expected_check_out_at', '', 'null', $textAttrs, 0),
-            $this->field(5, 'Check-out', 'bsText', 'check_out_at', '', 'null', $textAttrs, 0),
+            $this->field(3, 'Check-in', 'fecha_hora', 'check_in_at', '', 'null', $textAttrs, 1),
+            $this->field(4, 'Salida esperada', 'fecha_hora', 'expected_check_out_at', '', 'null', $textAttrs, 0),
+            $this->field(5, 'Check-out', 'fecha_hora', 'check_out_at', '', 'null', $textAttrs, 0),
             $this->field(6, 'Adultos', 'bsText', 'adults_count', '', '1', $textAttrs, 1),
-            $this->field(7, 'Ninos', 'bsText', 'children_count', '', '0', $textAttrs, 0),
+            $this->field(7, 'Niños', 'bsText', 'children_count', '', '0', $textAttrs, 0),
             $this->field(8, 'Estado', 'select', 'status', $stayStatuses, 'ACTIVA', $comboAttrs, 1),
             $this->field(9, 'Notas', 'bsTextArea', 'notes', '', 'null', $textAttrs, 0),
         ));
@@ -328,9 +328,10 @@ class HotelApplicationSeeder extends Seeder
             'fa_icon' => 'list',
         ));
 
+        // hotel/stays/check-in
         $permissions = array(
             array('hotel.dashboard', 'Panel hotelero', 'hotel', 'stays', $transactionsParentId, 0, 0, 'building'),
-            array('hotel.checkin', 'Check-In', 'hotel/stays/check-in', 'stays', $transactionsParentId, 1, 1, 'sign-in'),
+            array('hotel.checkin', 'Check-In', 'web/create', 'stays', $transactionsParentId, 1, 1, 'sign-in'),
             array('hotel.checkout', 'Check-Out', 'hotel/stays/active', 'stays', $transactionsParentId, 2, 1, 'sign-out'),
             array('hotel.reservas', 'Reservas', 'web', 'stays', $transactionsParentId, 3, 1, 'calendar'),
             array('hotel.facturas', 'Facturas', 'web', 'orders', $transactionsParentId, 4, 1, 'file-text'),

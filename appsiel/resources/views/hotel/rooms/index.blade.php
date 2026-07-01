@@ -1,6 +1,7 @@
 @extends('layouts.principal')
 
 @section('content')
+    <?php $hotelUrl = 'App\\Hotel\\Support\\HotelBreadcrumb'; ?>
     {{ Form::bsMigaPan($miga_pan) }}
     @include('layouts.mensajes')
 
@@ -9,8 +10,8 @@
             <div class="row">
                 <div class="col-md-8"><h3>Habitaciones</h3></div>
                 <div class="col-md-4 text-right">
-                    <a href="{{ url('hotel/stays/check-in') }}" class="btn btn-success btn-sm">Check-in</a>
-                    <a href="{{ url('hotel/rooms/create') }}" class="btn btn-primary btn-sm">Nueva habitacion</a>
+                    <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelStay')))) }}" class="btn btn-success btn-sm">Check-in</a>
+                    <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelRoom')))) }}" class="btn btn-primary btn-sm">Nueva habitación</a>
                 </div>
             </div>
             <div class="table-responsive">
@@ -38,8 +39,8 @@
                                 <td>{{ $room->status }}</td>
                                 <td>{{ $room->is_active ? 'Si' : 'No' }}</td>
                                 <td>
-                                    <a href="{{ url('hotel/rooms/'.$room->id) }}" class="btn btn-info btn-xs">Ver</a>
-                                    <a href="{{ url('hotel/rooms/'.$room->id.'/edit') }}" class="btn btn-warning btn-xs">Editar</a>
+                                    <a href="{{ url($hotelUrl::url('hotel/rooms/'.$room->id)) }}" class="btn btn-info btn-xs">Ver</a>
+                                    <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelRoom'), 'room_id' => $room->id))) }}" class="btn btn-warning btn-xs">Editar</a>
                                 </td>
                             </tr>
                         @endforeach

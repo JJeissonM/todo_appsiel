@@ -250,6 +250,9 @@ class VistaController extends Controller
             case 'fecha':
                 $control = FormFacade::bsFecha($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
                 break;
+            case 'fecha_hora':
+                $control = FormFacade::bsFechaHora($campo['name'], VistaController::formatear_valor_fecha_hora($campo['value']), $campo['descripcion'], $campo['opciones'], $campo['atributos']);
+                break;
             case 'hora':
                 $control = FormFacade::bsHora($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
                 break;
@@ -456,6 +459,21 @@ class VistaController extends Controller
         }
 
         return $control;
+    }
+
+    public static function formatear_valor_fecha_hora($valor)
+    {
+        if (is_null($valor) || $valor == '' || $valor == 'null') {
+            return null;
+        }
+
+        $valor = trim((string)$valor);
+
+        if (strpos($valor, 'T') !== false) {
+            return substr($valor, 0, 16);
+        }
+
+        return str_replace(' ', 'T', substr($valor, 0, 16));
     }
 
     /*

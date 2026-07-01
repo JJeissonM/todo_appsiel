@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Auth;
 
 class HotelOrderController extends Controller
 {
+    public function __construct()
+    {
+        HotelBreadcrumb::ensureContext('App\\Hotel\\HotelOrderHeader');
+    }
+
     public function show($id)
     {
         $order = $this->findOrder($id);
@@ -40,7 +45,7 @@ class HotelOrderController extends Controller
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }
 
-        return redirect('hotel/orders/' . $order->id)->with('flash_message', 'Linea agregada correctamente.');
+        return redirect(HotelBreadcrumb::url('hotel/orders/' . $order->id))->with('flash_message', 'Linea agregada correctamente.');
     }
 
     public function updateLine(Request $request, $id, $lineId)
@@ -59,7 +64,7 @@ class HotelOrderController extends Controller
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }
 
-        return redirect('hotel/orders/' . $order->id)->with('flash_message', 'Linea actualizada correctamente.');
+        return redirect(HotelBreadcrumb::url('hotel/orders/' . $order->id))->with('flash_message', 'Linea actualizada correctamente.');
     }
 
     public function deleteLine($id, $lineId)
@@ -73,7 +78,7 @@ class HotelOrderController extends Controller
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }
 
-        return redirect('hotel/orders/' . $order->id)->with('flash_message', 'Linea eliminada correctamente.');
+        return redirect(HotelBreadcrumb::url('hotel/orders/' . $order->id))->with('flash_message', 'Linea eliminada correctamente.');
     }
 
     public function generateStandardInvoice($id)

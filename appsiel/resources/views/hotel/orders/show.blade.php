@@ -1,6 +1,7 @@
 @extends('layouts.principal')
 
 @section('content')
+    <?php $hotelUrl = 'App\\Hotel\\Support\\HotelBreadcrumb'; ?>
     {{ Form::bsMigaPan($miga_pan) }}
     @include('layouts.mensajes')
 
@@ -11,7 +12,7 @@
                     <h3>Pedido hotelero {{ $order->document_number }}</h3>
                 </div>
                 <div class="col-md-4 text-right">
-                    <a href="{{ url('hotel/stays/'.$order->stay_id) }}" class="btn btn-default btn-sm">Volver a estadia</a>
+                    <a href="{{ url($hotelUrl::url('hotel/stays/'.$order->stay_id, array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelStay')))) }}" class="btn btn-default btn-sm">Volver a estadia</a>
                 </div>
             </div>
             <table class="table table-bordered">
@@ -23,11 +24,11 @@
             </table>
 
             @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
-                <form method="POST" action="{{ url('hotel/orders/'.$order->id.'/generate-standard-invoice') }}" style="display:inline-block;">
+                <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-standard-invoice')) }}" style="display:inline-block;">
                     {{ csrf_field() }}
                     <button class="btn btn-success" onclick="return confirm('Generar factura estandar?')">Generar factura estandar</button>
                 </form>
-                <form method="POST" action="{{ url('hotel/orders/'.$order->id.'/generate-pos-invoice') }}" style="display:inline-block;">
+                <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-pos-invoice')) }}" style="display:inline-block;">
                     {{ csrf_field() }}
                     <button class="btn btn-primary" onclick="return confirm('Generar factura POS?')">Generar factura POS</button>
                 </form>
@@ -56,7 +57,7 @@
                         @foreach($order->lines as $line)
                             <?php $total += $line->line_total; ?>
                             <tr>
-                                <form method="POST" action="{{ url('hotel/orders/'.$order->id.'/lines/'.$line->id.'/update') }}">
+                                <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines/'.$line->id.'/update')) }}">
                                     {{ csrf_field() }}
                                     <td>{{ $line->product ? $line->product->descripcion : $line->producto_id }}</td>
                                     <td><input type="text" name="description" class="form-control input-sm" value="{{ $line->description }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
@@ -72,7 +73,7 @@
                                         @endif
                                 </form>
                                         @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
-                                            <form method="POST" action="{{ url('hotel/orders/'.$order->id.'/lines/'.$line->id.'/delete') }}" style="display:inline-block;">
+                                            <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines/'.$line->id.'/delete')) }}" style="display:inline-block;">
                                                 {{ csrf_field() }}
                                                 <button class="btn btn-danger btn-xs" onclick="return confirm('Eliminar linea?')">Eliminar</button>
                                             </form>
@@ -91,7 +92,7 @@
 
             @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
                 <h4>Agregar consumo</h4>
-                <form method="POST" action="{{ url('hotel/orders/'.$order->id.'/lines') }}">
+                <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines')) }}">
                     {{ csrf_field() }}
                     <div class="row">
                         <div class="col-md-5">

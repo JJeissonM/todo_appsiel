@@ -54,6 +54,21 @@ class HotelStay extends Model
         return array(self::STATUS_ACTIVA, self::STATUS_CERRADA, self::STATUS_ANULADA);
     }
 
+    public function setCheckInAtAttribute($value)
+    {
+        $this->attributes['check_in_at'] = self::normalizeDateTimeValue($value);
+    }
+
+    public function setExpectedCheckOutAtAttribute($value)
+    {
+        $this->attributes['expected_check_out_at'] = self::normalizeDateTimeValue($value);
+    }
+
+    public function setCheckOutAtAttribute($value)
+    {
+        $this->attributes['check_out_at'] = self::normalizeDateTimeValue($value);
+    }
+
     public function room()
     {
         return $this->belongsTo('App\Hotel\HotelRoom', 'room_id');
@@ -153,5 +168,21 @@ class HotelStay extends Model
         }
 
         return $query;
+    }
+
+    private static function normalizeDateTimeValue($value)
+    {
+        if (is_null($value) || $value === '' || $value === 'null') {
+            return null;
+        }
+
+        $value = trim((string)$value);
+        $value = str_replace('T', ' ', $value);
+
+        if (strlen($value) == 16) {
+            return $value . ':00';
+        }
+
+        return $value;
     }
 }

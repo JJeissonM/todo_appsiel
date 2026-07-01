@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class HotelDashboardController extends Controller
 {
+    public function __construct()
+    {
+        HotelBreadcrumb::ensureContext('App\\Hotel\\HotelRoom');
+    }
+
     public function index(Request $request)
     {
         $empresaId = Auth::user()->empresa_id;
@@ -46,8 +51,9 @@ class HotelDashboardController extends Controller
         $orderModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelOrderHeader');
         $roomIndexUrl = HotelBreadcrumb::crudIndexUrl('App\\Hotel\\HotelRoom');
         $roomCreateUrl = HotelBreadcrumb::crudCreateUrl('App\\Hotel\\HotelRoom');
+        $guestCreateUrl = HotelBreadcrumb::crudCreateUrl('App\\Ventas\\Cliente');
 
-        return view('hotel.index', compact('rooms', 'floors', 'statuses', 'summary', 'miga_pan', 'appId', 'roomModelId', 'stayModelId', 'orderModelId', 'roomIndexUrl', 'roomCreateUrl'));
+        return view('hotel.index', compact('rooms', 'floors', 'statuses', 'summary', 'miga_pan', 'appId', 'roomModelId', 'stayModelId', 'orderModelId', 'roomIndexUrl', 'roomCreateUrl','guestCreateUrl'));
     }
 
     private function summary($empresaId)

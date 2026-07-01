@@ -1,13 +1,23 @@
 @extends('layouts.principal')
 
 @section('content')
+    <?php $hotelUrl = 'App\\Hotel\\Support\\HotelBreadcrumb'; ?>
+    <?php
+        $fechaHoraLocal = function ($valor) {
+            if (is_null($valor) || $valor == '') {
+                return '';
+            }
+
+            return str_replace(' ', 'T', substr($valor, 0, 16));
+        };
+    ?>
     {{ Form::bsMigaPan($miga_pan) }}
     @include('layouts.mensajes')
 
     <div class="container-fluid">
         <div class="marco_formulario">
             <h3>Check-in</h3>
-            <form method="POST" action="{{ url('hotel/stays/check-in') }}">
+            <form method="POST" action="{{ url($hotelUrl::url('web/create')) }}">
                 {{ csrf_field() }}
                 <div class="row">
                     <div class="col-md-6">
@@ -36,13 +46,13 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>Check-in</label>
-                            <input type="text" name="check_in_at" class="form-control" value="{{ old('check_in_at', date('Y-m-d H:i:s')) }}">
+                            <input type="datetime-local" name="check_in_at" class="form-control" value="{{ $fechaHoraLocal(old('check_in_at', date('Y-m-d H:i:s'))) }}">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>Salida esperada</label>
-                            <input type="text" name="expected_check_out_at" class="form-control" value="{{ old('expected_check_out_at') }}">
+                            <input type="datetime-local" name="expected_check_out_at" class="form-control" value="{{ $fechaHoraLocal(old('expected_check_out_at')) }}">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -53,7 +63,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label>Ninos</label>
+                            <label>Niños</label>
                             <input type="number" name="children_count" min="0" class="form-control" value="{{ old('children_count', 0) }}">
                         </div>
                     </div>
@@ -63,7 +73,7 @@
                     <textarea name="notes" class="form-control" rows="3">{{ old('notes') }}</textarea>
                 </div>
                 <button class="btn btn-success">Registrar check-in</button>
-                <a href="{{ url('hotel/stays') }}" class="btn btn-default">Cancelar</a>
+                <a href="{{ url($hotelUrl::url('hotel/stays')) }}" class="btn btn-default">Cancelar</a>
             </form>
         </div>
     </div>

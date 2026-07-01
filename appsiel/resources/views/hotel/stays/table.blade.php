@@ -1,3 +1,4 @@
+<?php $hotelUrl = 'App\\Hotel\\Support\\HotelBreadcrumb'; ?>
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
         <thead>
@@ -20,7 +21,7 @@
                     <td>{{ $stay->check_in_at }}</td>
                     <td>{{ $stay->expected_check_out_at }}</td>
                     <td>{{ $stay->status }}</td>
-                    <td><a href="{{ url('hotel/stays/'.$stay->id) }}" class="btn btn-info btn-xs">Ver</a></td>
+                    <td><a href="{{ url($hotelUrl::url('hotel/stays/'.$stay->id)) }}" class="btn btn-info btn-xs">Ver</a></td>
                 </tr>
             @endforeach
         </tbody>
