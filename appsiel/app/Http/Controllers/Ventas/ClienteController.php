@@ -137,6 +137,7 @@ class ClienteController extends ModeloController
         $registro = app($modelo->name_space)->find($id);
 
         $lista_campos = $this->get_campos_modelo($modelo,$registro,'edit');
+        $lista_campos = $registro->get_campos_adicionales_edit($lista_campos, $registro);
 
         $tercero = Tercero::find($registro->core_tercero_id);
         $registro->descripcion = $tercero->descripcion;

@@ -53,6 +53,10 @@ class DatabaseSeeder extends Seeder
                 'any_tables' => ['sys_aplicaciones', 'sys_modelos', 'permissions', 'sys_reportes'],
             ],
             [
+                'class' => InventoryDefaultWarehouseSeeder::class,
+                'tables' => ['inv_bodegas'],
+            ],
+            [
                 'class' => HotelRoomsTableSeeder::class,
                 'tables' => ['hotel_rooms', 'inv_productos'],
             ],

@@ -115,9 +115,9 @@ class CustomerServices
             $datos['vendedor_id'] = (int)config('ventas.vendedor_id');
         } 
 
-        if( !isset($datos['inv_bodega_id']) )
+        if( !isset($datos['inv_bodega_id']) || !Cliente::validInvBodegaId($datos['inv_bodega_id']) )
         {
-            $datos['inv_bodega_id'] = (int)config('inventarios.item_bodega_principal_id');
+            $datos['inv_bodega_id'] = Cliente::getDefaultInvBodegaId();
         } 
 
         if( !isset($datos['lista_precios_id']) )

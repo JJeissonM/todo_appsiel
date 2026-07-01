@@ -11,6 +11,9 @@ use App\Ventas\DireccionEntrega;
 use App\Core\Tercero;
 use App\Sistema\Services\CrudService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Cliente extends Model
 {
@@ -24,6 +27,17 @@ class Cliente extends Model
 
     public $archivo_js = 'assets/js/ventas/clientes.js';
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($cliente) {
+            if (!static::validInvBodegaId($cliente->inv_bodega_id)) {
+                $cliente->inv_bodega_id = static::getDefaultInvBodegaId();
+            }
+        });
+    }
+
     public static function get_cuenta_cartera( $cliente_id )
     {
         $clase_cliente_id = Cliente::where( 'id', $cliente_id )->value( 'clase_cliente_id' );
@@ -36,6 +50,127 @@ class Cliente extends Model
         }
 
         return $cta_x_cobrar_id;
+    }
+
+    public static function getDefaultInvBodegaId()
+    {
+        if (!Schema::hasTable('inv_bodegas')) {
+            return (int)config('inventarios.item_bodega_principal_id');
+        }
+
+        $empresa_id = 0;
+        if (Auth::check()) {
+            $empresa_id = (int)Auth::user()->empresa_id;
+        }
+        if ($empresa_id <= 0 && Schema::hasTable('core_empresas')) {
+            $empresa_id = (int)DB::table('core_empresas')->orderBy('id')->value('id');
+        }
+        if ($empresa_id <= 0) {
+            $empresa_id = 1;
+        }
+
+        $ids_config = [
+            (int)config('inventarios.item_bodega_principal_id'),
+            (int)config('ventas.inv_bodega_id')
+        ];
+
+        foreach ($ids_config as $inv_bodega_id) {
+            if (static::validInvBodegaId($inv_bodega_id, $empresa_id)) {
+                return $inv_bodega_id;
+            }
+        }
+
+        $query = DB::table('inv_bodegas')->where('estado', 'Activo');
+        if ($empresa_id > 0) {
+            $query->where('core_empresa_id', $empresa_id);
+        }
+
+        $inv_bodega_id = (int)$query->orderBy('id')->value('id');
+        if ($inv_bodega_id > 0) {
+            return $inv_bodega_id;
+        }
+
+        $inv_bodega_id = (int)DB::table('inv_bodegas')->orderBy('id')->value('id');
+        if ($inv_bodega_id > 0) {
+            return $inv_bodega_id;
+        }
+
+        return static::crearBodegaPrincipal($empresa_id);
+    }
+
+    public static function validInvBodegaId($inv_bodega_id, $empresa_id = 0)
+    {
+        if (!Schema::hasTable('inv_bodegas')) {
+            return false;
+        }
+
+        $inv_bodega_id = (int)$inv_bodega_id;
+        if ($inv_bodega_id <= 0) {
+            return false;
+        }
+
+        if ((int)$empresa_id <= 0 && Auth::check()) {
+            $empresa_id = (int)Auth::user()->empresa_id;
+        }
+
+        $query = DB::table('inv_bodegas')->where('id', $inv_bodega_id);
+        if ((int)$empresa_id > 0) {
+            $query->where('core_empresa_id', (int)$empresa_id);
+        }
+
+        return $query->exists();
+    }
+
+    protected static function crearBodegaPrincipal($empresa_id)
+    {
+        $datos = [
+            'core_empresa_id' => (int)$empresa_id,
+            'descripcion' => 'Bodega principal',
+            'estado' => 'Activo',
+        ];
+
+        $defaultId = (int)config('inventarios.item_bodega_principal_id');
+        if ($defaultId > 0 && !DB::table('inv_bodegas')->where('id', $defaultId)->exists()) {
+            $datos['id'] = $defaultId;
+        }
+
+        $now = date('Y-m-d H:i:s');
+        if (Schema::hasColumn('inv_bodegas', 'created_at')) {
+            $datos['created_at'] = $now;
+        }
+        if (Schema::hasColumn('inv_bodegas', 'updated_at')) {
+            $datos['updated_at'] = $now;
+        }
+
+        return (int)DB::table('inv_bodegas')->insertGetId($datos);
+    }
+
+    public function get_campos_adicionales_create($lista_campos)
+    {
+        return $this->prepararCampoBodegaCliente($lista_campos);
+    }
+
+    public function get_campos_adicionales_edit($lista_campos, $registro)
+    {
+        return $this->prepararCampoBodegaCliente($lista_campos, $registro->inv_bodega_id);
+    }
+
+    protected function prepararCampoBodegaCliente($lista_campos, $inv_bodega_id = null)
+    {
+        $cantidad_campos = count($lista_campos);
+        for ($i = 0; $i < $cantidad_campos; $i++) {
+            if ($lista_campos[$i]['name'] == 'inv_bodega_id') {
+                $lista_campos[$i]['requerido'] = 0;
+                $lista_campos[$i]['tipo'] = 'hidden';
+                $lista_campos[$i]['value'] = static::validInvBodegaId($inv_bodega_id) ? (int)$inv_bodega_id : static::getDefaultInvBodegaId();
+
+                if (isset($lista_campos[$i]['atributos']) && is_array($lista_campos[$i]['atributos'])) {
+                    unset($lista_campos[$i]['atributos']['required']);
+                }
+            }
+        }
+
+        return $lista_campos;
     }
 
     public function lista_precios()
