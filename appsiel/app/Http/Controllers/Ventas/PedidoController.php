@@ -88,6 +88,7 @@ class PedidoController extends TransaccionController
         }
 
         $lineas_registros = json_decode($request->lineas_registros);
+        $this->set_default_bodega_if_missing($request);
         $request['estado'] = "Pendiente";
 
         if (!isset($request['vendedor_id'])) {
@@ -148,8 +149,6 @@ class PedidoController extends TransaccionController
         $tercero = Tercero::find($registro->core_tercero_id);
         $registro->cliente_input = $tercero->apellido1 . " " . $tercero->apellido2 . " " . $tercero->nombre1 . " " . $tercero->otros_nombres;
 
-        $registro->inv_bodega_id = 1;
-        
         $url_action = 'web/'.$id.$this->variables_url;
         if ($modelo->url_form_create != '') {
             $url_action = $modelo->url_form_create.'/'.$id.$this->variables_url;
@@ -182,6 +181,7 @@ class PedidoController extends TransaccionController
     //     A L M A C E N A R  LA MODIFICACION DE UN REGISTRO
     public function update(Request $request, $id)
     {
+        $this->set_default_bodega_if_missing($request);
         $datos = $request->all();
         $modelo = Modelo::find( $request->url_id_modelo );
 
@@ -202,6 +202,27 @@ class PedidoController extends TransaccionController
         $registro_encabezado_doc->save();
 
         return redirect( 'vtas_pedidos/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+    }
+
+    protected function set_default_bodega_if_missing(Request $request)
+    {
+        if (isset($request['inv_bodega_id']) && (int)$request['inv_bodega_id'] > 0) {
+            return;
+        }
+
+        $inv_bodega_id = 0;
+        if (isset($request['cliente_id']) && (int)$request['cliente_id'] > 0) {
+            $cliente = Cliente::find((int)$request['cliente_id']);
+            if (!is_null($cliente) && (int)$cliente->inv_bodega_id > 0) {
+                $inv_bodega_id = (int)$cliente->inv_bodega_id;
+            }
+        }
+
+        if ($inv_bodega_id <= 0) {
+            $inv_bodega_id = (int)config('ventas.inv_bodega_id');
+        }
+
+        $request['inv_bodega_id'] = $inv_bodega_id;
     }
     
     // Desde la Web

@@ -51,8 +51,6 @@
 
 				<input type="hidden" name="action" id="action" value="{{ Input::get('action') }}">
 
-				<input type="hidden" name="inv_bodega_id" id="inv_bodega_id" value="{{$cliente->inv_bodega_id}}">
-
 				<input type="hidden" name="cliente_id" id="cliente_id" value="{{$cliente->id}}">
 				<input type="hidden" name="zona_id" id="zona_id" value="{{$cliente->zona_id}}">
 				<input type="hidden" name="clase_cliente_id" id="clase_cliente_id" value="{{$cliente->clase_cliente_id}}">
