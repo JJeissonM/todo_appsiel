@@ -19,6 +19,8 @@ use App\VentasPos\DocRegistro;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\Pdv;
 use App\VentasPos\Services\AccumulationService;
+use App\VentasPos\Services\CxCService;
+use App\VentasPos\Services\TreasuryService;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMotivo;
 use Illuminate\Support\Facades\Auth;
@@ -83,26 +85,40 @@ class HotelService
             $room->status = HotelRoom::STATUS_OCUPADA;
             $room->save();
 
-            $order = HotelOrderHeader::create(array(
-                'empresa_id' => $empresaId,
-                'stay_id' => $stay->id,
-                'cliente_id' => $cliente->id,
-                'document_number' => 'HOT-' . $stay->id,
-                'order_date' => date('Y-m-d H:i:s'),
-                'status' => HotelOrderHeader::STATUS_ABIERTO,
-                'created_by' => $service->userId(),
-            ));
+            $service->createOrderForStay($stay, true);
 
-            $service->createLine($order, array(
+            return $stay;
+        });
+    }
+
+    public function createOrderForStay(HotelStay $stay, $includeRoomLine = false)
+    {
+        if ($stay->status != HotelStay::STATUS_ACTIVA) {
+            throw new \Exception('Solo se pueden crear pedidos para una estadia activa.');
+        }
+
+        $room = $stay->room;
+        $order = HotelOrderHeader::create(array(
+            'empresa_id' => $stay->empresa_id,
+            'stay_id' => $stay->id,
+            'cliente_id' => $stay->main_cliente_id,
+            'document_number' => $this->nextOrderNumber($stay),
+            'order_date' => date('Y-m-d H:i:s'),
+            'status' => HotelOrderHeader::STATUS_ABIERTO,
+            'created_by' => $this->userId(),
+        ));
+
+        if ($includeRoomLine && !is_null($room) && !empty($room->inv_producto_id)) {
+            $this->createLine($order, array(
                 'producto_id' => $room->inv_producto_id,
                 'room_id' => $room->id,
                 'quantity' => 1,
                 'source_type' => HotelOrderLine::SOURCE_ROOM,
                 'source_id' => $room->id,
             ));
+        }
 
-            return $stay;
-        });
+        return $order;
     }
 
     public function checkOut(HotelStay $stay)
@@ -148,9 +164,11 @@ class HotelService
                 $stay->room->save();
             }
 
-            if (!is_null($stay->order) && $stay->order->status == HotelOrderHeader::STATUS_ABIERTO) {
-                $stay->order->status = HotelOrderHeader::STATUS_ANULADO;
-                $stay->order->save();
+            foreach ($stay->orders as $order) {
+                if ($order->status == HotelOrderHeader::STATUS_ABIERTO) {
+                    $order->status = HotelOrderHeader::STATUS_ANULADO;
+                    $order->save();
+                }
             }
 
             return $stay;
@@ -269,11 +287,11 @@ class HotelService
         });
     }
 
-    public function generatePosInvoice(HotelOrderHeader $order, $lineasRegistrosMediosRecaudos = null, $formaPago = 'contado')
+    public function generatePosInvoice(HotelOrderHeader $order, $lineasRegistrosMediosRecaudos = null, $formaPago = 'contado', $objectAnticipos = null)
     {
         $service = $this;
 
-        return DB::transaction(function () use ($order, $service, $lineasRegistrosMediosRecaudos, $formaPago) {
+        return DB::transaction(function () use ($order, $service, $lineasRegistrosMediosRecaudos, $formaPago, $objectAnticipos) {
             $order = $service->loadOpenOrder($order->id);
             $cliente = Cliente::find($order->cliente_id);
             if (is_null($cliente) || count($order->lines) == 0) {
@@ -301,8 +319,12 @@ class HotelService
             $consecutivo = TipoDocApp::get_consecutivo_actual($order->empresa_id, $tipoDocAppId) + 1;
             TipoDocApp::aumentar_consecutivo($order->empresa_id, $tipoDocAppId);
             $totalOrder = $order->lines->sum('line_total');
+            $hasAnticipos = $service->hasAdvancePayments($objectAnticipos);
             $formaPago = $service->normalizePaymentType($formaPago);
-            $lineasRegistrosMediosRecaudos = $service->normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $formaPago, $pdv);
+            if ($hasAnticipos) {
+                $formaPago = 'credito';
+            }
+            $lineasRegistrosMediosRecaudos = $service->normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $formaPago, $pdv, $hasAnticipos);
 
             $doc = FacturaPos::create(array(
                 'uniqid' => uniqid(),
@@ -337,6 +359,11 @@ class HotelService
             $accumulationService->hacer_preparaciones_recetas('Creado por factura POS hotelera ' . $doc->get_label_documento(), $doc->fecha, $doc->id);
             $accumulationService->hacer_desarme_automatico('Creado por factura POS hotelera ' . $doc->get_label_documento(), $doc->fecha);
             $accumulationService->accumulate_one_invoice($doc->id);
+
+            if ($hasAnticipos) {
+                (new CxCService())->crear_cruce_con_anticipos($doc, $objectAnticipos);
+                (new TreasuryService())->crear_abonos_documento($doc, $lineasRegistrosMediosRecaudos);
+            }
 
             $order->status = HotelOrderHeader::STATUS_FACTURADO;
             $order->invoice_type = HotelOrderHeader::INVOICE_POS;
@@ -453,20 +480,30 @@ class HotelService
         return $order;
     }
 
+    private function nextOrderNumber(HotelStay $stay)
+    {
+        $count = HotelOrderHeader::where('empresa_id', $stay->empresa_id)->where('stay_id', $stay->id)->count();
+        if ($count == 0) {
+            return 'HOT-' . $stay->id;
+        }
+
+        return 'HOT-' . $stay->id . '-' . ($count + 1);
+    }
+
     private function normalizePaymentType($formaPago)
     {
         return $formaPago == 'credito' ? 'credito' : 'contado';
     }
 
-    private function normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $formaPago, $pdv)
+    private function normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $formaPago, $pdv, $hasAnticipos = false)
     {
-        if ($formaPago == 'credito') {
+        if ($formaPago == 'credito' && !$hasAnticipos) {
             return '[]';
         }
 
         $lineas = json_decode((string)$lineasRegistrosMediosRecaudos, true);
         if (!is_array($lineas) || count($lineas) == 0) {
-            throw new \Exception('Debe ingresar los medios de pago para facturar de contado.');
+            throw new \Exception('Debe ingresar los medios de pago para facturar de contado o aplicar anticipos.');
         }
 
         $lineasValidas = array();
@@ -538,6 +575,12 @@ class HotelService
 
         $total = 0;
         foreach ($lineas as $linea) {
+            $medioRecaudo = isset($linea['teso_medio_recaudo_id']) ? $linea['teso_medio_recaudo_id'] : '';
+            $medioRecaudoParts = explode('-', $medioRecaudo);
+            if ((int)$medioRecaudoParts[0] == 0) {
+                continue;
+            }
+
             $total += $this->parsePaymentValue(isset($linea['valor']) ? $linea['valor'] : 0);
         }
 
@@ -558,5 +601,11 @@ class HotelService
         }
 
         return (float)$value;
+    }
+
+    private function hasAdvancePayments($objectAnticipos)
+    {
+        $objectAnticipos = trim((string)$objectAnticipos);
+        return $objectAnticipos != '' && $objectAnticipos != 'null' && $objectAnticipos != '[]';
     }
 }

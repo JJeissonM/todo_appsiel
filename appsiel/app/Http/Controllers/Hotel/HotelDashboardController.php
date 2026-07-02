@@ -23,7 +23,7 @@ class HotelDashboardController extends Controller
         $empresaId = Auth::user()->empresa_id;
 
         $query = HotelRoom::where('empresa_id', $empresaId)
-            ->with('product', 'activeStay.order', 'activeStay.mainGuest.tercero')
+            ->with('product', 'activeStay.orders', 'activeStay.mainGuest.tercero')
             ->orderBy('floor')
             ->orderBy('room_number');
 

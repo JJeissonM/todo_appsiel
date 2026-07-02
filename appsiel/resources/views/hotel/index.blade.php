@@ -247,8 +247,20 @@
                                 </form>
                             @elseif($room->status == App\Hotel\HotelRoom::STATUS_OCUPADA && $stay)
                                 <a href="{{ url('web/'.$stay->id.'?id='.$appId.'&id_modelo='.$stayModelId) }}" class="btn btn-danger btn-xs"><i class="fa fa-user"></i> Estadia</a>
-                                @if($stay->order)
-                                    <a href="{{ url('web/'.$stay->order->id.'?id='.$appId.'&id_modelo='.$orderModelId) }}" class="btn btn-primary btn-xs"><i class="fa fa-shopping-cart"></i> Pedido</a>
+                                <?php
+                                    $dashboardOrder = null;
+                                    foreach ($stay->orders as $stayOrder) {
+                                        if ($stayOrder->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO) {
+                                            $dashboardOrder = $stayOrder;
+                                            break;
+                                        }
+                                    }
+                                    if (is_null($dashboardOrder)) {
+                                        $dashboardOrder = $stay->orders->first();
+                                    }
+                                ?>
+                                @if($dashboardOrder)
+                                    <a href="{{ url($hotelUrl::url('hotel/orders/'.$dashboardOrder->id, array('id_modelo' => $orderModelId))) }}" class="btn btn-primary btn-xs"><i class="fa fa-shopping-cart"></i> Pedido</a>
                                 @endif
                                 <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/check-out', array('id_modelo' => $stayModelId))) }}" style="display:inline-block;">
                                     {{ csrf_field() }}

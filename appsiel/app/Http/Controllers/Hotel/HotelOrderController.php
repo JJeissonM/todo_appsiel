@@ -7,6 +7,7 @@ use App\Hotel\HotelOrderLine;
 use App\Hotel\Services\HotelService;
 use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
+use App\CxC\CxcMovimiento;
 use App\Inventarios\InvProducto;
 use App\VentasPos\Services\FacturaPosService;
 use App\VentasPos\Services\PosPaymentModalService;
@@ -26,8 +27,9 @@ class HotelOrderController extends Controller
         $products = $this->productsList();
         $miga_pan = HotelBreadcrumb::make('App\\Hotel\\HotelOrderHeader', 'Pedido ' . $order->document_number);
         $paymentData = $this->paymentData();
+        $anticipos = $this->anticiposCliente($order);
 
-        return view('hotel.orders.show', compact('order', 'products', 'miga_pan') + $paymentData);
+        return view('hotel.orders.show', compact('order', 'products', 'anticipos', 'miga_pan') + $paymentData);
     }
 
     public function addLine(Request $request, $id)
@@ -102,7 +104,7 @@ class HotelOrderController extends Controller
         $order = $this->findOrder($id);
 
         try {
-            $doc = (new HotelService())->generatePosInvoice($order, $request->lineas_registros_medios_recaudos, $request->forma_pago);
+            $doc = (new HotelService())->generatePosInvoice($order, $request->lineas_registros_medios_recaudos, $request->forma_pago, $request->object_anticipos);
         } catch (\Exception $e) {
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }
@@ -149,5 +151,22 @@ class HotelOrderController extends Controller
             'filtrar_destinos_por_medio_recaudo' => $paymentModalData['filtrar_destinos_por_medio_recaudo'],
             'destinos_medios_recaudo_data' => $paymentModalData['destinos_medios_recaudo_data'],
         );
+    }
+
+    private function anticiposCliente(HotelOrderHeader $order)
+    {
+        if (is_null($order->cliente) || empty($order->cliente->core_tercero_id)) {
+            return array();
+        }
+
+        $rows = CxcMovimiento::get_documentos_tercero($order->cliente->core_tercero_id, date('Y-m-d'));
+        $anticipos = array();
+        foreach ($rows as $row) {
+            if ((float)$row['saldo_pendiente'] < -0.1) {
+                $anticipos[] = $row;
+            }
+        }
+
+        return $anticipos;
     }
 }

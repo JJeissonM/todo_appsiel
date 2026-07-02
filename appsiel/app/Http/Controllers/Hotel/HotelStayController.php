@@ -8,6 +8,7 @@ use App\Hotel\HotelStay;
 use App\Hotel\Services\HotelService;
 use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
+use App\CxC\CxcMovimiento;
 use App\Ventas\Cliente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,8 +42,9 @@ class HotelStayController extends Controller
         $stay->ensureCheckInRecords();
         $stay = $this->findStay($id);
         $clients = $this->clientsList();
+        $anticipos = $this->anticiposCliente($stay);
         $miga_pan = $this->breadcrumb('Estadia #' . $stay->id);
-        return view('hotel.stays.show', compact('stay', 'clients', 'miga_pan'));
+        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'miga_pan'));
     }
 
     public function createCheckIn()
@@ -83,11 +85,28 @@ class HotelStayController extends Controller
         }
 
         $message = 'Check-out registrado correctamente.';
-        if (!is_null($stay->order) && $stay->order->status == HotelOrderHeader::STATUS_ABIERTO) {
+        $openOrders = HotelOrderHeader::where('empresa_id', Auth::user()->empresa_id)
+            ->where('stay_id', $stay->id)
+            ->where('status', HotelOrderHeader::STATUS_ABIERTO)
+            ->count();
+        if ($openOrders > 0) {
             return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('mensaje_error', 'La estadia fue cerrada, pero el pedido hotelero aun no ha sido facturado.');
         }
 
         return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('flash_message', $message);
+    }
+
+    public function createOrder($id)
+    {
+        $stay = $this->findStay($id);
+
+        try {
+            $order = (new HotelService())->createOrderForStay($stay, false);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('mensaje_error', $e->getMessage());
+        }
+
+        return redirect(HotelBreadcrumb::url('hotel/orders/' . $order->id, array('id_modelo' => HotelBreadcrumb::modelId('App\\Hotel\\HotelOrderHeader'))))->with('flash_message', 'Pedido hotelero creado correctamente.');
     }
 
     public function cancel($id)
@@ -105,7 +124,7 @@ class HotelStayController extends Controller
 
     private function findStay($id)
     {
-        return HotelStay::where('empresa_id', Auth::user()->empresa_id)->where('id', $id)->with('room', 'mainGuest.tercero', 'guests.cliente.tercero', 'order.lines.product')->firstOrFail();
+        return HotelStay::where('empresa_id', Auth::user()->empresa_id)->where('id', $id)->with('room', 'mainGuest.tercero', 'guests.cliente.tercero', 'orders.lines.product')->firstOrFail();
     }
 
     private function clientsList()
@@ -121,6 +140,23 @@ class HotelStayController extends Controller
             $options[$row->id] = $row->numero_identificacion . ' - ' . $row->descripcion;
         }
         return $options;
+    }
+
+    private function anticiposCliente(HotelStay $stay)
+    {
+        if (is_null($stay->mainGuest) || empty($stay->mainGuest->core_tercero_id)) {
+            return array();
+        }
+
+        $rows = CxcMovimiento::get_documentos_tercero($stay->mainGuest->core_tercero_id, date('Y-m-d'));
+        $anticipos = array();
+        foreach ($rows as $row) {
+            if ((float)$row['saldo_pendiente'] < -0.1) {
+                $anticipos[] = $row;
+            }
+        }
+
+        return $anticipos;
     }
 
     private function breadcrumb($label)

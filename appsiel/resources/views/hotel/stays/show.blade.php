@@ -30,12 +30,13 @@
 
 
                     <div class="btn-group" role="group">
-                        @if($stay->order)
-                            <a href="{{ url($hotelUrl::url('hotel/orders/'.$stay->order->id, array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelOrderHeader')))) }}" class="btn btn-primary btn-sm">Ver pedido</a>
-                        @endif
                         <a href="{{ url($hotelUrl::url('hotel?id=22')) }}" class="btn btn-default btn-sm">Volver</a>
 
                         @if($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA)
+                            <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/orders')) }}" style="display:inline-block;">
+                                {{ csrf_field() }}
+                                <button class="btn btn-primary btn-sm">Nuevo pedido</button>
+                            </form>
                             <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/check-out')) }}" style="display:inline-block;">
                                 {{ csrf_field() }}
                                 <button class="btn btn-success btn-sm" onclick="return confirm('Registrar check-out?')">Check-out</button>
@@ -86,6 +87,96 @@
                         </form>
                     @endif
                 </div>
+            </div>
+
+            <hr>
+
+            <h4>Anticipos / saldos a favor del huesped</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Fecha</th>
+                            <th>Detalle</th>
+                            <th>Saldo a favor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $totalAnticipos = 0; ?>
+                        @foreach($anticipos as $anticipo)
+                            <?php
+                                $saldoAnticipo = abs((float)$anticipo['saldo_pendiente']);
+                                $totalAnticipos += $saldoAnticipo;
+                            ?>
+                            <tr>
+                                <td>{{ $anticipo['documento'] }}</td>
+                                <td>{{ $anticipo['fecha'] }}</td>
+                                <td>{{ $anticipo['detalle'] }}</td>
+                                <td class="text-right">{{ number_format($saldoAnticipo, 2, ',', '.') }}</td>
+                            </tr>
+                        @endforeach
+                        @if(count($anticipos) == 0)
+                            <tr>
+                                <td colspan="4">El huesped no tiene anticipos disponibles.</td>
+                            </tr>
+                        @endif
+                        <tr>
+                            <th colspan="3" class="text-right">Total</th>
+                            <th class="text-right">{{ number_format($totalAnticipos, 2, ',', '.') }}</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr>
+
+            <h4>Pedidos hoteleros</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Total</th>
+                            <th>Factura</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($stay->orders as $order)
+                            <?php
+                                $orderTotal = 0;
+                                foreach ($order->lines as $line) {
+                                    $orderTotal += (float)$line->line_total;
+                                }
+                            ?>
+                            <tr>
+                                <td>{{ $order->document_number ? $order->document_number : 'PED-' . $order->id }}</td>
+                                <td>{{ $order->order_date }}</td>
+                                <td>{{ $order->status }}</td>
+                                <td class="text-right">{{ number_format($orderTotal, 2, ',', '.') }}</td>
+                                <td>
+                                    @if($order->invoice_type == App\Hotel\HotelOrderHeader::INVOICE_POS && $order->pos_doc_id)
+                                        POS #{{ $order->pos_doc_id }}
+                                    @elseif($order->invoice_type == App\Hotel\HotelOrderHeader::INVOICE_STANDARD && $order->sales_doc_id)
+                                        Ventas #{{ $order->sales_doc_id }}
+                                    @endif
+                                </td>
+                                <td>
+                                    <a href="{{ url($hotelUrl::url('hotel/orders/'.$order->id, array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelOrderHeader')))) }}" class="btn btn-primary btn-xs">Ver pedido</a>
+                                </td>
+                            </tr>
+                        @endforeach
+
+                        @if(count($stay->orders) == 0)
+                            <tr>
+                                <td colspan="6">No hay pedidos hoteleros registrados.</td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
             </div>
         </div>
 

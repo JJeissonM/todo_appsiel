@@ -101,35 +101,9 @@ class HotelStay extends Model
                 $room->save();
             }
 
-            $order = HotelOrderHeader::where('empresa_id', $stay->empresa_id)->where('stay_id', $stay->id)->first();
-            if (is_null($order)) {
-                $order = HotelOrderHeader::create(array(
-                    'empresa_id' => $stay->empresa_id,
-                    'stay_id' => $stay->id,
-                    'cliente_id' => $stay->main_cliente_id,
-                    'document_number' => 'HOT-' . $stay->id,
-                    'order_date' => date('Y-m-d H:i:s'),
-                    'status' => HotelOrderHeader::STATUS_ABIERTO,
-                    'created_by' => Auth::check() ? Auth::user()->id : $stay->created_by,
-                ));
-            }
-
-            if (!is_null($room) && !empty($room->inv_producto_id)) {
-                $roomLine = HotelOrderLine::where('empresa_id', $stay->empresa_id)
-                    ->where('hotel_order_id', $order->id)
-                    ->where('source_type', HotelOrderLine::SOURCE_ROOM)
-                    ->where('source_id', $room->id)
-                    ->first();
-
-                if (is_null($roomLine)) {
-                    (new HotelService())->createLine($order, array(
-                        'producto_id' => $room->inv_producto_id,
-                        'room_id' => $room->id,
-                        'quantity' => 1,
-                        'source_type' => HotelOrderLine::SOURCE_ROOM,
-                        'source_id' => $room->id,
-                    ));
-                }
+            $ordersCount = HotelOrderHeader::where('empresa_id', $stay->empresa_id)->where('stay_id', $stay->id)->count();
+            if ($ordersCount == 0) {
+                (new HotelService())->createOrderForStay($stay, true);
             }
         });
     }
@@ -166,7 +140,12 @@ class HotelStay extends Model
 
     public function order()
     {
-        return $this->hasOne('App\Hotel\HotelOrderHeader', 'stay_id');
+        return $this->hasOne('App\Hotel\HotelOrderHeader', 'stay_id')->orderBy('id', 'DESC');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany('App\Hotel\HotelOrderHeader', 'stay_id')->orderBy('id', 'DESC');
     }
 
     public static function consultar_registros($nro_registros, $search)

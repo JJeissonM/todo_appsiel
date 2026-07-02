@@ -119,6 +119,53 @@
         </div>
 
         @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
+            <div class="marco_formulario">
+                <h4>Anticipos / saldos a favor</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="hotel_anticipos_table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Documento</th>
+                                <th>Fecha</th>
+                                <th>Detalle</th>
+                                <th>Saldo a favor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($anticipos as $anticipo)
+                                <?php $saldoAnticipo = abs((float)$anticipo['saldo_pendiente']); ?>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox"
+                                            class="hotel-advance-check"
+                                            data-cxc_movimiento_id="{{ $anticipo['id'] }}"
+                                            data-documento="{{ $anticipo['documento'] }}"
+                                            data-fecha="{{ $anticipo['fecha'] }}"
+                                            data-detalle="{{ $anticipo['detalle'] }}"
+                                            data-saldo_pendiente="{{ $anticipo['saldo_pendiente'] }}"
+                                            data-valor_disponible="{{ $saldoAnticipo }}">
+                                    </td>
+                                    <td>{{ $anticipo['documento'] }}</td>
+                                    <td>{{ $anticipo['fecha'] }}</td>
+                                    <td>{{ $anticipo['detalle'] }}</td>
+                                    <td class="text-right">{{ number_format($saldoAnticipo, 2, ',', '.') }}</td>
+                                </tr>
+                            @endforeach
+
+                            @if(count($anticipos) == 0)
+                                <tr>
+                                    <td colspan="5">El cliente no tiene anticipos disponibles.</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-success btn-sm" type="button" id="hotel_btn_aplicar_anticipo">
+                    <i class="fa fa-check"></i> Aplicar anticipo
+                </button>
+            </div>
+
             <div id="hotel_medios_pago_panel">
                 @include('tesoreria.incluir.medios_recaudos')
             </div>
@@ -142,6 +189,7 @@
                     <br>
                     <br>
                     <input type="hidden" name="lineas_registros_medios_recaudos" id="hotel_lineas_registros_medios_recaudos" value="[]">
+                    <input type="hidden" name="object_anticipos" id="hotel_object_anticipos" value="null">
                     <button class="btn btn-primary" onclick="return confirm('Generar factura POS?')"> <i class="fa fa-save"></i> Guardar </button>
                 </form>
             @endif
@@ -168,6 +216,7 @@
             var $formaPago = $('#hotel_forma_pago');
             var $mediosPagoPanel = $('#hotel_medios_pago_panel');
             var hotelOrderTotal = {{ (float)$order->lines->sum('line_total') }};
+            var hotelAdvanceObjects = [];
 
             function normalizarRespuesta(respuesta) {
                 if (typeof respuesta === 'string') {
@@ -264,6 +313,43 @@
                 return rows;
             }
 
+            function hotelMoneyLabel(value) {
+                return '$' + parseFloat(value || 0).toFixed(2);
+            }
+
+            function hotelAppendAdvancePayment(advance, value) {
+                var exists = false;
+                $('#ingreso_registros_medios_recaudo tbody tr').each(function() {
+                    var $row = $(this);
+                    if ($row.attr('data-hotel_anticipo_id') == advance.cxc_movimiento_id) {
+                        exists = true;
+                    }
+                });
+
+                if (exists) {
+                    return;
+                }
+
+                $('#ingreso_registros_medios_recaudo tbody').append(
+                    '<tr data-hotel_anticipo_id="' + advance.cxc_movimiento_id + '">' +
+                        '<td>0-Anticipo</td>' +
+                        '<td>0-Cruce anticipos</td>' +
+                        '<td>0-</td>' +
+                        '<td>0-</td>' +
+                        '<td class="text-right">' + hotelMoneyLabel(value) + '</td>' +
+                        '<td><button type="button" class="btn btn-danger btn-xs hotel-remove-advance"><i class="fa fa-trash"></i></button></td>' +
+                    '</tr>'
+                );
+            }
+
+            function hotelAdvanceTotal() {
+                var total = 0;
+                $.each(hotelAdvanceObjects, function(index, advance) {
+                    total += hotelParseMoney(advance.valor_aplicar);
+                });
+                return total;
+            }
+
             function hotelPaymentTotal(rows) {
                 var total = 0;
                 $.each(rows, function(index, row) {
@@ -277,7 +363,7 @@
             }
 
             function toggleMediosPago() {
-                if ($formaPago.val() === 'credito') {
+                if ($formaPago.val() === 'credito' && hotelAdvanceObjects.length === 0) {
                     $mediosPagoPanel.hide();
                     return;
                 }
@@ -288,19 +374,99 @@
             $formaPago.on('change', toggleMediosPago);
             toggleMediosPago();
 
+            $('#hotel_btn_aplicar_anticipo').on('click', function() {
+                var rows = hotelPaymentRows();
+                var totalPayments = hotelPaymentTotal(rows);
+                var remaining = hotelOrderTotal - totalPayments;
+
+                if (remaining <= 1) {
+                    alert('El pedido ya tiene medios de pago por el total.');
+                    return;
+                }
+
+                $('.hotel-advance-check:checked').each(function() {
+                    var $check = $(this);
+                    var advanceId = $check.attr('data-cxc_movimiento_id');
+                    var alreadyApplied = false;
+
+                    $.each(hotelAdvanceObjects, function(index, advance) {
+                        if (advance.cxc_movimiento_id == advanceId) {
+                            alreadyApplied = true;
+                        }
+                    });
+
+                    if (alreadyApplied || remaining <= 1) {
+                        return;
+                    }
+
+                    var available = parseFloat($check.attr('data-valor_disponible')) || 0;
+                    var valueToApply = Math.min(available, remaining);
+
+                    if (valueToApply <= 0) {
+                        return;
+                    }
+
+                    var advance = {
+                        cxc_movimiento_id: advanceId,
+                        Documento: $check.attr('data-documento'),
+                        Fecha: $check.attr('data-fecha'),
+                        saldo_pendiente: $check.attr('data-saldo_pendiente'),
+                        valor_aplicar: valueToApply.toFixed(2)
+                    };
+
+                    hotelAdvanceObjects.push(advance);
+                    hotelAppendAdvancePayment(advance, valueToApply);
+                    remaining -= valueToApply;
+                    $check.prop('checked', false);
+                    $check.prop('disabled', true);
+                });
+
+                if (hotelAdvanceTotal() > 0) {
+                    $formaPago.val('contado');
+                    toggleMediosPago();
+                }
+
+                if (typeof calcular_totales_medio_recaudos === 'function') {
+                    calcular_totales_medio_recaudos();
+                }
+            });
+
+            $(document).on('click', '.hotel-remove-advance', function() {
+                var $row = $(this).closest('tr');
+                var advanceId = $row.attr('data-hotel_anticipo_id');
+                var newAdvances = [];
+
+                $.each(hotelAdvanceObjects, function(index, advance) {
+                    if (advance.cxc_movimiento_id != advanceId) {
+                        newAdvances.push(advance);
+                    }
+                });
+
+                hotelAdvanceObjects = newAdvances;
+                $('.hotel-advance-check[data-cxc_movimiento_id="' + advanceId + '"]').prop('disabled', false);
+                $row.remove();
+                toggleMediosPago();
+
+                if (typeof calcular_totales_medio_recaudos === 'function') {
+                    calcular_totales_medio_recaudos();
+                }
+            });
+
             $('#hotel_generate_pos_invoice_form').on('submit', function(event) {
                 var rows = hotelPaymentRows();
                 var totalPayments = hotelPaymentTotal(rows);
                 var formaPago = $formaPago.val();
+                var hasAdvances = hotelAdvanceObjects.length > 0;
 
-                if (formaPago === 'credito') {
+                if (formaPago === 'credito' && !hasAdvances) {
                     $('#hotel_lineas_registros_medios_recaudos').val('[]');
+                    $('#hotel_object_anticipos').val('null');
                     return true;
                 }
 
                 if (rows.length === 0) {
                     event.preventDefault();
-                    alert('Debe ingresar los medios de pago para facturar de contado.');
+                    alert('Debe ingresar los medios de pago para facturar de contado o aplicar anticipos.');
                     return false;
                 }
 
@@ -311,6 +477,9 @@
                 }
 
                 $('#hotel_lineas_registros_medios_recaudos').val(JSON.stringify(rows));
+                $('#hotel_object_anticipos').val(hasAdvances ? $.map(hotelAdvanceObjects, function(advance) {
+                    return JSON.stringify(advance);
+                }).join(',') : 'null');
                 return true;
             });
         });

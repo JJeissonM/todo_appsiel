@@ -17,6 +17,7 @@ Route::group(array('middleware' => array('auth'), 'prefix' => 'hotel'), function
     Route::get('stays/check-in', 'Hotel\HotelStayController@createCheckIn');
     Route::post('stays/check-in', 'Hotel\HotelStayController@storeCheckIn');
     Route::get('stays/{id}', 'Hotel\HotelStayController@show');
+    Route::post('stays/{id}/orders', 'Hotel\HotelStayController@createOrder');
     Route::post('stays/{id}/check-out', 'Hotel\HotelStayController@checkOut');
     Route::post('stays/{id}/cancel', 'Hotel\HotelStayController@cancel');
     Route::post('stays/{id}/guests', 'Hotel\HotelStayGuestController@store');
