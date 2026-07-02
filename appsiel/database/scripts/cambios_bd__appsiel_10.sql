@@ -720,3 +720,18 @@ WHERE NOT EXISTS (
 
 
 INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES (NULL, 'Estado', 'select', 'status', '{\"ACTIVA\":\"ACTIVA\",\"CUMPLIDA\":\"CUMPLIDA\",\"ANULADA\":\"ANULADA\"}', 'ACTIVA', '', '', '1', '1', '0', '2026-07-01 10:18:24', NULL);
+
+UPDATE `nom_elect_cat_cptos_dian` SET `descripcion` = 'OTRO DEVENGO' WHERE `descripcion` LIKE '%otro%';
+
+-- Nomina electronica: evitar rechazo de DATAICO por auxilios enviados como OTRO_CONCEPTO.
+UPDATE `nom_conceptos`
+SET `cpto_dian_id` = (SELECT id FROM `nom_elect_cat_cptos_dian` WHERE codigo = 'AUXILIO' LIMIT 1)
+WHERE `naturaleza` = 'Devengo'
+  AND (
+    UPPER(`descripcion`) LIKE '%AUXILIO%'
+    OR UPPER(`descripcion`) LIKE '%ALIMENT%'
+    OR UPPER(`descripcion`) LIKE '%ALMUERZO%'
+    OR UPPER(`descripcion`) LIKE '%REEMBOLSO%'
+    OR UPPER(`descripcion`) LIKE '%REMBOLSO%'
+  )
+  AND UPPER(`descripcion`) NOT LIKE '%TRANSPORTE%';

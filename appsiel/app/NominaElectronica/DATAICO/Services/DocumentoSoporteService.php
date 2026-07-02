@@ -272,7 +272,7 @@ class DocumentoSoporteService
          return $one_line;
       }
 
-      $codigo_cpto_dian = $concepto->cpto_dian->codigo;
+      $codigo_cpto_dian = $this->normalize_dian_code($concepto->cpto_dian->codigo, $concepto->descripcion);
 
       $skip = false;   
       if($concepto->modo_liquidacion_id ==  16) { // Intereses de cesantías. Se agrega como subconcepto de las Cesantías
@@ -315,7 +315,7 @@ class DocumentoSoporteService
          $one_line['percentage'] = $concepto->cpto_dian->porcentaje_del_basico;
       }
 
-      if (in_array($concepto->cpto_dian->id, [33,52])) { // 33 = OTRO_CONCEPTO (devengo) , 52 = OTRA_DEDUCCION
+      if (in_array($codigo_cpto_dian, ['OTRO_CONCEPTO','OTRA_DEDUCCION'])) {
          $one_line['description'] = $concepto->descripcion;
       }
       
@@ -354,6 +354,38 @@ class DocumentoSoporteService
       }
 
       return $one_line;
+   }
+
+   protected function normalize_dian_code($codigo_cpto_dian, $descripcion_concepto)
+   {
+      if ($codigo_cpto_dian != 'OTRO_CONCEPTO') {
+         return $codigo_cpto_dian;
+      }
+
+      $descripcion = $this->normalize_text($descripcion_concepto);
+      if (strpos($descripcion, 'AUXILIO') !== false || strpos($descripcion, 'ALIMENT') !== false || strpos($descripcion, 'ALMUERZO') !== false || strpos($descripcion, 'REEMBOLSO') !== false || strpos($descripcion, 'REMBOLSO') !== false) {
+         return 'AUXILIO';
+      }
+
+      return $codigo_cpto_dian;
+   }
+
+   protected function normalize_text($value)
+   {
+      return strtoupper(strtr((string)$value, [
+         'á' => 'a',
+         'é' => 'e',
+         'í' => 'i',
+         'ó' => 'o',
+         'ú' => 'u',
+         'Á' => 'A',
+         'É' => 'E',
+         'Í' => 'I',
+         'Ó' => 'O',
+         'Ú' => 'U',
+         'ñ' => 'n',
+         'Ñ' => 'N',
+      ]));
    }
 
    protected function get_horas_dia_laboral($fecha_periodo)

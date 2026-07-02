@@ -195,7 +195,7 @@ class DocumentoSoporte extends Model
          return $one_line;
       }
       
-      $one_line['code'] = $concepto->cpto_dian->codigo;
+      $one_line['code'] = $this->normalize_dian_code($concepto->cpto_dian->codigo, $concepto->descripcion);
       $one_line['concept-description'] = $concepto->descripcion;
 
       if ($amount <= 0) {
@@ -221,6 +221,38 @@ class DocumentoSoporte extends Model
       $one_line['amount'] = $amount;
 
       return $one_line;
+   }
+
+   protected function normalize_dian_code($codigo_cpto_dian, $descripcion_concepto)
+   {
+      if ($codigo_cpto_dian != 'OTRO_CONCEPTO') {
+         return $codigo_cpto_dian;
+      }
+
+      $descripcion = $this->normalize_text($descripcion_concepto);
+      if (strpos($descripcion, 'AUXILIO') !== false || strpos($descripcion, 'ALIMENT') !== false || strpos($descripcion, 'ALMUERZO') !== false || strpos($descripcion, 'REEMBOLSO') !== false || strpos($descripcion, 'REMBOLSO') !== false) {
+         return 'AUXILIO';
+      }
+
+      return $codigo_cpto_dian;
+   }
+
+   protected function normalize_text($value)
+   {
+      return strtoupper(strtr((string)$value, [
+         'á' => 'a',
+         'é' => 'e',
+         'í' => 'i',
+         'ó' => 'o',
+         'ú' => 'u',
+         'Á' => 'A',
+         'É' => 'E',
+         'Í' => 'I',
+         'Ó' => 'O',
+         'Ú' => 'U',
+         'ñ' => 'n',
+         'Ñ' => 'N',
+      ]));
    }
 
    protected function get_horas_dia_laboral($fecha_periodo)
@@ -270,7 +302,7 @@ class DocumentoSoporte extends Model
          'final-settlement-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
          'issue-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
          'payment-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
-         'accruals' => json_decode($document_header['accruals_json'],true),
+         'accruals' => $this->normalize_accruals_to_send(json_decode($document_header['accruals_json'],true)),
          'deductions' => json_decode($document_header['deductions_json'],true),
          'employee' => json_decode($document_header['employee_json'],true),
          'software' => [
@@ -285,6 +317,28 @@ class DocumentoSoporte extends Model
 	      return $data;
 	   
 	   }
+
+      protected function normalize_accruals_to_send($accruals)
+      {
+         if (!is_array($accruals)) {
+            return [];
+         }
+
+         foreach ($accruals as $key => $line) {
+            if (!isset($line['code']) || $line['code'] != 'OTRO_CONCEPTO') {
+               continue;
+            }
+
+            $description = isset($line['description']) ? $line['description'] : '';
+            $normalized_code = $this->normalize_dian_code($line['code'], $description);
+            if ($normalized_code != $line['code']) {
+               $accruals[$key]['code'] = $normalized_code;
+               unset($accruals[$key]['description']);
+            }
+         }
+
+         return $accruals;
+      }
 
       protected function get_head_data_stored()
       {
