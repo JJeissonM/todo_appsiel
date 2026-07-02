@@ -23,24 +23,6 @@
                 <tr><th>Factura</th><td>{{ $order->invoice_type }} {{ $order->sales_doc_id ? 'Ventas #'.$order->sales_doc_id : '' }} {{ $order->pos_doc_id ? 'POS #'.$order->pos_doc_id : '' }}</td></tr>
             </table>
 
-            @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
-                <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-standard-invoice')) }}" style="display:inline-block;">
-                    {{ csrf_field() }}
-                    <button class="btn btn-success" onclick="return confirm('Generar factura estandar?')">Generar factura estandar</button>
-                </form>
-                <form method="POST" id="hotel_generate_pos_invoice_form" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-pos-invoice')) }}" style="display:inline-block;">
-                    {{ csrf_field() }}
-                    <input type="hidden" name="lineas_registros_medios_recaudos" id="hotel_lineas_registros_medios_recaudos" value="{{ $order->lineas_registros_medios_recaudos }}">
-                    <button class="btn btn-primary" onclick="return confirm('Generar factura POS?')">Generar factura POS</button>
-                </form>
-            @endif
-        </div>
-
-        @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
-            @include('tesoreria.incluir.medios_recaudos')
-        @endif
-
-        <div class="marco_formulario">
             <h4>Lineas del pedido</h4>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
@@ -131,6 +113,36 @@
                     </div>
                     <input type="hidden" name="source_type" value="MANUAL">
                     <button class="btn btn-primary">Agregar linea</button>
+                    <br>
+                </form>
+            @endif
+        </div>
+
+        @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
+            <div id="hotel_medios_pago_panel">
+                @include('tesoreria.incluir.medios_recaudos')
+            </div>
+        @endif
+
+        <div class="marco_formulario">
+                <h4>Generar factura</h4>
+            @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
+                <!-- <form method="POST" action="{ { url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-standard-invoice')) }}" style="display:inline-block;">
+                    {{ csrf_field() }}
+                    <button class="btn btn-success" onclick="return confirm('Generar factura estandar?')">Generar factura estandar</button>
+                </form>
+                -->
+                <form method="POST" id="hotel_generate_pos_invoice_form" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-pos-invoice')) }}" style="display:inline-block;">
+                    {{ csrf_field() }}
+                    <label for="hotel_forma_pago">Forma de pago:</label>
+                    <select name="forma_pago" id="hotel_forma_pago" class="form-control" style="display:inline-block; width:auto;">
+                        <option value="contado">Contado</option>
+                        <option value="credito">Credito</option>
+                    </select>
+                    <br>
+                    <br>
+                    <input type="hidden" name="lineas_registros_medios_recaudos" id="hotel_lineas_registros_medios_recaudos" value="[]">
+                    <button class="btn btn-primary" onclick="return confirm('Generar factura POS?')"> <i class="fa fa-save"></i> Guardar </button>
                 </form>
             @endif
         </div>
@@ -153,6 +165,8 @@
             var $precio = $('#hotel_unit_price');
             var $descripcion = $('#hotel_line_description');
             var $cantidad = $('#hotel_quantity');
+            var $formaPago = $('#hotel_forma_pago');
+            var $mediosPagoPanel = $('#hotel_medios_pago_panel');
             var hotelOrderTotal = {{ (float)$order->lines->sum('line_total') }};
 
             function normalizarRespuesta(respuesta) {
@@ -262,11 +276,35 @@
                 calcular_totales_medio_recaudos();
             }
 
+            function toggleMediosPago() {
+                if ($formaPago.val() === 'credito') {
+                    $mediosPagoPanel.hide();
+                    return;
+                }
+
+                $mediosPagoPanel.show();
+            }
+
+            $formaPago.on('change', toggleMediosPago);
+            toggleMediosPago();
+
             $('#hotel_generate_pos_invoice_form').on('submit', function(event) {
                 var rows = hotelPaymentRows();
                 var totalPayments = hotelPaymentTotal(rows);
+                var formaPago = $formaPago.val();
 
-                if (rows.length > 0 && Math.abs(totalPayments - hotelOrderTotal) > 1) {
+                if (formaPago === 'credito') {
+                    $('#hotel_lineas_registros_medios_recaudos').val('[]');
+                    return true;
+                }
+
+                if (rows.length === 0) {
+                    event.preventDefault();
+                    alert('Debe ingresar los medios de pago para facturar de contado.');
+                    return false;
+                }
+
+                if (Math.abs(totalPayments - hotelOrderTotal) > 1) {
                     event.preventDefault();
                     alert('El valor total de los medios de pago debe ser igual al total del pedido hotelero.');
                     return false;

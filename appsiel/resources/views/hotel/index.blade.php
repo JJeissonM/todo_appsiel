@@ -307,11 +307,24 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Guardar huésped</button>
+                            <button type="submit" class="btn btn-success" id="hotel_guest_save_button"><i class="fa fa-save"></i> Guardar huésped</button>
                         </div>
                     {{ Form::close() }}
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    @parent
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#hotel_guest_create_form').on('submit', function() {
+                var $button = $('#hotel_guest_save_button');
+                $button.prop('disabled', true);
+                $button.html('<i class="fa fa-spinner fa-spin"></i> Guardando...');
+            });
+        });
+    </script>
 @endsection

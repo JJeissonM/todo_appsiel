@@ -2,6 +2,7 @@
 
 namespace App\Hotel\Services;
 
+use App\Contabilidad\Impuesto;
 use App\Core\TipoDocApp;
 use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelOrderLine;
@@ -170,7 +171,8 @@ class HotelService
         $quantity = isset($data['quantity']) ? (float)$data['quantity'] : 1;
         $unitPrice = isset($data['unit_price']) && $data['unit_price'] !== '' ? (float)$data['unit_price'] : $this->getProductPrice($producto->id, $order->cliente_id);
         $discount = isset($data['discount']) ? (float)$data['discount'] : 0;
-        $taxValue = isset($data['tax_value']) ? (float)$data['tax_value'] : 0;
+        $taxData = $this->calculateTaxData($producto->id, $order->cliente_id, $quantity, $unitPrice, $discount);
+        $taxValue = $taxData['valor_impuesto_total'];
 
         return HotelOrderLine::create(array(
             'empresa_id' => $order->empresa_id,
@@ -197,7 +199,8 @@ class HotelService
         $quantity = isset($data['quantity']) ? (float)$data['quantity'] : $line->quantity;
         $unitPrice = isset($data['unit_price']) ? (float)$data['unit_price'] : $line->unit_price;
         $discount = isset($data['discount']) ? (float)$data['discount'] : $line->discount;
-        $taxValue = isset($data['tax_value']) ? (float)$data['tax_value'] : $line->tax_value;
+        $taxData = $this->calculateTaxData($line->producto_id, $order->cliente_id, $quantity, $unitPrice, $discount);
+        $taxValue = $taxData['valor_impuesto_total'];
 
         $line->description = isset($data['description']) ? $data['description'] : $line->description;
         $line->quantity = $quantity;
@@ -266,11 +269,11 @@ class HotelService
         });
     }
 
-    public function generatePosInvoice(HotelOrderHeader $order, $lineasRegistrosMediosRecaudos = null)
+    public function generatePosInvoice(HotelOrderHeader $order, $lineasRegistrosMediosRecaudos = null, $formaPago = 'contado')
     {
         $service = $this;
 
-        return DB::transaction(function () use ($order, $service, $lineasRegistrosMediosRecaudos) {
+        return DB::transaction(function () use ($order, $service, $lineasRegistrosMediosRecaudos, $formaPago) {
             $order = $service->loadOpenOrder($order->id);
             $cliente = Cliente::find($order->cliente_id);
             if (is_null($cliente) || count($order->lines) == 0) {
@@ -298,7 +301,8 @@ class HotelService
             $consecutivo = TipoDocApp::get_consecutivo_actual($order->empresa_id, $tipoDocAppId) + 1;
             TipoDocApp::aumentar_consecutivo($order->empresa_id, $tipoDocAppId);
             $totalOrder = $order->lines->sum('line_total');
-            $lineasRegistrosMediosRecaudos = $service->normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $pdv);
+            $formaPago = $service->normalizePaymentType($formaPago);
+            $lineasRegistrosMediosRecaudos = $service->normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $formaPago, $pdv);
 
             $doc = FacturaPos::create(array(
                 'uniqid' => uniqid(),
@@ -312,7 +316,7 @@ class HotelService
                 'vendedor_id' => $vendedorId,
                 'pdv_id' => $pdv->id,
                 'cajero_id' => Auth::check() ? Auth::user()->id : null,
-                'forma_pago' => 'contado',
+                'forma_pago' => $formaPago,
                 'fecha_vencimiento' => $cliente->fecha_vencimiento_pago(date('Y-m-d')),
                 'lineas_registros_medios_recaudos' => $lineasRegistrosMediosRecaudos,
                 'descripcion' => 'Factura POS generada desde pedido hotelero ' . $order->document_number,
@@ -337,7 +341,6 @@ class HotelService
             $order->status = HotelOrderHeader::STATUS_FACTURADO;
             $order->invoice_type = HotelOrderHeader::INVOICE_POS;
             $order->pos_doc_id = $doc->id;
-            $order->lineas_registros_medios_recaudos = $lineasRegistrosMediosRecaudos;
             $order->save();
 
             return $doc;
@@ -357,7 +360,8 @@ class HotelService
     private function invoiceLineData(HotelOrderLine $line, $header)
     {
         $producto = $line->product;
-        $tasa = (!is_null($producto) && !is_null($producto->impuesto)) ? (float)$producto->impuesto->tasa_impuesto : 0;
+        $clienteId = !is_null($line->order) ? $line->order->cliente_id : 0;
+        $taxData = $this->calculateTaxData($line->producto_id, $clienteId, $line->quantity, $line->unit_price, $line->discount);
 
         return $header + array(
             'vtas_motivo_id' => (int)config('ventas_pos.recetas_motivo_salida_id', 10),
@@ -368,15 +372,56 @@ class HotelService
             'cantidad_pendiente' => $line->quantity,
             'cantidad_devuelta' => 0,
             'precio_total' => $line->line_total,
-            'base_impuesto' => $line->unit_price,
-            'tasa_impuesto' => $tasa,
-            'valor_impuesto' => $line->tax_value,
-            'base_impuesto_total' => ($line->quantity * $line->unit_price) - $line->discount,
+            'base_impuesto' => $taxData['base_impuesto_unitaria'],
+            'tasa_impuesto' => $taxData['tasa_impuesto'],
+            'valor_impuesto' => $taxData['valor_impuesto_unitario'],
+            'base_impuesto_total' => $taxData['base_impuesto_total'],
             'tasa_descuento' => 0,
             'valor_total_descuento' => $line->discount,
             'creado_por' => Auth::user()->email,
             'estado' => 'Activo',
         );
+    }
+
+    private function calculateTaxData($productoId, $clienteId, $quantity, $unitPrice, $discount)
+    {
+        $quantity = (float)$quantity;
+        $unitPrice = (float)$unitPrice;
+        $discount = (float)$discount;
+        $lineTotal = HotelOrderLine::calculateTotal($quantity, $unitPrice, $discount, 0);
+        if ($lineTotal < 0) {
+            $lineTotal = 0;
+        }
+
+        $tasa = $this->getTaxRate($productoId, $clienteId);
+        $baseTotal = $lineTotal;
+        $taxTotal = 0;
+
+        if ($tasa > 0 && $lineTotal > 0) {
+            // Appsiel maneja precios de venta con IVA incluido.
+            $baseTotal = round($lineTotal / (1 + ($tasa / 100)), 2);
+            $taxTotal = round($lineTotal - $baseTotal, 2);
+        }
+
+        $baseUnit = 0;
+        $taxUnit = 0;
+        if ($quantity > 0) {
+            $baseUnit = round($baseTotal / $quantity, 6);
+            $taxUnit = round($taxTotal / $quantity, 6);
+        }
+
+        return array(
+            'tasa_impuesto' => $tasa,
+            'base_impuesto_unitaria' => $baseUnit,
+            'valor_impuesto_unitario' => $taxUnit,
+            'base_impuesto_total' => $baseTotal,
+            'valor_impuesto_total' => $taxTotal,
+        );
+    }
+
+    private function getTaxRate($productoId, $clienteId)
+    {
+        return (float)Impuesto::get_tasa((int)$productoId, 0, (int)$clienteId);
     }
 
     private function getProductPrice($productoId, $clienteId)
@@ -408,11 +453,20 @@ class HotelService
         return $order;
     }
 
-    private function normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $pdv)
+    private function normalizePaymentType($formaPago)
     {
+        return $formaPago == 'credito' ? 'credito' : 'contado';
+    }
+
+    private function normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $formaPago, $pdv)
+    {
+        if ($formaPago == 'credito') {
+            return '[]';
+        }
+
         $lineas = json_decode((string)$lineasRegistrosMediosRecaudos, true);
         if (!is_array($lineas) || count($lineas) == 0) {
-            return $this->defaultPaymentLines($totalOrder, $pdv);
+            throw new \Exception('Debe ingresar los medios de pago para facturar de contado.');
         }
 
         $lineasValidas = array();
@@ -436,7 +490,7 @@ class HotelService
         }
 
         if (count($lineasValidas) == 0) {
-            return $this->defaultPaymentLines($totalOrder, $pdv);
+            throw new \Exception('Debe ingresar medios de pago validos para facturar de contado.');
         }
 
         $totalPayments = 0;
@@ -449,17 +503,6 @@ class HotelService
         }
 
         return json_encode($lineasValidas);
-    }
-
-    private function defaultPaymentLines($totalOrder, $pdv)
-    {
-        return json_encode(array(array(
-            'teso_medio_recaudo_id' => '1-Efectivo',
-            'teso_motivo_id' => $this->defaultPaymentReason(),
-            'teso_caja_id' => $this->defaultCashBox($pdv),
-            'teso_cuenta_bancaria_id' => '0-',
-            'valor' => '$' . (float)$totalOrder,
-        )));
     }
 
     private function defaultPaymentReason()

@@ -25,7 +25,7 @@ class HotelOrderController extends Controller
         $order = $this->findOrder($id);
         $products = $this->productsList();
         $miga_pan = HotelBreadcrumb::make('App\\Hotel\\HotelOrderHeader', 'Pedido ' . $order->document_number);
-        $paymentData = $this->paymentData($order);
+        $paymentData = $this->paymentData();
 
         return view('hotel.orders.show', compact('order', 'products', 'miga_pan') + $paymentData);
     }
@@ -102,7 +102,7 @@ class HotelOrderController extends Controller
         $order = $this->findOrder($id);
 
         try {
-            $doc = (new HotelService())->generatePosInvoice($order, $request->lineas_registros_medios_recaudos);
+            $doc = (new HotelService())->generatePosInvoice($order, $request->lineas_registros_medios_recaudos, $request->forma_pago);
         } catch (\Exception $e) {
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }
@@ -130,7 +130,7 @@ class HotelOrderController extends Controller
         return $options;
     }
 
-    private function paymentData(HotelOrderHeader $order)
+    private function paymentData()
     {
         $id_transaccion = 8;
         $motivos = (new FacturaPosService())->get_motivos_tesoreria();
@@ -143,46 +143,11 @@ class HotelOrderController extends Controller
             'medios_recaudo' => $paymentModalData['medios_recaudo'],
             'cajas' => $paymentModalData['cajas'],
             'cuentas_bancarias' => $paymentModalData['cuentas_bancarias'],
-            'cuerpo_tabla_medios_recaudos' => $this->paymentRows($order->lineas_registros_medios_recaudos),
+            'cuerpo_tabla_medios_recaudos' => '',
             'usar_modal_botones_medios_pago' => $paymentModalData['usar_modal_botones'],
             'modal_botones_medios_pago_data' => $paymentModalData['modal_botones_data'],
             'filtrar_destinos_por_medio_recaudo' => $paymentModalData['filtrar_destinos_por_medio_recaudo'],
             'destinos_medios_recaudo_data' => $paymentModalData['destinos_medios_recaudo_data'],
         );
-    }
-
-    private function paymentRows($lineasRegistrosMediosRecaudos)
-    {
-        $lineas = json_decode((string)$lineasRegistrosMediosRecaudos);
-        if (!is_array($lineas)) {
-            return '';
-        }
-
-        $html = '';
-        foreach ($lineas as $linea) {
-            if (!is_object($linea)) {
-                continue;
-            }
-
-            $html .= '<tr>';
-            $html .= $this->paymentCell(isset($linea->teso_medio_recaudo_id) ? $linea->teso_medio_recaudo_id : '');
-            $html .= $this->paymentCell(isset($linea->teso_motivo_id) ? $linea->teso_motivo_id : '');
-            $html .= $this->paymentCell(isset($linea->teso_caja_id) ? $linea->teso_caja_id : '');
-            $html .= $this->paymentCell(isset($linea->teso_cuenta_bancaria_id) ? $linea->teso_cuenta_bancaria_id : '');
-            $html .= '<td class="valor_total">' . e(isset($linea->valor) ? $linea->valor : '') . '</td>';
-            $html .= '<td><button type="button" class="btn btn-danger btn-xs btn_eliminar_linea_medio_recaudo"><i class="fa fa-btn fa-trash"></i></button></td>';
-            $html .= '</tr>';
-        }
-
-        return $html;
-    }
-
-    private function paymentCell($value)
-    {
-        $parts = explode('-', (string)$value, 2);
-        $id = isset($parts[0]) ? $parts[0] : '0';
-        $label = isset($parts[1]) ? $parts[1] : '';
-
-        return '<td><span style="color:white;">' . e($id) . '-</span><span>' . e($label) . '</span></td>';
     }
 }

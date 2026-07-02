@@ -44,6 +44,18 @@
 @section('datos_adicionales_encabezado')
 	<br/>
 	<b>Remisión: </b> {!! $docs_relacionados[0] !!}
+	<?php
+		$pedidoHotelero = App\Hotel\HotelOrderHeader::where('pos_doc_id', $id)->first();
+		$hotelApp = App\Sistema\Aplicacion::where('app', 'hotel')->first();
+		$hotelOrderModelId = App\Sistema\Modelo::where('name_space', 'App\\Hotel\\HotelOrderHeader')->value('id');
+	?>
+	@if( !is_null($pedidoHotelero) )
+		<br/>
+		<b>Pedido hotelero: </b>
+		<a href="{{ url('hotel/orders/' . $pedidoHotelero->id . '?' . http_build_query(array('id' => !is_null($hotelApp) ? $hotelApp->id : Input::get('id'), 'id_modelo' => $hotelOrderModelId))) }}" target="_blank">
+			{{ $pedidoHotelero->document_number != '' ? $pedidoHotelero->document_number : 'Pedido #' . $pedidoHotelero->id }}
+		</a>
+	@endif
 	<?php $ensambles_relacionados = $doc_encabezado->enlaces_ensambles_relacionados(); ?>
 	@if( $ensambles_relacionados != '' )
 		<br/>

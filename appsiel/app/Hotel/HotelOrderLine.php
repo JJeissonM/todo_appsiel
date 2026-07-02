@@ -41,7 +41,8 @@ class HotelOrderLine extends Model
 
     public static function calculateTotal($quantity, $unitPrice, $discount, $taxValue)
     {
-        return ($quantity * $unitPrice) - $discount + $taxValue;
+        // En Appsiel los precios de venta ya incluyen IVA; taxValue solo desglosa el impuesto.
+        return ($quantity * $unitPrice) - $discount;
     }
 
     private static function prepareLine($line)
