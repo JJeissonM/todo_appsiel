@@ -224,6 +224,7 @@ class DocumentHeaderService
     {
         $status = 'success';
         $message = '';
+        $email = trim((string)$tercero->email);
 
         /*
         if ( $tercero->direccion1 == '' || strlen( $tercero->direccion1 ) < 2 )
@@ -233,7 +234,7 @@ class DocumentHeaderService
         }
         */
 
-        if ( $tercero->email == '' || gettype( filter_var($tercero->email, FILTER_VALIDATE_EMAIL) ) != 'string' )
+        if ( $email == '' || gettype( filter_var($email, FILTER_VALIDATE_EMAIL) ) != 'string' )
         {
             $status = 'error';
             $message .= ' - Revisar email - ';
@@ -317,4 +318,3 @@ class DocumentHeaderService
     }
         
 }
-

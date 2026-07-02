@@ -85,7 +85,7 @@ class DocumentoElectronico
 		$destinatario->canalDeEntrega = "0";
 	
 		$correodestinatario = new strings();
-		$correodestinatario->string = $tercero->email;
+		$correodestinatario->string = trim((string)$tercero->email);
 	
 		$destinatario->email = $correodestinatario;
 		$destinatario->nitProveedorReceptor = $tercero->numero_identificacion;
@@ -145,7 +145,7 @@ class DocumentoElectronico
 		
 	    $cliente->responsabilidadesRut[0] = $this->preparar_responsabilidades_rut( $datos_cliente->tercero );
 		
-	    $cliente->email = $datos_cliente->tercero->email;
+	    $cliente->email = trim((string)$datos_cliente->tercero->email);
 	    $cliente->nombreRazonSocial  = $datos_cliente->tercero->descripcion;
 	    $cliente->notificar = "SI";
 	    $cliente->numeroDocumento = $datos_cliente->tercero->numero_identificacion;

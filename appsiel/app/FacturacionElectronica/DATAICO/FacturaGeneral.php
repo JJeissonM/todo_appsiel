@@ -113,10 +113,11 @@ class FacturaGeneral
       $send_dian = 'true';
       $send_email = config('facturacion_electronica.enviar_email_clientes');
 
-      $lista_emails = $this->doc_encabezado->cliente->tercero->email;
-      if ( config('facturacion_electronica.email_copia_factura') != '' )
+      $lista_emails = trim((string)$this->doc_encabezado->cliente->tercero->email);
+      $email_copia = trim((string)config('facturacion_electronica.email_copia_factura'));
+      if ( $email_copia != '' )
       {
-         $lista_emails .= ';' . config('facturacion_electronica.email_copia_factura');
+         $lista_emails .= ';' . $email_copia;
       }
 
       return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"invoice": {' . $this->get_encabezado_factura() . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
@@ -127,10 +128,11 @@ class FacturaGeneral
       $send_dian = 'true';
       $send_email = config('facturacion_electronica.enviar_email_clientes');
 
-      $lista_emails = $this->doc_encabezado->cliente->tercero->email;
-      if ( config('facturacion_electronica.email_copia_factura') != '' )
+      $lista_emails = trim((string)$this->doc_encabezado->cliente->tercero->email);
+      $email_copia = trim((string)config('facturacion_electronica.email_copia_factura'));
+      if ( $email_copia != '' )
       {
-         $lista_emails .= ';' . config('facturacion_electronica.email_copia_factura');
+         $lista_emails .= ';' . $email_copia;
       }
 
       return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"credit_note": {' . $this->get_encabezado_nota_credito( $factura_doc_encabezado ) . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
@@ -239,7 +241,7 @@ class FacturaGeneral
 
       $party_identification_type = $cliente->tercero->id_tipo_documento_id;
       
-      return '{"email": "' . $cliente->tercero->email . '","phone": "' . $cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $company_name . '","first_name":"' . $first_name . '","family_name":"' . $family_name . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","party_identification_type": "' . $party_identification_type . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . $department_id . '","city": "' . $city_id . '","address_line": "' . $address_line . '"}';
+      return '{"email": "' . trim((string)$cliente->tercero->email) . '","phone": "' . $cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $company_name . '","first_name":"' . $first_name . '","family_name":"' . $family_name . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","party_identification_type": "' . $party_identification_type . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . $department_id . '","city": "' . $city_id . '","address_line": "' . $address_line . '"}';
    }
 
    public function get_lineas_registros()

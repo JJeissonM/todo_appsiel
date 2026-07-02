@@ -1,3 +1,12 @@
+-- Cambios año 2024
+
+ALTER TABLE `users` ADD `estado` VARCHAR(255) NULL AFTER `remember_token`;
+UPDATE `users` SET `estado` = 'Activo' WHERE `users`.`id` > 0;
+
+ALTER TABLE `compras_proveedores` ADD `codigo` VARCHAR(10) NULL AFTER `condicion_pago_id`;
+
+ALTER TABLE `vtas_doc_registros` CHANGE `estado` `estado` VARCHAR(100) NOT NULL;
+
 -- 30 ENERO 2025
 -- Se agregaron nuevas config para Ventas POS
 
