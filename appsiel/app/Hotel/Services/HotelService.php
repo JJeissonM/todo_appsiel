@@ -328,6 +328,7 @@ class HotelService
             $hasAnticipos = $service->hasAdvancePayments($objectAnticipos);
             $formaPago = $service->normalizePaymentType($formaPago);
             if ($hasAnticipos) {
+                $objectAnticipos = $service->normalizeAdvancePayments($objectAnticipos);
                 $formaPago = 'credito';
             }
             $lineasRegistrosMediosRecaudos = $service->normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $formaPago, $pdv, $hasAnticipos);
@@ -641,5 +642,46 @@ class HotelService
     {
         $objectAnticipos = trim((string)$objectAnticipos);
         return $objectAnticipos != '' && $objectAnticipos != 'null' && $objectAnticipos != '[]';
+    }
+
+    private function normalizeAdvancePayments($objectAnticipos)
+    {
+        $decoded = json_decode('[' . (string)$objectAnticipos . ']', true);
+        if (!is_array($decoded) || count($decoded) == 0) {
+            throw new \Exception('Los anticipos aplicados no tienen un formato valido.');
+        }
+
+        $normalized = array();
+        foreach ($decoded as $advance) {
+            if (!is_array($advance)) {
+                continue;
+            }
+
+            $cxcMovimientoId = isset($advance['cxc_movimiento_id']) ? (int)$advance['cxc_movimiento_id'] : 0;
+            $valorAplicar = isset($advance['valor_aplicar']) ? abs($this->parsePaymentValue($advance['valor_aplicar'])) : 0;
+
+            if ($cxcMovimientoId <= 0 || $valorAplicar <= 0) {
+                continue;
+            }
+
+            $normalized[] = array(
+                'cxc_movimiento_id' => (string)$cxcMovimientoId,
+                'Documento' => isset($advance['Documento']) ? $advance['Documento'] : '',
+                'Fecha' => isset($advance['Fecha']) ? $advance['Fecha'] : '',
+                'saldo_pendiente' => isset($advance['saldo_pendiente']) ? $advance['saldo_pendiente'] : '',
+                'valor_aplicar' => (string)($valorAplicar * -1),
+            );
+        }
+
+        if (count($normalized) == 0) {
+            throw new \Exception('No hay anticipos validos para aplicar.');
+        }
+
+        $parts = array();
+        foreach ($normalized as $advance) {
+            $parts[] = json_encode($advance);
+        }
+
+        return implode(',', $parts);
     }
 }

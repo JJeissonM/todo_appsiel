@@ -197,6 +197,7 @@
                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#hotelGuestCreateModal"><i class="fa fa-plus"></i> Huesped</button>
                     <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $reservationModelId))) }}" class="btn btn-info"><i class="fa fa-calendar"></i> Reserva</a>
                     <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId))) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a>
+                    <a href="{{ url('pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=1&action=create') }}" class="btn btn-success" target="_blank"><i class="fa fa-calculator"></i> Fact. Directa</a>
                 </div>
             </div>
 
@@ -262,7 +263,7 @@
                                     <button class="btn btn-danger btn-xs" onclick="return confirm('Anular reserva?')"><i class="fa fa-ban"></i> Anular</button>
                                 </form>
                             @elseif($room->status == App\Hotel\HotelRoom::STATUS_OCUPADA && $stay)
-                                <a href="{{ url('web/'.$stay->id.'?id='.$appId.'&id_modelo='.$stayModelId) }}" class="btn btn-danger btn-xs"><i class="fa fa-user"></i> Estadia</a>
+                                <a href="{{ url('hotel/stays/'.$stay->id.'?id='.$appId.'&id_modelo='.$stayModelId) }}" class="btn btn-danger btn-xs"><i class="fa fa-user"></i> Estadia</a>
                                 <?php
                                     $dashboardOrder = null;
                                     foreach ($stay->orders as $stayOrder) {

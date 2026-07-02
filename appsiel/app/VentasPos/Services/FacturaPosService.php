@@ -293,6 +293,10 @@ class FacturaPosService
 
     public function verificar_datos_por_defecto( $pdv )
     {
+        if ( $pdv->estado != 'Abierto' ) {
+            return 'El punto de ventas ' . $pdv->descripcion . ' se encuentra cerrado. Primero debe realizar la apertura.';
+        }
+
         if ( is_null( $pdv->cliente ) ) {
             return 'El punto de ventas NO tiene asociado un Cliente por defecto.';
         }

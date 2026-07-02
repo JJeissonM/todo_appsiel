@@ -177,8 +177,8 @@ class HotelApplicationSeeder extends Seeder
         $this->seedModelFields('reservations', array(
             $this->field(1, 'Cliente', 'select', 'cliente_id', 'model_App\\Ventas\\Cliente', 'null', $comboAttrs, 1),
             $this->field(2, 'Habitacion', 'select', 'room_id', 'model_App\\Hotel\\HotelRoom', 'null', $comboAttrs, 1),
-            $this->field(3, 'Fecha desde', 'date', 'reserved_from', '', 'null', $textAttrs, 1),
-            $this->field(4, 'Fecha hasta', 'date', 'reserved_until', '', 'null', $textAttrs, 1),
+            $this->field(3, 'Fecha desde', 'fecha', 'reserved_from', '', 'null', $textAttrs, 1),
+            $this->field(4, 'Fecha hasta', 'fecha', 'reserved_until', '', 'null', $textAttrs, 1),
             $this->field(5, 'Estado', 'select', 'status', $reservationStatuses, 'ACTIVA', $comboAttrs, 1),
             $this->field(6, 'Notas', 'bsTextArea', 'notes', '', 'null', $textAttrs, 0),
         ));
@@ -342,10 +342,10 @@ class HotelApplicationSeeder extends Seeder
         // hotel/stays/check-in
         $permissions = array(
             array('hotel.dashboard', 'Panel hotelero', 'hotel', 'stays', $transactionsParentId, 0, 0, 'building'),
-            array('hotel.checkin', 'Check-In', 'web/create', 'stays', $transactionsParentId, 1, 1, 'sign-in'),
-            array('hotel.checkout', 'Check-Out', 'hotel/stays/active', 'stays', $transactionsParentId, 2, 1, 'sign-out'),
+            array('hotel.checkin', 'Estadías', 'web/create', 'stays', $transactionsParentId, 1, 1, 'sign-in'),
+            array('hotel.checkout', 'Check-Out', 'hotel/stays/active', 'stays', $transactionsParentId, 2, 0, 'sign-out'),
             array('hotel.reservas', 'Reservas', 'web', 'reservations', $transactionsParentId, 3, 1, 'calendar'),
-            array('hotel.facturas', 'Facturas', 'web', 'orders', $transactionsParentId, 4, 1, 'file-text'),
+            array('hotel.facturas', 'Pedidos', 'web', 'orders', $transactionsParentId, 4, 1, 'file-text'),
             array('hotel.rooms', 'Habitaciones', 'web', 'rooms', $catalogParentId, 1, 1, 'bed'),
             array('hotel.services', 'Servicios', 'web', 'services', $catalogParentId, 2, 1, 'cubes'),
             array('hotel.guests', 'Huespedes', 'web', 'clients', $catalogParentId, 3, 1, 'users'),

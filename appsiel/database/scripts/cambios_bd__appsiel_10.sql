@@ -708,3 +708,6 @@ SELECT NULL, '9', '0', 'compras_configuracion', 'Configuración', 'config', '0',
 WHERE NOT EXISTS (
     SELECT 1 FROM `permissions` WHERE `name` = 'compras_configuracion'
 );
+
+
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES (NULL, 'Estado', 'select', 'status', '{\"ACTIVA\":\"ACTIVA\",\"CUMPLIDA\":\"CUMPLIDA\",\"ANULADA\":\"ANULADA\"}', 'ACTIVA', '', '', '1', '1', '0', '2026-07-01 10:18:24', NULL);
