@@ -22,6 +22,7 @@ Route::group(array('middleware' => array('auth'), 'prefix' => 'hotel'), function
     Route::post('stays/{id}/cancel', 'Hotel\HotelStayController@cancel');
     Route::post('stays/{id}/guests', 'Hotel\HotelStayGuestController@store');
     Route::post('stays/{id}/guests/{guestId}/delete', 'Hotel\HotelStayGuestController@destroy');
+    Route::post('reservations/{id}/cancel', 'Hotel\HotelReservationController@cancel');
 
     Route::get('orders/{id}', 'Hotel\HotelOrderController@show');
     Route::post('orders/{id}/lines', 'Hotel\HotelOrderController@addLine');

@@ -171,29 +171,29 @@
             </div>
         @endif
 
-        <div class="marco_formulario">
-                <h4>Generar factura</h4>
-            @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
-                <!-- <form method="POST" action="{ { url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-standard-invoice')) }}" style="display:inline-block;">
-                    {{ csrf_field() }}
-                    <button class="btn btn-success" onclick="return confirm('Generar factura estandar?')">Generar factura estandar</button>
-                </form>
-                -->
-                <form method="POST" id="hotel_generate_pos_invoice_form" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-pos-invoice')) }}" style="display:inline-block;">
-                    {{ csrf_field() }}
-                    <label for="hotel_forma_pago">Forma de pago:</label>
-                    <select name="forma_pago" id="hotel_forma_pago" class="form-control" style="display:inline-block; width:auto;">
-                        <option value="contado">Contado</option>
-                        <option value="credito">Credito</option>
-                    </select>
-                    <br>
-                    <br>
-                    <input type="hidden" name="lineas_registros_medios_recaudos" id="hotel_lineas_registros_medios_recaudos" value="[]">
-                    <input type="hidden" name="object_anticipos" id="hotel_object_anticipos" value="null">
-                    <button class="btn btn-primary" onclick="return confirm('Generar factura POS?')"> <i class="fa fa-save"></i> Guardar </button>
-                </form>
-            @endif
-        </div>
+        @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
+            <div class="marco_formulario">
+                    <h4>Generar factura</h4>
+                    <!-- <form method="POST" action="{ { url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-standard-invoice')) }}" style="display:inline-block;">
+                        {{ csrf_field() }}
+                        <button class="btn btn-success" onclick="return confirm('Generar factura estandar?')">Generar factura estandar</button>
+                    </form>
+                    -->
+                    <form method="POST" id="hotel_generate_pos_invoice_form" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-pos-invoice')) }}" style="display:inline-block;">
+                        {{ csrf_field() }}
+                        <label for="hotel_forma_pago">Forma de pago:</label>
+                        <select name="forma_pago" id="hotel_forma_pago" class="form-control" style="display:inline-block; width:auto;">
+                            <option value="contado">Contado</option>
+                            <option value="credito">Credito</option>
+                        </select>
+                        <br>
+                        <br>
+                        <input type="hidden" name="lineas_registros_medios_recaudos" id="hotel_lineas_registros_medios_recaudos" value="[]">
+                        <input type="hidden" name="object_anticipos" id="hotel_object_anticipos" value="null">
+                        <button class="btn btn-primary" onclick="return confirm('Generar factura POS?')"> <i class="fa fa-save"></i> Guardar </button>
+                    </form>
+            </div>
+        @endif
     </div>
 @endsection
 

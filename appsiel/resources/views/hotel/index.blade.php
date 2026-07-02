@@ -109,6 +109,11 @@
             background: #dd5b3f;
         }
 
+        .hotel-room-reservada,
+        .hotel-summary-reservada {
+            background: #2f86b7;
+        }
+
         .hotel-room-limpieza,
         .hotel-summary-limpieza {
             background: #3b8fc0;
@@ -190,6 +195,7 @@
                 </div>
                 <div class="col-md-4 text-right">
                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#hotelGuestCreateModal"><i class="fa fa-plus"></i> Huesped</button>
+                    <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $reservationModelId))) }}" class="btn btn-info"><i class="fa fa-calendar"></i> Reserva</a>
                     <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId))) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a>
                 </div>
             </div>
@@ -207,9 +213,12 @@
                 <?php
                     $statusClass = 'hotel-room-' . strtolower($room->status);
                     $stay = $room->activeStay->first();
+                    $todayReservation = $room->activeTodayReservation->first();
                     $guestName = '';
                     if ($stay && $stay->mainGuest && $stay->mainGuest->tercero) {
                         $guestName = $stay->mainGuest->tercero->descripcion;
+                    } elseif ($todayReservation && $todayReservation->cliente && $todayReservation->cliente->tercero) {
+                        $guestName = 'Reserva: ' . $todayReservation->cliente->tercero->descripcion;
                     }
                 ?>
                 <div class="hotel-room-wrap">
@@ -233,6 +242,7 @@
 
                             @if($room->status == App\Hotel\HotelRoom::STATUS_DISPONIBLE && $room->is_active)
                                 <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
+                                <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $reservationModelId, 'room_id' => $room->id))) }}" class="btn btn-info btn-xs"><i class="fa fa-calendar"></i> Reservar</a>
                                 <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
                                     {{ csrf_field() }}
                                     <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_MANTENIMIENTO }}">
@@ -244,6 +254,12 @@
                                     <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_BLOQUEADA }}">
                                     <input type="hidden" name="return_to" value="{{ $returnTo }}">
                                     <button class="btn btn-danger btn-xs" title="Bloquear"><i class="fa fa-lock"></i></button>
+                                </form>
+                            @elseif($room->status == App\Hotel\HotelRoom::STATUS_RESERVADA && $todayReservation)
+                                <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id, 'main_cliente_id' => $todayReservation->cliente_id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
+                                <form method="POST" action="{{ url($hotelUrl::url('hotel/reservations/'.$todayReservation->id.'/cancel', array('id_modelo' => $reservationModelId))) }}" style="display:inline-block;">
+                                    {{ csrf_field() }}
+                                    <button class="btn btn-danger btn-xs" onclick="return confirm('Anular reserva?')"><i class="fa fa-ban"></i> Anular</button>
                                 </form>
                             @elseif($room->status == App\Hotel\HotelRoom::STATUS_OCUPADA && $stay)
                                 <a href="{{ url('web/'.$stay->id.'?id='.$appId.'&id_modelo='.$stayModelId) }}" class="btn btn-danger btn-xs"><i class="fa fa-user"></i> Estadia</a>
@@ -296,6 +312,79 @@
         @if(count($rooms) == 0)
             <div class="alert alert-info">No hay habitaciones para los filtros seleccionados.</div>
         @endif
+
+        <div class="marco_formulario">
+            <h4>Reservas activas</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Habitacion</th>
+                            <th>Huesped</th>
+                            <th>Desde</th>
+                            <th>Hasta</th>
+                            <th>Estado</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($activeReservations as $reservation)
+                            <tr>
+                                <td>{{ $reservation->room ? $reservation->room->room_number : $reservation->room_id }}</td>
+                                <td>{{ $reservation->cliente && $reservation->cliente->tercero ? $reservation->cliente->tercero->descripcion : $reservation->cliente_id }}</td>
+                                <td>{{ $reservation->reserved_from }}</td>
+                                <td>{{ $reservation->reserved_until }}</td>
+                                <td>{{ $reservation->status }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url($hotelUrl::url('hotel/reservations/'.$reservation->id.'/cancel', array('id_modelo' => $reservationModelId))) }}" style="display:inline-block;">
+                                        {{ csrf_field() }}
+                                        <button class="btn btn-danger btn-xs" onclick="return confirm('Anular reserva?')">Anular</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                        @if(count($activeReservations) == 0)
+                            <tr>
+                                <td colspan="6">No hay reservas activas.</td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="marco_formulario">
+            <h4>Anticipos de clientes</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Documento</th>
+                            <th>Fecha</th>
+                            <th>Detalle</th>
+                            <th>Saldo a favor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($customerAdvances as $advance)
+                            <tr>
+                                <td>{{ $advance->tercero }}</td>
+                                <td>{{ $advance->documento }}</td>
+                                <td>{{ $advance->fecha }}</td>
+                                <td>{{ $advance->detalle }}</td>
+                                <td class="text-right">{{ number_format(abs((float)$advance->saldo_pendiente), 2, ',', '.') }}</td>
+                            </tr>
+                        @endforeach
+                        @if(count($customerAdvances) == 0)
+                            <tr>
+                                <td colspan="5">No hay anticipos de clientes pendientes por aplicar.</td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
         <div class="modal fade" id="hotelGuestCreateModal" tabindex="-1" role="dialog" aria-labelledby="hotelGuestCreateModalLabel">
             <div class="modal-dialog modal-lg" role="document">

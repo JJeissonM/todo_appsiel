@@ -49,7 +49,11 @@ class HotelStayController extends Controller
 
     public function createCheckIn()
     {
-        $rooms = HotelRoom::where('empresa_id', Auth::user()->empresa_id)->where('status', HotelRoom::STATUS_DISPONIBLE)->where('is_active', 1)->orderBy('room_number')->get();
+        $rooms = HotelRoom::where('empresa_id', Auth::user()->empresa_id)
+            ->whereIn('status', array(HotelRoom::STATUS_DISPONIBLE, HotelRoom::STATUS_RESERVADA))
+            ->where('is_active', 1)
+            ->orderBy('room_number')
+            ->get();
         $clients = $this->clientsList();
         $miga_pan = $this->breadcrumb('Check-in');
 

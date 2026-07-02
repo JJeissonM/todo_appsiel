@@ -15,6 +15,7 @@ class HotelRoom extends Model
     const TYPE_SUITE = 'SUITE';
 
     const STATUS_DISPONIBLE = 'DISPONIBLE';
+    const STATUS_RESERVADA = 'RESERVADA';
     const STATUS_OCUPADA = 'OCUPADA';
     const STATUS_LIMPIEZA = 'LIMPIEZA';
     const STATUS_MANTENIMIENTO = 'MANTENIMIENTO';
@@ -54,7 +55,7 @@ class HotelRoom extends Model
 
     public static function statuses()
     {
-        return array(self::STATUS_DISPONIBLE, self::STATUS_OCUPADA, self::STATUS_LIMPIEZA, self::STATUS_MANTENIMIENTO, self::STATUS_BLOQUEADA);
+        return array(self::STATUS_DISPONIBLE, self::STATUS_RESERVADA, self::STATUS_OCUPADA, self::STATUS_LIMPIEZA, self::STATUS_MANTENIMIENTO, self::STATUS_BLOQUEADA);
     }
 
     public static function options($values)
@@ -79,6 +80,20 @@ class HotelRoom extends Model
     public function activeStay()
     {
         return $this->stays()->where('status', HotelStay::STATUS_ACTIVA);
+    }
+
+    public function reservations()
+    {
+        return $this->hasMany('App\Hotel\HotelReservation', 'room_id');
+    }
+
+    public function activeTodayReservation()
+    {
+        $today = date('Y-m-d');
+        return $this->reservations()
+            ->where('status', HotelReservation::STATUS_ACTIVA)
+            ->where('reserved_from', '<=', $today)
+            ->where('reserved_until', '>=', $today);
     }
 
     public static function consultar_registros($nro_registros, $search)

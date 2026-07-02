@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Hotel;
 
+use App\CxC\CxcMovimiento;
+use App\Hotel\HotelReservation;
 use App\Hotel\HotelRoom;
 use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
@@ -10,6 +12,7 @@ use App\Sistema\Modelo;
 use App\Sistema\Services\ModeloService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HotelDashboardController extends Controller
 {
@@ -21,9 +24,10 @@ class HotelDashboardController extends Controller
     public function index(Request $request)
     {
         $empresaId = Auth::user()->empresa_id;
+        $this->syncTodayReservations($empresaId);
 
         $query = HotelRoom::where('empresa_id', $empresaId)
-            ->with('product', 'activeStay.orders', 'activeStay.mainGuest.tercero')
+            ->with('product', 'activeStay.orders', 'activeStay.mainGuest.tercero', 'activeTodayReservation.cliente.tercero')
             ->orderBy('floor')
             ->orderBy('room_number');
 
@@ -47,18 +51,45 @@ class HotelDashboardController extends Controller
 
         $statuses = HotelRoom::options(HotelRoom::statuses());
         $summary = $this->summary($empresaId);
+        $activeReservations = $this->activeReservations($empresaId);
+        $customerAdvances = $this->customerAdvances($empresaId);
         $miga_pan = HotelBreadcrumb::dashboard('Habitaciones');
         $appId = HotelBreadcrumb::appId();
         $roomModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelRoom');
         $stayModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelStay');
         $orderModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelOrderHeader');
+        $reservationModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelReservation');
         $guestModelId = 138;
         $roomIndexUrl = HotelBreadcrumb::crudIndexUrl('App\\Hotel\\HotelRoom');
         $roomCreateUrl = HotelBreadcrumb::crudCreateUrl('App\\Hotel\\HotelRoom');
         $guestCreateUrl = HotelBreadcrumb::crudCreateUrl('App\\Ventas\\Cliente');
         $guestFormCreate = $this->guestFormCreate($guestModelId);
 
-        return view('hotel.index', compact('rooms', 'floors', 'statuses', 'summary', 'miga_pan', 'appId', 'roomModelId', 'stayModelId', 'orderModelId', 'guestModelId', 'roomIndexUrl', 'roomCreateUrl','guestCreateUrl', 'guestFormCreate'));
+        return view('hotel.index', compact('rooms', 'floors', 'statuses', 'summary', 'activeReservations', 'customerAdvances', 'miga_pan', 'appId', 'roomModelId', 'stayModelId', 'orderModelId', 'reservationModelId', 'guestModelId', 'roomIndexUrl', 'roomCreateUrl','guestCreateUrl', 'guestFormCreate'));
+    }
+
+    private function syncTodayReservations($empresaId)
+    {
+        $today = date('Y-m-d');
+
+        $reservedRoomIds = HotelReservation::where('empresa_id', $empresaId)
+            ->where('status', HotelReservation::STATUS_ACTIVA)
+            ->where('reserved_from', '<=', $today)
+            ->where('reserved_until', '>=', $today)
+            ->lists('room_id')
+            ->toArray();
+
+        if (count($reservedRoomIds) > 0) {
+            HotelRoom::where('empresa_id', $empresaId)
+                ->whereIn('id', $reservedRoomIds)
+                ->where('status', HotelRoom::STATUS_DISPONIBLE)
+                ->update(array('status' => HotelRoom::STATUS_RESERVADA));
+        }
+
+        HotelRoom::where('empresa_id', $empresaId)
+            ->where('status', HotelRoom::STATUS_RESERVADA)
+            ->whereNotIn('id', count($reservedRoomIds) > 0 ? $reservedRoomIds : array(0))
+            ->update(array('status' => HotelRoom::STATUS_DISPONIBLE));
     }
 
     private function summary($empresaId)
@@ -69,6 +100,33 @@ class HotelDashboardController extends Controller
         }
 
         return $summary;
+    }
+
+    private function activeReservations($empresaId)
+    {
+        return HotelReservation::where('empresa_id', $empresaId)
+            ->where('status', HotelReservation::STATUS_ACTIVA)
+            ->with('room', 'cliente.tercero')
+            ->orderBy('reserved_from')
+            ->get();
+    }
+
+    private function customerAdvances($empresaId)
+    {
+        return CxcMovimiento::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
+            ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
+            ->where('cxc_movimientos.core_empresa_id', $empresaId)
+            ->where('cxc_movimientos.saldo_pendiente', '<', -0.1)
+            ->select(
+                'cxc_movimientos.id',
+                'core_terceros.descripcion AS tercero',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo, " ", cxc_movimientos.consecutivo) AS documento'),
+                'cxc_movimientos.fecha',
+                'cxc_movimientos.detalle',
+                'cxc_movimientos.saldo_pendiente'
+            )
+            ->orderBy('cxc_movimientos.fecha', 'DESC')
+            ->get();
     }
 
     private function guestFormCreate($guestModelId)

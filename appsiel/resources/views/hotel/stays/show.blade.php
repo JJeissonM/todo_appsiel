@@ -17,7 +17,12 @@
             </div>
             <div class="row">
                 <div class="col-md-8">
-                    <h4>Informacion estadia <a href="{{ url($hotelUrl::url('web/'.$stay->id.'/edit?id=22&id_modelo=364&id_transaccion=')) }}"><i class="fa fa-edit"></i></a></h4>
+                    <h4>
+                        Informacion estadia
+                        @if($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA)
+                            <a href="{{ url($hotelUrl::url('web/'.$stay->id.'/edit?id=22&id_modelo=364&id_transaccion=')) }}"><i class="fa fa-edit"></i></a>
+                        @endif
+                    </h4>
                     <table class="table table-bordered">
                         <tr><th>Huesped principal</th><td>{{ $stay->mainGuest && $stay->mainGuest->tercero ? $stay->mainGuest->tercero->descripcion : $stay->main_cliente_id }}</td></tr>
                         <tr><th>Check-in</th><td>{{ $stay->check_in_at }}</td></tr>

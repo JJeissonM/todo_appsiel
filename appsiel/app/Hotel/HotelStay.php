@@ -6,6 +6,7 @@ use App\Hotel\Services\HotelService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class HotelStay extends Model
 {
@@ -43,6 +44,7 @@ class HotelStay extends Model
             }
 
             $stay->total_guests = max(1, (int)$stay->adults_count + (int)$stay->children_count);
+            self::validateCheckInAvailability($stay);
         });
 
         static::updating(function ($stay) {
@@ -60,6 +62,25 @@ class HotelStay extends Model
         $registro->ensureCheckInRecords();
 
         return null;
+    }
+
+    public function get_campos_adicionales_create($lista_campos)
+    {
+        foreach ($lista_campos as $key => $campo) {
+            if (!isset($campo['name'])) {
+                continue;
+            }
+
+            if ($campo['name'] == 'room_id' && Input::get('room_id') != '') {
+                $lista_campos[$key]['value'] = Input::get('room_id');
+            }
+
+            if ($campo['name'] == 'main_cliente_id' && Input::get('main_cliente_id') != '') {
+                $lista_campos[$key]['value'] = Input::get('main_cliente_id');
+            }
+        }
+
+        return $lista_campos;
     }
 
     public function ensureCheckInRecords()
@@ -96,9 +117,14 @@ class HotelStay extends Model
             }
 
             $room = HotelRoom::where('empresa_id', $stay->empresa_id)->where('id', $stay->room_id)->first();
-            if (!is_null($room) && $stay->status == self::STATUS_ACTIVA && $room->status == HotelRoom::STATUS_DISPONIBLE) {
+            $reservation = self::reservationForCheckIn($stay);
+            if (!is_null($room) && $stay->status == self::STATUS_ACTIVA && in_array($room->status, array(HotelRoom::STATUS_DISPONIBLE, HotelRoom::STATUS_RESERVADA))) {
                 $room->status = HotelRoom::STATUS_OCUPADA;
                 $room->save();
+            }
+
+            if (!is_null($reservation)) {
+                $reservation->fulfill($stay->id);
             }
 
             $ordersCount = HotelOrderHeader::where('empresa_id', $stay->empresa_id)->where('stay_id', $stay->id)->count();
@@ -106,6 +132,50 @@ class HotelStay extends Model
                 (new HotelService())->createOrderForStay($stay, true);
             }
         });
+    }
+
+    private static function validateCheckInAvailability($stay)
+    {
+        if ($stay->status != self::STATUS_ACTIVA) {
+            return;
+        }
+
+        $activeStay = self::where('empresa_id', $stay->empresa_id)
+            ->where('room_id', $stay->room_id)
+            ->where('status', self::STATUS_ACTIVA)
+            ->count();
+
+        if ($activeStay > 0) {
+            throw new \Exception('La habitacion ya tiene una estadia activa.');
+        }
+
+        $room = HotelRoom::where('empresa_id', $stay->empresa_id)->where('id', $stay->room_id)->first();
+        if (is_null($room) || (int)$room->is_active != 1 || (int)$room->inv_producto_id <= 0) {
+            throw new \Exception('La habitacion no esta disponible para check-in.');
+        }
+
+        if ($room->status == HotelRoom::STATUS_DISPONIBLE) {
+            return;
+        }
+
+        if ($room->status == HotelRoom::STATUS_RESERVADA && !is_null(self::reservationForCheckIn($stay))) {
+            return;
+        }
+
+        throw new \Exception('La habitacion no esta disponible para check-in.');
+    }
+
+    private static function reservationForCheckIn($stay)
+    {
+        $date = substr($stay->check_in_at, 0, 10);
+
+        return HotelReservation::where('empresa_id', $stay->empresa_id)
+            ->where('room_id', $stay->room_id)
+            ->where('cliente_id', $stay->main_cliente_id)
+            ->where('status', HotelReservation::STATUS_ACTIVA)
+            ->where('reserved_from', '<=', $date)
+            ->where('reserved_until', '>=', $date)
+            ->first();
     }
 
     public function setCheckInAtAttribute($value)

@@ -6,6 +6,7 @@ use App\Contabilidad\Impuesto;
 use App\Core\TipoDocApp;
 use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelOrderLine;
+use App\Hotel\HotelReservation;
 use App\Hotel\HotelRoom;
 use App\Hotel\HotelStay;
 use App\Hotel\HotelStayGuest;
@@ -45,13 +46,14 @@ class HotelService
         return DB::transaction(function () use ($data, $service) {
             $empresaId = $service->empresaId();
             $room = HotelRoom::where('empresa_id', $empresaId)->where('id', (int)$data['room_id'])->lockForUpdate()->first();
-            if (is_null($room) || !$service->roomIsAvailable($room)) {
-                throw new \Exception('La habitacion no esta disponible para check-in.');
-            }
-
             $cliente = Cliente::find((int)$data['main_cliente_id']);
             if (is_null($cliente)) {
                 throw new \Exception('El huesped principal no existe.');
+            }
+
+            $reservation = $service->reservationForCheckIn($room, $cliente->id, isset($data['check_in_at']) && $data['check_in_at'] != '' ? substr($data['check_in_at'], 0, 10) : date('Y-m-d'));
+            if (is_null($room) || !$service->roomIsAvailableForCheckIn($room, $reservation)) {
+                throw new \Exception('La habitacion no esta disponible para check-in.');
             }
 
             if ($service->hasActiveStay($empresaId, $room->id)) {
@@ -86,6 +88,10 @@ class HotelService
             $room->save();
 
             $service->createOrderForStay($stay, true);
+
+            if (!is_null($reservation)) {
+                $reservation->fulfill($stay->id);
+            }
 
             return $stay;
         });
@@ -460,14 +466,42 @@ class HotelService
         return is_null($price) ? 0 : $price;
     }
 
-    private function roomIsAvailable(HotelRoom $room)
+    private function roomIsAvailableForCheckIn($room, $reservation)
     {
-        return $room->status == HotelRoom::STATUS_DISPONIBLE && (int)$room->is_active == 1 && (int)$room->inv_producto_id > 0;
+        if (is_null($room)) {
+            return false;
+        }
+
+        if ((int)$room->is_active != 1 || (int)$room->inv_producto_id <= 0) {
+            return false;
+        }
+
+        if ($room->status == HotelRoom::STATUS_DISPONIBLE) {
+            return true;
+        }
+
+        return $room->status == HotelRoom::STATUS_RESERVADA && !is_null($reservation);
     }
 
     private function hasActiveStay($empresaId, $roomId)
     {
         return HotelStay::where('empresa_id', $empresaId)->where('room_id', $roomId)->where('status', HotelStay::STATUS_ACTIVA)->count() > 0;
+    }
+
+    private function reservationForCheckIn($room, $clienteId, $date)
+    {
+        if (is_null($room)) {
+            return null;
+        }
+
+        return HotelReservation::where('empresa_id', $room->empresa_id)
+            ->where('room_id', $room->id)
+            ->where('cliente_id', $clienteId)
+            ->where('status', HotelReservation::STATUS_ACTIVA)
+            ->where('reserved_from', '<=', $date)
+            ->where('reserved_until', '>=', $date)
+            ->lockForUpdate()
+            ->first();
     }
 
     private function loadOpenOrder($orderId)

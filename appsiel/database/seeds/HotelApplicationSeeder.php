@@ -67,6 +67,7 @@ class HotelApplicationSeeder extends Seeder
         $models = array(
             'rooms' => array('Habitaciones', 'hotel_rooms', 'App\\Hotel\\HotelRoom', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
             'stays' => array('Estadias', 'hotel_stays', 'App\\Hotel\\HotelStay', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
+            'reservations' => array('Reservas hoteleras', 'hotel_reservations', 'App\\Hotel\\HotelReservation', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
             'guests' => array('Huespedes', 'hotel_stay_guests', 'App\\Hotel\\HotelStayGuest', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
             'orders' => array('Pedidos hoteleros', 'hotel_order_headers', 'App\\Hotel\\HotelOrderHeader', 'web/create', 'web/id_fila/edit', 'hotel/orders/id_fila'),
             'lines' => array('Lineas de pedidos hoteleros', 'hotel_order_lines', 'App\\Hotel\\HotelOrderLine', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
@@ -140,8 +141,9 @@ class HotelApplicationSeeder extends Seeder
         }
 
         $roomTypes = '{"SENCILLA":"SENCILLA","DOBLE":"DOBLE","TRIPLE":"TRIPLE","FAMILIAR":"FAMILIAR","SUITE":"SUITE"}';
-        $roomStatuses = '{"DISPONIBLE":"DISPONIBLE","OCUPADA":"OCUPADA","LIMPIEZA":"LIMPIEZA","MANTENIMIENTO":"MANTENIMIENTO","BLOQUEADA":"BLOQUEADA"}';
+        $roomStatuses = '{"DISPONIBLE":"DISPONIBLE","RESERVADA":"RESERVADA","OCUPADA":"OCUPADA","LIMPIEZA":"LIMPIEZA","MANTENIMIENTO":"MANTENIMIENTO","BLOQUEADA":"BLOQUEADA"}';
         $stayStatuses = '{"ACTIVA":"ACTIVA","CERRADA":"CERRADA","ANULADA":"ANULADA"}';
+        $reservationStatuses = '{"ACTIVA":"ACTIVA","CUMPLIDA":"CUMPLIDA","ANULADA":"ANULADA"}';
         $orderStatuses = '{"ABIERTO":"ABIERTO","FACTURADO":"FACTURADO","ANULADO":"ANULADO"}';
         $invoiceTypes = '{"":"Sin factura","STANDARD":"STANDARD","POS":"POS"}';
         $sourceTypes = '{"ROOM":"ROOM","PRODUCT":"PRODUCT","SERVICE":"SERVICE","MANUAL":"MANUAL"}';
@@ -170,6 +172,15 @@ class HotelApplicationSeeder extends Seeder
             $this->field(7, 'Niños', 'bsText', 'children_count', '', '0', $textAttrs, 0),
             $this->field(8, 'Estado', 'select', 'status', $stayStatuses, 'ACTIVA', $comboAttrs, 1),
             $this->field(9, 'Notas', 'bsTextArea', 'notes', '', 'null', $textAttrs, 0),
+        ));
+
+        $this->seedModelFields('reservations', array(
+            $this->field(1, 'Cliente', 'select', 'cliente_id', 'model_App\\Ventas\\Cliente', 'null', $comboAttrs, 1),
+            $this->field(2, 'Habitacion', 'select', 'room_id', 'model_App\\Hotel\\HotelRoom', 'null', $comboAttrs, 1),
+            $this->field(3, 'Fecha desde', 'date', 'reserved_from', '', 'null', $textAttrs, 1),
+            $this->field(4, 'Fecha hasta', 'date', 'reserved_until', '', 'null', $textAttrs, 1),
+            $this->field(5, 'Estado', 'select', 'status', $reservationStatuses, 'ACTIVA', $comboAttrs, 1),
+            $this->field(6, 'Notas', 'bsTextArea', 'notes', '', 'null', $textAttrs, 0),
         ));
 
         $this->seedModelFields('guests', array(
@@ -333,7 +344,7 @@ class HotelApplicationSeeder extends Seeder
             array('hotel.dashboard', 'Panel hotelero', 'hotel', 'stays', $transactionsParentId, 0, 0, 'building'),
             array('hotel.checkin', 'Check-In', 'web/create', 'stays', $transactionsParentId, 1, 1, 'sign-in'),
             array('hotel.checkout', 'Check-Out', 'hotel/stays/active', 'stays', $transactionsParentId, 2, 1, 'sign-out'),
-            array('hotel.reservas', 'Reservas', 'web', 'stays', $transactionsParentId, 3, 1, 'calendar'),
+            array('hotel.reservas', 'Reservas', 'web', 'reservations', $transactionsParentId, 3, 1, 'calendar'),
             array('hotel.facturas', 'Facturas', 'web', 'orders', $transactionsParentId, 4, 1, 'file-text'),
             array('hotel.rooms', 'Habitaciones', 'web', 'rooms', $catalogParentId, 1, 1, 'bed'),
             array('hotel.services', 'Servicios', 'web', 'services', $catalogParentId, 2, 1, 'cubes'),

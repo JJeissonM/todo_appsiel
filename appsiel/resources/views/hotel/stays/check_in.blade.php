@@ -25,7 +25,7 @@
                             <label>Huesped principal</label>
                             <select name="main_cliente_id" class="form-control" required>
                                 @foreach($clients as $key => $label)
-                                    <option value="{{ $key }}" {{ old('main_cliente_id') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                                    <option value="{{ $key }}" {{ old('main_cliente_id', Input::get('main_cliente_id')) == $key ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
                             </select>
                         </div>
