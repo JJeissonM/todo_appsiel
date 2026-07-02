@@ -48,7 +48,7 @@
                 </div>
                 
                 <div class="col-md-6 col-lg-6 col-xl-2">
-                    {{ Form::bsSelect('bodega_id', $inv_services->get_bodega_id($doc_encabezado->cliente_id), 'Bodega', $inv_services->get_bodegas()->pluck('descripcion','id')->toArray(), ['required'=>'required']) }}
+                    {{ Form::bsSelect('bodega_id', $doc_encabezado->inv_bodega_id, 'Bodega', $inv_services->get_bodegas()->pluck('descripcion','id')->toArray(), ['required'=>'required']) }}
                 </div>
             </div>
 

@@ -138,6 +138,10 @@ class PedidoController extends TransaccionController
         $registro = app($modelo->name_space)->find($id);
         $registros = VtasDocRegistro::get_registros_impresion($registro->id);
 
+        if ((int)$registro->inv_bodega_id <= 0) {
+            $registro->inv_bodega_id = $this->get_default_bodega_id((int)$registro->cliente_id);
+        }
+
         $lista_campos = $general->get_campos_modelo($modelo, $registro, 'edit');
 
         $cantidad_campos = count($lista_campos);
@@ -210,9 +214,14 @@ class PedidoController extends TransaccionController
             return;
         }
 
+        $request['inv_bodega_id'] = $this->get_default_bodega_id((int)$request['cliente_id']);
+    }
+
+    protected function get_default_bodega_id($cliente_id)
+    {
         $inv_bodega_id = 0;
-        if (isset($request['cliente_id']) && (int)$request['cliente_id'] > 0) {
-            $cliente = Cliente::find((int)$request['cliente_id']);
+        if ($cliente_id > 0) {
+            $cliente = Cliente::find($cliente_id);
             if (!is_null($cliente) && (int)$cliente->inv_bodega_id > 0) {
                 $inv_bodega_id = (int)$cliente->inv_bodega_id;
             }
@@ -222,7 +231,7 @@ class PedidoController extends TransaccionController
             $inv_bodega_id = (int)config('ventas.inv_bodega_id');
         }
 
-        $request['inv_bodega_id'] = $inv_bodega_id;
+        return $inv_bodega_id;
     }
     
     // Desde la Web

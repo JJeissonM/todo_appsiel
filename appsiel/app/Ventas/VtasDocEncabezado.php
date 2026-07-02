@@ -27,7 +27,7 @@ class VtasDocEncabezado extends Model
     use FiltraRegistrosPorUsuario;
     //protected $table = 'vtas_doc_encabezados'; 
 
-    protected $fillable = [ 'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'contacto_cliente_id', 'vendedor_id', 'forma_pago', 'fecha_entrega', 'hora_entrega', 'plazo_entrega_id', 'fecha_vencimiento', 'orden_compras', 'valor_total', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio', 'valor_total_bolsas' ];
+    protected $fillable = [ 'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'contacto_cliente_id', 'vendedor_id', 'inv_bodega_id', 'forma_pago', 'fecha_entrega', 'hora_entrega', 'plazo_entrega_id', 'fecha_vencimiento', 'orden_compras', 'valor_total', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio', 'valor_total_bolsas' ];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Valor ingresos (sin iva)', 'Total factura', 'Forma de pago', 'Estado'];
 
@@ -562,6 +562,7 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.cliente_id',
                 'vtas_doc_encabezados.contacto_cliente_id',
                 'vtas_doc_encabezados.remision_doc_encabezado_id',
+                'vtas_doc_encabezados.inv_bodega_id',
                 'vtas_doc_encabezados.core_tipo_transaccion_id',
                 'vtas_doc_encabezados.core_tipo_doc_app_id',
                 'vtas_doc_encabezados.consecutivo',
