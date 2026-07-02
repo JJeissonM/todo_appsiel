@@ -342,7 +342,7 @@ class HotelApplicationSeeder extends Seeder
         // hotel/stays/check-in
         $permissions = array(
             array('hotel.dashboard', 'Panel hotelero', 'hotel', 'stays', $transactionsParentId, 0, 0, 'building'),
-            array('hotel.checkin', 'Estadías', 'web/create', 'stays', $transactionsParentId, 1, 1, 'sign-in'),
+            array('hotel.checkin', 'Estadías', 'web', 'stays', $transactionsParentId, 1, 1, 'sign-in'),
             array('hotel.checkout', 'Check-Out', 'hotel/stays/active', 'stays', $transactionsParentId, 2, 0, 'sign-out'),
             array('hotel.reservas', 'Reservas', 'web', 'reservations', $transactionsParentId, 3, 1, 'calendar'),
             array('hotel.facturas', 'Pedidos', 'web', 'orders', $transactionsParentId, 4, 1, 'file-text'),
