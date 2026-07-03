@@ -40,6 +40,58 @@ class HotelReservation extends Model
         return array(self::STATUS_ACTIVA, self::STATUS_CUMPLIDA, self::STATUS_ANULADA);
     }
 
+    public function validar_datos_creacion($request, $controller)
+    {
+        $this->validarDatosFormulario($request, $controller);
+    }
+
+    public function validar_datos_actualizacion($request, $controller, $id)
+    {
+        $this->validarDatosFormulario($request, $controller, $id);
+    }
+
+    private function validarDatosFormulario($request, $controller, $id = null)
+    {
+        $controller->validate($request, array(
+            'cliente_id' => 'required',
+            'room_id' => 'required',
+            'reserved_from' => 'required',
+            'reserved_until' => 'required',
+        ), array(
+            'cliente_id.required' => 'Debe seleccionar el huesped.',
+            'room_id.required' => 'Debe seleccionar una habitacion.',
+            'reserved_from.required' => 'Debe ingresar la fecha desde de la reserva.',
+            'reserved_until.required' => 'Debe ingresar la fecha hasta de la reserva.',
+        ));
+
+        $validator = \Validator::make($request->all(), array());
+        $validator->after(function ($validator) use ($request, $id) {
+            $reservation = new self;
+            $reservation->id = $id;
+            $reservation->empresa_id = $request->empresa_id;
+            if (empty($reservation->empresa_id) && Auth::check()) {
+                $reservation->empresa_id = Auth::user()->empresa_id;
+            }
+
+            $reservation->cliente_id = $request->cliente_id;
+            $reservation->room_id = $request->room_id;
+            $reservation->reserved_from = !empty($request->reserved_from) ? substr($request->reserved_from, 0, 10) : '';
+            $reservation->reserved_until = !empty($request->reserved_until) ? substr($request->reserved_until, 0, 10) : '';
+            $reservation->status = in_array($request->status, self::statuses()) ? $request->status : self::STATUS_ACTIVA;
+
+            $message = self::getPreparationError($reservation);
+            if (is_null($message)) {
+                $message = self::getAvailabilityError($reservation);
+            }
+
+            if (!is_null($message)) {
+                $validator->errors()->add('room_id', $message);
+            }
+        });
+
+        $controller->validateWith($validator, $request);
+    }
+
     private static function prepareReservation($reservation)
     {
         if (empty($reservation->empresa_id) && Auth::check()) {
@@ -62,19 +114,43 @@ class HotelReservation extends Model
             $reservation->reserved_until = substr($reservation->reserved_until, 0, 10);
         }
 
-        if (empty($reservation->reserved_from) || empty($reservation->reserved_until)) {
-            throw new \Exception('Debe ingresar la fecha desde y la fecha hasta de la reserva.');
-        }
+        $message = self::getPreparationError($reservation);
 
-        if ($reservation->reserved_until < $reservation->reserved_from) {
-            throw new \Exception('La fecha hasta de la reserva no puede ser menor que la fecha desde.');
+        if (!is_null($message)) {
+            throw new \Exception($message);
         }
     }
 
     private static function validateAvailability($reservation)
     {
+        $message = self::getAvailabilityError($reservation);
+
+        if (!is_null($message)) {
+            throw new \Exception($message);
+        }
+    }
+
+    private static function getPreparationError($reservation)
+    {
+        if (empty($reservation->reserved_from) || empty($reservation->reserved_until)) {
+            return 'Debe ingresar la fecha desde y la fecha hasta de la reserva.';
+        }
+
+        if ($reservation->reserved_until < $reservation->reserved_from) {
+            return 'La fecha hasta de la reserva no puede ser menor que la fecha desde.';
+        }
+
+        return null;
+    }
+
+    private static function getAvailabilityError($reservation)
+    {
         if ($reservation->status != self::STATUS_ACTIVA) {
-            return;
+            return null;
+        }
+
+        if (empty($reservation->room_id) || empty($reservation->reserved_from) || empty($reservation->reserved_until)) {
+            return null;
         }
 
         $query = self::where('empresa_id', $reservation->empresa_id)
@@ -88,7 +164,7 @@ class HotelReservation extends Model
         }
 
         if ($query->count() > 0) {
-            throw new \Exception('La habitacion ya tiene una reserva activa en ese rango de fechas.');
+            return 'La habitacion ya tiene una reserva activa en ese rango de fechas.';
         }
 
         $activeStay = HotelStay::where('empresa_id', $reservation->empresa_id)
@@ -102,8 +178,10 @@ class HotelReservation extends Model
             ->count();
 
         if ($activeStay > 0) {
-            throw new \Exception('La habitacion tiene una estadia activa en ese rango de fechas.');
+            return 'La habitacion tiene una estadia activa en ese rango de fechas.';
         }
+
+        return null;
     }
 
     public function store_adicional($datos, $registro)
@@ -114,6 +192,8 @@ class HotelReservation extends Model
 
     public function get_campos_adicionales_create($lista_campos)
     {
+        $lista_campos = $this->setCustomerAutocompleteField($lista_campos);
+
         foreach ($lista_campos as $key => $campo) {
             if (!isset($campo['name'])) {
                 continue;
@@ -127,6 +207,14 @@ class HotelReservation extends Model
                 $lista_campos[$key]['value'] = Input::get('cliente_id');
             }
 
+            if (in_array($campo['name'], array('cliente_id', 'room_id', 'reserved_from', 'reserved_until'))) {
+                $lista_campos[$key]['requerido'] = 1;
+                if (!isset($lista_campos[$key]['atributos']) || !is_array($lista_campos[$key]['atributos'])) {
+                    $lista_campos[$key]['atributos'] = array();
+                }
+                $lista_campos[$key]['atributos']['required'] = 'required';
+            }
+
             if ($campo['name'] == 'reserved_from' && Input::get('reserved_from') != '') {
                 $lista_campos[$key]['value'] = Input::get('reserved_from');
             }
@@ -137,6 +225,92 @@ class HotelReservation extends Model
         }
 
         return $lista_campos;
+    }
+
+    public function get_campos_adicionales_edit($lista_campos, $registro)
+    {
+        return $this->setCustomerAutocompleteField($lista_campos);
+    }
+
+    public function show_adicional($lista_campos, $registro)
+    {
+        foreach ($lista_campos as $key => $campo) {
+            if (!isset($campo['name'])) {
+                continue;
+            }
+
+            if ($campo['name'] == 'cliente_id') {
+                $clienteLabel = $this->getClienteLabel($registro);
+                $lista_campos[$key]['value'] = $clienteLabel;
+                $lista_campos[$key]['show_value'] = $clienteLabel;
+            }
+
+            if ($campo['name'] == 'room_id') {
+                $roomLabel = $this->getRoomLabel($registro);
+                $lista_campos[$key]['value'] = $roomLabel;
+                $lista_campos[$key]['show_value'] = $roomLabel;
+            }
+        }
+
+        return $lista_campos;
+    }
+
+    public function get_botones_adicionales_show($registro, $variables_url)
+    {
+        $cliente = $registro->cliente;
+        if (is_null($cliente) || is_null($cliente->tercero)) {
+            return array();
+        }
+
+        $url = 'tesoreria/recaudos/create?id=3'
+            . '&id_modelo=46&id_transaccion=8'
+            . '&core_tercero_id=' . $cliente->core_tercero_id
+            . '&cliente_text=' . rawurlencode($this->getClienteLabel($registro))
+            . '&hotel_reservation_id=' . $registro->id;
+
+        $btn = new \stdClass();
+        $btn->url = $url;
+        $btn->title = 'Registrar anticipo';
+        $btn->color_bootstrap = 'success';
+        $btn->faicon = 'money';
+        $btn->size = 'md';
+        $btn->tag_html = 'a';
+        $btn->target = '_blank';
+
+        return array(new \App\Sistema\Html\Boton($btn));
+    }
+
+    private function setCustomerAutocompleteField($lista_campos)
+    {
+        foreach ($lista_campos as $key => $campo) {
+            if (isset($campo['name']) && $campo['name'] == 'cliente_id') {
+                $lista_campos[$key]['tipo'] = 'cliente_autocomplete';
+                $lista_campos[$key]['opciones'] = '';
+                $lista_campos[$key]['atributos'] = array('class' => 'form-control');
+            }
+        }
+
+        return $lista_campos;
+    }
+
+    private function getClienteLabel($reservation)
+    {
+        $cliente = $reservation->cliente;
+        if (is_null($cliente) || is_null($cliente->tercero)) {
+            return '';
+        }
+
+        return trim($cliente->tercero->numero_identificacion . ' - ' . $cliente->tercero->descripcion);
+    }
+
+    private function getRoomLabel($reservation)
+    {
+        $room = $reservation->room;
+        if (is_null($room)) {
+            return '';
+        }
+
+        return trim($room->room_number . ' - ' . $room->room_type);
     }
 
     public function update_adicional($datos, $id)

@@ -18,6 +18,7 @@ use App\Ventas\VtasDocEncabezado;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\Services\CustomerServices;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 
@@ -32,7 +33,22 @@ class ClienteController extends ModeloController
      */
     public function store(Request $request)
     {
+        $duplicateResponse = $this->validarNumeroIdentificacionUnico($request);
+        if (!is_null($duplicateResponse)) {
+            return $duplicateResponse;
+        }
+
         $Cliente = (new CustomerServices())->store_new_customer($request->all());
+
+        if ($request->ajax() || $request->hotel_autocomplete_modal == 1) {
+            $label = trim((string)$Cliente->numero_identificacion . ' - ' . (string)$Cliente->nombre_cliente);
+
+            return response()->json(array(
+                'id' => $Cliente->id,
+                'text' => $label,
+                'cliente' => $Cliente,
+            ));
+        }
 
         if ($request->return_to != '') {
             return redirect($request->return_to)->with('flash_message', 'Huésped CREADO correctamente.');
@@ -43,6 +59,41 @@ class ClienteController extends ModeloController
         $url_ver = str_replace('id_fila', $Cliente->id, $acciones->show);
 
         return redirect( $url_ver . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo )->with( 'flash_message', 'Registro CREADO correctamente.' );
+    }
+
+    private function validarNumeroIdentificacionUnico(Request $request)
+    {
+        $numeroIdentificacion = trim((string)$request->numero_identificacion);
+        if ($numeroIdentificacion == '') {
+            return null;
+        }
+
+        $empresaId = (int)$request->core_empresa_id;
+        if ($empresaId <= 0 && Auth::check()) {
+            $empresaId = (int)Auth::user()->empresa_id;
+        }
+
+        $tercero = Tercero::where('numero_identificacion', $numeroIdentificacion);
+        if ($empresaId > 0) {
+            $tercero->where('core_empresa_id', $empresaId);
+        }
+
+        $tercero = $tercero->first();
+        if (is_null($tercero)) {
+            return null;
+        }
+
+        $cliente = Cliente::where('core_tercero_id', $tercero->id)->first();
+        $mensaje = 'Ya existe un tercero con el número de identificación ' . $numeroIdentificacion . '.';
+        if (!is_null($cliente)) {
+            $mensaje = 'Ya existe un cliente con el número de identificación ' . $numeroIdentificacion . ': ' . $tercero->descripcion . '. Use el buscador para seleccionarlo.';
+        }
+
+        if ($request->ajax() || $request->hotel_autocomplete_modal == 1) {
+            return response()->json(array('message' => $mensaje), 422);
+        }
+
+        return redirect()->back()->withInput()->with('mensaje_error', $mensaje);
     }
 
 

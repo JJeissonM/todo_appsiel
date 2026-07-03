@@ -127,7 +127,7 @@ class VistaController extends Controller
             }
             
             if ( $modo == 'show') {
-                echo '<div class="row" style="padding:5px;">'.VistaController::mostrar_campo( $campo['id'], $campo['value'], 'show' ).'</div>';
+                echo '<div class="row" style="padding:5px;">'.VistaController::show_campo($campo).'</div>';
             }else{
                 // Si el campo tiene el name core_campo_id-ID, se reemplaza por el ID del campo en la tabla sys_campos
                 echo '<div class="row" style="padding:5px;">'.str_replace("core_campo_id-ID", 'core_campo_id-'.$campo['id'], VistaController::dibujar_campo($campo) ).'</div>';
@@ -451,6 +451,10 @@ class VistaController extends Controller
             case 'input_lista_sugerencias':
                 $control = FormFacade::bsInputListaSugerencias( $campo['name'], $campo['value'], $campo['descripcion'], $campo['atributos']);
                 break;
+
+            case 'cliente_autocomplete':
+                $control = FormFacade::bsClienteAutocomplete($campo['name'], VistaController::valor_cliente_autocomplete($campo['value']), $campo['descripcion'], $campo['atributos']);
+                break;
             
             default:
                 $control = '<div class="alert alert-danger">
@@ -459,6 +463,28 @@ class VistaController extends Controller
         }
 
         return $control;
+    }
+
+    public static function valor_cliente_autocomplete($value)
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+
+        if ($value == '' || $value == 'null' || is_null($value)) {
+            return array('', '');
+        }
+
+        $cliente = \App\Ventas\Cliente::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_clientes.core_tercero_id')
+            ->where('vtas_clientes.id', (int)$value)
+            ->select('vtas_clientes.id', 'core_terceros.descripcion', 'core_terceros.numero_identificacion')
+            ->first();
+
+        if (is_null($cliente)) {
+            return array('', $value);
+        }
+
+        return array(trim($cliente->numero_identificacion . ' - ' . $cliente->descripcion), $cliente->id);
     }
 
     public static function formatear_valor_fecha_hora($valor)
@@ -512,6 +538,10 @@ class VistaController extends Controller
     // Recibe un array del campo
     public static function show_campo(array $campo)
     {
+        if (array_key_exists('show_value', $campo)) {
+            return '<b>' . $campo['descripcion'] . ': </b>' . $campo['show_value'];
+        }
+
         $control = VistaController::mostrar_campo( $campo['id'], $campo['value'], 'show' );
 
         return $control;

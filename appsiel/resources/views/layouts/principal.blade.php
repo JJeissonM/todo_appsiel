@@ -413,13 +413,20 @@
 		function validar_requeridos() {
 			control_requeridos = true;
 			$("*[required]").each(function() {
-				if ($(this).val() == "" || $(this).val() == null) {
-					$(this).focus();
-					var name_campo = $(this).attr('name');
-					var lbl_campo = $(this).parent().prev('label').text();
+				var campo = $(this);
+				var modal_padre = campo.closest('.modal');
+
+				if (campo.is(':disabled') || (modal_padre.length > 0 && !modal_padre.hasClass('in'))) {
+					return true;
+				}
+
+				if (campo.val() == "" || campo.val() == null) {
+					campo.focus();
+					var name_campo = campo.attr('name');
+					var lbl_campo = campo.parent().prev('label').text();
 					if( lbl_campo === '' )
 					{
-						lbl_campo = $(this).prev('label').text();
+						lbl_campo = campo.prev('label').text();
 					}
 					alert( 'Este campo es requerido: ' + lbl_campo + ' (' + name_campo + ')' );
 

@@ -163,7 +163,7 @@ class HotelApplicationSeeder extends Seeder
         ));
 
         $this->seedModelFields('stays', array(
-            $this->field(1, 'Cliente principal', 'select', 'main_cliente_id', 'model_App\\Ventas\\Cliente', 'null', $comboAttrs, 1),
+            $this->field(1, 'Cliente principal', 'cliente_autocomplete', 'main_cliente_id', '', 'null', $textAttrs, 1),
             $this->field(2, 'Habitacion', 'select', 'room_id', 'model_App\\Hotel\\HotelRoom', 'null', $comboAttrs, 1),
             $this->field(3, 'Check-in', 'fecha_hora', 'check_in_at', '', 'null', $textAttrs, 1),
             $this->field(4, 'Salida esperada', 'fecha_hora', 'expected_check_out_at', '', 'null', $textAttrs, 0),
@@ -175,7 +175,7 @@ class HotelApplicationSeeder extends Seeder
         ));
 
         $this->seedModelFields('reservations', array(
-            $this->field(1, 'Cliente', 'select', 'cliente_id', 'model_App\\Ventas\\Cliente', 'null', $comboAttrs, 1),
+            $this->field(1, 'Cliente', 'cliente_autocomplete', 'cliente_id', '', 'null', $textAttrs, 1),
             $this->field(2, 'Habitacion', 'select', 'room_id', 'model_App\\Hotel\\HotelRoom', 'null', $comboAttrs, 1),
             $this->field(3, 'Fecha desde', 'fecha', 'reserved_from', '', 'null', $textAttrs, 1),
             $this->field(4, 'Fecha hasta', 'fecha', 'reserved_until', '', 'null', $textAttrs, 1),

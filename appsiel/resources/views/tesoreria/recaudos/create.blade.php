@@ -123,6 +123,7 @@
 		$(document).ready(function(){
 
 			$('#fecha').val( get_fecha_hoy() );
+			asignar_datos_desde_reserva_hotel();
 			$('#fecha').focus();
 
 			/*
@@ -372,6 +373,46 @@
 
 				$('#teso_medio_recaudo_id').val('');
 				$('#teso_medio_recaudo_id').focus();
+			}
+
+			function asignar_datos_desde_reserva_hotel()
+			{
+				var core_tercero_id = {!! json_encode(Input::get('core_tercero_id')) !!};
+				var cliente_text = {!! json_encode(Input::get('cliente_text')) !!};
+
+				if (core_tercero_id === null || core_tercero_id === '') {
+					return;
+				}
+
+				if ($('#core_tercero_id').is('select')) {
+					if ($('#core_tercero_id option[value="' + core_tercero_id + '"]').length == 0 && cliente_text !== null && cliente_text !== '') {
+						$('#core_tercero_id').append($('<option>', {
+							value: core_tercero_id,
+							text: cliente_text
+						}));
+					}
+
+					$('#core_tercero_id').val(core_tercero_id);
+					$('#core_tercero_id_aux').val(core_tercero_id);
+
+					var texto_tercero = $('#core_tercero_id option:selected').text();
+					if ((texto_tercero === '' || texto_tercero == core_tercero_id) && cliente_text !== null && cliente_text !== '') {
+						texto_tercero = cliente_text;
+					}
+
+					if (texto_tercero !== '') {
+						$('#id_tercero').val(texto_tercero);
+						$('#core_tercero_id').next('.custom-combobox').find('.custom-combobox-input').val(texto_tercero);
+					}
+
+					return;
+				}
+
+				if (cliente_text !== null && cliente_text !== '') {
+					$('input[name="core_tercero_id_aux"]').val(cliente_text);
+				}
+
+				$('input[type="hidden"][name="core_tercero_id"]').val(core_tercero_id);
 			}
 
 			function calcular_totales(){

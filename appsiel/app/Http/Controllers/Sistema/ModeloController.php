@@ -269,6 +269,10 @@ class ModeloController extends Controller
         
         $this->validar_requeridos_y_unicos($request, $this->modelo);
 
+        if (method_exists(app($this->modelo->name_space), 'validar_datos_creacion')) {
+            app($this->modelo->name_space)->validar_datos_creacion($request, $this);
+        }
+
         // Se verifican si vienen campos con valores tipo array. Normalmente para los campos tipo chexkbox.
         foreach ($request->all() as $key => $value)
         {
@@ -429,6 +433,10 @@ class ModeloController extends Controller
             }
         }
 
+        if (method_exists(app($modelo->name_space), 'validar_datos_actualizacion')) {
+            app($modelo->name_space)->validar_datos_actualizacion($request, $this, $id);
+        }
+
         // Se verifican si vienen campos con valores tipo array. Normalmente para los campos tipo chexkbox.
         foreach ($request->all() as $key => $value) {
             if (is_array($value)) {
@@ -514,6 +522,15 @@ class ModeloController extends Controller
             foreach ($enlaces as $fila) {
                 $botones[$i] = new Boton($fila);
                 $i++;
+            }
+        }
+
+        if (method_exists(app($this->modelo->name_space), 'get_botones_adicionales_show')) {
+            $botones_adicionales = app($this->modelo->name_space)->get_botones_adicionales_show($registro, $variables_url);
+            if (is_array($botones_adicionales)) {
+                foreach ($botones_adicionales as $boton_adicional) {
+                    $botones[] = $boton_adicional;
+                }
             }
         }
 

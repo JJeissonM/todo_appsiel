@@ -60,6 +60,11 @@ class CustomerServices
      */
     public function preparar_datos($datos)
     {
+        if( !isset($datos['core_empresa_id']) && Auth::check() )
+        {
+            $datos['core_empresa_id'] = Auth::user()->empresa_id;
+        }
+
         if( !isset($datos['numero_identificacion']) )
         {
             $datos['numero_identificacion'] = abs( crc32( uniqid() ) ); // Cedula de ciudadania

@@ -12,6 +12,7 @@
 		    <hr>
 
 		    @include('layouts.form_create',compact('form_create'))
+		    @include('hotel.partials.cliente_autocomplete_modal', compact('form_create'))
 
 			@if(isset($tabla))
 
@@ -53,6 +54,8 @@
 	@if( isset($archivo_js) )
 		<script src="{{ asset( $archivo_js ) }}"></script>
 	@endif
+
+	@include('hotel.partials.cliente_autocomplete_scripts', compact('form_create'))
 
 	@yield('script_adicional')
 @endsection

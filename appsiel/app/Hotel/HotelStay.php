@@ -57,6 +57,38 @@ class HotelStay extends Model
         return array(self::STATUS_ACTIVA, self::STATUS_CERRADA, self::STATUS_ANULADA);
     }
 
+    public function validar_datos_creacion($request, $controller)
+    {
+        $controller->validate($request, array(
+            'main_cliente_id' => 'required',
+            'room_id' => 'required',
+        ), array(
+            'main_cliente_id.required' => 'Debe seleccionar el huesped principal.',
+            'room_id.required' => 'Debe seleccionar una habitacion.',
+        ));
+
+        $validator = \Validator::make($request->all(), array());
+        $validator->after(function ($validator) use ($request) {
+            $stay = new self;
+            $stay->empresa_id = $request->empresa_id;
+            if (empty($stay->empresa_id) && Auth::check()) {
+                $stay->empresa_id = Auth::user()->empresa_id;
+            }
+
+            $stay->main_cliente_id = $request->main_cliente_id;
+            $stay->room_id = $request->room_id;
+            $stay->check_in_at = !empty($request->check_in_at) ? $request->check_in_at : date('Y-m-d H:i:s');
+            $stay->status = in_array($request->status, self::statuses()) ? $request->status : self::STATUS_ACTIVA;
+
+            $message = self::getCheckInAvailabilityError($stay);
+            if (!is_null($message)) {
+                $validator->errors()->add('room_id', $message);
+            }
+        });
+
+        $controller->validateWith($validator, $request);
+    }
+
     public function store_adicional($datos, $registro)
     {
         $registro->ensureCheckInRecords();
@@ -66,6 +98,8 @@ class HotelStay extends Model
 
     public function get_campos_adicionales_create($lista_campos)
     {
+        $lista_campos = $this->setCustomerAutocompleteField($lista_campos);
+
         foreach ($lista_campos as $key => $campo) {
             if (!isset($campo['name'])) {
                 continue;
@@ -75,8 +109,34 @@ class HotelStay extends Model
                 $lista_campos[$key]['value'] = Input::get('room_id');
             }
 
+            if ($campo['name'] == 'room_id') {
+                $lista_campos[$key]['requerido'] = 1;
+                if (!isset($lista_campos[$key]['atributos']) || !is_array($lista_campos[$key]['atributos'])) {
+                    $lista_campos[$key]['atributos'] = array();
+                }
+                $lista_campos[$key]['atributos']['required'] = 'required';
+            }
+
             if ($campo['name'] == 'main_cliente_id' && Input::get('main_cliente_id') != '') {
                 $lista_campos[$key]['value'] = Input::get('main_cliente_id');
+            }
+        }
+
+        return $lista_campos;
+    }
+
+    public function get_campos_adicionales_edit($lista_campos, $registro)
+    {
+        return $this->setCustomerAutocompleteField($lista_campos);
+    }
+
+    private function setCustomerAutocompleteField($lista_campos)
+    {
+        foreach ($lista_campos as $key => $campo) {
+            if (isset($campo['name']) && $campo['name'] == 'main_cliente_id') {
+                $lista_campos[$key]['tipo'] = 'cliente_autocomplete';
+                $lista_campos[$key]['opciones'] = '';
+                $lista_campos[$key]['atributos'] = array('class' => 'form-control');
             }
         }
 
@@ -136,8 +196,21 @@ class HotelStay extends Model
 
     private static function validateCheckInAvailability($stay)
     {
+        $message = self::getCheckInAvailabilityError($stay);
+
+        if (!is_null($message)) {
+            throw new \Exception($message);
+        }
+    }
+
+    private static function getCheckInAvailabilityError($stay)
+    {
         if ($stay->status != self::STATUS_ACTIVA) {
-            return;
+            return null;
+        }
+
+        if (empty($stay->room_id)) {
+            return 'Debe seleccionar una habitacion para el check-in.';
         }
 
         $activeStay = self::where('empresa_id', $stay->empresa_id)
@@ -146,23 +219,23 @@ class HotelStay extends Model
             ->count();
 
         if ($activeStay > 0) {
-            throw new \Exception('La habitacion ya tiene una estadia activa.');
+            return 'La habitacion ya tiene una estadia activa.';
         }
 
         $room = HotelRoom::where('empresa_id', $stay->empresa_id)->where('id', $stay->room_id)->first();
         if (is_null($room) || (int)$room->is_active != 1 || (int)$room->inv_producto_id <= 0) {
-            throw new \Exception('La habitacion no esta disponible para check-in.');
+            return 'La habitacion no esta disponible para check-in.';
         }
 
         if ($room->status == HotelRoom::STATUS_DISPONIBLE) {
-            return;
+            return null;
         }
 
         if ($room->status == HotelRoom::STATUS_RESERVADA && !is_null(self::reservationForCheckIn($stay))) {
-            return;
+            return null;
         }
 
-        throw new \Exception('La habitacion no esta disponible para check-in.');
+        return 'La habitacion no esta disponible para check-in.';
     }
 
     private static function reservationForCheckIn($stay)
