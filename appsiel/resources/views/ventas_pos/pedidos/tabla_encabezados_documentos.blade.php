@@ -10,6 +10,24 @@
                 ?>
 
             @foreach ($encabezados_documentos as $fila)
+                <?php
+                    $tercero_cliente = null;
+                    if ( !is_null($fila->cliente) && !is_null($fila->cliente->tercero) )
+                    {
+                        $tercero_cliente = $fila->cliente->tercero;
+                    }
+
+                    if ( is_null($tercero_cliente) && !is_null($fila->tercero) )
+                    {
+                        $tercero_cliente = $fila->tercero;
+                    }
+
+                    $cliente_label = 'Cliente no encontrado';
+                    if ( !is_null($tercero_cliente) )
+                    {
+                        $cliente_label = $tercero_cliente->descripcion;
+                    }
+                ?>
                 <tr>                    
                     <td>
                         <a class="btn btn-primary btn-xs btn-detail" href="{{ url('vtas_pedidos/' . $fila->id .'?id=20&id_modelo=175&id_transaccion=42') }}" title="Consultar" id="btn_print" target="_blank"><i class="fa fa-btn fa-eye"></i>&nbsp;</a>                        
@@ -31,7 +49,7 @@
                         {{ $fila->get_label_documento() }}
                     </td>
                     <td class="table-text">
-                        {{ $fila->cliente->tercero->descripcion }}
+                        {{ $cliente_label }}
                     </td>
                     <td class="table-text">
                         {{ $fila->forma_pago }}

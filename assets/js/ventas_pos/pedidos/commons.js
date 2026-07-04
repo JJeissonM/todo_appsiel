@@ -992,6 +992,19 @@ $(document).ready(function () {
         $.get(url, function (respuesta) {
             $('#div_spin2').hide();
             $('#contenido_modal2').html(respuesta);
+        }).fail(function (xhr) {
+            $('#div_spin2').hide();
+
+            var status = xhr.status ? xhr.status : 'N/D';
+            var statusText = xhr.statusText ? xhr.statusText : 'Error desconocido';
+
+            $('#contenido_modal2').html(
+                '<div class="alert alert-danger" role="alert" style="margin: 15px;">' +
+                    '<h4><i class="fa fa-warning"></i> No fue posible consultar los pedidos.</h4>' +
+                    '<p>Ocurrió un error al cargar la información de la ventana. Intente nuevamente; si el problema continúa, revise el log del servidor.</p>' +
+                    '<p><b>Código:</b> ' + status + ' - ' + statusText + '</p>' +
+                '</div>'
+            );
         });/**/
     });
 
@@ -1090,5 +1103,4 @@ $(document).ready(function () {
     }
 
 });
-
 

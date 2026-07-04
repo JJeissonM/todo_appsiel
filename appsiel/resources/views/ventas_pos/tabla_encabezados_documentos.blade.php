@@ -36,6 +36,23 @@
                 }
 
                 $valor_factura = $fila->valor_total + $valor_propina + $valor_datafono + $fila->valor_ajuste_al_peso + $fila->valor_total_bolsas;
+
+                $tercero_cliente = null;
+                if ( !is_null($fila->cliente) && !is_null($fila->cliente->tercero) )
+                {
+                    $tercero_cliente = $fila->cliente->tercero;
+                }
+
+                if ( is_null($tercero_cliente) && !is_null($fila->tercero) )
+                {
+                    $tercero_cliente = $fila->tercero;
+                }
+
+                $cliente_label = 'Cliente no encontrado';
+                if ( !is_null($tercero_cliente) )
+                {
+                    $cliente_label = $tercero_cliente->get_label_to_show();
+                }
             ?>
                 <tr>
                     
@@ -88,7 +105,7 @@
                         {{ $fila->get_label_documento() }}
                     </td>
                     <td class="table-text">
-                        {{ $fila->cliente->tercero->get_label_to_show() }}
+                        {{ $cliente_label }}
                     </td>
                     <td class="table-text">
                         {{ $fila->forma_pago }}
