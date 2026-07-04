@@ -45,6 +45,10 @@ class FacturaEntradaPendienteController extends CompraController
     public static function get_total_documento_desde_lineas_registros_desde_entrada( $doc_encabezado, $lineas_registros )
     {
         $total_documento = 0;
+        $liquida_impuestos = (int)config('configuracion.liquidacion_impuestos');
+        if (!is_null($doc_encabezado->proveedor)) {
+            $liquida_impuestos = $liquida_impuestos && (int)$doc_encabezado->proveedor->liquida_impuestos;
+        }
         // Por cada entrada de almacén pendiente
         $cantidad_registros = count( $lineas_registros );
 
@@ -57,7 +61,7 @@ class FacturaEntradaPendienteController extends CompraController
             foreach ($registros_entrada as $un_registro)
             {
                 $datos_linea_entrada = CompraController::get_datos_factura_desde_registro_entrada($un_registro, $doc_encabezado->proveedor_id);
-                $total_documento += $datos_linea_entrada['precio_total'];
+                $total_documento += $liquida_impuestos ? $datos_linea_entrada['precio_total'] : $datos_linea_entrada['base_impuesto'];
             } // Fin por cada registro de la entrada
         }
 

@@ -386,7 +386,7 @@ class InvDocEncabezado extends Model
                     ->first();
     }
 
-    public static function get_documentos_por_transaccion( $core_tipo_transaccion_id, $core_tercero_id, $estado)
+    public static function get_documentos_por_transaccion( $core_tipo_transaccion_id, $core_tercero_id, $estado, $opciones = [])
     {
         $documentos = InvDocEncabezado::where( [
                                                 ['inv_doc_encabezados.core_empresa_id', Auth::user()->empresa_id ],
@@ -440,13 +440,21 @@ class InvDocEncabezado extends Model
         }
 
 
+        $liquida_impuestos = (int)config('configuracion.liquidacion_impuestos');
+        if (isset($opciones['liquida_impuestos'])) {
+            $liquida_impuestos = $liquida_impuestos && (int)$opciones['liquida_impuestos'];
+        }
+
         foreach ($documentos as $un_documento)
         {
             $registros = InvDocRegistro::where('inv_doc_encabezado_id', $un_documento->id)->get();
             $total_documento_mas_iva = 0;
             foreach ($registros as $un_registro)
             {
-                $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, $proveedor_id, $cliente_id );
+                $tasa_impuesto = 0;
+                if ($liquida_impuestos) {
+                    $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, $proveedor_id, $cliente_id );
+                }
 
                 $precio_total = $un_registro->costo_total * ( 1 + $tasa_impuesto  / 100 );
 

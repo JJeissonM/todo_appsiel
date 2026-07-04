@@ -311,6 +311,19 @@ class CompraController extends TransaccionController
                 $tasa_impuesto = $datos_linea_entrada['tasa_impuesto'];
                 $precio_unitario = $datos_linea_entrada['precio_unitario'];
                 $precio_total = $datos_linea_entrada['precio_total'];
+                $valor_impuesto = $datos_linea_entrada['valor_impuesto'];
+
+                $liquida_impuestos = (int)config('configuracion.liquidacion_impuestos');
+                if (!is_null($doc_encabezado->proveedor)) {
+                    $liquida_impuestos = $liquida_impuestos && (int)$doc_encabezado->proveedor->liquida_impuestos;
+                }
+
+                if (!$liquida_impuestos) {
+                    $valor_impuesto = 0;
+                    $tasa_impuesto = 0;
+                    $precio_total = $total_base_impuesto;
+                    $precio_unitario = $cantidad != 0 ? $precio_total / $cantidad : 0;
+                }
 
                 $tasa_descuento = 0;
                 $valor_total_descuento = 0;
@@ -362,14 +375,6 @@ class CompraController extends TransaccionController
                             $contab_retencion_id = 0;
                         }
                     }
-                }
-
-                $valor_impuesto = $datos_linea_entrada['valor_impuesto'];
-
-                if (!(int)$doc_encabezado->proveedor->liquida_impuestos) {
-                    $valor_impuesto = 0;
-                    $tasa_impuesto = 0;
-                    $total_base_impuesto = $precio_total;
                 }
 
                 $linea_datos = ['inv_bodega_id' => $un_registro->inv_bodega_id] +
@@ -460,9 +465,12 @@ class CompraController extends TransaccionController
         $cantidad = (float)$registro_entrada->cantidad;
         $total_base_impuesto = (float)$registro_entrada->costo_total;
 
-        $tasa_impuesto = Impuesto::get_tasa($registro_entrada->inv_producto_id, $proveedor_id, 0);
+        $tasa_impuesto = 0;
         if ((int)config('configuracion.liquidacion_impuestos')) {
-            $tasa_impuesto = $registro_entrada->item->impuesto->tasa_impuesto;
+            $tasa_impuesto = Impuesto::get_tasa($registro_entrada->inv_producto_id, $proveedor_id, 0);
+            if (!is_null($registro_entrada->item) && !is_null($registro_entrada->item->impuesto)) {
+                $tasa_impuesto = $registro_entrada->item->impuesto->tasa_impuesto;
+            }
         }
 
         $precio_total = $total_base_impuesto * (1 + $tasa_impuesto / 100);
@@ -651,7 +659,9 @@ class CompraController extends TransaccionController
             $proveedor_ea = \App\Compras\Proveedor::find($doc_encabezado->proveedor_id);
             $tercero_id   = $proveedor_ea ? $proveedor_ea->core_tercero_id : 0;
             // Cargar con totales usando el método existente
-            $ea_asignadas = InvDocEncabezado::get_documentos_por_transaccion(35, $tercero_id, 'Facturada')
+            $ea_asignadas = InvDocEncabezado::get_documentos_por_transaccion(35, $tercero_id, 'Facturada', [
+                'liquida_impuestos' => $proveedor_ea ? (int)$proveedor_ea->liquida_impuestos : 1
+            ])
                 ->whereIn('id', $ea_ids);
 
             $bodegas_ingreso_mercancia = InvDocEncabezado::whereIn('inv_doc_encabezados.id', $ea_ids)
@@ -1194,7 +1204,8 @@ class CompraController extends TransaccionController
         $entradas = InvDocEncabezado::get_documentos_por_transaccion(
             35,
             $proveedor->core_tercero_id,
-            'Pendiente'
+            'Pendiente',
+            ['liquida_impuestos' => (int)$proveedor->liquida_impuestos]
         );
 
         if ($entradas->isEmpty()) {
@@ -1270,7 +1281,12 @@ class CompraController extends TransaccionController
     // Cuando se hace la Entrada por compras y queda pendiente hacer la factura
     public function consultar_entradas_pendientes()
     {
-        $entradas = InvDocEncabezado::get_documentos_por_transaccion(35, Input::get('core_tercero_id'), 'Pendiente');
+        $proveedor = Proveedor::where('core_tercero_id', (int)Input::get('core_tercero_id'))->first();
+        $liquida_impuestos = $proveedor ? (int)$proveedor->liquida_impuestos : 1;
+
+        $entradas = InvDocEncabezado::get_documentos_por_transaccion(35, Input::get('core_tercero_id'), 'Pendiente', [
+            'liquida_impuestos' => $liquida_impuestos
+        ]);
 
         if (empty($entradas->toArray())) {
             return 'sin_registros';
