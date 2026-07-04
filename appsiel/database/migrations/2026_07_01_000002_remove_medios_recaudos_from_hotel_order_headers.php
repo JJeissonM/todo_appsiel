@@ -8,6 +8,10 @@ class RemoveMediosRecaudosFromHotelOrderHeaders extends Migration
 {
     public function up()
     {
+        if (!$this->hotelModuleEnabled()) {
+            return;
+        }
+
         if (!Schema::hasTable('hotel_order_headers')) {
             return;
         }
@@ -21,6 +25,10 @@ class RemoveMediosRecaudosFromHotelOrderHeaders extends Migration
 
     public function down()
     {
+        if (!$this->hotelModuleEnabled()) {
+            return;
+        }
+
         if (!Schema::hasTable('hotel_order_headers')) {
             return;
         }
@@ -30,5 +38,10 @@ class RemoveMediosRecaudosFromHotelOrderHeaders extends Migration
                 $table->text('lineas_registros_medios_recaudos')->nullable()->after('pos_doc_id');
             });
         }
+    }
+
+    protected function hotelModuleEnabled()
+    {
+        return filter_var(env('HOTEL_MODULE_ENABLED', env('HOTEL_MODULE_SEEDERS_ENABLED', false)), FILTER_VALIDATE_BOOLEAN);
     }
 }

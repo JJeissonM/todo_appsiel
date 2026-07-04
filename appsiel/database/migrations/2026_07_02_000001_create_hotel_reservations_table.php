@@ -7,6 +7,10 @@ class CreateHotelReservationsTable extends Migration
 {
     public function up()
     {
+        if (!$this->hotelModuleEnabled()) {
+            return;
+        }
+
         Schema::create('hotel_reservations', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('empresa_id')->unsigned();
@@ -31,6 +35,15 @@ class CreateHotelReservationsTable extends Migration
 
     public function down()
     {
+        if (!$this->hotelModuleEnabled()) {
+            return;
+        }
+
         Schema::drop('hotel_reservations');
+    }
+
+    protected function hotelModuleEnabled()
+    {
+        return filter_var(env('HOTEL_MODULE_ENABLED', env('HOTEL_MODULE_SEEDERS_ENABLED', false)), FILTER_VALIDATE_BOOLEAN);
     }
 }

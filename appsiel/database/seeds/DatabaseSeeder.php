@@ -51,6 +51,7 @@ class DatabaseSeeder extends Seeder
             [
                 'class' => HotelApplicationSeeder::class,
                 'any_tables' => ['sys_aplicaciones', 'sys_modelos', 'permissions', 'sys_reportes'],
+                'enabled_by_env' => 'HOTEL_MODULE_ENABLED',
             ],
             [
                 'class' => InventoryDefaultWarehouseSeeder::class,
@@ -59,6 +60,7 @@ class DatabaseSeeder extends Seeder
             [
                 'class' => HotelRoomsTableSeeder::class,
                 'tables' => ['hotel_rooms', 'inv_productos'],
+                'enabled_by_env' => 'HOTEL_MODULE_ENABLED',
             ],
             [
                 'class' => PdvCrudFieldsSeeder::class,
@@ -95,6 +97,12 @@ class DatabaseSeeder extends Seeder
     protected function callIfSafe(array $seeder)
     {
         $class = $seeder['class'];
+
+        if (isset($seeder['enabled_by_env']) && !$this->envFlagEnabled($seeder['enabled_by_env'])) {
+            $this->warnSeeder($class, 'bandera ' . $seeder['enabled_by_env'] . ' inactiva');
+            return;
+        }
+
         $this->loadSeederClassIfNeeded($class);
 
         if (!class_exists($class)) {
@@ -161,6 +169,11 @@ class DatabaseSeeder extends Seeder
     protected function tableHasData($table)
     {
         return Schema::hasTable($table) && DB::table($table)->limit(1)->exists();
+    }
+
+    protected function envFlagEnabled($key)
+    {
+        return filter_var(env($key, env('HOTEL_MODULE_SEEDERS_ENABLED', false)), FILTER_VALIDATE_BOOLEAN);
     }
 
     protected function warnSeeder($class, $reason)
