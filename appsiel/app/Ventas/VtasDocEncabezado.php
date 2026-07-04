@@ -284,7 +284,9 @@ class VtasDocEncabezado extends Model
             dd('Error en Tipo de Documento (tipo_documento_app)', $this);
         }            
 
-        $enlace = '<a href="' . url( $url . $this->id . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
+        $app_id = 13; // Ventas
+
+        $enlace = '<a href="' . url( $url . $this->id . '?id=' . $app_id . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
 
         return $enlace;
     }
@@ -549,6 +551,12 @@ class VtasDocEncabezado extends Model
     */
     public static function get_registro_impresion($id)
     {
+        $campo_inv_bodega_id = DB::raw('0 AS inv_bodega_id');
+        if ( Schema::hasColumn('vtas_doc_encabezados', 'inv_bodega_id') )
+        {
+            $campo_inv_bodega_id = 'vtas_doc_encabezados.inv_bodega_id';
+        }
+
         // ARREGLAR ESTO:     ->leftJoin('vtas_condiciones_pago','vtas_condiciones_pago.id','=','vtas_doc_encabezados.condicion_pago_id')
         return VtasDocEncabezado::where('vtas_doc_encabezados.id', $id)
             ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
@@ -562,7 +570,7 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.cliente_id',
                 'vtas_doc_encabezados.contacto_cliente_id',
                 'vtas_doc_encabezados.remision_doc_encabezado_id',
-                'vtas_doc_encabezados.inv_bodega_id',
+                $campo_inv_bodega_id,
                 'vtas_doc_encabezados.core_tipo_transaccion_id',
                 'vtas_doc_encabezados.core_tipo_doc_app_id',
                 'vtas_doc_encabezados.consecutivo',

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 use App\Core\EncabezadoDocumentoTransaccion;
 
@@ -20,6 +21,7 @@ use App\Contabilidad\Impuesto;
 use App\Contabilidad\ContabMovimiento;
 
 use App\Ventas\VtasDocEncabezado;
+use App\VentasPos\FacturaPos;
 use App\Ventas\Cliente;
 use App\Compras\Proveedor;
 
@@ -70,7 +72,34 @@ class InvDocEncabezado extends Model
 
     public function documento_ventas_padre()
     {
-        return VtasDocEncabezado::find( $this->vtas_doc_encabezado_origen_id );
+        $documento_origen_id = (int)$this->vtas_doc_encabezado_origen_id;
+
+        if ( $documento_origen_id == 0 )
+        {
+            return null;
+        }
+
+        if ( $this->es_ensamble_generado_desde_factura_pos($documento_origen_id) )
+        {
+            return null;
+        }
+
+        return VtasDocEncabezado::find( $documento_origen_id );
+    }
+
+    protected function es_ensamble_generado_desde_factura_pos($documento_origen_id)
+    {
+        if ( (int)$this->core_tipo_transaccion_id != (int)config('inventarios.core_tipo_transaccion_id', 4) )
+        {
+            return false;
+        }
+
+        if ( !Schema::hasTable('vtas_pos_doc_encabezados') )
+        {
+            return false;
+        }
+
+        return FacturaPos::where('id', (int)$documento_origen_id)->exists();
     }
 
     public function proveedor()

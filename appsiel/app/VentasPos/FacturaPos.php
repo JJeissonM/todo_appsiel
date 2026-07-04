@@ -181,7 +181,9 @@ class FacturaPos extends Model
                 break;
         }
 
-        $enlace = '<a href="' . url( $url . $this->id . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
+        $app_id = 20; // Puntos de ventas
+
+        $enlace = '<a href="' . url( $url . $this->id . '?id=' . $app_id . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
 
         return $enlace;
     }

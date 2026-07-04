@@ -66,9 +66,14 @@
 			<b>{{ $doc_encabezado->documento_ventas_hijo()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_hijo()->enlace_show_documento() !!}
 		@endif
 
-		<br>
-		<b>Remisiones: </b> {!! $doc_encabezado->enlaces_remisiones_hijas() !!}
-	@endif
+			<?php
+				$enlaces_remisiones = $doc_encabezado->enlaces_remisiones_hijas();
+			?>
+			@if( $enlaces_remisiones != '' )
+				<br>
+				<b>Remisiones: </b> {!! $enlaces_remisiones !!}
+			@endif
+		@endif
 
 	
 @endsection
