@@ -702,7 +702,7 @@ class CompraController extends TransaccionController
             'estado' => 'Activo'
         ])->get();
 
-        $valor_total_confirmacion = $this->get_total_contable_desde_lineas_documento($lineas_confirmacion);
+        $valor_total_confirmacion = $this->get_total_contable_desde_lineas_documento($lineas_confirmacion, $doc_encabezado);
 
         $valor_retenciones_confirmacion = 0;
         if (Schema::hasColumn('compras_doc_registros', 'valor_retencion')) {
@@ -767,7 +767,7 @@ class CompraController extends TransaccionController
         if ($factura->forma_pago == 'contado') {
             $lineas_registros_collection = $factura->lineas_registros()->where('estado', 'Activo')->get();
             $lineas_registros = $lineas_registros_collection->toArray();
-            $total_documento = $this->get_total_contable_desde_lineas_documento($lineas_registros_collection);
+            $total_documento = $this->get_total_contable_desde_lineas_documento($lineas_registros_collection, $factura);
 
             if (Schema::hasColumn('compras_doc_registros', 'valor_retencion')) {
                 $total_documento -= (float)$lineas_registros_collection->sum('valor_retencion');
@@ -798,14 +798,18 @@ class CompraController extends TransaccionController
         return redirect( 'compras/'.$factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('flash_message','Documento confirmado correctamente.');
     }
 
-    protected function get_total_contable_desde_lineas_documento($lineas)
+    protected function get_total_contable_desde_lineas_documento($lineas, $documento = null)
     {
         $total = 0;
+        $liquida_impuestos = (int)config('configuracion.liquidacion_impuestos');
+        if (!is_null($documento) && !is_null($documento->proveedor)) {
+            $liquida_impuestos = $liquida_impuestos && (int)$documento->proveedor->liquida_impuestos;
+        }
 
         foreach ($lineas as $linea) {
             $base_impuesto = (float)$linea->base_impuesto;
             $valor_impuesto = (float)$linea->valor_impuesto;
-            $valor_contable = $base_impuesto + $valor_impuesto;
+            $valor_contable = $base_impuesto + ($liquida_impuestos ? $valor_impuesto : 0);
 
             if ($valor_contable == 0) {
                 $valor_contable = (float)$linea->precio_total;
@@ -1354,6 +1358,15 @@ class CompraController extends TransaccionController
             return redirect('compras/' . $doc_encabezado->id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('mensaje_error', 'Los registros de la Factura NO pueden ser modificados. Factura tiene Pagos de CXP aplicados (Tesorería).');
         }
 
+        $cantidad_movimientos_tesoreria = TesoMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+            ->where('consecutivo', $doc_encabezado->consecutivo)
+            ->count();
+
+        if ($doc_encabezado->forma_pago == 'contado' && $cantidad_movimientos_tesoreria > 1) {
+            return redirect('compras/' . $doc_encabezado->id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('mensaje_error', 'Los registros de la Factura NO pueden ser modificados. La factura de contado tiene varios movimientos de Tesorería asociados.');
+        }
+
         $viejo_total_encabezado = $doc_encabezado->valor_total;
 
         $cantidad = $request->cantidad;
@@ -1470,10 +1483,7 @@ class CompraController extends TransaccionController
         $inv_doc_encabezado = InvDocEncabezado::find($doc_encabezado->entrada_almacen_id);
         //$costo_total_actual = $costo_unitario_actual * $linea_registro->cantidad;
 
-        $tasa_impuesto = 0;
-        if ((int)config('configuracion.liquidacion_impuestos')) {
-            $tasa_impuesto = $producto->impuesto->tasa_impuesto;
-        }
+        $tasa_impuesto = (float)$linea_registro->tasa_impuesto;
 
         $costo_total_actual = $linea_registro->precio_total / (1 + $tasa_impuesto / 100);
         $costo_unitario = $precio_unitario / (1 + $tasa_impuesto / 100);

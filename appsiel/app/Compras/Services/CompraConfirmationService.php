@@ -173,17 +173,20 @@ class CompraConfirmationService
                 $motive_id = $this->getMotiveDefaultId();
             }
 
+            $valores_linea = $this->getEffectiveLineValues($linea, $documento);
+            $linea->update($valores_linea);
+
             $linea_datos = [
                 'compras_doc_encabezado_id' => $documento->id,
                 'inv_motivo_id' => $motive_id,
                 'inv_bodega_id' => $datos['inv_bodega_id'],
                 'inv_producto_id' => $linea->inv_producto_id,
-                'precio_unitario' => $linea->precio_unitario,
+                'precio_unitario' => $valores_linea['precio_unitario'],
                 'cantidad' => $linea->cantidad,
-                'precio_total' => $linea->precio_total,
-                'base_impuesto' => $linea->base_impuesto,
-                'tasa_impuesto' => $linea->tasa_impuesto,
-                'valor_impuesto' => $linea->valor_impuesto,
+                'precio_total' => $valores_linea['precio_total'],
+                'base_impuesto' => $valores_linea['base_impuesto'],
+                'tasa_impuesto' => $valores_linea['tasa_impuesto'],
+                'valor_impuesto' => $valores_linea['valor_impuesto'],
                 'tasa_descuento' => $linea->tasa_descuento,
                 'valor_total_descuento' => $linea->valor_total_descuento
             ];
@@ -192,7 +195,7 @@ class CompraConfirmationService
 
             CompraController::contabilizar_movimiento_debito($datos + $linea_datos, $detalle_operacion);
 
-            $total_documento += $this->getAccountingGrossFromLine($linea);
+            $total_documento += $this->getAccountingGrossFromLine($linea, $documento);
             $total_retenciones += (float)$linea->valor_retencion;
         }
 
@@ -210,9 +213,44 @@ class CompraConfirmationService
         CompraController::crear_registro_pago($documento->forma_pago, $datos, $total_documento, $detalle_operacion);
     }
 
-    protected function getAccountingGrossFromLine($linea)
+    protected function getEffectiveLineValues($linea, ComprasDocEncabezado $documento)
     {
-        $valor_contable = (float)$linea->base_impuesto + (float)$linea->valor_impuesto;
+        $base_impuesto = (float)$linea->base_impuesto;
+        $precio_total = (float)$linea->precio_total;
+        $valor_impuesto = (float)$linea->valor_impuesto;
+        $tasa_impuesto = (float)$linea->tasa_impuesto;
+
+        if ($base_impuesto == 0) {
+            $base_impuesto = $precio_total;
+        }
+
+        $liquida_impuestos = (int)config('configuracion.liquidacion_impuestos');
+        if (!is_null($documento->proveedor)) {
+            $liquida_impuestos = $liquida_impuestos && (int)$documento->proveedor->liquida_impuestos;
+        }
+
+        if (!$liquida_impuestos) {
+            $precio_total = $base_impuesto;
+            $valor_impuesto = 0;
+            $tasa_impuesto = 0;
+        }
+
+        $cantidad = (float)$linea->cantidad;
+        $precio_unitario = $cantidad != 0 ? $precio_total / $cantidad : 0;
+
+        return [
+            'precio_unitario' => $precio_unitario,
+            'precio_total' => $precio_total,
+            'base_impuesto' => $base_impuesto,
+            'tasa_impuesto' => $tasa_impuesto,
+            'valor_impuesto' => $valor_impuesto,
+        ];
+    }
+
+    protected function getAccountingGrossFromLine($linea, ComprasDocEncabezado $documento)
+    {
+        $valores_linea = $this->getEffectiveLineValues($linea, $documento);
+        $valor_contable = (float)$valores_linea['base_impuesto'] + (float)$valores_linea['valor_impuesto'];
 
         if ($valor_contable == 0) {
             return (float)$linea->precio_total;
