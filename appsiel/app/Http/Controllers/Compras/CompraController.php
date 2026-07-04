@@ -468,9 +468,6 @@ class CompraController extends TransaccionController
         $tasa_impuesto = 0;
         if ((int)config('configuracion.liquidacion_impuestos')) {
             $tasa_impuesto = Impuesto::get_tasa($registro_entrada->inv_producto_id, $proveedor_id, 0);
-            if (!is_null($registro_entrada->item) && !is_null($registro_entrada->item->impuesto)) {
-                $tasa_impuesto = $registro_entrada->item->impuesto->tasa_impuesto;
-            }
         }
 
         $precio_total = $total_base_impuesto * (1 + $tasa_impuesto / 100);
