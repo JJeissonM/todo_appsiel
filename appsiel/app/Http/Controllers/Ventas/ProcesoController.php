@@ -300,10 +300,20 @@ class ProcesoController extends Controller
     public function crear_remision_y_factura_desde_doc_venta( Request $request )
     {
         $pedido = VtasDocEncabezado::find( (int)$request->doc_encabezado_id );
+        $inv_bodega_id = (int)$request->bodega_id;
+
+        if ($inv_bodega_id <= 0) {
+            $inv_bodega_id = (int)$pedido->inv_bodega_id;
+        }
+
+        if ($inv_bodega_id > 0 && (int)$pedido->inv_bodega_id != $inv_bodega_id) {
+            $pedido->inv_bodega_id = $inv_bodega_id;
+            $pedido->save();
+        }
         
         $vtas_doc_header_serv = new DocumentHeaderService();
 
-        $hay_existencias_negativas = $vtas_doc_header_serv->determinar_posibles_existencias_negativas( $pedido );
+        $hay_existencias_negativas = $vtas_doc_header_serv->determinar_posibles_existencias_negativas( $pedido, $inv_bodega_id, $request->fecha );
 
         if ( $hay_existencias_negativas )
         {
@@ -437,7 +447,10 @@ class ProcesoController extends Controller
     {
         $datos_remision = $encabezado_doc_venta->toArray();
         $datos_remision['fecha'] = $fecha;
-        $datos_remision['inv_bodega_id'] = $encabezado_doc_venta->cliente->inv_bodega_id;
+        $datos_remision['inv_bodega_id'] = (int)$encabezado_doc_venta->inv_bodega_id;
+        if ($datos_remision['inv_bodega_id'] <= 0) {
+            $datos_remision['inv_bodega_id'] = (int)$encabezado_doc_venta->cliente->inv_bodega_id;
+        }
 
         $datos_remision['descripcion'] = $encabezado_doc_venta->descripcion;
 
@@ -510,7 +523,7 @@ class ProcesoController extends Controller
 
             if ($value['name'] == 'inv_bodega_id')
             {
-                $lista_campos[$key]['value'] = $encabezado_doc_venta->cliente->inv_bodega_id;
+                $lista_campos[$key]['value'] = (int)$encabezado_doc_venta->inv_bodega_id > 0 ? $encabezado_doc_venta->inv_bodega_id : $encabezado_doc_venta->cliente->inv_bodega_id;
             }
 
             if ($value['name'] == 'fecha')

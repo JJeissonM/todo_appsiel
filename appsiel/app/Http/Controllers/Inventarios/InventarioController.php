@@ -612,8 +612,12 @@ class InventarioController extends TransaccionController
                 continue;
             }
 
-            $inv_bodega_id = $doc_encabezado->cliente->inv_bodega_id;
-            if ( is_null($inv_bodega_id) )
+            $inv_bodega_id = (int)$doc_encabezado->inv_bodega_id;
+            if ( $inv_bodega_id <= 0 && !is_null($doc_encabezado->cliente) )
+            {
+                $inv_bodega_id = (int)$doc_encabezado->cliente->inv_bodega_id;
+            }
+            if ( $inv_bodega_id <= 0 )
             {
                 $inv_bodega_id = 1;
             }

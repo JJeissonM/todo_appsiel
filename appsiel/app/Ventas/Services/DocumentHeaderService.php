@@ -351,11 +351,14 @@ class DocumentHeaderService
         }
     }
 
-    public function determinar_posibles_existencias_negativas( $vta_doc_encabezado )
+    public function determinar_posibles_existencias_negativas( $vta_doc_encabezado, $inv_bodega_id = 0, $fecha = null )
     {
         if ((int)config('ventas.permitir_inventarios_negativos')) {
             return 0;
         }
+
+        $inv_bodega_id = $this->get_inv_bodega_id_documento($vta_doc_encabezado, $inv_bodega_id);
+        $fecha = is_null($fecha) ? $vta_doc_encabezado->fecha : $fecha;
 
         $lineas_registros = $vta_doc_encabezado->lineas_registros;
         foreach ($lineas_registros as $linea)
@@ -365,7 +368,7 @@ class DocumentHeaderService
                 continue;
             }
             
-            $existencia_actual = InvMovimiento::get_existencia_actual( $linea->inv_producto_id, $vta_doc_encabezado->cliente->inv_bodega_id, $vta_doc_encabezado->fecha );
+            $existencia_actual = InvMovimiento::get_existencia_actual( $linea->inv_producto_id, $inv_bodega_id, $fecha );
 
             if ( ( $existencia_actual - abs($linea->cantidad) ) < 0 )
             {
@@ -373,6 +376,29 @@ class DocumentHeaderService
             }
         }
         return 0;
+    }
+
+    protected function get_inv_bodega_id_documento($doc_encabezado, $inv_bodega_id = 0)
+    {
+        $inv_bodega_id = (int)$inv_bodega_id;
+
+        if ($inv_bodega_id <= 0) {
+            $inv_bodega_id = (int)$doc_encabezado->inv_bodega_id;
+        }
+
+        if ($inv_bodega_id <= 0 && !is_null($doc_encabezado->cliente)) {
+            $inv_bodega_id = (int)$doc_encabezado->cliente->inv_bodega_id;
+        }
+
+        if ($inv_bodega_id <= 0) {
+            $inv_bodega_id = (int)config('ventas.inv_bodega_id');
+        }
+
+        if ($inv_bodega_id <= 0) {
+            $inv_bodega_id = 1;
+        }
+
+        return $inv_bodega_id;
     }
 
     public function clonar_encabezado( $vta_doc_encabezado_padre, $fecha, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $descripcion, $modelo_id )
