@@ -736,8 +736,3 @@ WHERE `naturaleza` = 'Devengo'
   )
   AND UPPER(`descripcion`) NOT LIKE '%TRANSPORTE%';
 
-
-  INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES (NULL, 'Nacionalidad', 'bsText', 'core_campo_id-ID', '', 'null', '', '', '1', '1', '0', '2026-07-06 00:04:38', NULL);
-  INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES (NULL, 'Procedencia', 'bsText', 'core_campo_id-ID', '', 'null', '', '', '1', '1', '0', '2026-07-06 00:04:38', NULL);
-INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES (NULL, 'Destino', 'bsText', 'core_campo_id-ID', '', 'null', '', '', '1', '1', '0', '2026-07-06 00:04:38', NULL);
-INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES (NULL, 'Fecha de nacimiento', 'fecha', 'core_campo_id-ID', '', 'null', '', '', '1', '1', '0', '2026-07-06 00:04:38', NULL);

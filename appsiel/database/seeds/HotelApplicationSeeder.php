@@ -242,10 +242,10 @@ class HotelApplicationSeeder extends Seeder
             ));
         }
 
-        $this->getOrCreateField('Fecha de nacimiento', 'fecha', 'hotel_guest_fecha_nacimiento', '', 'null', $textAttrs, 0);
-        $this->getOrCreateField('Nacionalidad', 'bsText', 'hotel_guest_nacionalidad', '', 'null', $textAttrs, 0);
-        $this->getOrCreateField('Procedencia', 'bsText', 'hotel_guest_procedencia', '', 'null', $textAttrs, 0);
-        $this->getOrCreateField('Destino', 'bsText', 'hotel_guest_destino', '', 'null', $textAttrs, 0);
+        $this->getOrCreateHotelEavField('Fecha de nacimiento', 'fecha', 'hotel_guest_fecha_nacimiento', '', 'null', $textAttrs, 0);
+        $this->getOrCreateHotelEavField('Nacionalidad', 'bsText', 'hotel_guest_nacionalidad', '', 'null', $textAttrs, 0);
+        $this->getOrCreateHotelEavField('Procedencia', 'bsText', 'hotel_guest_procedencia', '', 'null', $textAttrs, 0);
+        $this->getOrCreateHotelEavField('Destino', 'bsText', 'hotel_guest_destino', '', 'null', $textAttrs, 0);
     }
 
     private function copyModelFields($sourceModelKey, $targetModelKey)
@@ -503,7 +503,7 @@ class HotelApplicationSeeder extends Seeder
 
         $roomsReportId = $this->upsertReport('Listado de habitaciones hoteleras', 'hotel/reports/rooms');
         $staysReportId = $this->upsertReport('Listado de estadias hoteleras', 'hotel/reports/stays');
-        $migrationReportId = $this->upsertReport('Migracion hotelera', 'hotel/reports/migration');
+        $migrationReportId = $this->upsertReport('Listado para SIRE', 'hotel/reports/migration');
 
         if ($staysReportId && Schema::hasTable('sys_campos') && Schema::hasTable('sys_reporte_tiene_campos')) {
             $fechaDesdeId = $this->getOrCreateField('Fecha desde', 'date', 'fecha_desde', '', 'null', '{"class":"form-control"}', 0);
@@ -584,6 +584,50 @@ class HotelApplicationSeeder extends Seeder
         );
 
         $data = $this->onlyExistingColumns('sys_campos', $data);
+        return (int)DB::table('sys_campos')->insertGetId($data);
+    }
+
+    private function getOrCreateHotelEavField($description, $type, $legacyName, $options, $value, $attributes, $required)
+    {
+        $fieldId = DB::table('sys_campos')
+            ->where('name', 'core_campo_id-ID')
+            ->where('descripcion', $description)
+            ->value('id');
+
+        $now = date('Y-m-d H:i:s');
+        $data = array(
+            'descripcion' => $description,
+            'tipo' => $type,
+            'name' => 'core_campo_id-ID',
+            'opciones' => $options,
+            'value' => $value,
+            'atributos' => $attributes,
+            'definicion' => '',
+            'requerido' => $required,
+            'editable' => 1,
+            'unico' => 0,
+            'updated_at' => $now,
+        );
+
+        $data = $this->onlyExistingColumns('sys_campos', $data);
+
+        if ($fieldId) {
+            DB::table('sys_campos')->where('id', $fieldId)->update($data);
+            return (int)$fieldId;
+        }
+
+        $legacyFieldId = DB::table('sys_campos')
+            ->where('name', $legacyName)
+            ->value('id');
+
+        if ($legacyFieldId) {
+            DB::table('sys_campos')->where('id', $legacyFieldId)->update($data);
+            return (int)$legacyFieldId;
+        }
+
+        $data['created_at'] = $now;
+        $data = $this->onlyExistingColumns('sys_campos', $data);
+
         return (int)DB::table('sys_campos')->insertGetId($data);
     }
 

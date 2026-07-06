@@ -179,7 +179,7 @@ class HotelGuest extends Cliente
     private function appendHotelEavFields($lista_campos, $registro = null, $showMode = false)
     {
         foreach (self::hotelEavFields() as $fieldName => $definition) {
-            $campo = Campo::where('name', $fieldName)->first();
+            $campo = self::findHotelEavField($fieldName, $definition);
             if (is_null($campo)) {
                 continue;
             }
@@ -190,7 +190,7 @@ class HotelGuest extends Cliente
                 'id' => $campo->id,
                 'descripcion' => $definition['label'],
                 'tipo' => $definition['type'],
-                'name' => 'core_campo_id-' . $campo->id,
+                'name' => 'core_campo_id-ID',
                 'opciones' => '',
                 'value' => $value,
                 'show_value' => $value,
@@ -282,10 +282,24 @@ class HotelGuest extends Cliente
     {
         $ids = array();
         foreach (self::hotelEavFields() as $fieldName => $definition) {
-            $ids[$fieldName] = (int)Campo::where('name', $fieldName)->value('id');
+            $campo = self::findHotelEavField($fieldName, $definition);
+            $ids[$fieldName] = !is_null($campo) ? (int)$campo->id : 0;
         }
 
         return $ids;
+    }
+
+    private static function findHotelEavField($legacyName, $definition)
+    {
+        $campo = Campo::where('name', 'core_campo_id-ID')
+            ->where('descripcion', $definition['label'])
+            ->first();
+
+        if (!is_null($campo)) {
+            return $campo;
+        }
+
+        return Campo::where('name', $legacyName)->first();
     }
 
     public static function getEavValue($clienteId, $fieldId)
