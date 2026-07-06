@@ -401,6 +401,9 @@ class RecipeServices
             return $bodega_default_id;
         }
 
+        $bodega_con_mayor_existencia = null;
+        $mayor_existencia = null;
+
         foreach ( $this->get_bodegas_candidatas_ingrediente($item_ingrediente_id, $bodega_default_id) as $bodega_id )
         {
             $existencia_bodega = InvMovimiento::get_cantidad_existencia_item($item_ingrediente_id, $bodega_id, $fecha);
@@ -408,6 +411,17 @@ class RecipeServices
             {
                 return (int)$bodega_id;
             }
+
+            if ( is_null($mayor_existencia) || $existencia_bodega > $mayor_existencia )
+            {
+                $mayor_existencia = $existencia_bodega;
+                $bodega_con_mayor_existencia = (int)$bodega_id;
+            }
+        }
+
+        if ( !is_null($bodega_con_mayor_existencia) )
+        {
+            return $bodega_con_mayor_existencia;
         }
 
         return $bodega_default_id;
