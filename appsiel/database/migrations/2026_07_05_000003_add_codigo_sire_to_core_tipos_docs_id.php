@@ -69,12 +69,16 @@ class AddCodigoSireToCoreTiposDocsId extends Migration
 
             if (!is_null($id) && !$this->documentIdExists($id)) {
                 $data['id'] = $id;
+            } else {
+                $data['id'] = $this->nextDocumentId();
             }
 
             $data = $this->addTimestamps($data, true);
             DB::table('core_tipos_docs_id')->insert($data);
             return;
         }
+
+        $registro = $this->moveZeroIdRecord($registro);
 
         $data = $this->addTimestamps(array(
             'codigo_sire' => $codigoSire
@@ -88,6 +92,33 @@ class AddCodigoSireToCoreTiposDocsId extends Migration
     private function documentIdExists($id)
     {
         return DB::table('core_tipos_docs_id')->where('id', $id)->count() > 0;
+    }
+
+    private function nextDocumentId()
+    {
+        $id = (int) DB::table('core_tipos_docs_id')->max('id') + 1;
+
+        while ($this->documentIdExists($id)) {
+            $id++;
+        }
+
+        return $id;
+    }
+
+    private function moveZeroIdRecord($registro)
+    {
+        if ((int) $registro->id !== 0) {
+            return $registro;
+        }
+
+        $newId = $this->nextDocumentId();
+
+        DB::table('core_tipos_docs_id')
+            ->where('id', 0)
+            ->where('abreviatura', $registro->abreviatura)
+            ->update(array('id' => $newId));
+
+        return DB::table('core_tipos_docs_id')->where('id', $newId)->first();
     }
 
     private function addTimestamps($data, $isNew)
