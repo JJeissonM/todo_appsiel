@@ -59,10 +59,13 @@ class HotelDashboardController extends Controller
         $stayModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelStay');
         $orderModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelOrderHeader');
         $reservationModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelReservation');
-        $guestModelId = 138;
+        $guestModelId = HotelBreadcrumb::modelId('App\\Hotel\\HotelGuest');
+        if ($guestModelId == 0) {
+            $guestModelId = 138;
+        }
         $roomIndexUrl = HotelBreadcrumb::crudIndexUrl('App\\Hotel\\HotelRoom');
         $roomCreateUrl = HotelBreadcrumb::crudCreateUrl('App\\Hotel\\HotelRoom');
-        $guestCreateUrl = HotelBreadcrumb::crudCreateUrl('App\\Ventas\\Cliente');
+        $guestCreateUrl = $guestModelId == 138 ? HotelBreadcrumb::crudCreateUrl('App\\Ventas\\Cliente') : HotelBreadcrumb::crudCreateUrl('App\\Hotel\\HotelGuest');
         $guestFormCreate = $this->guestFormCreate($guestModelId);
 
         return view('hotel.index', compact('rooms', 'floors', 'statuses', 'summary', 'activeReservations', 'customerAdvances', 'miga_pan', 'appId', 'roomModelId', 'stayModelId', 'orderModelId', 'reservationModelId', 'guestModelId', 'roomIndexUrl', 'roomCreateUrl','guestCreateUrl', 'guestFormCreate'));

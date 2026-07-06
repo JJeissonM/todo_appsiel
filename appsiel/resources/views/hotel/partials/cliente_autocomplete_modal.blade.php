@@ -3,6 +3,7 @@
     use App\Sistema\Modelo;
     use App\Sistema\Services\ModeloService;
     use App\Http\Controllers\Sistema\VistaController;
+    use App\Hotel\Support\HotelBreadcrumb;
 
     $clienteAutocompleteTieneCampo = false;
     if (isset($form_create) && isset($form_create['campos'])) {
@@ -16,7 +17,11 @@
 
     $clienteAutocompleteCampos = array();
     $clienteAutocompleteUrl = 'vtas_clientes';
-    $clienteAutocompleteModelo = Modelo::find(138);
+    $clienteAutocompleteModeloId = HotelBreadcrumb::modelId('App\\Hotel\\HotelGuest');
+    if ($clienteAutocompleteModeloId == 0) {
+        $clienteAutocompleteModeloId = 138;
+    }
+    $clienteAutocompleteModelo = Modelo::find($clienteAutocompleteModeloId);
 
     if ($clienteAutocompleteTieneCampo && !is_null($clienteAutocompleteModelo)) {
         $clienteAutocompleteCampos = ModeloController::get_campos_modelo($clienteAutocompleteModelo, '', 'create');
@@ -41,11 +46,11 @@
                         @if(count($clienteAutocompleteCampos) > 0)
                             <?php VistaController::campos_dos_colummnas($clienteAutocompleteCampos); ?>
                         @else
-                            <div class="alert alert-warning">No se encontraron campos configurados para el modelo Cliente.</div>
+                            <div class="alert alert-warning">No se encontraron campos configurados para el modelo Huesped.</div>
                         @endif
 
                         {{ Form::hidden('url_id', Input::get('id')) }}
-                        {{ Form::hidden('url_id_modelo', 138) }}
+                        {{ Form::hidden('url_id_modelo', $clienteAutocompleteModeloId) }}
                         {{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
                         {{ Form::hidden('hotel_autocomplete_modal', 1) }}
                     </div>

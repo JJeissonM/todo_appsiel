@@ -68,6 +68,7 @@ class HotelApplicationSeeder extends Seeder
             'rooms' => array('Habitaciones', 'hotel_rooms', 'App\\Hotel\\HotelRoom', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
             'stays' => array('Estadias', 'hotel_stays', 'App\\Hotel\\HotelStay', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
             'reservations' => array('Reservas hoteleras', 'hotel_reservations', 'App\\Hotel\\HotelReservation', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
+            'hotel_guests' => array('Huespedes hoteleros', 'vtas_clientes', 'App\\Hotel\\HotelGuest', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
             'guests' => array('Huespedes', 'hotel_stay_guests', 'App\\Hotel\\HotelStayGuest', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
             'orders' => array('Pedidos hoteleros', 'hotel_order_headers', 'App\\Hotel\\HotelOrderHeader', 'web/create', 'web/id_fila/edit', 'hotel/orders/id_fila'),
             'lines' => array('Lineas de pedidos hoteleros', 'hotel_order_lines', 'App\\Hotel\\HotelOrderLine', 'web/create', 'web/id_fila/edit', 'web/id_fila'),
@@ -214,6 +215,63 @@ class HotelApplicationSeeder extends Seeder
             $this->field(9, 'Tipo origen', 'select', 'source_type', $sourceTypes, 'MANUAL', '', 1),
             $this->field(10, 'Origen ID', 'bsText', 'source_id', '', 'null', $textAttrs, 0),
         ));
+
+        $this->seedHotelGuestFields($textAttrs, $comboAttrs);
+    }
+
+    private function seedHotelGuestFields($textAttrs, $comboAttrs)
+    {
+        if (!isset($this->modelIds['hotel_guests']) || $this->modelIds['hotel_guests'] == 0) {
+            return;
+        }
+
+        $copied = $this->copyModelFields('clients', 'hotel_guests');
+        if ($copied == 0) {
+            $this->seedModelFields('hotel_guests', array(
+                $this->field(1, 'Tipo', 'select', 'tipo', '{"Persona natural":"Persona natural","Persona juridica":"Persona juridica","Interno":"Interno"}', 'Persona natural', $comboAttrs, 1),
+                $this->field(2, 'Tipo documento', 'select', 'id_tipo_documento_id', 'table_core_tipos_docs_id', '13', $comboAttrs, 1),
+                $this->field(3, 'Numero identificacion', 'bsText', 'numero_identificacion', '', 'null', $textAttrs, 1),
+                $this->field(4, 'Nombre completo o Establecimiento', 'bsText', 'descripcion', '', 'null', $textAttrs, 1),
+                $this->field(5, 'Direccion', 'bsText', 'direccion1', '', 'null', $textAttrs, 0),
+                $this->field(6, 'Ciudad', 'select', 'codigo_ciudad', 'model_App\\Core\\Ciudad', '16920001', $comboAttrs, 1),
+                $this->field(7, 'Cel/Tel', 'bsText', 'telefono1', '', 'null', $textAttrs, 0),
+                $this->field(8, 'Email', 'bsText', 'email', '', 'null', $textAttrs, 0),
+                $this->field(9, 'Clase de cliente', 'select', 'clase_cliente_id', 'model_App\\Ventas\\ClaseCliente', '1', $comboAttrs, 1),
+                $this->field(10, 'Bodega', 'select', 'inv_bodega_id', 'model_App\\Inventarios\\InvBodega', '1', $comboAttrs, 0),
+                $this->field(11, 'Estado', 'select', 'estado', '{"Activo":"Activo","Inactivo":"Inactivo"}', 'Activo', $comboAttrs, 1),
+            ));
+        }
+
+        $this->getOrCreateField('Fecha de nacimiento', 'fecha', 'hotel_guest_fecha_nacimiento', '', 'null', $textAttrs, 0);
+        $this->getOrCreateField('Nacionalidad', 'bsText', 'hotel_guest_nacionalidad', '', 'null', $textAttrs, 0);
+        $this->getOrCreateField('Procedencia', 'bsText', 'hotel_guest_procedencia', '', 'null', $textAttrs, 0);
+        $this->getOrCreateField('Destino', 'bsText', 'hotel_guest_destino', '', 'null', $textAttrs, 0);
+    }
+
+    private function copyModelFields($sourceModelKey, $targetModelKey)
+    {
+        if (!isset($this->modelIds[$sourceModelKey]) || !isset($this->modelIds[$targetModelKey])) {
+            return 0;
+        }
+
+        $sourceModelId = (int)$this->modelIds[$sourceModelKey];
+        $targetModelId = (int)$this->modelIds[$targetModelKey];
+        if ($sourceModelId == 0 || $targetModelId == 0) {
+            return 0;
+        }
+
+        $relations = DB::table('sys_modelo_tiene_campos')
+            ->where('core_modelo_id', $sourceModelId)
+            ->orderBy('orden')
+            ->get();
+
+        $copied = 0;
+        foreach ($relations as $relation) {
+            $this->attachModelField($targetModelId, $relation->core_campo_id, $relation->orden);
+            $copied++;
+        }
+
+        return $copied;
     }
 
     private function seedModelFields($modelKey, $fields)
@@ -348,7 +406,7 @@ class HotelApplicationSeeder extends Seeder
             array('hotel.facturas', 'Pedidos', 'web', 'orders', $transactionsParentId, 4, 1, 'file-text'),
             array('hotel.rooms', 'Habitaciones', 'web', 'rooms', $catalogParentId, 1, 1, 'bed'),
             array('hotel.services', 'Servicios', 'web', 'services', $catalogParentId, 2, 1, 'cubes'),
-            array('hotel.guests', 'Huespedes', 'web', 'clients', $catalogParentId, 3, 1, 'users'),
+            array('hotel.guests', 'Huespedes', 'web', 'hotel_guests', $catalogParentId, 3, 1, 'users'),
             array('hotel.stays.catalog', 'Estadias', 'web', 'stays', $catalogParentId, 10, 0, 'calendar'),
             array('hotel.stay_guests', 'Huespedes por estadia', 'web', 'guests', $catalogParentId, 11, 0, 'users'),
             array('hotel.orders.catalog', 'Pedidos hoteleros', 'web', 'orders', $transactionsParentId, 12, 0, 'shopping-cart'),

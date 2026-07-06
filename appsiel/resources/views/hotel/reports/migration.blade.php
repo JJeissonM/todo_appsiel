@@ -27,6 +27,8 @@
                 if ($nombre == '') {
                     $nombre = $row->descripcion;
                 }
+                $procedencia = $lugarProcedencia != '' ? $lugarProcedencia : $row->hotel_procedencia;
+                $destino = $lugarDestino != '' ? $lugarDestino : $row->hotel_destino;
             ?>
             <tr>
                 <td>{{ $codigoHotel }}</td>
@@ -39,8 +41,8 @@
                 <td>{{ $nombre }}</td>
                 <td>{{ $tipoMovimiento }}</td>
                 <td>{{ substr($row->check_in_at, 0, 10) }}</td>
-                <td>{{ $lugarProcedencia }}</td>
-                <td>{{ $lugarDestino }}</td>
+                <td>{{ $procedencia }}</td>
+                <td>{{ $destino }}</td>
                 <td>{{ $row->fecha_nacimiento }}</td>
                 <td>{{ $row->room_number }}</td>
                 <td>#{{ $row->stay_id }}</td>

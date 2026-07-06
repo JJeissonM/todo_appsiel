@@ -404,7 +404,7 @@
                             @if(count($guestFormCreate['campos']) > 0)
                                 {{ $vistaController::campos_dos_colummnas($guestFormCreate['campos']) }}
                             @else
-                                <div class="alert alert-warning">No se encontraron campos configurados para el modelo Cliente.</div>
+                                <div class="alert alert-warning">No se encontraron campos configurados para el modelo Huesped.</div>
                             @endif
 
                             {{ Form::hidden('url_id', $appId) }}

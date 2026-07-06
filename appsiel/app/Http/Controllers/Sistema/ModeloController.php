@@ -251,6 +251,22 @@ class ModeloController extends Controller
             }
         }
 
+        if ($request->ajax() && $request->hotel_autocomplete_modal) {
+            $text = '';
+            if (method_exists($registro, 'hotelAutocompleteLabel')) {
+                $text = $registro->hotelAutocompleteLabel();
+            }
+
+            if ($text == '') {
+                $text = isset($registro->descripcion) ? $registro->descripcion : ('Registro #' . $registro->id);
+            }
+
+            return response()->json(array(
+                'id' => (int)$registro->id,
+                'text' => $text,
+            ));
+        }
+
         $acciones = $this->acciones_basicas_modelo($this->modelo, '');
 
         $url_ver = str_replace('id_fila', $registro->id, $acciones->show);
