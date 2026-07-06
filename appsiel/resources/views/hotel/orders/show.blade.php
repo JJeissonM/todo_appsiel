@@ -37,14 +37,12 @@
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th style="width: 18%;">Producto</th>
-                            <th style="width: 20%;">Descripcion</th>
+                            <th style="width: 25%;">Producto</th>
                             <th>Cantidad</th>
                             <th>Precio</th>
                             <th>Descuento</th>
                             <th>Impuesto</th>
                             <th>Total</th>
-                            <th>Origen</th>
                             <th>Accion</th>
                         </tr>
                     </thead>
@@ -56,13 +54,11 @@
                                 <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines/'.$line->id.'/update')) }}">
                                     {{ csrf_field() }}
                                     <td style="white-space: normal;">{{ $line->product ? $line->product->descripcion : $line->producto_id }}</td>
-                                    <td><input type="text" name="description" class="form-control input-sm" value="{{ $line->description }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
                                     <td><input type="text" name="quantity" class="form-control input-sm text-right" value="{{ $line->quantity }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
                                     <td><input type="text" name="unit_price" class="form-control input-sm text-right" value="{{ $line->unit_price }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
                                     <td><input type="text" name="discount" class="form-control input-sm text-right" value="{{ $line->discount }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
                                     <td><input type="text" name="tax_value" class="form-control input-sm text-right" value="{{ $line->tax_value }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
                                     <td class="text-right">{{ number_format($line->line_total, 2, ',', '.') }}</td>
-                                    <td>{{ $line->source_type }}</td>
                                     <td>
                                         @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
                                             <button class="btn btn-warning btn-xs">Actualizar</button>
@@ -78,9 +74,9 @@
                             </tr>
                         @endforeach
                         <tr>
-                            <th colspan="6" class="text-right">Total</th>
+                            <th colspan="5" class="text-right">Total</th>
                             <th class="text-right">{{ number_format($total, 2, ',', '.') }}</th>
-                            <th colspan="2"></th>
+                            <th>&nbsp;</th>
                         </tr>
                     </tbody>
                 </table>
@@ -91,9 +87,9 @@
                 <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines')) }}">
                     {{ csrf_field() }}
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <div class="form-group">
-                                <label>Producto</label>
+                                <label>Producto/Servicio</label>
                                 <select name="producto_id" id="hotel_producto_id" class="form-control" required>
                                     @foreach($products as $key => $label)
                                         <option value="{{ $key }}">{{ $label }}</option>
@@ -101,106 +97,113 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label>Cantidad</label>
                                 <input type="text" name="quantity" id="hotel_quantity" class="form-control" value="1">
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <label>Precio</label>
-                                <input type="text" name="unit_price" id="hotel_unit_price" class="form-control" placeholder="Automatico">
-                            </div>
-                        </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>Descripcion</label>
-                                <input type="text" name="description" id="hotel_line_description" class="form-control">
+                                <label>Precio</label>
+                                <input type="text" name="unit_price" id="hotel_unit_price" class="form-control" placeholder="Automático">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <input type="hidden" name="source_type" value="MANUAL">
+                                <button class="btn btn-primary" title="Agregar línea"><i class="fa fa-plus"></i></button>
                             </div>
                         </div>
                     </div>
-                    <input type="hidden" name="source_type" value="MANUAL">
-                    <button class="btn btn-primary">Agregar linea</button>
                     <br>
                 </form>
             @endif
         </div>
 
         @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
-            <div class="marco_formulario">
-                <h4>Anticipos / saldos a favor</h4>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="hotel_anticipos_table">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Documento</th>
-                                <th>Fecha</th>
-                                <th>Detalle</th>
-                                <th>Saldo a favor</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($anticipos as $anticipo)
-                                <?php $saldoAnticipo = abs((float)$anticipo['saldo_pendiente']); ?>
-                                <tr>
-                                    <td>
-                                        <input type="checkbox"
-                                            class="hotel-advance-check"
-                                            data-cxc_movimiento_id="{{ $anticipo['id'] }}"
-                                            data-documento="{{ $anticipo['documento'] }}"
-                                            data-fecha="{{ $anticipo['fecha'] }}"
-                                            data-detalle="{{ $anticipo['detalle'] }}"
-                                            data-saldo_pendiente="{{ $anticipo['saldo_pendiente'] }}"
-                                            data-valor_disponible="{{ $saldoAnticipo }}">
-                                    </td>
-                                    <td>{{ $anticipo['documento'] }}</td>
-                                    <td>{{ $anticipo['fecha'] }}</td>
-                                    <td>{{ $anticipo['detalle'] }}</td>
-                                    <td class="text-right">{{ number_format($saldoAnticipo, 2, ',', '.') }}</td>
-                                </tr>
-                            @endforeach
 
-                            @if(count($anticipos) == 0)
-                                <tr>
-                                    <td colspan="5">El cliente no tiene anticipos disponibles.</td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="marco_formulario">
+                        <h5>Anticipos / saldos a favor</h5>
+                        <hr>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="hotel_anticipos_table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Documento</th>
+                                        <th>Fecha</th>
+                                        <th>Detalle</th>
+                                        <th>Saldo a favor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($anticipos as $anticipo)
+                                        <?php $saldoAnticipo = abs((float)$anticipo['saldo_pendiente']); ?>
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox"
+                                                    class="hotel-advance-check"
+                                                    data-cxc_movimiento_id="{{ $anticipo['id'] }}"
+                                                    data-documento="{{ $anticipo['documento'] }}"
+                                                    data-fecha="{{ $anticipo['fecha'] }}"
+                                                    data-detalle="{{ $anticipo['detalle'] }}"
+                                                    data-saldo_pendiente="{{ $anticipo['saldo_pendiente'] }}"
+                                                    data-valor_disponible="{{ $saldoAnticipo }}">
+                                            </td>
+                                            <td>{{ $anticipo['documento'] }}</td>
+                                            <td>{{ $anticipo['fecha'] }}</td>
+                                            <td>{{ $anticipo['detalle'] }}</td>
+                                            <td class="text-right">{{ number_format($saldoAnticipo, 2, ',', '.') }}</td>
+                                        </tr>
+                                    @endforeach
+
+                                    @if(count($anticipos) == 0)
+                                        <tr>
+                                            <td colspan="5">El cliente no tiene anticipos disponibles.</td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-success btn-sm" type="button" id="hotel_btn_aplicar_anticipo">
+                            <i class="fa fa-check"></i> Aplicar anticipo
+                        </button>
+                        <br><br>
+                    </div>
                 </div>
-                <button class="btn btn-success btn-sm" type="button" id="hotel_btn_aplicar_anticipo">
-                    <i class="fa fa-check"></i> Aplicar anticipo
-                </button>
-            </div>
+                <div class="col-md-6">
+                    <div id="hotel_medios_pago_panel">
+                        @include('tesoreria.incluir.medios_recaudos')
+                    </div>
+                </div>
+                <div class="col-md-2">
 
-            <div id="hotel_medios_pago_panel">
-                @include('tesoreria.incluir.medios_recaudos')
-            </div>
-        @endif
-
-        @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
             <div class="marco_formulario">
-                    <h4>Generar factura</h4>
-                    <!-- <form method="POST" action="{ { url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-standard-invoice')) }}" style="display:inline-block;">
-                        {{ csrf_field() }}
-                        <button class="btn btn-success" onclick="return confirm('Generar factura estandar?')">Generar factura estandar</button>
-                    </form>
-                    -->
-                    <form method="POST" id="hotel_generate_pos_invoice_form" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-pos-invoice')) }}" style="display:inline-block;">
-                        {{ csrf_field() }}
-                        <label for="hotel_forma_pago">Forma de pago:</label>
-                        <select name="forma_pago" id="hotel_forma_pago" class="form-control" style="display:inline-block; width:auto;">
-                            <option value="contado">Contado</option>
-                            <option value="credito">Credito</option>
-                        </select>
-                        <br>
-                        <br>
-                        <input type="hidden" name="lineas_registros_medios_recaudos" id="hotel_lineas_registros_medios_recaudos" value="[]">
-                        <input type="hidden" name="object_anticipos" id="hotel_object_anticipos" value="null">
-                        <button class="btn btn-primary" onclick="return confirm('Generar factura POS?')"> <i class="fa fa-save"></i> Guardar </button>
-                    </form>
+                <h5>Generar factura</h5>
+                <hr>
+                <!-- <form method="POST" action="{ { url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-standard-invoice')) }}" style="display:inline-block;">
+                    {{ csrf_field() }}
+                    <button class="btn btn-success" onclick="return confirm('Generar factura estandar?')">Generar factura estandar</button>
+                </form>
+                -->
+                <form method="POST" id="hotel_generate_pos_invoice_form" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-pos-invoice')) }}" style="display:inline-block;">
+                    {{ csrf_field() }}
+                    <label for="hotel_forma_pago">Forma de pago:</label>
+                    <select name="forma_pago" id="hotel_forma_pago" class="form-control" style="display:inline-block; width:auto;">
+                        <option value="contado">Contado</option>
+                        <option value="credito">Credito</option>
+                    </select>
+                    <br>
+                    <br>
+                    <input type="hidden" name="lineas_registros_medios_recaudos" id="hotel_lineas_registros_medios_recaudos" value="[]">
+                    <input type="hidden" name="object_anticipos" id="hotel_object_anticipos" value="null">
+                    <button class="btn btn-primary" onclick="return confirm('Generar factura POS?')"> <i class="fa fa-save"></i> Guardar </button>
+                </form>
+                <br><br><br><br>
+            </div>
             </div>
         @endif
     </div>
@@ -340,7 +343,7 @@
                 });
 
                 if (exists) {
-                    return;
+                    return false;
                 }
 
                 $('#ingreso_registros_medios_recaudo tbody').append(
@@ -349,10 +352,12 @@
                         '<td>0-Cruce anticipos</td>' +
                         '<td>0-</td>' +
                         '<td>0-</td>' +
-                        '<td class="text-right">' + hotelMoneyLabel(value) + '</td>' +
+                        '<td class="valor_total text-right">' + hotelMoneyLabel(value) + '</td>' +
                         '<td><button type="button" class="btn btn-danger btn-xs hotel-remove-advance"><i class="fa fa-trash"></i></button></td>' +
                     '</tr>'
                 );
+
+                return true;
             }
 
             function hotelAdvanceTotal() {
@@ -408,7 +413,13 @@
                         }
                     });
 
+                    if ($('#ingreso_registros_medios_recaudo tbody tr[data-hotel_anticipo_id="' + advanceId + '"]').length > 0) {
+                        alreadyApplied = true;
+                    }
+
                     if (alreadyApplied || remaining <= 1) {
+                        $check.prop('checked', false);
+                        $check.prop('disabled', true);
                         return;
                     }
 
@@ -427,8 +438,13 @@
                         valor_aplicar: valueToApply.toFixed(2)
                     };
 
+                    if (!hotelAppendAdvancePayment(advance, valueToApply)) {
+                        $check.prop('checked', false);
+                        $check.prop('disabled', true);
+                        return;
+                    }
+
                     hotelAdvanceObjects.push(advance);
-                    hotelAppendAdvancePayment(advance, valueToApply);
                     remaining -= valueToApply;
                     $check.prop('checked', false);
                     $check.prop('disabled', true);

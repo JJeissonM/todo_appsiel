@@ -43,8 +43,9 @@ class HotelStayController extends Controller
         $stay = $this->findStay($id);
         $clients = $this->clientsList();
         $anticipos = $this->anticiposCliente($stay);
+        $cancelBlockMessage = (new HotelService())->getCancelInvoiceBlockMessage($stay);
         $miga_pan = $this->breadcrumb('Estadia #' . $stay->id);
-        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'miga_pan'));
+        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'cancelBlockMessage', 'miga_pan'));
     }
 
     public function createCheckIn()

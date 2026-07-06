@@ -162,6 +162,11 @@ class HotelService
                 throw new \Exception('No se puede anular una estadia cerrada.');
             }
 
+            $invoiceBlockMessage = $service->getCancelInvoiceBlockMessage($stay);
+            if ($invoiceBlockMessage != '') {
+                throw new \Exception($invoiceBlockMessage);
+            }
+
             $stay->status = HotelStay::STATUS_ANULADA;
             $stay->save();
 
@@ -179,6 +184,49 @@ class HotelService
 
             return $stay;
         });
+    }
+
+    public function getCancelInvoiceBlockMessage(HotelStay $stay)
+    {
+        $orders = HotelOrderHeader::where('empresa_id', $stay->empresa_id)
+            ->where('stay_id', $stay->id)
+            ->with('posInvoice.tipo_documento_app', 'salesInvoice.tipo_documento_app')
+            ->get();
+
+        foreach ($orders as $order) {
+            if ($this->orderHasActiveInvoice($order)) {
+                return 'No se puede anular la estadia porque ya tiene una factura de venta asociada (' . $order->invoiceLabel() . '). Primero debes anular la factura de venta asociada y, una vez realizada esa accion, podras anular la estadia.';
+            }
+
+            if ($order->status == HotelOrderHeader::STATUS_FACTURADO && empty($order->pos_doc_id) && empty($order->sales_doc_id)) {
+                return 'No se puede anular la estadia porque tiene un pedido hotelero marcado como facturado. Primero debes revisar o anular la factura de venta asociada.';
+            }
+        }
+
+        return '';
+    }
+
+    private function orderHasActiveInvoice(HotelOrderHeader $order)
+    {
+        if (!empty($order->pos_doc_id)) {
+            $invoice = $order->posInvoice;
+            if (is_null($invoice)) {
+                $invoice = FacturaPos::find($order->pos_doc_id);
+            }
+
+            return !is_null($invoice) && $invoice->estado != 'Anulado';
+        }
+
+        if (!empty($order->sales_doc_id)) {
+            $invoice = $order->salesInvoice;
+            if (is_null($invoice)) {
+                $invoice = VtasDocEncabezado::find($order->sales_doc_id);
+            }
+
+            return !is_null($invoice) && $invoice->estado != 'Anulado';
+        }
+
+        return false;
     }
 
     public function createLine(HotelOrderHeader $order, $data)

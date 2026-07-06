@@ -47,30 +47,39 @@
                                 {{ csrf_field() }}
                                 <button class="btn btn-success btn-sm" onclick="return confirm('Registrar check-out?')">Check-out</button>
                             </form>
-                            <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/cancel')) }}" style="display:inline-block;">
-                                {{ csrf_field() }}
-                                <button class="btn btn-danger btn-sm" onclick="return confirm('Anular estadia?')">Anular</button>
-                            </form>
+                            @if(isset($cancelBlockMessage) && $cancelBlockMessage != '')
+                                <button type="button" class="btn btn-danger btn-sm" disabled title="{{ $cancelBlockMessage }}">Anular</button>
+                            @else
+                                <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/cancel')) }}" style="display:inline-block;">
+                                    {{ csrf_field() }}
+                                    <button class="btn btn-danger btn-sm" onclick="return confirm('Anular estadia?')">Anular</button>
+                                </form>
+                            @endif
                         @endif
                     </div>
+                    @if(isset($cancelBlockMessage) && $cancelBlockMessage != '')
+                        <br><br>
+                        <div class="alert alert-warning">{{ $cancelBlockMessage }}</div>
+                    @endif
                 </div>
 
                 <div class="col-md-4">
                     <h4>Huespedes</h4>
                     <table class="table table-bordered table-striped">
-                        <thead><tr><th>Cliente</th><th>Principal</th><th>Parentesco</th><th>Accion</th></tr></thead>
+                        <thead><tr><th>Cliente</th><th>Principal</th><th>Accion</th></tr></thead>
                         <tbody>
                             @foreach($stay->guests as $guest)
                                 <?php $isMainGuest = (int)$guest->is_main_guest == 1 || (int)$guest->cliente_id == (int)$stay->main_cliente_id; ?>
                                 <tr>
                                     <td>{{ $guest->cliente && $guest->cliente->tercero ? $guest->cliente->tercero->descripcion : $guest->cliente_id }}</td>
                                     <td>{{ $isMainGuest ? 'Si' : 'No' }}</td>
-                                    <td>{{ $guest->relationship }}</td>
                                     <td>
                                         @if(!$isMainGuest && $stay->status == App\Hotel\HotelStay::STATUS_ACTIVA)
                                             <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/guests/'.$guest->id.'/delete')) }}">
                                                 {{ csrf_field() }}
-                                                <button class="btn btn-danger btn-xs">Eliminar</button>
+                                                <button class="btn btn-danger btn-xs" title="Eliminar acompañante">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
                                             </form>
                                         @endif
                                     </td>
@@ -83,56 +92,15 @@
                         <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/guests')) }}" class="form-inline">
                             {{ csrf_field() }}
                             <div class="hotel-cliente-autocomplete-wrap" style="position: relative; display: inline-block; min-width: 260px;">
-                                <label>Cliente:</label>
-                                <input type="text" class="form-control hotel-cliente-autocomplete-input" data-target="hotel_stay_guest_cliente_id" placeholder="Buscar huesped" autocomplete="off" required>
+                                <label>Acompañante:</label>
+                                <input type="text" class="form-control hotel-cliente-autocomplete-input" data-target="hotel_stay_guest_cliente_id" placeholder="Buscar acompañante" autocomplete="off" required>
                                 <input type="hidden" name="cliente_id" id="hotel_stay_guest_cliente_id" required>
                                 <div class="hotel-cliente-autocomplete-results list-group" style="display:none; position:absolute; z-index:1050; left:0; right:0;"></div>
                             </div>
-                            <input type="text" name="relationship" class="form-control" placeholder="Parentesco">
-                            <button class="btn btn-primary">Agregar huésped</button>
+                            <button class="btn btn-primary" title="Agregar acompañante"> <i class="fa fa-plus"></i> </button>
                         </form>
                     @endif
                 </div>
-            </div>
-
-            <hr>
-
-            <h4>Anticipos / saldos a favor del huesped</h4>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Documento</th>
-                            <th>Fecha</th>
-                            <th>Detalle</th>
-                            <th>Saldo a favor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php $totalAnticipos = 0; ?>
-                        @foreach($anticipos as $anticipo)
-                            <?php
-                                $saldoAnticipo = abs((float)$anticipo['saldo_pendiente']);
-                                $totalAnticipos += $saldoAnticipo;
-                            ?>
-                            <tr>
-                                <td>{{ $anticipo['documento'] }}</td>
-                                <td>{{ $anticipo['fecha'] }}</td>
-                                <td>{{ $anticipo['detalle'] }}</td>
-                                <td class="text-right">{{ number_format($saldoAnticipo, 2, ',', '.') }}</td>
-                            </tr>
-                        @endforeach
-                        @if(count($anticipos) == 0)
-                            <tr>
-                                <td colspan="4">El huesped no tiene anticipos disponibles.</td>
-                            </tr>
-                        @endif
-                        <tr>
-                            <th colspan="3" class="text-right">Total</th>
-                            <th class="text-right">{{ number_format($totalAnticipos, 2, ',', '.') }}</th>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
 
             <hr>

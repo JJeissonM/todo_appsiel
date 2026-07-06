@@ -8,7 +8,7 @@ class TipoDocumentoId extends Model
 {
     protected $table = 'core_tipos_docs_id'; 
 
-    protected $fillable = ['descripcion','abreviatura'];
+    protected $fillable = ['descripcion','abreviatura','codigo_sire'];
 
     public static function opciones_campo_select()
     {
