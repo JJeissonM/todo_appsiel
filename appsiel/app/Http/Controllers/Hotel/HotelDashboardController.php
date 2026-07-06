@@ -73,7 +73,7 @@ class HotelDashboardController extends Controller
         $today = date('Y-m-d');
 
         $reservedRoomIds = HotelReservation::where('empresa_id', $empresaId)
-            ->where('status', HotelReservation::STATUS_ACTIVA)
+            ->whereNotIn('status', array(HotelReservation::STATUS_ANULADA, HotelReservation::STATUS_CUMPLIDA))
             ->where('reserved_from', '<=', $today)
             ->where('reserved_until', '>=', $today)
             ->lists('room_id')
@@ -105,7 +105,7 @@ class HotelDashboardController extends Controller
     private function activeReservations($empresaId)
     {
         return HotelReservation::where('empresa_id', $empresaId)
-            ->where('status', HotelReservation::STATUS_ACTIVA)
+            ->whereNotIn('status', array(HotelReservation::STATUS_ANULADA, HotelReservation::STATUS_CUMPLIDA))
             ->with('room', 'cliente.tercero')
             ->orderBy('reserved_from')
             ->get();

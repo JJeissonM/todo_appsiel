@@ -2,6 +2,7 @@
 
 @section('content')
     <?php $hotelUrl = 'App\\Hotel\\Support\\HotelBreadcrumb'; ?>
+    <?php $form_create = array('campos' => array(array('tipo' => 'cliente_autocomplete'))); ?>
     {{ Form::bsMigaPan($miga_pan) }}
     @include('layouts.mensajes')
 
@@ -57,7 +58,7 @@
                 <div class="col-md-4">
                     <h4>Huespedes</h4>
                     <table class="table table-bordered table-striped">
-                        <thead><tr><th>Cliente</th><th>Principal</th><th>Parentezco</th><th>Accion</th></tr></thead>
+                        <thead><tr><th>Cliente</th><th>Principal</th><th>Parentesco</th><th>Accion</th></tr></thead>
                         <tbody>
                             @foreach($stay->guests as $guest)
                                 <?php $isMainGuest = (int)$guest->is_main_guest == 1 || (int)$guest->cliente_id == (int)$stay->main_cliente_id; ?>
@@ -81,14 +82,14 @@
                     @if($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA)
                         <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/guests')) }}" class="form-inline">
                             {{ csrf_field() }}
-                            Cliente:
-                            <select name="cliente_id" class="combobox" required>
-                                @foreach($clients as $key => $label)
-                                    <option value="{{ $key }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
-                            <input type="text" name="relationship" class="form-control" placeholder="Parentezco">
-                            <button class="btn btn-primary">Agregar huesped</button>
+                            <div class="hotel-cliente-autocomplete-wrap" style="position: relative; display: inline-block; min-width: 260px;">
+                                <label>Cliente:</label>
+                                <input type="text" class="form-control hotel-cliente-autocomplete-input" data-target="hotel_stay_guest_cliente_id" placeholder="Buscar huesped" autocomplete="off" required>
+                                <input type="hidden" name="cliente_id" id="hotel_stay_guest_cliente_id" required>
+                                <div class="hotel-cliente-autocomplete-results list-group" style="display:none; position:absolute; z-index:1050; left:0; right:0;"></div>
+                            </div>
+                            <input type="text" name="relationship" class="form-control" placeholder="Parentesco">
+                            <button class="btn btn-primary">Agregar huésped</button>
                         </form>
                     @endif
                 </div>
@@ -163,10 +164,10 @@
                                 <td>{{ $order->status }}</td>
                                 <td class="text-right">{{ number_format($orderTotal, 2, ',', '.') }}</td>
                                 <td>
-                                    @if($order->invoice_type == App\Hotel\HotelOrderHeader::INVOICE_POS && $order->pos_doc_id)
-                                        POS #{{ $order->pos_doc_id }}
-                                    @elseif($order->invoice_type == App\Hotel\HotelOrderHeader::INVOICE_STANDARD && $order->sales_doc_id)
-                                        Ventas #{{ $order->sales_doc_id }}
+                                    @if($order->invoiceUrl() != '')
+                                        <a href="{{ $order->invoiceUrl() }}" target="_blank">{{ $order->invoiceLabel() }}</a>
+                                    @else
+                                        {{ $order->invoiceLabel() }}
                                     @endif
                                 </td>
                                 <td>
@@ -186,4 +187,10 @@
         </div>
 
     </div>
+    @include('hotel.partials.cliente_autocomplete_modal')
+@endsection
+
+@section('scripts')
+    @parent
+    @include('hotel.partials.cliente_autocomplete_scripts')
 @endsection

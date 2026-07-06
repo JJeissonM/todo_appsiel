@@ -498,7 +498,7 @@ class HotelService
         return HotelReservation::where('empresa_id', $room->empresa_id)
             ->where('room_id', $room->id)
             ->where('cliente_id', $clienteId)
-            ->where('status', HotelReservation::STATUS_ACTIVA)
+            ->whereNotIn('status', array(HotelReservation::STATUS_ANULADA, HotelReservation::STATUS_CUMPLIDA))
             ->where('reserved_from', '<=', $date)
             ->where('reserved_until', '>=', $date)
             ->lockForUpdate()

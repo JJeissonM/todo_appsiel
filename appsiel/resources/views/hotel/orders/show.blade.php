@@ -20,7 +20,16 @@
                 <tr><th>Habitacion</th><td>{{ $order->stay && $order->stay->room ? $order->stay->room->room_number : '' }}</td></tr>
                 <tr><th>Fecha</th><td>{{ $order->order_date }}</td></tr>
                 <tr><th>Estado</th><td>{{ $order->status }}</td></tr>
-                <tr><th>Factura</th><td>{{ $order->invoice_type }} {{ $order->sales_doc_id ? 'Ventas #'.$order->sales_doc_id : '' }} {{ $order->pos_doc_id ? 'POS #'.$order->pos_doc_id : '' }}</td></tr>
+                <tr>
+                    <th>Factura</th>
+                    <td>
+                        @if($order->invoiceUrl() != '')
+                            <a href="{{ $order->invoiceUrl() }}" target="_blank">{{ $order->invoiceLabel() }}</a>
+                        @else
+                            {{ $order->invoiceLabel() }}
+                        @endif
+                    </td>
+                </tr>
             </table>
 
             <h4>Lineas del pedido</h4>
@@ -28,8 +37,8 @@
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Producto</th>
-                            <th>Descripcion</th>
+                            <th style="width: 18%;">Producto</th>
+                            <th style="width: 20%;">Descripcion</th>
                             <th>Cantidad</th>
                             <th>Precio</th>
                             <th>Descuento</th>
@@ -46,7 +55,7 @@
                             <tr>
                                 <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines/'.$line->id.'/update')) }}">
                                     {{ csrf_field() }}
-                                    <td>{{ $line->product ? $line->product->descripcion : $line->producto_id }}</td>
+                                    <td style="white-space: normal;">{{ $line->product ? $line->product->descripcion : $line->producto_id }}</td>
                                     <td><input type="text" name="description" class="form-control input-sm" value="{{ $line->description }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
                                     <td><input type="text" name="quantity" class="form-control input-sm text-right" value="{{ $line->quantity }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
                                     <td><input type="text" name="unit_price" class="form-control input-sm text-right" value="{{ $line->unit_price }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
@@ -217,6 +226,10 @@
             var $mediosPagoPanel = $('#hotel_medios_pago_panel');
             var hotelOrderTotal = {{ (float)$order->lines->sum('line_total') }};
             var hotelAdvanceObjects = [];
+
+            if ($.fn.select2) {
+                $producto.select2();
+            }
 
             function normalizarRespuesta(respuesta) {
                 if (typeof respuesta === 'string') {

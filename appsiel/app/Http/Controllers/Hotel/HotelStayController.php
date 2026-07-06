@@ -128,7 +128,7 @@ class HotelStayController extends Controller
 
     private function findStay($id)
     {
-        return HotelStay::where('empresa_id', Auth::user()->empresa_id)->where('id', $id)->with('room', 'mainGuest.tercero', 'guests.cliente.tercero', 'orders.lines.product')->firstOrFail();
+        return HotelStay::where('empresa_id', Auth::user()->empresa_id)->where('id', $id)->with('room', 'mainGuest.tercero', 'guests.cliente.tercero', 'orders.lines.product', 'orders.posInvoice.tipo_documento_app', 'orders.salesInvoice.tipo_documento_app')->firstOrFail();
     }
 
     private function clientsList()

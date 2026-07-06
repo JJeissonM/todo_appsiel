@@ -102,7 +102,7 @@ class HotelReservation extends Model
             $reservation->created_by = Auth::user()->id;
         }
 
-        if (empty($reservation->status)) {
+        if (empty($reservation->status) || !in_array($reservation->status, self::statuses())) {
             $reservation->status = self::STATUS_ACTIVA;
         }
 
@@ -155,7 +155,7 @@ class HotelReservation extends Model
 
         $query = self::where('empresa_id', $reservation->empresa_id)
             ->where('room_id', $reservation->room_id)
-            ->where('status', self::STATUS_ACTIVA)
+            ->whereNotIn('status', array(self::STATUS_ANULADA, self::STATUS_CUMPLIDA))
             ->where('reserved_from', '<=', $reservation->reserved_until)
             ->where('reserved_until', '>=', $reservation->reserved_from);
 
@@ -340,7 +340,7 @@ class HotelReservation extends Model
 
     public function syncRoomStatus()
     {
-        if ($this->status == self::STATUS_ACTIVA && $this->coversDate(date('Y-m-d'))) {
+        if (!in_array($this->status, array(self::STATUS_ANULADA, self::STATUS_CUMPLIDA)) && $this->coversDate(date('Y-m-d'))) {
             $room = $this->room;
             if (!is_null($room) && $room->status == HotelRoom::STATUS_DISPONIBLE) {
                 $room->status = HotelRoom::STATUS_RESERVADA;
@@ -362,7 +362,7 @@ class HotelReservation extends Model
 
         $hasTodayReservation = self::where('empresa_id', $this->empresa_id)
             ->where('room_id', $this->room_id)
-            ->where('status', self::STATUS_ACTIVA)
+            ->whereNotIn('status', array(self::STATUS_ANULADA, self::STATUS_CUMPLIDA))
             ->where('reserved_from', '<=', date('Y-m-d'))
             ->where('reserved_until', '>=', date('Y-m-d'))
             ->count() > 0;

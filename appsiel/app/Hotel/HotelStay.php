@@ -245,7 +245,7 @@ class HotelStay extends Model
         return HotelReservation::where('empresa_id', $stay->empresa_id)
             ->where('room_id', $stay->room_id)
             ->where('cliente_id', $stay->main_cliente_id)
-            ->where('status', HotelReservation::STATUS_ACTIVA)
+            ->whereNotIn('status', array(HotelReservation::STATUS_ANULADA, HotelReservation::STATUS_CUMPLIDA))
             ->where('reserved_from', '<=', $date)
             ->where('reserved_until', '>=', $date)
             ->first();

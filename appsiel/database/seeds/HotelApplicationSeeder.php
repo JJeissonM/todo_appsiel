@@ -445,12 +445,28 @@ class HotelApplicationSeeder extends Seeder
 
         $roomsReportId = $this->upsertReport('Listado de habitaciones hoteleras', 'hotel/reports/rooms');
         $staysReportId = $this->upsertReport('Listado de estadias hoteleras', 'hotel/reports/stays');
+        $migrationReportId = $this->upsertReport('Migracion hotelera', 'hotel/reports/migration');
 
         if ($staysReportId && Schema::hasTable('sys_campos') && Schema::hasTable('sys_reporte_tiene_campos')) {
             $fechaDesdeId = $this->getOrCreateField('Fecha desde', 'date', 'fecha_desde', '', 'null', '{"class":"form-control"}', 0);
             $fechaHastaId = $this->getOrCreateField('Fecha hasta', 'date', 'fecha_hasta', '', 'null', '{"class":"form-control"}', 0);
             $this->attachReportField($staysReportId, $fechaDesdeId, 1);
             $this->attachReportField($staysReportId, $fechaHastaId, 2);
+        }
+
+        if ($migrationReportId && Schema::hasTable('sys_campos') && Schema::hasTable('sys_reporte_tiene_campos')) {
+            $codigoHotelId = $this->getOrCreateField('Codigo hotel', 'bsText', 'codigo_hotel', '', 'null', '{"class":"form-control"}', 0);
+            $fechaDesdeId = $this->getOrCreateField('Fecha desde', 'date', 'fecha_desde', '', 'null', '{"class":"form-control"}', 0);
+            $fechaHastaId = $this->getOrCreateField('Fecha hasta', 'date', 'fecha_hasta', '', 'null', '{"class":"form-control"}', 0);
+            $tipoMovimientoId = $this->getOrCreateField('Tipo movimiento', 'select', 'tipo_movimiento', '{"E":"Entrada","S":"Salida"}', 'E', '{"class":"form-control"}', 0);
+            $procedenciaId = $this->getOrCreateField('Lugar de procedencia', 'bsText', 'lugar_procedencia', '', 'null', '{"class":"form-control"}', 0);
+            $destinoId = $this->getOrCreateField('Lugar de destino', 'bsText', 'lugar_destino', '', 'null', '{"class":"form-control"}', 0);
+            $this->attachReportField($migrationReportId, $codigoHotelId, 1);
+            $this->attachReportField($migrationReportId, $fechaDesdeId, 2);
+            $this->attachReportField($migrationReportId, $fechaHastaId, 3);
+            $this->attachReportField($migrationReportId, $tipoMovimientoId, 4);
+            $this->attachReportField($migrationReportId, $procedenciaId, 5);
+            $this->attachReportField($migrationReportId, $destinoId, 6);
         }
 
         if ($roomsReportId) {

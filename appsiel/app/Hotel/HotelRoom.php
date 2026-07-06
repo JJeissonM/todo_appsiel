@@ -91,7 +91,7 @@ class HotelRoom extends Model
     {
         $today = date('Y-m-d');
         return $this->reservations()
-            ->where('status', HotelReservation::STATUS_ACTIVA)
+            ->whereNotIn('status', array(HotelReservation::STATUS_ANULADA, HotelReservation::STATUS_CUMPLIDA))
             ->where('reserved_from', '<=', $today)
             ->where('reserved_until', '>=', $today);
     }

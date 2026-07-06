@@ -65,6 +65,10 @@
         .hotel-room-type {
             font-size: 16px;
             margin-top: 12px;
+            line-height: 1.25;
+            max-width: 78%;
+            min-height: 40px;
+            word-break: normal;
         }
 
         .hotel-room-meta {
@@ -225,15 +229,16 @@
                 <div class="hotel-room-wrap">
                     <div class="hotel-room {{ $statusClass }}">
                         <div class="hotel-room-main">
-                            <div class="hotel-room-number">Nro: {{ $room->room_number }}</div>
-                            <div class="hotel-room-type">Habitacion {{ ucfirst(strtolower($room->room_type)) }}</div>
+                            <div class="hotel-room-number">HAB. {{ $room->room_number }}</div>
+                            <div class="hotel-room-type">
+                                {{ $room->description != '' ? $room->description : ucfirst(strtolower($room->room_type)) }}
+                            </div>
                             <div class="hotel-room-meta">
                                 Piso: {{ $room->floor ? $room->floor : 'N/A' }} &nbsp; Cap: {{ $room->capacity }}
                                 @if($guestName != '')
                                     <br>{{ substr($guestName, 0, 34) }}
                                 @endif
                             </div>
-                            <i class="fa fa-bed hotel-room-icon"></i>
                         </div>
                         <div class="hotel-room-status">
                             {{ $room->status }} <i class="fa fa-arrow-circle-right"></i>
