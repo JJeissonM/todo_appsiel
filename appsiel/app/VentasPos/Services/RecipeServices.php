@@ -42,8 +42,11 @@ class RecipeServices
          */
         $lineas_desarme = '[{"inv_producto_id":"","Producto":"","motivo":"","costo_unitario":"","cantidad":"","costo_total":""}';
 
+        $planes_ensamble = [];
+        $requerimientos_ingredientes = [];
+        $items_ingredientes = [];
+
         // Por cada item vendido con parametros de desarme
-        $hay_productos = 0;
         foreach ($items_con_receta as $item_platillo_id => $lineas_receta_platillo)
         {
             $cantidad_facturada = (float)$cantidades_facturadas->where('inv_producto_id', $item_platillo_id)->sum('cantidad_facturada');
@@ -55,21 +58,78 @@ class RecipeServices
             if ($cantidad_a_ingresar_platillo_facturado <= 0) {
                 continue;
             }
-            
-            //$ingredientes = $receta_platillo->ingredientes();
-            $costo_total_ingredientes = 0;
+
+            $item_platillo = $lineas_receta_platillo->first()->item_platillo;
+            if ( is_null($item_platillo) )
+            {
+                continue;
+            }
+
+            $planes_ensamble[] = (object)[
+                'item_platillo' => $item_platillo,
+                'lineas_receta_platillo' => $lineas_receta_platillo,
+                'cantidad_a_ingresar' => $cantidad_a_ingresar_platillo_facturado
+            ];
+
             foreach ($lineas_receta_platillo as $linea_receta) {
                 $cantidad_a_sacar_ingrediente = $linea_receta->cantidad_porcion * $cantidad_a_ingresar_platillo_facturado;
-                $bodega_ingrediente_id = $this->get_bodega_consumo_ingrediente(
-                    $linea_receta->item_ingrediente_id,
-                    $bodega_default_id,
-                    $cantidad_a_sacar_ingrediente,
-                    $fecha
-                );
 
-                // ---------------- Ensambles anidados
-                $this->create_document_making_for_ingredient( $linea_receta->item_ingrediente, $bodega_ingrediente_id, $fecha, $parametros_config_inventarios, $cantidades_facturadas, $items_con_receta, $factura_pos_id );
-                // ----------------
+                if ( is_null($linea_receta->item_ingrediente) )
+                {
+                    continue;
+                }
+
+                $ingrediente_id = (int)$linea_receta->item_ingrediente_id;
+                if ( !isset($requerimientos_ingredientes[$ingrediente_id]) )
+                {
+                    $requerimientos_ingredientes[$ingrediente_id] = 0;
+                }
+
+                $requerimientos_ingredientes[$ingrediente_id] += $cantidad_a_sacar_ingrediente;
+                $items_ingredientes[$ingrediente_id] = $linea_receta->item_ingrediente;
+            }
+        }
+
+        if ( empty($planes_ensamble) )
+        {
+            return 99; // Type integer
+        }
+
+        $bodegas_ingredientes = [];
+        foreach ($requerimientos_ingredientes as $ingrediente_id => $cantidad_requerida) {
+            $bodega_ingrediente_id = $this->get_bodega_consumo_ingrediente(
+                $ingrediente_id,
+                $bodega_default_id,
+                $cantidad_requerida,
+                $fecha
+            );
+
+            $bodegas_ingredientes[$ingrediente_id] = $bodega_ingrediente_id;
+
+            // ---------------- Ensambles anidados
+            $this->create_document_making_for_ingredient(
+                $items_ingredientes[$ingrediente_id],
+                $bodega_ingrediente_id,
+                $fecha,
+                $parametros_config_inventarios,
+                $cantidad_requerida,
+                $factura_pos_id
+            );
+            // ----------------
+        }
+
+        foreach ($planes_ensamble as $plan_ensamble)
+        {
+            $costo_total_ingredientes = 0;
+            foreach ($plan_ensamble->lineas_receta_platillo as $linea_receta) {
+                if ( is_null($linea_receta->item_ingrediente) )
+                {
+                    continue;
+                }
+
+                $ingrediente_id = (int)$linea_receta->item_ingrediente_id;
+                $cantidad_a_sacar_ingrediente = $linea_receta->cantidad_porcion * $plan_ensamble->cantidad_a_ingresar;
+                $bodega_ingrediente_id = $bodegas_ingredientes[$ingrediente_id];
 
                 $costo_unitario_ingrediente = $linea_receta->item_ingrediente->get_costo_promedio( $bodega_ingrediente_id );
 
@@ -82,16 +142,9 @@ class RecipeServices
             $lineas_desarme .= ',';
             
             // Un solo registro de entrada para el platillo
-            $item_platillo = $lineas_receta_platillo->first()->item_platillo;
+            $item_platillo = $plan_ensamble->item_platillo;
 
-            $lineas_desarme .= '{"inv_bodega_id":"' . $bodega_default_id . '","inv_producto_id":"' . $item_platillo->id . '","Producto":"' . $item_platillo->id . ' ' . $item_platillo->descripcion . ' (' . $item_platillo->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_total_ingredientes . '","cantidad":"' . $cantidad_a_ingresar_platillo_facturado . ' UND","costo_total":"$' . ($cantidad_a_ingresar_platillo_facturado * $costo_total_ingredientes) . '"}';
-
-            $hay_productos++;
-        }
-
-        if ( $hay_productos == 0 )
-        {
-            return 99; // Type integer
+            $lineas_desarme .= '{"inv_bodega_id":"' . $bodega_default_id . '","inv_producto_id":"' . $item_platillo->id . '","Producto":"' . $item_platillo->id . ' ' . $item_platillo->descripcion . ' (' . $item_platillo->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_total_ingredientes . '","cantidad":"' . $plan_ensamble->cantidad_a_ingresar . ' UND","costo_total":"$' . ($plan_ensamble->cantidad_a_ingresar * $costo_total_ingredientes) . '"}';
         }
 
         // Lineas auxiliares que se eliminan en el store() de la transaccion
@@ -272,7 +325,7 @@ class RecipeServices
     /**
      * Se hace Un (1) ensamble para TODAS las cantidades del ingrediente requeridas en la preparación de TODOS los platillo facturados.
      */
-    public function create_document_making_for_ingredient( $item_ingrediente, $bodega_default_id, $fecha, $parametros_config_inventarios, $cantidades_facturadas_platillos, $items_con_receta, $factura_pos_id = null )
+    public function create_document_making_for_ingredient( $item_ingrediente, $bodega_default_id, $fecha, $parametros_config_inventarios, $cantidad_requerida, $factura_pos_id = null )
     {
         $lineas_recetas_ingrediente = RecetaCocina::where('item_platillo_id', $item_ingrediente->id)->get()->first();
 
@@ -281,9 +334,22 @@ class RecipeServices
             return false;
         }
         
-        $cantidades_facturadas = $this->get_obj_cantidades_facturadas_ingrediente( $item_ingrediente->id, $cantidades_facturadas_platillos, $items_con_receta );
+        $cantidades_facturadas = $this->get_obj_cantidad_facturada_item( $item_ingrediente->id, $cantidad_requerida );
         
         return $this->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios, 'Ensamble de ' . $item_ingrediente->descripcion  . ' para todos los platillos facturados.', $factura_pos_id);
+    }
+
+    public function get_obj_cantidad_facturada_item( $item_id, $cantidad_facturada )
+    {
+        $cantidades = collect();
+
+        $aux_registro = new DocRegistro();
+        $aux_registro->cantidad_facturada = (float)$cantidad_facturada;
+        $aux_registro->inv_producto_id = (int)$item_id;
+
+        $cantidades->push( $aux_registro );
+
+        return $cantidades;
     }
 
     public function get_obj_cantidades_facturadas_ingrediente( $item_ingrediente_id, $cantidades_facturadas_platillos, $items_con_receta )
