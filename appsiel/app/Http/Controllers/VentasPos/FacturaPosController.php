@@ -511,6 +511,8 @@ class FacturaPosController extends TransaccionController
         $botones_anterior_siguiente = new BotonesAnteriorSiguiente($this->transaccion, $id);
 
         $doc_encabezado = app($this->transaccion->modelo_encabezados_documentos)->get_registro_impresion($id);
+        $this->validar_acceso_documento_pos($doc_encabezado);
+
         $doc_registros = app($this->transaccion->modelo_registros_documentos)->get_registros_impresion($doc_encabezado->id);
 
         $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados($doc_encabezado);
@@ -572,9 +574,35 @@ class FacturaPosController extends TransaccionController
     */
     public function imprimir($id)
     {
+        $this->validar_acceso_documento_pos(FacturaPos::find($id));
+
         $print_service = new PrintServices();
         
         return $print_service->generar_documento_vista( $id, 'ventas.formatos_impresion.pos' );
+    }
+
+    protected function validar_acceso_documento_pos($documento)
+    {
+        if (is_null($documento)) {
+            abort(404);
+        }
+
+        $user = Auth::user();
+        $roles_sin_filtro = config('filtrado_registros.roles_sin_filtro', []);
+
+        if (is_null($user) || empty($user->email)) {
+            abort(403);
+        }
+
+        foreach ($user->roles as $role) {
+            if (in_array($role->name, $roles_sin_filtro)) {
+                return;
+            }
+        }
+
+        if ($documento->creado_por != $user->email) {
+            abort(403, 'No tiene permiso para consultar esta factura POS.');
+        }
     }
 
     /**
@@ -586,6 +614,7 @@ class FacturaPosController extends TransaccionController
 
         // Se obtiene el registro a modificar del modelo
         $factura = app($this->modelo->name_space)->find($id); // Encabezado FActura POS
+        $this->validar_acceso_documento_pos($factura);
 
         $pdv = Pdv::find($factura->pdv_id);
 

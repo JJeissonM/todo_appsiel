@@ -41,6 +41,29 @@ class HotelService
         return Auth::check() ? Auth::user()->id : null;
     }
 
+    public function currentCashierPdv()
+    {
+        if (!Auth::check()) {
+            return null;
+        }
+
+        return Pdv::where('core_empresa_id', $this->empresaId())
+            ->where('estado', '<>', 'Inactivo')
+            ->where('cajero_default_id', Auth::user()->id)
+            ->orderBy('id')
+            ->first();
+    }
+
+    public function currentCashierPdvOrFail()
+    {
+        $pdv = $this->currentCashierPdv();
+        if (is_null($pdv)) {
+            throw new \Exception('El usuario actual no tiene un punto de venta POS asociado.');
+        }
+
+        return $pdv;
+    }
+
     public function checkIn($data)
     {
         $service = $this;
@@ -120,10 +143,16 @@ class HotelService
         }
 
         $room = $stay->room;
+        $pdv = $this->currentCashierPdvOrFail();
+        if ($pdv->estado != 'Abierto') {
+            throw new \Exception('El punto de venta ' . $pdv->descripcion . ' se encuentra cerrado. Primero debe realizar la apertura.');
+        }
+
         $order = HotelOrderHeader::create(array(
             'empresa_id' => $stay->empresa_id,
             'stay_id' => $stay->id,
             'cliente_id' => $stay->main_cliente_id,
+            'pdv_id' => !is_null($pdv) ? $pdv->id : null,
             'document_number' => $this->nextOrderNumber($stay),
             'order_date' => date('Y-m-d H:i:s'),
             'status' => HotelOrderHeader::STATUS_ABIERTO,
@@ -386,9 +415,13 @@ class HotelService
                 throw new \Exception('El pedido no tiene cliente valido o lineas para facturar.');
             }
 
-            $pdv = Pdv::find((int)config('ventas_pos.pdv_id_default', 1));
+            $pdv = !empty($order->pdv_id) ? Pdv::find((int)$order->pdv_id) : $service->currentCashierPdvOrFail();
             if (is_null($pdv)) {
-                throw new \Exception('No existe un punto de venta POS por defecto para generar y contabilizar la factura.');
+                throw new \Exception('No existe un punto de venta POS asociado al pedido hotelero.');
+            }
+
+            if ($pdv->estado != 'Abierto') {
+                throw new \Exception('El punto de venta ' . $pdv->descripcion . ' se encuentra cerrado. Primero debe realizar la apertura.');
             }
 
             $tipoDocAppId = (int)$pdv->tipo_doc_app_default_id;
@@ -456,6 +489,7 @@ class HotelService
 
             $order->status = HotelOrderHeader::STATUS_FACTURADO;
             $order->invoice_type = HotelOrderHeader::INVOICE_POS;
+            $order->pdv_id = $pdv->id;
             $order->pos_doc_id = $doc->id;
             $order->save();
 

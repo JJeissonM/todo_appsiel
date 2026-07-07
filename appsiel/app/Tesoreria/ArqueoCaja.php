@@ -5,12 +5,15 @@ namespace App\Tesoreria;
 use App\Http\Controllers\Tesoreria\ArqueoCajaController;
 use App\Sistema\Html\Boton;
 use App\Sistema\TipoTransaccion;
+use App\Traits\FiltraRegistrosPorUsuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 
 class ArqueoCaja extends Model
 {
+    use FiltraRegistrosPorUsuario;
+
     protected $table = 'teso_arqueos_caja';
 
     protected $fillable = [
@@ -28,7 +31,7 @@ class ArqueoCaja extends Model
 
     public static function consultar_registros($nro_registros, $search)
     {
-        return ArqueoCaja::leftJoin('teso_cajas', 'teso_cajas.id', '=', 'teso_arqueos_caja.teso_caja_id')
+        $query = ArqueoCaja::leftJoin('teso_cajas', 'teso_cajas.id', '=', 'teso_arqueos_caja.teso_caja_id')
             ->select(
                 'teso_arqueos_caja.fecha AS campo1',
                 'teso_cajas.descripcion AS campo2',
@@ -36,34 +39,62 @@ class ArqueoCaja extends Model
                 'teso_arqueos_caja.total_saldo AS campo4',
                 'teso_arqueos_caja.estado AS campo5',
                 'teso_arqueos_caja.id AS campo6'
-            )
-            ->where("teso_arqueos_caja.fecha", "LIKE", "%$search%")
-            ->orWhere("teso_cajas.descripcion", "LIKE", "%$search%")
-            ->orWhere("teso_arqueos_caja.observaciones", "LIKE", "%$search%")
-            ->orWhere("teso_arqueos_caja.total_saldo", "LIKE", "%$search%")
-            ->orWhere("teso_arqueos_caja.estado", "LIKE", "%$search%")
+            );
+
+        $query = self::aplicarFiltroCreadoPor($query, 'teso_arqueos_caja.creado_por');
+
+        $query->where(function($q) use ($search) {
+            $q->where("teso_arqueos_caja.fecha", "LIKE", "%$search%")
+                ->orWhere("teso_cajas.descripcion", "LIKE", "%$search%")
+                ->orWhere("teso_arqueos_caja.observaciones", "LIKE", "%$search%")
+                ->orWhere("teso_arqueos_caja.total_saldo", "LIKE", "%$search%")
+                ->orWhere("teso_arqueos_caja.estado", "LIKE", "%$search%");
+        });
+
+        return $query
             ->orderBy('teso_arqueos_caja.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
     public static function sqlString($search)
     {
-        $string = ArqueoCaja::leftJoin('teso_cajas', 'teso_cajas.id', '=', 'teso_arqueos_caja.teso_caja_id')
+        $query = ArqueoCaja::leftJoin('teso_cajas', 'teso_cajas.id', '=', 'teso_arqueos_caja.teso_caja_id')
             ->select(
                 'teso_arqueos_caja.fecha AS FECHA',
                 'teso_cajas.descripcion AS CAJA',
                 'teso_arqueos_caja.observaciones AS OBSERVACIONES',
                 'teso_arqueos_caja.total_saldo AS TOTAL_SALDO',
                 'teso_arqueos_caja.estado AS ESTADO'
-            )
-            ->where("teso_arqueos_caja.fecha", "LIKE", "%$search%")
-            ->orWhere("teso_cajas.descripcion", "LIKE", "%$search%")
-            ->orWhere("teso_arqueos_caja.observaciones", "LIKE", "%$search%")
-            ->orWhere("teso_arqueos_caja.total_saldo", "LIKE", "%$search%")
-            ->orWhere("teso_arqueos_caja.estado", "LIKE", "%$search%")
+            );
+
+        $query = self::aplicarFiltroCreadoPor($query, 'teso_arqueos_caja.creado_por');
+
+        $query->where(function($q) use ($search) {
+            $q->where("teso_arqueos_caja.fecha", "LIKE", "%$search%")
+                ->orWhere("teso_cajas.descripcion", "LIKE", "%$search%")
+                ->orWhere("teso_arqueos_caja.observaciones", "LIKE", "%$search%")
+                ->orWhere("teso_arqueos_caja.total_saldo", "LIKE", "%$search%")
+                ->orWhere("teso_arqueos_caja.estado", "LIKE", "%$search%");
+        });
+
+        return self::reemplazarBindingsSql($query
             ->orderBy('teso_arqueos_caja.created_at', 'DESC')
-            ->toSql();
-        return str_replace('?', '"%' . $search . '%"', $string);
+            ->toSql(), $query->getBindings());
+    }
+
+    protected static function reemplazarBindingsSql($sql, $bindings)
+    {
+        foreach ($bindings as $binding) {
+            if (is_numeric($binding)) {
+                $value = $binding;
+            } else {
+                $value = "'" . str_replace("'", "''", $binding) . "'";
+            }
+
+            $sql = preg_replace('/\?/', $value, $sql, 1);
+        }
+
+        return $sql;
     }
 
     //Titulo para la exportación en PDF y EXCEL

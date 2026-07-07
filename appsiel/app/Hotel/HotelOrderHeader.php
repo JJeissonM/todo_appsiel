@@ -19,7 +19,7 @@ class HotelOrderHeader extends Model
 
     protected $table = 'hotel_order_headers';
 
-    protected $fillable = array('empresa_id', 'stay_id', 'cliente_id', 'document_number', 'order_date', 'status', 'invoice_type', 'sales_doc_id', 'pos_doc_id', 'notes', 'created_by');
+    protected $fillable = array('empresa_id', 'stay_id', 'cliente_id', 'pdv_id', 'document_number', 'order_date', 'status', 'invoice_type', 'sales_doc_id', 'pos_doc_id', 'notes', 'created_by');
 
     public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Estadía', 'Habitación', 'Cliente', 'Factura', 'Estado');
 
@@ -71,6 +71,11 @@ class HotelOrderHeader extends Model
     public function cliente()
     {
         return $this->belongsTo('App\Ventas\Cliente', 'cliente_id');
+    }
+
+    public function pdv()
+    {
+        return $this->belongsTo('App\VentasPos\Pdv', 'pdv_id');
     }
 
     public function lines()

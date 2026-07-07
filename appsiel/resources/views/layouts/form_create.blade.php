@@ -19,6 +19,9 @@
 	{{ Form::hidden('url_id',Input::get('id')) }}
 	{{ Form::hidden('url_id_modelo', Input::get('id_modelo')) }}
 	{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
+	@if(Input::get('return_to') != '')
+		{{ Form::hidden('return_to', Input::get('return_to')) }}
+	@endif
 
 	@yield('campos_adicionales')
 	

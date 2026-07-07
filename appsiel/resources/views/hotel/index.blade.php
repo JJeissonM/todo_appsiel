@@ -133,6 +133,25 @@
             background: #606873;
         }
 
+        .hotel-pdv-panel {
+            background: #fff;
+            border: 1px solid #eee;
+            margin-bottom: 16px;
+            padding: 18px 24px;
+            min-height: 140px;
+        }
+
+        .hotel-pdv-name {
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        .hotel-pdv-status {
+            margin-bottom: 28px;
+        }
+
         @media (max-width: 1199px) {
             .hotel-room-wrap {
                 width: 33.3333%;
@@ -161,7 +180,37 @@
 
     <div class="container-fluid">
 
+        <div class="hotel-pdv-panel">
+            <div class="row">
+                <div class="col-md-4">
+                    @if(!is_null($pdvData['pdv']))
+                        <div class="hotel-pdv-name">{{ $pdvData['pdv']->descripcion }}</div>
+                        <hr>
+                        <div class="hotel-pdv-status">
+                            <b>Estado:</b>
+                            <i class="fa fa-circle" style="color: {{ $pdvData['color'] }}"></i>
+                            {{ $pdvData['status'] }}
+                            <small>| desde {{ $pdvData['since'] }}</small>
+                        </div>
+                        <div>
+                            @if($pdvData['status'] != 'Abierto')
+                                <a href="{{ url($pdvData['apertura_url']) }}" class="btn btn-success btn-xs">Apertura</a>
+                            @endif
+                            @if($pdvData['status'] == 'Abierto')
+                                <a href="{{ url($pdvData['cierre_url']) }}" class="btn btn-danger btn-xs">Cierre</a>
+                            @endif
+                            @if($pdvData['status'] != 'Abierto')
+                                <a href="{{ url($pdvData['arqueo_url']) }}" class="btn btn-info btn-xs">Hacer arqueo</a>
+                            @endif
+                        </div>
+                    @else
+                        <div class="alert alert-warning">{{ $pdvData['message'] }}</div>
+                    @endif
+                </div>
+            </div>
+        </div>
 
+        @if($dashboardEnabled)
         <div class="marco_formulario">
             <div class="row">
                 <div class="col-md-8">
@@ -201,7 +250,7 @@
                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#hotelGuestCreateModal"><i class="fa fa-plus"></i> Huesped</button>
                     <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $reservationModelId))) }}" class="btn btn-info"><i class="fa fa-calendar"></i> Reserva</a>
                     <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId))) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a>
-                    <a href="{{ url('pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=1&action=create') }}" class="btn btn-success" target="_blank"><i class="fa fa-calculator"></i> Fact. Directa</a>
+                    <a href="{{ url($pdvData['factura_directa_url']) }}" class="btn btn-success" target="_blank"><i class="fa fa-calculator"></i> Fact. Directa</a>
                 </div>
             </div>
 
@@ -394,6 +443,11 @@
                 </table>
             </div>
         </div>
+        @else
+            <div class="alert alert-info">
+                Para usar el dashboard de Gestion Hotelera debe realizar la apertura del punto de venta POS asociado al cajero.
+            </div>
+        @endif
 
         <div class="modal fade" id="hotelGuestCreateModal" tabindex="-1" role="dialog" aria-labelledby="hotelGuestCreateModalLabel">
             <div class="modal-dialog modal-lg" role="document">

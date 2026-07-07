@@ -11,6 +11,7 @@ use App\User;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\Sistema\ModeloController;
 
@@ -36,6 +37,8 @@ class ArqueoCajaController extends ModeloController
     public function vista_preliminar($id,$formato_impresion)
     {
         $registro = ArqueoCaja::find($id);
+        $this->validar_acceso_registro($registro);
+
         $empresa = Empresa::find($registro->core_empresa_id);
         $doc_encabezado = [ 'documento' => 'ACTA DE ARQUEO DE CAJA', 'fecha' => $registro->fecha, 'titulo' => 'ARQUEO DE CAJA No. ' . $registro->id ];
         $user = User::where('email', $registro->creado_por)->first();
@@ -81,6 +84,8 @@ class ArqueoCajaController extends ModeloController
     public function show($id)
     {
         $registro = ArqueoCaja::find($id);
+        $this->validar_acceso_registro($registro);
+
         $empresa = Empresa::find($registro->core_empresa_id);
         $doc_encabezado = [
             'documento'=>'ARQUEO DE CAJA No. ' . $registro->id,
@@ -172,6 +177,8 @@ class ArqueoCajaController extends ModeloController
     public function edit($id)
     {
         $registro = ArqueoCaja::find($id);
+        $this->validar_acceso_registro($registro);
+
         $miga_pan = $this->get_miga_pan($this->modelo, 'Editar');
         $lista_campos = $this->get_campos_modelo($this->modelo, $registro, 'edit');
         $form_create = [
@@ -216,6 +223,30 @@ class ArqueoCajaController extends ModeloController
         $registro->total_saldo = $datos['total_saldo'];
 
         return $registro;
+    }
+
+    protected function validar_acceso_registro($registro)
+    {
+        if (is_null($registro)) {
+            abort(404);
+        }
+
+        $user = Auth::user();
+        $roles_sin_filtro = config('filtrado_registros.roles_sin_filtro', []);
+
+        if (is_null($user) || empty($user->email)) {
+            abort(403);
+        }
+
+        foreach ($user->roles as $role) {
+            if (in_array($role->name, $roles_sin_filtro)) {
+                return;
+            }
+        }
+
+        if ($registro->creado_por != $user->email) {
+            abort(403, 'No tiene permiso para consultar este arqueo de caja.');
+        }
     }
 
 }

@@ -3,6 +3,7 @@
 namespace App\VentasPos;
 
 use App\Ventas\VtasPedido;
+use App\Traits\FiltraRegistrosPorUsuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Input;
 
 class CierreEncabezado extends Model
 {
+    use FiltraRegistrosPorUsuario;
+
     protected $table = 'vtas_pos_cierre_encabezados';
     protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'cajero_id', 'pdv_id', 'detalle', 'creado_por', 'modificado_por', 'estado'];
 
@@ -18,7 +21,7 @@ class CierreEncabezado extends Model
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cajero', 'PDV', 'Detalle', 'Fecha creación', 'Estado'];
     public static function consultar_registros($nro_registros, $search)
     {
-        return CierreEncabezado::leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_cierre_encabezados.pdv_id')
+        $query = CierreEncabezado::leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_cierre_encabezados.pdv_id')
             ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_cierre_encabezados.core_tipo_doc_app_id')
             ->leftJoin('users', 'users.id', '=', 'vtas_pos_cierre_encabezados.cajero_id')
             ->select(
@@ -30,20 +33,27 @@ class CierreEncabezado extends Model
                 'vtas_pos_cierre_encabezados.updated_at AS campo6',
                 'vtas_pos_cierre_encabezados.estado AS campo7',
                 'vtas_pos_cierre_encabezados.id AS campo8'
-            )
-            ->where("vtas_pos_cierre_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_cierre_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere("users.name", "LIKE", "%$search%")
-            ->orWhere("vtas_pos_puntos_de_ventas.descripcion", "LIKE", "%$search%")
-            ->orWhere("vtas_pos_cierre_encabezados.detalle", "LIKE", "%$search%")
-            ->orWhere("vtas_pos_cierre_encabezados.estado", "LIKE", "%$search%")
+            );
+
+        $query = self::aplicarFiltroCreadoPor($query, 'vtas_pos_cierre_encabezados.creado_por');
+
+        $query->where(function($q) use ($search) {
+            $q->where("vtas_pos_cierre_encabezados.fecha", "LIKE", "%$search%")
+                ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_cierre_encabezados.consecutivo)'), "LIKE", "%$search%")
+                ->orWhere("users.name", "LIKE", "%$search%")
+                ->orWhere("vtas_pos_puntos_de_ventas.descripcion", "LIKE", "%$search%")
+                ->orWhere("vtas_pos_cierre_encabezados.detalle", "LIKE", "%$search%")
+                ->orWhere("vtas_pos_cierre_encabezados.estado", "LIKE", "%$search%");
+        });
+
+        return $query
             ->orderBy('vtas_pos_cierre_encabezados.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
     public static function sqlString($search)
     {
-        $string = CierreEncabezado::leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_cierre_encabezados.pdv_id')
+        $query = CierreEncabezado::leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_cierre_encabezados.pdv_id')
             ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_cierre_encabezados.core_tipo_doc_app_id')
             ->leftJoin('users', 'users.id', '=', 'vtas_pos_cierre_encabezados.cajero_id')
             ->select(
@@ -53,16 +63,32 @@ class CierreEncabezado extends Model
                 'vtas_pos_puntos_de_ventas.descripcion AS PDV',
                 'vtas_pos_cierre_encabezados.detalle AS DETALLE',
                 'vtas_pos_cierre_encabezados.estado AS ESTADO'
-            )
-            ->where("vtas_pos_cierre_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_cierre_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere("users.name", "LIKE", "%$search%")
-            ->orWhere("vtas_pos_puntos_de_ventas.descripcion", "LIKE", "%$search%")
-            ->orWhere("vtas_pos_cierre_encabezados.detalle", "LIKE", "%$search%")
-            ->orWhere("vtas_pos_cierre_encabezados.estado", "LIKE", "%$search%")
+            );
+
+        $query = self::aplicarFiltroCreadoPor($query, 'vtas_pos_cierre_encabezados.creado_por');
+
+        $query->where(function($q) use ($search) {
+            $q->where("vtas_pos_cierre_encabezados.fecha", "LIKE", "%$search%")
+                ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_cierre_encabezados.consecutivo)'), "LIKE", "%$search%")
+                ->orWhere("users.name", "LIKE", "%$search%")
+                ->orWhere("vtas_pos_puntos_de_ventas.descripcion", "LIKE", "%$search%")
+                ->orWhere("vtas_pos_cierre_encabezados.detalle", "LIKE", "%$search%")
+                ->orWhere("vtas_pos_cierre_encabezados.estado", "LIKE", "%$search%");
+        });
+
+        return self::reemplazarBindingsSql($query
             ->orderBy('vtas_pos_cierre_encabezados.created_at', 'DESC')
-            ->toSql();
-        return str_replace('?', '"%' . $search . '%"', $string);
+            ->toSql(), $query->getBindings());
+    }
+
+    protected static function reemplazarBindingsSql($sql, $bindings)
+    {
+        foreach ($bindings as $binding) {
+            $value = is_numeric($binding) ? $binding : "'" . str_replace("'", "''", $binding) . "'";
+            $sql = preg_replace('/\?/', $value, $sql, 1);
+        }
+
+        return $sql;
     }
 
     //Titulo para la exportación en PDF y EXCEL

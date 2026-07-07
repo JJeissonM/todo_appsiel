@@ -267,6 +267,10 @@ class ModeloController extends Controller
             ));
         }
 
+        if ($request->return_to != '') {
+            return redirect($request->return_to)->with('flash_message', 'Registro CREADO correctamente.');
+        }
+
         $acciones = $this->acciones_basicas_modelo($this->modelo, '');
 
         $url_ver = str_replace('id_fila', $registro->id, $acciones->show);
