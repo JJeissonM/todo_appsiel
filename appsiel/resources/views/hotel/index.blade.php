@@ -284,10 +284,13 @@
                                 @if($dashboardOrder)
                                     <a href="{{ url($hotelUrl::url('hotel/orders/'.$dashboardOrder->id, array('id_modelo' => $orderModelId))) }}" class="btn btn-primary btn-xs"><i class="fa fa-shopping-cart"></i> Pedido</a>
                                 @endif
-                                <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/check-out', array('id_modelo' => $stayModelId))) }}" style="display:inline-block;">
-                                    {{ csrf_field() }}
-                                    <button class="btn btn-success btn-xs" onclick="return confirm('Registrar check-out de esta habitacion?')"><i class="fa fa-sign-out"></i> Check-out</button>
-                                </form>
+                                <button type="button"
+                                        class="btn btn-success btn-xs hotel-dashboard-checkout-btn"
+                                        data-action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/check-out', array('id_modelo' => $stayModelId))) }}"
+                                        data-room="{{ $room->room_number }}"
+                                        data-checkout-at="{{ date('Y-m-d\\TH:i') }}">
+                                    <i class="fa fa-sign-out"></i> Check-out
+                                </button>
                             @elseif($room->status == App\Hotel\HotelRoom::STATUS_LIMPIEZA)
                                 <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
                                     {{ csrf_field() }}
@@ -420,6 +423,31 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="hotelDashboardCheckOutModal" tabindex="-1" role="dialog" aria-labelledby="hotelDashboardCheckOutModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form method="POST" id="hotel_dashboard_check_out_form" action="">
+                        {{ csrf_field() }}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="hotelDashboardCheckOutModalLabel">Confirmar check-out</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p id="hotel_dashboard_check_out_room_text">Registrar check-out de la habitacion.</p>
+                            <div class="form-group">
+                                <label for="hotel_dashboard_check_out_at">Fecha y hora de check-out</label>
+                                <input type="datetime-local" name="check_out_at" id="hotel_dashboard_check_out_at" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success"><i class="fa fa-sign-out"></i> Registrar check-out</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -431,6 +459,17 @@
                 var $button = $('#hotel_guest_save_button');
                 $button.prop('disabled', true);
                 $button.html('<i class="fa fa-spinner fa-spin"></i> Guardando...');
+            });
+
+            $('.hotel-dashboard-checkout-btn').on('click', function() {
+                var action = $(this).data('action');
+                var room = $(this).data('room');
+                var checkOutAt = $(this).data('checkout-at');
+
+                $('#hotel_dashboard_check_out_form').attr('action', action);
+                $('#hotel_dashboard_check_out_at').val(checkOutAt);
+                $('#hotel_dashboard_check_out_room_text').text('Registrar check-out de la habitacion ' + room + '.');
+                $('#hotelDashboardCheckOutModal').modal('show');
             });
         });
     </script>

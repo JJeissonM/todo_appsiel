@@ -7,8 +7,11 @@ use App\Hotel\HotelOrderLine;
 use App\Hotel\Services\HotelService;
 use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
+use App\Core\Services\ResolucionFacturacionService;
+use App\Core\TipoDocApp;
 use App\CxC\CxcMovimiento;
 use App\Inventarios\InvProducto;
+use App\Ventas\Cliente;
 use App\VentasPos\Services\FacturaPosService;
 use App\VentasPos\Services\PosPaymentModalService;
 use Illuminate\Http\Request;
@@ -28,8 +31,9 @@ class HotelOrderController extends Controller
         $miga_pan = HotelBreadcrumb::make('App\\Hotel\\HotelOrderHeader', 'Pedido ' . $order->document_number);
         $paymentData = $this->paymentData();
         $anticipos = $this->anticiposCliente($order);
+        $electronicResolutionValidation = $this->electronicResolutionValidation();
 
-        return view('hotel.orders.show', compact('order', 'products', 'anticipos', 'miga_pan') + $paymentData);
+        return view('hotel.orders.show', compact('order', 'products', 'anticipos', 'miga_pan', 'electronicResolutionValidation') + $paymentData);
     }
 
     public function addLine(Request $request, $id)
@@ -102,11 +106,38 @@ class HotelOrderController extends Controller
     public function generatePosInvoice(Request $request, $id)
     {
         $order = $this->findOrder($id);
+        $invoiceClienteId = $order->cliente_id;
+        $invoiceDocumentType = $request->invoice_document_type == 'electronic' ? 'electronic' : 'pos';
+        $convertToElectronic = $invoiceDocumentType == 'electronic';
+
+        if ($convertToElectronic) {
+            $resolutionValidation = $this->electronicResolutionValidation();
+            if ($resolutionValidation->status == 'error') {
+                return redirect()->back()->with('mensaje_error', $resolutionValidation->message);
+            }
+        }
+
+        if ($request->invoice_customer_mode == 'other') {
+            $this->validate($request, array(
+                'invoice_cliente_id' => 'required|exists:vtas_clientes,id',
+            ));
+
+            $invoiceClienteId = (int)$request->invoice_cliente_id;
+        }
+
+        $invoiceCliente = Cliente::find($invoiceClienteId);
+        if (is_null($invoiceCliente)) {
+            return redirect()->back()->with('mensaje_error', 'El cliente seleccionado para facturar no existe.');
+        }
 
         try {
-            $doc = (new HotelService())->generatePosInvoice($order, $request->lineas_registros_medios_recaudos, $request->forma_pago, $request->object_anticipos);
+            $doc = (new HotelService())->generatePosInvoice($order, $request->lineas_registros_medios_recaudos, $request->forma_pago, $request->object_anticipos, $invoiceClienteId, $convertToElectronic);
         } catch (\Exception $e) {
             return redirect()->back()->with('mensaje_error', $e->getMessage());
+        }
+
+        if ($convertToElectronic && isset($doc->hotel_factura_electronica_url) && $doc->hotel_factura_electronica_url != '') {
+            return redirect($doc->hotel_factura_electronica_url)->with('flash_message', 'Factura electronica generada correctamente desde pedido hotelero.');
         }
 
         return redirect('pos_factura/' . $doc->id . '?id=20&id_modelo=230&id_transaccion=47')->with('flash_message', 'Factura POS generada correctamente.');
@@ -168,5 +199,18 @@ class HotelOrderController extends Controller
         }
 
         return $anticipos;
+    }
+
+    private function electronicResolutionValidation()
+    {
+        if ((int)config('ventas_pos.modulo_fe_activo') != 1) {
+            return (object)array(
+                'status' => 'error',
+                'message' => 'El modulo de facturacion electronica no esta activo. Active la facturacion electronica antes de generar facturas electronicas desde hotel.'
+            );
+        }
+
+        $tipoDocApp = TipoDocApp::find((int)config('facturacion_electronica.document_type_id_default'));
+        return (new ResolucionFacturacionService())->validate_resolucion_facturacion($tipoDocApp, Auth::user()->empresa_id);
     }
 }

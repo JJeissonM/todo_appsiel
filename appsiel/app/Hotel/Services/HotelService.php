@@ -3,7 +3,9 @@
 namespace App\Hotel\Services;
 
 use App\Contabilidad\Impuesto;
+use App\Core\Services\ResolucionFacturacionService;
 use App\Core\TipoDocApp;
+use App\Http\Controllers\VentasPos\FacturaElectronicaController;
 use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelOrderLine;
 use App\Hotel\HotelReservation;
@@ -368,13 +370,18 @@ class HotelService
         });
     }
 
-    public function generatePosInvoice(HotelOrderHeader $order, $lineasRegistrosMediosRecaudos = null, $formaPago = 'contado', $objectAnticipos = null)
+    public function generatePosInvoice(HotelOrderHeader $order, $lineasRegistrosMediosRecaudos = null, $formaPago = 'contado', $objectAnticipos = null, $invoiceClienteId = null, $convertToElectronic = false)
     {
         $service = $this;
 
-        return DB::transaction(function () use ($order, $service, $lineasRegistrosMediosRecaudos, $formaPago, $objectAnticipos) {
+        if ($convertToElectronic) {
+            $service->validateElectronicInvoiceResolution();
+        }
+
+        $doc = DB::transaction(function () use ($order, $service, $lineasRegistrosMediosRecaudos, $formaPago, $objectAnticipos, $invoiceClienteId) {
             $order = $service->loadOpenOrder($order->id);
-            $cliente = Cliente::find($order->cliente_id);
+            $clienteId = !empty($invoiceClienteId) ? (int)$invoiceClienteId : (int)$order->cliente_id;
+            $cliente = Cliente::find($clienteId);
             if (is_null($cliente) || count($order->lines) == 0) {
                 throw new \Exception('El pedido no tiene cliente valido o lineas para facturar.');
             }
@@ -434,7 +441,7 @@ class HotelService
             ));
 
             foreach ($order->lines as $line) {
-                $service->createPosInvoiceLine($doc->id, $line);
+                $service->createPosInvoiceLine($doc->id, $line, $cliente->id);
             }
 
             $accumulationService = new AccumulationService($pdv->id);
@@ -454,6 +461,39 @@ class HotelService
 
             return $doc;
         });
+
+        if ($convertToElectronic) {
+            $doc->hotel_factura_electronica_url = $service->convertPosInvoiceToElectronic($doc);
+        }
+
+        return $doc;
+    }
+
+    private function validateElectronicInvoiceResolution()
+    {
+        if ((int)config('ventas_pos.modulo_fe_activo') != 1) {
+            throw new \Exception('El modulo de facturacion electronica no esta activo. Active la facturacion electronica antes de generar facturas electronicas desde hotel.');
+        }
+
+        $tipoDocApp = TipoDocApp::find((int)config('facturacion_electronica.document_type_id_default'));
+        $validation = (new ResolucionFacturacionService())->validate_resolucion_facturacion($tipoDocApp, $this->empresaId());
+
+        if ($validation->status == 'error') {
+            throw new \Exception($validation->message);
+        }
+
+        return $validation;
+    }
+
+    private function convertPosInvoiceToElectronic(FacturaPos $doc)
+    {
+        $url = (new FacturaElectronicaController())->convertir_en_factura_electronica($doc->id);
+
+        if (trim((string)$url) == '' || strpos((string)$url, '/vtas_imprimir/') === false) {
+            throw new \Exception('La factura POS fue generada, pero no fue posible convertirla a factura electronica. Revise la configuracion de facturacion electronica y el documento POS ' . $doc->get_label_documento() . '.');
+        }
+
+        return $url;
     }
 
     private function createStandardInvoiceLine($docId, HotelOrderLine $line)
@@ -461,15 +501,17 @@ class HotelService
         VtasDocRegistro::create($this->invoiceLineData($line, array('vtas_doc_encabezado_id' => $docId)));
     }
 
-    private function createPosInvoiceLine($docId, HotelOrderLine $line)
+    private function createPosInvoiceLine($docId, HotelOrderLine $line, $clienteId = null)
     {
-        DocRegistro::create($this->invoiceLineData($line, array('vtas_pos_doc_encabezado_id' => $docId)));
+        DocRegistro::create($this->invoiceLineData($line, array('vtas_pos_doc_encabezado_id' => $docId), $clienteId));
     }
 
-    private function invoiceLineData(HotelOrderLine $line, $header)
+    private function invoiceLineData(HotelOrderLine $line, $header, $clienteId = null)
     {
         $producto = $line->product;
-        $clienteId = !is_null($line->order) ? $line->order->cliente_id : 0;
+        if (is_null($clienteId)) {
+            $clienteId = !is_null($line->order) ? $line->order->cliente_id : 0;
+        }
         $taxData = $this->calculateTaxData($line->producto_id, $clienteId, $line->quantity, $line->unit_price, $line->discount);
 
         return $header + array(

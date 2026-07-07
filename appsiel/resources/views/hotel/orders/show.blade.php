@@ -2,6 +2,7 @@
 
 @section('content')
     <?php $hotelUrl = 'App\\Hotel\\Support\\HotelBreadcrumb'; ?>
+    <?php $form_create = array('campos' => array(array('tipo' => 'cliente_autocomplete'))); ?>
     {{ Form::bsMigaPan($miga_pan) }}
     @include('layouts.mensajes')
 
@@ -174,12 +175,12 @@
                         <br><br>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <div id="hotel_medios_pago_panel">
                         @include('tesoreria.incluir.medios_recaudos')
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
 
             <div class="marco_formulario">
                 <h5>Generar factura</h5>
@@ -189,8 +190,49 @@
                     <button class="btn btn-success" onclick="return confirm('Generar factura estandar?')">Generar factura estandar</button>
                 </form>
                 -->
-                <form method="POST" id="hotel_generate_pos_invoice_form" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-pos-invoice')) }}" style="display:inline-block;">
+                <form method="POST" id="hotel_generate_pos_invoice_form" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-pos-invoice')) }}" style="display:block;">
                     {{ csrf_field() }}
+                    <label>Tipo de factura:</label>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="invoice_document_type" value="pos" checked>
+                            Factura POS
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="invoice_document_type" value="electronic">
+                            Factura electronica
+                        </label>
+                    </div>
+
+                    <label>Facturar a:</label>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="invoice_customer_mode" value="guest" checked>
+                            Huesped del pedido
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="invoice_customer_mode" value="other">
+                            Otro cliente
+                        </label>
+                    </div>
+
+                    <div id="hotel_invoice_customer_picker" style="display:none;">
+                        <div class="hotel-cliente-autocomplete-wrap" style="position: relative;">
+                            <input type="text"
+                                class="form-control hotel-cliente-autocomplete-input"
+                                data-target="hotel_invoice_cliente_id"
+                                placeholder="Buscar cliente"
+                                autocomplete="off">
+                            <input type="hidden" name="invoice_cliente_id" id="hotel_invoice_cliente_id">
+                            <div class="hotel-cliente-autocomplete-results list-group" style="display:none; position:absolute; z-index:1050; left:0; right:0;"></div>
+                        </div>
+                        <br>
+                    </div>
+
                     <label for="hotel_forma_pago">Forma de pago:</label>
                     <select name="forma_pago" id="hotel_forma_pago" class="form-control" style="display:inline-block; width:auto;">
                         <option value="contado">Contado</option>
@@ -200,13 +242,17 @@
                     <br>
                     <input type="hidden" name="lineas_registros_medios_recaudos" id="hotel_lineas_registros_medios_recaudos" value="[]">
                     <input type="hidden" name="object_anticipos" id="hotel_object_anticipos" value="null">
-                    <button class="btn btn-primary" onclick="return confirm('Generar factura POS?')"> <i class="fa fa-save"></i> Guardar </button>
+                    <input type="hidden" id="hotel_electronic_resolution_status" value="{{ isset($electronicResolutionValidation->status) ? $electronicResolutionValidation->status : 'error' }}">
+                    <input type="hidden" id="hotel_electronic_resolution_message" value="{{ isset($electronicResolutionValidation->message) ? $electronicResolutionValidation->message : 'No fue posible validar la resolucion de facturacion electronica.' }}">
+                    <button class="btn btn-primary" onclick="return confirm('Generar factura?')"> <i class="fa fa-save"></i> Guardar </button>
                 </form>
                 <br><br><br><br>
             </div>
             </div>
+            </div>
         @endif
     </div>
+    @include('hotel.partials.cliente_autocomplete_modal')
 @endsection
 
 @section('scripts')
@@ -227,6 +273,7 @@
             var $cantidad = $('#hotel_quantity');
             var $formaPago = $('#hotel_forma_pago');
             var $mediosPagoPanel = $('#hotel_medios_pago_panel');
+            var $invoiceCustomerPicker = $('#hotel_invoice_customer_picker');
             var hotelOrderTotal = {{ (float)$order->lines->sum('line_total') }};
             var hotelAdvanceObjects = [];
 
@@ -333,6 +380,24 @@
                 return '$' + parseFloat(value || 0).toFixed(2);
             }
 
+            function hotelPendingPaymentValue() {
+                var pending = hotelOrderTotal - hotelPaymentTotal(hotelPaymentRows());
+                return pending < 0 ? 0 : pending;
+            }
+
+            function hotelFormatPendingPayment(value) {
+                return '$ ' + parseFloat(value || 0).toFixed(2);
+            }
+
+            function hotelSetPendingPaymentLabel() {
+                $('#lbl_hotel_vlr_pendiente_ingresar').text(hotelFormatPendingPayment(hotelPendingPaymentValue()));
+            }
+
+            $.fn.actualizar_medio_recaudo = function() {
+                hotelSetPendingPaymentLabel();
+                return this;
+            };
+
             function hotelAppendAdvancePayment(advance, value) {
                 var exists = false;
                 $('#ingreso_registros_medios_recaudo tbody tr').each(function() {
@@ -380,6 +445,18 @@
                 calcular_totales_medio_recaudos();
             }
 
+            $('#recaudoModal').on('shown.bs.modal.hotelPendingPayment', function() {
+                if ($('#div_hotel_pendiente_ingresar_medio_recaudo').length === 0) {
+                    $('#form_registro').before('<div id="div_hotel_pendiente_ingresar_medio_recaudo" style="color: red; font-size: 18px; margin-bottom: 12px;">Pendiente por registrar: <span id="lbl_hotel_vlr_pendiente_ingresar">$ 0.00</span></div>');
+                }
+
+                hotelSetPendingPaymentLabel();
+            });
+
+            $('#recaudoModal').on('hidden.bs.modal.hotelPendingPayment', function() {
+                $('#div_hotel_pendiente_ingresar_medio_recaudo').remove();
+            });
+
             function toggleMediosPago() {
                 if ($formaPago.val() === 'credito' && hotelAdvanceObjects.length === 0) {
                     $mediosPagoPanel.hide();
@@ -391,6 +468,20 @@
 
             $formaPago.on('change', toggleMediosPago);
             toggleMediosPago();
+
+            function toggleInvoiceCustomerPicker() {
+                if ($('input[name="invoice_customer_mode"]:checked').val() === 'other') {
+                    $invoiceCustomerPicker.show();
+                    return;
+                }
+
+                $invoiceCustomerPicker.hide();
+                $('#hotel_invoice_cliente_id').val('');
+                $invoiceCustomerPicker.find('.hotel-cliente-autocomplete-input').val('');
+            }
+
+            $('input[name="invoice_customer_mode"]').on('change', toggleInvoiceCustomerPicker);
+            toggleInvoiceCustomerPicker();
 
             $('#hotel_btn_aplicar_anticipo').on('click', function() {
                 var rows = hotelPaymentRows();
@@ -481,15 +572,61 @@
                 }
             });
 
+            function prepareHotelInvoiceSubmit($form) {
+                if ($('input[name="invoice_document_type"]:checked').val() === 'electronic') {
+                    $form.attr('target', '_blank');
+                    window.setTimeout(function() {
+                        window.location.reload();
+                    }, 1200);
+                    return;
+                }
+
+                $form.removeAttr('target');
+            }
+
+            function validateElectronicResolutionBeforeSubmit(event) {
+                if ($('input[name="invoice_document_type"]:checked').val() !== 'electronic') {
+                    return true;
+                }
+
+                var status = $('#hotel_electronic_resolution_status').val();
+                var message = $('#hotel_electronic_resolution_message').val();
+
+                if (status === 'error') {
+                    event.preventDefault();
+                    alert(message);
+                    return false;
+                }
+
+                if (status === 'warning' && message !== '') {
+                    return confirm(message + "\n\nDesea continuar con la generacion de la factura electronica?");
+                }
+
+                return true;
+            }
+
             $('#hotel_generate_pos_invoice_form').on('submit', function(event) {
+                var $form = $(this);
                 var rows = hotelPaymentRows();
                 var totalPayments = hotelPaymentTotal(rows);
                 var formaPago = $formaPago.val();
                 var hasAdvances = hotelAdvanceObjects.length > 0;
+                var invoiceCustomerMode = $('input[name="invoice_customer_mode"]:checked').val();
+
+                if (invoiceCustomerMode === 'other' && $('#hotel_invoice_cliente_id').val() === '') {
+                    event.preventDefault();
+                    alert('Debe seleccionar el cliente a quien se emitira la factura.');
+                    return false;
+                }
+
+                if (!validateElectronicResolutionBeforeSubmit(event)) {
+                    return false;
+                }
 
                 if (formaPago === 'credito' && !hasAdvances) {
                     $('#hotel_lineas_registros_medios_recaudos').val('[]');
                     $('#hotel_object_anticipos').val('null');
+                    prepareHotelInvoiceSubmit($form);
                     return true;
                 }
 
@@ -509,8 +646,10 @@
                 $('#hotel_object_anticipos').val(hasAdvances ? $.map(hotelAdvanceObjects, function(advance) {
                     return JSON.stringify(advance);
                 }).join(',') : 'null');
+                prepareHotelInvoiceSubmit($form);
                 return true;
             });
         });
     </script>
+    @include('hotel.partials.cliente_autocomplete_scripts')
 @endsection
