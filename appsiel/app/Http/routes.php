@@ -301,7 +301,9 @@ include __DIR__ . '/contratotransporte_routes.php';
 include __DIR__ . '/siesa_routes.php';
 
 // Aplicación GESTIÓN HOTELERA
-include __DIR__ . '/hotel_routes.php';
+if (filter_var(env('HOTEL_MODULE_ENABLED', env('HOTEL_MODULE_SEEDERS_ENABLED', false)), FILTER_VALIDATE_BOOLEAN)) {
+	include __DIR__ . '/hotel_routes.php';
+}
 
 // Esta línea debe ir de última porque ya hay rutas específicas para /{slug}
 // Ejemplo, /inicio, /ventas, /configuracion, etc. 

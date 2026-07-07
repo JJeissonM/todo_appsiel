@@ -45,9 +45,15 @@
 	<br/>
 	<b>Remisión: </b> {!! $docs_relacionados[0] !!}
 	<?php
-		$pedidoHotelero = App\Hotel\HotelOrderHeader::where('pos_doc_id', $id)->first();
-		$hotelApp = App\Sistema\Aplicacion::where('app', 'hotel')->first();
-		$hotelOrderModelId = App\Sistema\Modelo::where('name_space', 'App\\Hotel\\HotelOrderHeader')->value('id');
+		$pedidoHotelero = null;
+		$hotelApp = null;
+		$hotelOrderModelId = null;
+		$hotelModuleEnabled = filter_var(env('HOTEL_MODULE_ENABLED', env('HOTEL_MODULE_SEEDERS_ENABLED', false)), FILTER_VALIDATE_BOOLEAN);
+		if ($hotelModuleEnabled && Illuminate\Support\Facades\Schema::hasTable('hotel_order_headers')) {
+			$pedidoHotelero = App\Hotel\HotelOrderHeader::where('pos_doc_id', $id)->first();
+			$hotelApp = App\Sistema\Aplicacion::where('app', 'hotel')->first();
+			$hotelOrderModelId = App\Sistema\Modelo::where('name_space', 'App\\Hotel\\HotelOrderHeader')->value('id');
+		}
 	?>
 	@if( !is_null($pedidoHotelero) )
 		<br/>

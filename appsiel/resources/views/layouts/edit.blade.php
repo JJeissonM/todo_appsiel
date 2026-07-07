@@ -7,7 +7,9 @@
 	@include('layouts.mensajes')
 	
 	@include('layouts.form_edit',compact('form_create'))
-	@include('hotel.partials.cliente_autocomplete_modal', compact('form_create'))
+	@if(filter_var(env('HOTEL_MODULE_ENABLED', env('HOTEL_MODULE_SEEDERS_ENABLED', false)), FILTER_VALIDATE_BOOLEAN))
+		@include('hotel.partials.cliente_autocomplete_modal', compact('form_create'))
+	@endif
 
 @endsection
 
@@ -41,5 +43,7 @@
 		<script src="{{ asset( $archivo_js ) }}"></script>
 	@endif
 
-	@include('hotel.partials.cliente_autocomplete_scripts', compact('form_create'))
+	@if(filter_var(env('HOTEL_MODULE_ENABLED', env('HOTEL_MODULE_SEEDERS_ENABLED', false)), FILTER_VALIDATE_BOOLEAN))
+		@include('hotel.partials.cliente_autocomplete_scripts', compact('form_create'))
+	@endif
 @endsection
