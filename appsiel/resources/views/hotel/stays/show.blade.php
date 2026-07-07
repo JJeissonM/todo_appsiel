@@ -20,7 +20,7 @@
                 <div class="col-md-8">
                     <h4>
                         Informacion estadia
-                        @if($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA)
+                        @if($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA && isset($cancelBlockMessage) && $cancelBlockMessage == '')
                             <a href="{{ url($hotelUrl::url('web/'.$stay->id.'/edit?id=22&id_modelo=364&id_transaccion=')) }}"><i class="fa fa-edit"></i></a>
                         @endif
                     </h4>
@@ -28,6 +28,7 @@
                         <tr><th>Huesped principal</th><td>{{ $stay->mainGuest && $stay->mainGuest->tercero ? $stay->mainGuest->tercero->descripcion : $stay->main_cliente_id }}</td></tr>
                         <tr><th>Check-in</th><td>{{ $stay->check_in_at }}</td></tr>
                         <tr><th>Salida esperada</th><td>{{ $stay->expected_check_out_at }}</td></tr>
+                        <tr><th>Dias estadia</th><td>{{ $stay->stayDays() }}</td></tr>
                         <tr><th>Check-out</th><td>{{ $stay->check_out_at }}</td></tr>
                         <tr><th>Huespedes</th><td>{{ $stay->total_guests }} ({{ $stay->adults_count }} adultos, {{ $stay->children_count }} niños)</td></tr>
                         <tr><th>Estado</th><td>{{ $stay->status }}</td></tr>
@@ -43,10 +44,7 @@
                                 {{ csrf_field() }}
                                 <button class="btn btn-primary btn-sm">Nuevo pedido</button>
                             </form>
-                            <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/check-out')) }}" style="display:inline-block;">
-                                {{ csrf_field() }}
-                                <button class="btn btn-success btn-sm" onclick="return confirm('Registrar check-out?')">Check-out</button>
-                            </form>
+                            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#hotelCheckOutModal">Check-out</button>
                             @if(isset($cancelBlockMessage) && $cancelBlockMessage != '')
                                 <button type="button" class="btn btn-danger btn-sm" disabled title="{{ $cancelBlockMessage }}">Anular</button>
                             @else
@@ -155,6 +153,33 @@
         </div>
 
     </div>
+
+    @if($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA)
+        <div class="modal fade" id="hotelCheckOutModal" tabindex="-1" role="dialog" aria-labelledby="hotelCheckOutModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/check-out')) }}">
+                        {{ csrf_field() }}
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="hotelCheckOutModalLabel">Confirmar check-out</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="hotel_check_out_at">Fecha y hora de check-out</label>
+                                <input type="datetime-local" name="check_out_at" id="hotel_check_out_at" class="form-control" value="{{ date('Y-m-d\\TH:i') }}" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Confirmar check-out</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @include('hotel.partials.cliente_autocomplete_modal')
 @endsection
 

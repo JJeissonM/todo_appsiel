@@ -167,13 +167,13 @@ class HotelApplicationSeeder extends Seeder
             $this->field(1, 'Cliente principal', 'cliente_autocomplete', 'main_cliente_id', '', 'null', $textAttrs, 1),
             $this->field(2, 'Habitacion', 'select', 'room_id', 'model_App\\Hotel\\HotelRoom', 'null', $comboAttrs, 1),
             $this->field(3, 'Check-in', 'fecha_hora', 'check_in_at', '', 'null', $textAttrs, 1),
-            $this->field(4, 'Salida esperada', 'fecha_hora', 'expected_check_out_at', '', 'null', $textAttrs, 0),
-            $this->field(5, 'Check-out', 'fecha_hora', 'check_out_at', '', 'null', $textAttrs, 0),
-            $this->field(6, 'Adultos', 'bsText', 'adults_count', '', '1', $textAttrs, 1),
-            $this->field(7, 'Niños', 'bsText', 'children_count', '', '0', $textAttrs, 0),
-            $this->field(8, 'Estado', 'select', 'status', $stayStatuses, 'ACTIVA', $comboAttrs, 1),
-            $this->field(9, 'Notas', 'bsTextArea', 'notes', '', 'null', $textAttrs, 0),
+            $this->field(4, 'Salida esperada', 'fecha_hora', 'expected_check_out_at', '', 'null', $textAttrs, 1),
+            $this->field(5, 'Adultos', 'bsText', 'adults_count', '', '1', $textAttrs, 1),
+            $this->field(6, 'Niños', 'bsText', 'children_count', '', '0', $textAttrs, 0),
+            $this->field(7, 'Estado', 'select', 'status', $stayStatuses, 'ACTIVA', $comboAttrs, 1),
+            $this->field(8, 'Notas', 'bsTextArea', 'notes', '', 'null', $textAttrs, 0),
         ));
+        $this->detachModelFieldByName('stays', 'check_out_at');
 
         $this->seedModelFields('reservations', array(
             $this->field(1, 'Cliente', 'cliente_autocomplete', 'cliente_id', '', 'null', $textAttrs, 1),
@@ -339,6 +339,23 @@ class HotelApplicationSeeder extends Seeder
             'core_campo_id' => $fieldId,
             'orden' => $order,
         ));
+    }
+
+    private function detachModelFieldByName($modelKey, $fieldName)
+    {
+        if (!isset($this->modelIds[$modelKey]) || $this->modelIds[$modelKey] == 0) {
+            return;
+        }
+
+        $fieldId = (int)DB::table('sys_campos')->where('name', $fieldName)->value('id');
+        if ($fieldId == 0) {
+            return;
+        }
+
+        DB::table('sys_modelo_tiene_campos')
+            ->where('core_modelo_id', (int)$this->modelIds[$modelKey])
+            ->where('core_campo_id', $fieldId)
+            ->delete();
     }
 
     private function field($order, $description, $type, $name, $options, $value, $attributes, $required)

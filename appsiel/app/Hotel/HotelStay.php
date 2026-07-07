@@ -18,7 +18,7 @@ class HotelStay extends Model
 
     protected $fillable = array('empresa_id', 'main_cliente_id', 'room_id', 'check_in_at', 'expected_check_out_at', 'check_out_at', 'adults_count', 'children_count', 'total_guests', 'status', 'notes', 'created_by', 'closed_by');
 
-    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Habitacion', 'Cliente principal', 'Check-in', 'Salida esperada', 'Check-out', 'Huespedes', 'Estado');
+    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Habitacion', 'Cliente principal', 'Check-in', 'Salida esperada', 'Dias', 'Huespedes', 'Estado');
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"hotel/stays/id_fila"}';
 
@@ -44,11 +44,22 @@ class HotelStay extends Model
             }
 
             $stay->total_guests = max(1, (int)$stay->adults_count + (int)$stay->children_count);
+            $message = self::getStayDatesError($stay);
+            if (!is_null($message)) {
+                throw new \Exception($message);
+            }
             self::validateCheckInAvailability($stay);
         });
 
         static::updating(function ($stay) {
             $stay->total_guests = max(1, (int)$stay->adults_count + (int)$stay->children_count);
+
+            $message = self::getStayDatesError($stay);
+            if (!is_null($message)) {
+                throw new \Exception($message);
+            }
+
+            self::syncPrimaryOrderRoomQuantityOnDateChange($stay);
         });
     }
 
@@ -62,9 +73,11 @@ class HotelStay extends Model
         $controller->validate($request, array(
             'main_cliente_id' => 'required',
             'room_id' => 'required',
+            'expected_check_out_at' => 'required',
         ), array(
             'main_cliente_id.required' => 'Debe seleccionar el huesped principal.',
             'room_id.required' => 'Debe seleccionar una habitacion.',
+            'expected_check_out_at.required' => 'Debe ingresar la salida esperada.',
         ));
 
         $validator = \Validator::make($request->all(), array());
@@ -77,10 +90,15 @@ class HotelStay extends Model
 
             $stay->main_cliente_id = $request->main_cliente_id;
             $stay->room_id = $request->room_id;
-            $stay->check_in_at = !empty($request->check_in_at) ? $request->check_in_at : date('Y-m-d H:i:s');
+            $stay->check_in_at = !empty($request->check_in_at) ? self::normalizeDateTimeValue($request->check_in_at) : date('Y-m-d H:i:s');
+            $stay->expected_check_out_at = self::normalizeDateTimeValue($request->expected_check_out_at);
             $stay->status = in_array($request->status, self::statuses()) ? $request->status : self::STATUS_ACTIVA;
 
-            $message = self::getCheckInAvailabilityError($stay);
+            $message = self::getStayDatesError($stay);
+            if (is_null($message)) {
+                $message = self::getCheckInAvailabilityError($stay);
+            }
+
             if (!is_null($message)) {
                 $validator->errors()->add('room_id', $message);
             }
@@ -117,17 +135,37 @@ class HotelStay extends Model
                 $lista_campos[$key]['atributos']['required'] = 'required';
             }
 
+            if ($campo['name'] == 'expected_check_out_at') {
+                $lista_campos[$key]['requerido'] = 1;
+                if (!isset($lista_campos[$key]['atributos']) || !is_array($lista_campos[$key]['atributos'])) {
+                    $lista_campos[$key]['atributos'] = array();
+                }
+                $lista_campos[$key]['atributos']['required'] = 'required';
+            }
+
+            if ($campo['name'] == 'check_out_at') {
+                unset($lista_campos[$key]);
+            }
+
             if ($campo['name'] == 'main_cliente_id' && Input::get('main_cliente_id') != '') {
                 $lista_campos[$key]['value'] = Input::get('main_cliente_id');
             }
         }
 
-        return $lista_campos;
+        return array_values($lista_campos);
     }
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
-        return $this->setCustomerAutocompleteField($lista_campos);
+        $lista_campos = $this->setCustomerAutocompleteField($lista_campos);
+
+        foreach ($lista_campos as $key => $campo) {
+            if (isset($campo['name']) && $campo['name'] == 'check_out_at') {
+                unset($lista_campos[$key]);
+            }
+        }
+
+        return array_values($lista_campos);
     }
 
     private function setCustomerAutocompleteField($lista_campos)
@@ -238,6 +276,97 @@ class HotelStay extends Model
         return 'La habitacion no esta disponible para check-in.';
     }
 
+    public static function getStayDatesError($stay)
+    {
+        if (empty($stay->check_in_at) || empty($stay->expected_check_out_at)) {
+            return 'Debe ingresar check-in y salida esperada.';
+        }
+
+        $checkIn = strtotime($stay->check_in_at);
+        $expectedCheckOut = strtotime($stay->expected_check_out_at);
+
+        if ($checkIn === false || $expectedCheckOut === false) {
+            return 'Las fechas de la estadia no son validas.';
+        }
+
+        if ($expectedCheckOut <= $checkIn) {
+            return 'La salida esperada debe ser mayor que el check-in.';
+        }
+
+        return null;
+    }
+
+    public function stayDays()
+    {
+        return self::calculateStayDays($this->check_in_at, $this->expected_check_out_at);
+    }
+
+    public static function calculateStayDays($checkInAt, $expectedCheckOutAt)
+    {
+        $checkIn = strtotime($checkInAt);
+        $expectedCheckOut = strtotime($expectedCheckOutAt);
+
+        if ($checkIn === false || $expectedCheckOut === false || $expectedCheckOut <= $checkIn) {
+            return 1;
+        }
+
+        return max(1, (int)ceil(($expectedCheckOut - $checkIn) / 86400));
+    }
+
+    private static function syncPrimaryOrderRoomQuantityOnDateChange($stay)
+    {
+        if (!$stay->isDirty('check_in_at') && !$stay->isDirty('expected_check_out_at')) {
+            return;
+        }
+
+        if ($stay->isDirty('room_id')) {
+            return;
+        }
+
+        $oldDays = self::calculateStayDays($stay->getOriginal('check_in_at'), $stay->getOriginal('expected_check_out_at'));
+        $newDays = self::calculateStayDays($stay->check_in_at, $stay->expected_check_out_at);
+
+        if ($oldDays == $newDays) {
+            return;
+        }
+
+        $order = HotelOrderHeader::where('empresa_id', $stay->empresa_id)
+            ->where('stay_id', $stay->id)
+            ->orderBy('id', 'ASC')
+            ->first();
+
+        if (is_null($order) || $order->status != HotelOrderHeader::STATUS_ABIERTO || !empty($order->invoice_type) || !empty($order->sales_doc_id) || !empty($order->pos_doc_id)) {
+            return;
+        }
+
+        if ($order->lines()->count() != 1) {
+            return;
+        }
+
+        $line = $order->lines()
+            ->where('source_type', HotelOrderLine::SOURCE_ROOM)
+            ->where('source_id', $stay->room_id)
+            ->where('room_id', $stay->room_id)
+            ->first();
+
+        if (is_null($line)) {
+            return;
+        }
+
+        $room = $stay->room;
+        if (is_null($room) || (int)$line->producto_id != (int)$room->inv_producto_id) {
+            return;
+        }
+
+        if (abs((float)$line->quantity - (float)$oldDays) > 0.01) {
+            return;
+        }
+
+        (new HotelService())->updateLine($order, $line, array(
+            'quantity' => $newDays,
+        ));
+    }
+
     private static function reservationForCheckIn($stay)
     {
         $date = substr($stay->check_in_at, 0, 10);
@@ -299,7 +428,7 @@ class HotelStay extends Model
                 'core_terceros.descripcion AS campo2',
                 'hotel_stays.check_in_at AS campo3',
                 'hotel_stays.expected_check_out_at AS campo4',
-                'hotel_stays.check_out_at AS campo5',
+                DB::raw('IF(hotel_stays.expected_check_out_at IS NULL, 1, GREATEST(1, CEIL(TIMESTAMPDIFF(SECOND, hotel_stays.check_in_at, hotel_stays.expected_check_out_at) / 86400))) AS campo5'),
                 'hotel_stays.total_guests AS campo6',
                 'hotel_stays.status AS campo7',
                 'hotel_stays.id AS campo8'
@@ -316,7 +445,7 @@ class HotelStay extends Model
                 'core_terceros.descripcion AS CLIENTE',
                 'hotel_stays.check_in_at AS CHECK_IN',
                 'hotel_stays.expected_check_out_at AS SALIDA_ESPERADA',
-                'hotel_stays.check_out_at AS CHECK_OUT',
+                DB::raw('IF(hotel_stays.expected_check_out_at IS NULL, 1, GREATEST(1, CEIL(TIMESTAMPDIFF(SECOND, hotel_stays.check_in_at, hotel_stays.expected_check_out_at) / 86400))) AS DIAS'),
                 'hotel_stays.total_guests AS HUESPEDES',
                 'hotel_stays.status AS ESTADO'
             )
@@ -372,7 +501,7 @@ class HotelStay extends Model
         return $query;
     }
 
-    private static function normalizeDateTimeValue($value)
+    public static function normalizeDateTimeValue($value)
     {
         if (is_null($value) || $value === '' || $value === 'null') {
             return null;

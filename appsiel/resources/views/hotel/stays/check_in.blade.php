@@ -46,13 +46,13 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>Check-in</label>
-                            <input type="datetime-local" name="check_in_at" class="form-control" value="{{ $fechaHoraLocal(old('check_in_at', date('Y-m-d H:i:s'))) }}">
+                            <input type="datetime-local" name="check_in_at" class="form-control" value="{{ $fechaHoraLocal(old('check_in_at', date('Y-m-d H:i:s'))) }}" required>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>Salida esperada</label>
-                            <input type="datetime-local" name="expected_check_out_at" class="form-control" value="{{ $fechaHoraLocal(old('expected_check_out_at')) }}">
+                            <input type="datetime-local" name="expected_check_out_at" class="form-control" value="{{ $fechaHoraLocal(old('expected_check_out_at')) }}" required>
                         </div>
                     </div>
                     <div class="col-md-3">

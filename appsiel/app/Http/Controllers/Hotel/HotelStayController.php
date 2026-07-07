@@ -66,8 +66,11 @@ class HotelStayController extends Controller
         $this->validate($request, array(
             'main_cliente_id' => 'required|exists:vtas_clientes,id',
             'room_id' => 'required|exists:hotel_rooms,id',
+            'expected_check_out_at' => 'required',
             'adults_count' => 'required|integer|min:1',
             'children_count' => 'integer|min:0',
+        ), array(
+            'expected_check_out_at.required' => 'Debe ingresar la salida esperada.',
         ));
 
         try {
@@ -79,12 +82,18 @@ class HotelStayController extends Controller
         return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('flash_message', 'Check-in registrado correctamente.');
     }
 
-    public function checkOut($id)
+    public function checkOut(Request $request, $id)
     {
         $stay = $this->findStay($id);
 
+        $this->validate($request, array(
+            'check_out_at' => 'required',
+        ), array(
+            'check_out_at.required' => 'Debe ingresar la fecha y hora de check-out.',
+        ));
+
         try {
-            $stay = (new HotelService())->checkOut($stay);
+            $stay = (new HotelService())->checkOut($stay, $request->check_out_at);
         } catch (\Exception $e) {
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }

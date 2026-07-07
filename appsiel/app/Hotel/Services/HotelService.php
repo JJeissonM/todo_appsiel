@@ -60,6 +60,20 @@ class HotelService
                 throw new \Exception('La habitacion ya tiene una estadia activa.');
             }
 
+            $checkInAt = isset($data['check_in_at']) && $data['check_in_at'] != '' ? HotelStay::normalizeDateTimeValue($data['check_in_at']) : date('Y-m-d H:i:s');
+            $expectedCheckOutAt = isset($data['expected_check_out_at']) && $data['expected_check_out_at'] != '' ? HotelStay::normalizeDateTimeValue($data['expected_check_out_at']) : null;
+            if (empty($expectedCheckOutAt)) {
+                throw new \Exception('Debe ingresar la salida esperada.');
+            }
+
+            $dateMessage = HotelStay::getStayDatesError((object)array(
+                'check_in_at' => $checkInAt,
+                'expected_check_out_at' => $expectedCheckOutAt,
+            ));
+            if (!is_null($dateMessage)) {
+                throw new \Exception($dateMessage);
+            }
+
             $adults = isset($data['adults_count']) ? (int)$data['adults_count'] : 1;
             $children = isset($data['children_count']) ? (int)$data['children_count'] : 0;
 
@@ -67,8 +81,8 @@ class HotelService
                 'empresa_id' => $empresaId,
                 'main_cliente_id' => $cliente->id,
                 'room_id' => $room->id,
-                'check_in_at' => isset($data['check_in_at']) && $data['check_in_at'] != '' ? $data['check_in_at'] : date('Y-m-d H:i:s'),
-                'expected_check_out_at' => isset($data['expected_check_out_at']) && $data['expected_check_out_at'] != '' ? $data['expected_check_out_at'] : null,
+                'check_in_at' => $checkInAt,
+                'expected_check_out_at' => $expectedCheckOutAt,
                 'adults_count' => $adults,
                 'children_count' => $children,
                 'total_guests' => max(1, $adults + $children),
@@ -118,7 +132,7 @@ class HotelService
             $this->createLine($order, array(
                 'producto_id' => $room->inv_producto_id,
                 'room_id' => $room->id,
-                'quantity' => 1,
+                'quantity' => $stay->stayDays(),
                 'source_type' => HotelOrderLine::SOURCE_ROOM,
                 'source_id' => $room->id,
             ));
@@ -127,17 +141,30 @@ class HotelService
         return $order;
     }
 
-    public function checkOut(HotelStay $stay)
+    public function checkOut(HotelStay $stay, $checkOutAt = null)
     {
         $service = $this;
 
-        return DB::transaction(function () use ($stay, $service) {
+        return DB::transaction(function () use ($stay, $service, $checkOutAt) {
             $stay = HotelStay::where('empresa_id', $service->empresaId())->where('id', $stay->id)->lockForUpdate()->first();
             if (is_null($stay) || $stay->status != HotelStay::STATUS_ACTIVA) {
                 throw new \Exception('Solo se puede hacer check-out a estadias activas.');
             }
 
-            $stay->check_out_at = date('Y-m-d H:i:s');
+            if (empty($checkOutAt)) {
+                throw new \Exception('Debe ingresar la fecha y hora de check-out.');
+            }
+
+            $normalizedCheckOutAt = HotelStay::normalizeDateTimeValue($checkOutAt);
+            if (strtotime($normalizedCheckOutAt) === false) {
+                throw new \Exception('La fecha y hora de check-out no es valida.');
+            }
+
+            if (strtotime($normalizedCheckOutAt) < strtotime($stay->check_in_at)) {
+                throw new \Exception('La fecha y hora de check-out no puede ser menor que el check-in.');
+            }
+
+            $stay->check_out_at = $normalizedCheckOutAt;
             $stay->status = HotelStay::STATUS_CERRADA;
             $stay->closed_by = $service->userId();
             $stay->save();

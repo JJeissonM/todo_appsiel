@@ -153,6 +153,22 @@ class HotelReservation extends Model
             return null;
         }
 
+        $room = HotelRoom::where('empresa_id', $reservation->empresa_id)
+            ->where('id', $reservation->room_id)
+            ->first();
+
+        if (is_null($room)) {
+            return 'La habitacion seleccionada no existe.';
+        }
+
+        if ((int)$room->is_active != 1) {
+            return 'La habitacion seleccionada esta inactiva y no puede reservarse.';
+        }
+
+        if ($room->status == HotelRoom::STATUS_BLOQUEADA) {
+            return 'La habitacion seleccionada esta bloqueada y no puede reservarse.';
+        }
+
         $query = self::where('empresa_id', $reservation->empresa_id)
             ->where('room_id', $reservation->room_id)
             ->whereNotIn('status', array(self::STATUS_ANULADA, self::STATUS_CUMPLIDA))
@@ -203,6 +219,10 @@ class HotelReservation extends Model
                 $lista_campos[$key]['value'] = Input::get('room_id');
             }
 
+            if ($campo['name'] == 'room_id') {
+                $lista_campos[$key]['opciones'] = self::roomOptionsForReservation();
+            }
+
             if ($campo['name'] == 'cliente_id' && Input::get('cliente_id') != '') {
                 $lista_campos[$key]['value'] = Input::get('cliente_id');
             }
@@ -225,6 +245,24 @@ class HotelReservation extends Model
         }
 
         return $lista_campos;
+    }
+
+    public static function roomOptionsForReservation()
+    {
+        $query = HotelRoom::where('is_active', 1)
+            ->where('status', '<>', HotelRoom::STATUS_BLOQUEADA)
+            ->orderBy('room_number');
+
+        if (Auth::check()) {
+            $query->where('empresa_id', Auth::user()->empresa_id);
+        }
+
+        $options = array('' => '');
+        foreach ($query->get() as $room) {
+            $options[$room->id] = $room->room_number . ' - ' . $room->room_type;
+        }
+
+        return $options;
     }
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
