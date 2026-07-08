@@ -204,13 +204,21 @@
                             @endif
                         </div>
                     @else
-                        <div class="alert alert-warning">{{ $pdvData['message'] }}</div>
+                        <div class="hotel-pdv-name">{{ $pdvData['status'] }}</div>
+                        <hr>
+                        <div class="{{ !empty($pdvData['is_admin']) ? 'alert alert-info' : 'alert alert-warning' }}">{{ $pdvData['message'] }}</div>
                     @endif
                 </div>
             </div>
         </div>
 
         @if($dashboardEnabled)
+        @if(!$dashboardCanTransact)
+            <div class="alert alert-info">
+                Dashboard en modo consulta. Para registrar check-in, facturas directas o pedidos POS se requiere un punto de venta abierto asociado al usuario.
+            </div>
+        @endif
+
         <div class="marco_formulario">
             <div class="row">
                 <div class="col-md-8">
@@ -249,8 +257,10 @@
                 <div class="col-md-4 text-right">
                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#hotelGuestCreateModal"><i class="fa fa-plus"></i> Huesped</button>
                     <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $reservationModelId))) }}" class="btn btn-info"><i class="fa fa-calendar"></i> Reserva</a>
-                    <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId))) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a>
-                    <a href="{{ url($pdvData['factura_directa_url']) }}" class="btn btn-success" target="_blank"><i class="fa fa-calculator"></i> Fact. Directa</a>
+                    @if($dashboardCanTransact)
+                        <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId))) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a>
+                        <a href="{{ url($pdvData['factura_directa_url']) }}" class="btn btn-success" target="_blank"><i class="fa fa-calculator"></i> Fact. Directa</a>
+                    @endif
                 </div>
             </div>
 
@@ -296,7 +306,9 @@
                             <!-- <a href="{ { url('web/'.$room->id.'?id='.$appId.'&id_modelo='.$roomModelId) }}" class="btn btn-default btn-xs" title="Ver habitacion"><i class="fa fa-eye"></i></a> -->
 
                             @if($room->status == App\Hotel\HotelRoom::STATUS_DISPONIBLE && $room->is_active)
-                                <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
+                                @if($dashboardCanTransact)
+                                    <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
+                                @endif
                                 <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $reservationModelId, 'room_id' => $room->id))) }}" class="btn btn-info btn-xs"><i class="fa fa-calendar"></i> Reservar</a>
                                 <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
                                     {{ csrf_field() }}
@@ -311,7 +323,9 @@
                                     <button class="btn btn-danger btn-xs" title="Bloquear"><i class="fa fa-lock"></i></button>
                                 </form>
                             @elseif($room->status == App\Hotel\HotelRoom::STATUS_RESERVADA && $todayReservation)
-                                <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id, 'main_cliente_id' => $todayReservation->cliente_id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
+                                @if($dashboardCanTransact)
+                                    <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id, 'main_cliente_id' => $todayReservation->cliente_id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
+                                @endif
                                 <form method="POST" action="{{ url($hotelUrl::url('hotel/reservations/'.$todayReservation->id.'/cancel', array('id_modelo' => $reservationModelId))) }}" style="display:inline-block;">
                                     {{ csrf_field() }}
                                     <button class="btn btn-danger btn-xs" onclick="return confirm('Anular reserva?')"><i class="fa fa-ban"></i> Anular</button>
