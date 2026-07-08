@@ -183,7 +183,7 @@ class NominaElectronicaController extends TransaccionController
 
             return $this->dibujar_vista();
         } catch ( \Throwable $e ) {
-            Log::error('Error generando documento soporte de nomina electronica.', [
+            $this->registrar_error_nomina_electronica('Error generando documento soporte de nomina electronica.', [
                 'fecha_final_periodo' => $request->fecha_final_periodo,
                 'almacenar_registros' => $request->almacenar_registros,
                 'user_id' => Auth::check() ? Auth::user()->id : null,
@@ -237,6 +237,18 @@ class NominaElectronicaController extends TransaccionController
     public function actualizar_datos_vista( $datos_doc_soporte )
     {
         $this->datos_vista[] = $datos_doc_soporte;
+    }
+
+    protected function registrar_error_nomina_electronica($mensaje, array $contexto)
+    {
+        try {
+            Log::error($mensaje, $contexto);
+            return;
+        } catch ( \Throwable $log_exception ) {
+            $contexto['log_error'] = $log_exception->getMessage();
+        }
+
+        error_log($mensaje . ' ' . json_encode($contexto));
     }
 
     public function dibujar_vista()
@@ -369,7 +381,7 @@ class NominaElectronicaController extends TransaccionController
         try {
             $json_doc_electronico_enviado = json_encode($document_header->get_json_to_send());
         } catch ( \Throwable $e ) {
-            \Log::error('No se pudo construir el JSON de documento soporte de nomina electronica.', [
+            $this->registrar_error_nomina_electronica('No se pudo construir el JSON de documento soporte de nomina electronica.', [
                 'documento_id' => $document_header->id,
                 'core_tipo_doc_app_id' => $document_header->core_tipo_doc_app_id,
                 'message' => $e->getMessage(),

@@ -170,6 +170,15 @@
                         <td> {{ $deduccion }} </td>
                     </tr>
 
+                    @if(isset($registro['cesantias-interest']))
+                        <tr>
+                            <td>Intereses sobre cesantías</td>
+                            <td style="text-align: center;">&nbsp;</td>
+                            <td> {{ Form::TextoMoneda($registro['cesantias-interest']) }} </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    @endif
+
                     <?php
                         $total_devengos += $amount;
                     ?>

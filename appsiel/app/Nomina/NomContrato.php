@@ -192,25 +192,19 @@ class NomContrato extends Model
 
     public function get_registros_documentos_nomina_entre_fechas($fecha_inicial, $fecha_final)
     {
-        $todos_los_registros = $this->registros_documentos_nomina;
-        $coleccion = collect();
-        foreach ($todos_los_registros as $registro)
-        {
-            if ($registro->concepto != null) {
-                // Las Cesantías consignadas no se le pagan al empleado.
-                if( $registro->concepto->modo_liquidacion_id == 15 )
-                {
-                    continue;
-                }
-            }            
+        $registros = $this->registros_documentos_nomina()
+            ->with('concepto.cpto_dian', 'novedad_tnl')
+            ->whereBetween('fecha', [$fecha_inicial, $fecha_final])
+            ->get();
 
-            if ($registro->fecha >= $fecha_inicial && $registro->fecha <= $fecha_final)
-            {
-                $coleccion[] = $registro;
+        return $registros->filter(function ($registro) {
+            if ($registro->concepto == null) {
+                return true;
             }
-        }
 
-        return $coleccion;
+            // Las Cesantías consignadas no se le pagan al empleado.
+            return $registro->concepto->modo_liquidacion_id != 15;
+        })->values();
     }
 
     public static function consultar_registros($nro_registros, $search)

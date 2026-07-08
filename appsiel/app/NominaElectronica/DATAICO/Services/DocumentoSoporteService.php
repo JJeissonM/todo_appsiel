@@ -286,6 +286,7 @@ class DocumentoSoporteService
             return [];
          }
 
+         // Solo se pagan Intereses
          $one_line['percentage'] = 12;
          $one_line['cesantias-interest'] = $amount;
          $amount = 0;

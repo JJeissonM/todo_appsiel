@@ -71,7 +71,7 @@
                         $descripcion_concepto .= ' (Cesantías + Intereses)';
                     }                                
 
-                    $devengo = Form::TextoMoneda( $amount );
+                    $devengo = Form::TextoMoneda( $amount + $cesantias_interest);
 
                     if ( isset($registro['days']))
                     {
