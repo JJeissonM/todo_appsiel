@@ -214,7 +214,7 @@ class CalificacionController extends Controller
 
             $titulo_tabla = '';
 
-            $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año', 'Periodo', 'Curso', 'Estudiante', 'Asignatura', 'Calificación'];
+            $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año', 'Periodo', 'Curso', 'Estudiante', 'Asignatura', 'Calificación', 'Creado Por', 'Fecha Cierre'];
 
             $ruta_modelo = 'calificaciones';
 
