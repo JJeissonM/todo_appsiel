@@ -33,7 +33,7 @@
     <table class="table table-bordered" style="width:100%; margin-bottom: 15px; font-size: 13px;">
         <thead>
             <tr style="background-color: #f5f5f5;">
-                <th colspan="4" style="text-align: center; font-size: 16px;">
+                <th colspan="5" style="text-align: center; font-size: 16px;">
                     Envío Nómina Electrónica
                 </th>
             </tr>

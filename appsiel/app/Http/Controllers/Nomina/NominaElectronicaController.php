@@ -20,7 +20,7 @@ use GuzzleHttp\Client;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
-
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 
 class NominaElectronicaController extends TransaccionController
@@ -183,7 +183,7 @@ class NominaElectronicaController extends TransaccionController
 
             return $this->dibujar_vista();
         } catch ( \Throwable $e ) {
-            \Log::error('Error generando documento soporte de nomina electronica.', [
+            Log::error('Error generando documento soporte de nomina electronica.', [
                 'fecha_final_periodo' => $request->fecha_final_periodo,
                 'almacenar_registros' => $request->almacenar_registros,
                 'user_id' => Auth::check() ? Auth::user()->id : null,
