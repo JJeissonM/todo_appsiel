@@ -30,7 +30,7 @@
 		@if( $doc_encabezado->estado == 'Sin enviar' )
 			<a class="btn-gmail" href="#" id="btn_abrir_modal_recalcular_doc_soporte" title="Recalcular documento"><i class="fa fa-refresh"></i></a>
 		@endif
-        <a class="btn-gmail" href="{{ url('/nom_electronica_enviar_documentos') . '/[' . $doc_encabezado->id . ']' }}" class="btn btn-info btn-sm"title="Enviar"> <i class="fa fa-send"></i> </a>
+        <a class="btn-gmail btn-enviar-doc-soporte-show" href="#" data-documento-id="{{ $doc_encabezado->id }}" title="Enviar"> <i class="fa fa-send"></i> </a>
         <i class="fa fa-circle" style="color: orange;"> Sin enviar </i>
 	@endif
 
@@ -57,6 +57,20 @@
 
 @section('section_after_documento_vista')
 	@if( $doc_encabezado->estado == 'Sin enviar' )
+		<div class="alert alert-info" id="panel_envio_doc_soporte_show">
+			<div class="row">
+				<div class="col-md-8">
+					<strong><i class="fa fa-send"></i> Envío individual del documento {{ $doc_encabezado->get_value_to_show() }}</strong>
+					<div id="estado_envio_doc_soporte_show" style="margin-top: 4px;">Listo para enviar al proveedor tecnológico.</div>
+				</div>
+				<div class="col-md-4" style="text-align: right;">
+					<button type="button" class="btn btn-info btn-enviar-doc-soporte-show" data-documento-id="{{ $doc_encabezado->id }}">
+						<i class="fa fa-send"></i> <span class="btn-text">Enviar documento</span>
+					</button>
+				</div>
+			</div>
+		</div>
+
 		<div class="modal fade" id="modal_recalcular_doc_soporte" tabindex="-1" role="dialog" aria-labelledby="modal_recalcular_doc_soporte_label" data-backdrop="static" data-keyboard="false">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
@@ -88,6 +102,68 @@
 @section('otros_scripts')
 	<script type="text/javascript">
 		$(document).ready(function(){
+			var enviando_doc_soporte = false;
+
+			function cambiar_estado_envio_documento(tipo, mensaje)
+			{
+				var panel = $('#panel_envio_doc_soporte_show');
+				panel.removeClass('alert-info alert-success alert-warning alert-danger').addClass('alert-' + tipo);
+				$('#estado_envio_doc_soporte_show').html(mensaje);
+			}
+
+			function bloquear_botones_envio_documento(estado)
+			{
+				enviando_doc_soporte = estado;
+
+				$('.btn-enviar-doc-soporte-show').each(function(){
+					var btn = $(this);
+					if (estado) {
+						btn.addClass('disabled').attr('aria-disabled', 'true');
+						btn.find('.fa-send').attr('class', 'fa fa-spinner fa-spin');
+						btn.find('.btn-text').text('Enviando...');
+					}else{
+						btn.removeClass('disabled').removeAttr('aria-disabled');
+						btn.find('.fa-spinner').attr('class', 'fa fa-send');
+						btn.find('.btn-text').text('Enviar documento');
+					}
+				});
+			}
+
+			$('.btn-enviar-doc-soporte-show').on('click', function(event){
+				event.preventDefault();
+
+				if (enviando_doc_soporte) {
+					return false;
+				}
+
+				var documento_id = $(this).data('documento-id');
+				bloquear_botones_envio_documento(true);
+				cambiar_estado_envio_documento('info', '<i class="fa fa-spinner fa-spin"></i> Enviando documento ID ' + documento_id + '...');
+
+				$.ajax({
+					url: "{{ url('nom_electronica_enviar_documento_ajax') }}" + '/' + documento_id,
+					type: "post",
+					dataType: "json",
+					headers: {
+						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+						'X-Requested-With': 'XMLHttpRequest'
+					}
+				})
+				.done(function(respuesta){
+					var tiempo = respuesta.elapsed_seconds != null ? ' (' + respuesta.elapsed_seconds + 's)' : '';
+					cambiar_estado_envio_documento('success', '<i class="fa fa-check"></i> ' + (respuesta.message || 'Documento enviado correctamente.') + tiempo + ' Actualizando la vista...');
+					setTimeout(function(){
+						window.location.reload();
+					}, 1200);
+				})
+				.fail(function(xhr){
+					var respuesta = xhr.responseJSON || {};
+					var tiempo = respuesta.elapsed_seconds != null ? ' (' + respuesta.elapsed_seconds + 's)' : '';
+					cambiar_estado_envio_documento('warning', '<i class="fa fa-warning"></i> ' + (respuesta.message || 'No fue posible enviar el documento.') + tiempo);
+					bloquear_botones_envio_documento(false);
+				});
+			});
+
 			$('#btn_abrir_modal_recalcular_doc_soporte').on('click', function(event){
 				event.preventDefault();
 				$('#modal_recalcular_doc_soporte').modal('show');

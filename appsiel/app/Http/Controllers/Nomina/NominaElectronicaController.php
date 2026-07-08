@@ -357,8 +357,9 @@ class NominaElectronicaController extends TransaccionController
 
     protected function procesar_envio_documento($document_id)
     {
+        $tiempo_inicio = microtime(true);
         $doc_soporte_service = new DocumentoSoporteService();
-        $document_header = DocumentoSoporte::find($document_id);
+        $document_header = DocumentoSoporte::with('empleado', 'tipo_documento_app')->find($document_id);
 
         if (is_null($document_header)) {
             return [
@@ -379,7 +380,8 @@ class NominaElectronicaController extends TransaccionController
         }
 
         try {
-            $json_doc_electronico_enviado = json_encode($document_header->get_json_to_send());
+            $payload_documento = $document_header->get_json_to_send();
+            $json_doc_electronico_enviado = json_encode($payload_documento, JSON_UNESCAPED_UNICODE);
         } catch ( \Throwable $e ) {
             $this->registrar_error_nomina_electronica('No se pudo construir el JSON de documento soporte de nomina electronica.', [
                 'documento_id' => $document_header->id,
@@ -408,7 +410,10 @@ class NominaElectronicaController extends TransaccionController
                               'content-type' => 'application/json',
                               'auth-token' => config('nomina.tokenPassword')
                            ],
-                'json' => json_decode( $json_doc_electronico_enviado )
+                'body' => $json_doc_electronico_enviado,
+                'http_errors' => false,
+                'connect_timeout' => 10,
+                'timeout' => 60
             ]);
 
          } catch (\GuzzleHttp\Exception\ConnectException $e) {
@@ -427,6 +432,12 @@ class NominaElectronicaController extends TransaccionController
                     'dian_messages' => [ $e->getMessage() ]
                 ];
              }
+         } catch (\GuzzleHttp\Exception\TransferException $e) {
+             $array_respuesta = [
+                'codigo' => 0,
+                'dian_status' => 'DIAN_RECHAZADO',
+                'dian_messages' => [ 'No fue posible completar la comunicación con Dataico. Detalle: ' . $e->getMessage() ]
+            ];
          }
 
         if ( !is_null($response) )
@@ -461,7 +472,8 @@ class NominaElectronicaController extends TransaccionController
                 'ok' => true,
                 'documento_id' => (int)$document_header->id,
                 'documento' => $document_header->get_value_to_show(),
-                'message' => 'Documento enviado correctamente.'
+                'message' => 'Documento enviado correctamente.',
+                'elapsed_seconds' => round(microtime(true) - $tiempo_inicio, 2)
             ];
         }
 
@@ -471,7 +483,8 @@ class NominaElectronicaController extends TransaccionController
             'ok' => false,
             'documento_id' => (int)$document_header->id,
             'documento' => $document_header->get_value_to_show(),
-            'message' => empty($mensajes) ? 'El documento fue rechazado por el proveedor tecnológico.' : implode(' | ', $mensajes)
+            'message' => empty($mensajes) ? 'El documento fue rechazado por el proveedor tecnológico.' : implode(' | ', $mensajes),
+            'elapsed_seconds' => round(microtime(true) - $tiempo_inicio, 2)
         ];
     }
 

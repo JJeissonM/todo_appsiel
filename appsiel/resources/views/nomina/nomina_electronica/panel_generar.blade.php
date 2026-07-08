@@ -44,13 +44,27 @@
 			</div>
 			<div class="col-md-6">
 				<button type="button" class="btn btn-info" id="btn_enviar" style="display:none;" data-ids="[]">
-					<i class="fa fa-send"></i> <span id="texto_btn_enviar">Enviar</span>
+					<i class="fa fa-send"></i> <span id="texto_btn_enviar">Enviar documentos</span>
 				</button>
-				<span class="label label-default" id="contador_envio_generados" style="display:none; margin-left: 10px;">Enviados: 0 | Pendientes: 0</span>
 			</div>
 		</div>
 	@endif	
 		
+</div>
+
+<div id="panel_envio_generados" class="alert alert-info" style="display:none; margin-bottom: 15px;">
+	<div class="row">
+		<div class="col-md-4">
+			<strong><i class="fa fa-list-ol"></i> Envío individual por documento</strong>
+		</div>
+		<div class="col-md-4" id="contador_envio_generados">Enviados: 0 | Errores: 0 | Pendientes: 0</div>
+		<div class="col-md-4" id="documento_envio_actual" style="text-align:right;">Listo para iniciar</div>
+	</div>
+	<div class="progress" style="margin: 10px 0 0;">
+		<div id="barra_envio_generados" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+			0%
+		</div>
+	</div>
 </div>
 
 <div id="mensaje_envio_generados" style="display:none; margin-bottom: 15px;"></div>
@@ -66,7 +80,10 @@
 		$(document).ready(function(){
 			var procesando_envio = false;
 			var enviados_generados = 0;
+			var errores_generados = 0;
+			var procesados_generados = 0;
 			var pendientes_generados = 0;
+			var total_generados = 0;
 
 			function get_ids_documentos_generados()
 			{
@@ -90,7 +107,17 @@
 
 			function actualizar_contador_envio()
 			{
-				$("#contador_envio_generados").text('Enviados: ' + enviados_generados + ' | Pendientes: ' + pendientes_generados);
+				$("#contador_envio_generados").text('Enviados: ' + enviados_generados + ' | Errores: ' + errores_generados + ' | Pendientes: ' + pendientes_generados);
+
+				var porcentaje = 0;
+				if (total_generados > 0) {
+					porcentaje = Math.round((procesados_generados / total_generados) * 100);
+				}
+
+				$("#barra_envio_generados")
+					.css('width', porcentaje + '%')
+					.attr('aria-valuenow', porcentaje)
+					.text(porcentaje + '%');
 			}
 
 			function mostrar_mensaje_envio(tipo, texto_html)
@@ -116,7 +143,7 @@
 					$("#texto_btn_enviar").text('Enviando...');
 				}else{
 					$("#btn_enviar").children('.fa-spinner').attr('class','fa fa-send');
-					$("#texto_btn_enviar").text('Enviar');
+					$("#texto_btn_enviar").text('Enviar documentos');
 				}
 			}
 
@@ -137,10 +164,11 @@
 			{
 				if (indice >= ids.length) {
 					bloquear_boton_envio(false);
+					$("#documento_envio_actual").text('Proceso finalizado');
 
 					if (errores.length > 0) {
 						$("#btn_enviar").attr('data-ids', JSON.stringify(errores.ids));
-						mostrar_mensaje_envio('warning', 'Proceso finalizado. Enviados: ' + enviados_generados + '. Pendientes: ' + pendientes_generados + '. Errores:<br>' + errores.join('<br>'));
+						mostrar_mensaje_envio('warning', 'Proceso finalizado. Enviados: ' + enviados_generados + '. Errores: ' + errores_generados + '. Pendientes para reintento: ' + errores.ids.length + '.<br>' + errores.join('<br>'));
 					}else{
 						$("#btn_enviar").attr('data-ids', '[]');
 						mostrar_mensaje_envio('success', 'Proceso finalizado. Todos los documentos fueron enviados correctamente.');
@@ -151,17 +179,30 @@
 				}
 
 				var documento_id = ids[indice];
+				$("#documento_envio_actual").text('Enviando documento ID ' + documento_id);
 				enviar_documento_generado(documento_id)
-					.done(function(){
+					.done(function(respuesta){
 						enviados_generados++;
+						procesados_generados++;
 						pendientes_generados = Math.max(pendientes_generados - 1, 0);
 						actualizar_contador_envio();
+						if (respuesta.elapsed_seconds != null) {
+							$("#documento_envio_actual").text('Documento ID ' + documento_id + ' enviado en ' + respuesta.elapsed_seconds + 's');
+						}
 					})
 					.fail(function(xhr){
 						var respuesta = xhr.responseJSON || {};
 						var mensaje = respuesta.message || 'Error no controlado durante el envío.';
+						if (respuesta.elapsed_seconds != null) {
+							mensaje += ' (' + respuesta.elapsed_seconds + 's)';
+						}
 						errores.push('Doc. ' + documento_id + ': ' + mensaje);
 						errores.ids.push(documento_id);
+						errores_generados++;
+						procesados_generados++;
+						pendientes_generados = Math.max(pendientes_generados - 1, 0);
+						actualizar_contador_envio();
+						$("#documento_envio_actual").text('Documento ID ' + documento_id + ' rechazado');
 					})
 					.always(function(){
 						procesar_siguiente_envio(ids, indice + 1, errores);
@@ -193,7 +234,7 @@
 		 		$("#div_cargando").show();
         		$("#div_resultado_panel_generar").html( '' );
         		$("#btn_enviar").hide().attr('data-ids', '[]');
-        		$("#contador_envio_generados").hide();
+        		$("#panel_envio_generados").hide();
         		ocultar_mensaje_envio();
 				
 				var form = $('#formulario_inicial');
@@ -224,17 +265,21 @@
 							var arr_ids_docs_generados = document.getElementById('arr_ids_docs_generados').value;
 							$("#btn_enviar").attr( 'data-ids', arr_ids_docs_generados);
 							pendientes_generados = get_ids_documentos_generados().length;
+							total_generados = pendientes_generados;
 
 							if (pendientes_generados == 0) {
 								$("#btn_enviar").hide();
-								$("#contador_envio_generados").hide();
+								$("#panel_envio_generados").hide();
 								return;
 							}
 
 							$("#btn_enviar").fadeIn( 1000 );
 							enviados_generados = 0;
+							errores_generados = 0;
+							procesados_generados = 0;
 							actualizar_contador_envio();
-							$("#contador_envio_generados").show();
+							$("#documento_envio_actual").text('Listo para iniciar');
+							$("#panel_envio_generados").show();
 							ocultar_mensaje_envio();
 						}
 					}
@@ -268,9 +313,13 @@
 				}
 
 				enviados_generados = 0;
+				errores_generados = 0;
+				procesados_generados = 0;
 				pendientes_generados = ids.length;
+				total_generados = ids.length;
 				actualizar_contador_envio();
-				$("#contador_envio_generados").show();
+				$("#documento_envio_actual").text('Preparando envío...');
+				$("#panel_envio_generados").show();
 				ocultar_mensaje_envio();
 				bloquear_boton_envio(true);
 				var errores = [];
