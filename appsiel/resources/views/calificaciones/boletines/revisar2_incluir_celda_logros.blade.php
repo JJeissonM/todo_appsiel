@@ -43,7 +43,8 @@
 <td style="background-color:{{$color_back}} color:{{$color_font}}; text-align: justify;">
 
 	<?php
-        $propositos = $metas_del_curso_en_el_periodo->where('asignatura_id', $asignatura_id )->all();
+        $metas_estudiante = (new App\Calificaciones\Services\MetasBoletinService())->filtrarPorTipoEstudiante($metas_del_curso_en_el_periodo, (object)['es_de_inclusion' => isset($es_de_inclusion) ? $es_de_inclusion : 0]);
+        $propositos = $metas_estudiante->where('asignatura_id', $asignatura_id )->all();
 
 		$linea = (object) array();
 		$linea->propositos = $propositos;

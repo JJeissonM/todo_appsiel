@@ -28,6 +28,7 @@ use App\Calificaciones\CalificacionAuxiliar;
 use App\Calificaciones\CalificacionDesempenio;
 use App\Calificaciones\NotaNivelacion;
 use App\Calificaciones\Services\CalificacionesService;
+use App\Calificaciones\Services\MetasBoletinService;
 use App\Core\PasswordReset;
 use App\Core\Colegio;
 use App\Sistema\Aplicacion;
@@ -121,7 +122,7 @@ class BoletinController extends Controller
             $metas_del_curso_en_el_periodo = Meta::where( [
                                                 ['periodo_id', '=', $request->id_periodo],
                                                 ['curso_id', '=', $request->curso_id]
-                                            ])->select('id', 'codigo', 'periodo_id', 'curso_id', 'asignatura_id', 'descripcion')
+                                            ])->select('id', 'codigo', 'periodo_id', 'curso_id', 'asignatura_id', 'descripcion', 'es_para_inclusion')
                                             ->get();
         }
 
@@ -707,9 +708,11 @@ class BoletinController extends Controller
             $metas_del_curso_en_el_periodo = Meta::where( [
                                                 ['periodo_id', '=', $periodo->id],
                                                 ['curso_id', '=', $curso->id]
-                                            ])->select('id', 'codigo', 'periodo_id', 'curso_id', 'asignatura_id', 'descripcion')
+                                            ])->select('id', 'codigo', 'periodo_id', 'curso_id', 'asignatura_id', 'descripcion', 'es_para_inclusion')
                                             ->get();
         }
+
+        $metasBoletinService = new MetasBoletinService();
         
         $profesores_del_curso_en_el_periodo_lectivo = collect([]);
         if ($mostrar_nombre_docentes) {
@@ -838,7 +841,8 @@ class BoletinController extends Controller
                     $cuerpo_boletin->lineas[$a]->valor_calificacion = $valor_calificacion;
                 }
 
-                $cuerpo_boletin->lineas[$a]->propositos = $metas_del_curso_en_el_periodo->where('asignatura_id', $asignacion->asignatura_id )->all();
+                $metas_estudiante = $metasBoletinService->filtrarPorTipoEstudiante($metas_del_curso_en_el_periodo, $matricula->estudiante);
+                $cuerpo_boletin->lineas[$a]->propositos = $metas_estudiante->where('asignatura_id', $asignacion->asignatura_id )->all();
                 
                 $cuerpo_boletin->lineas[$a]->profesor_asignatura = $this->get_profesor_de_la_asignatura( $profesores_del_curso_en_el_periodo_lectivo, $asignacion->asignatura_id);
 

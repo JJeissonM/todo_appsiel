@@ -117,8 +117,14 @@ class InscripcionesEnLineaController extends Controller
                                             'core_tercero_id' => $tercero->id, 
                                             'genero' => $request->genero,
                                             'fecha_nacimiento' => $request->fecha_nacimiento, 
-                                            'ciudad_nacimiento' => $request->ciudad_nacimiento
+                                            'ciudad_nacimiento' => $request->ciudad_nacimiento,
+                                            'es_de_inclusion' => $request->has('es_de_inclusion') ? (int)$request->es_de_inclusion : 0,
+                                            'diagnostico_inclusion' => $request->input('diagnostico_inclusion')
                                         ] );
+        } else {
+            $estudiante->es_de_inclusion = $request->has('es_de_inclusion') ? (int)$request->es_de_inclusion : ($estudiante->es_de_inclusion ? 1 : 0);
+            $estudiante->diagnostico_inclusion = $request->input('diagnostico_inclusion', $estudiante->diagnostico_inclusion);
+            $estudiante->save();
         }
 
         // Almacenar datos restantes de la inscripcion
@@ -202,12 +208,26 @@ class InscripcionesEnLineaController extends Controller
         $descripcion_transaccion = 'Ficha de Inscripción';
 
         $estudiante = $inscripcion->estudiante();
+        if (is_null($estudiante)) {
+            $estudiante = (object)[
+                'es_de_inclusion' => $inscripcion->es_de_inclusion,
+                'diagnostico_inclusion' => $inscripcion->diagnostico_inclusion
+            ];
+        } elseif (empty($estudiante->diagnostico_inclusion)) {
+            $estudiante->diagnostico_inclusion = $inscripcion->diagnostico_inclusion;
+        }
 
         $string_ids_campos = '323-' . $inscripcion->id . '-core_campo_id-1570';
-        $estudiante->es_de_inclusion = ModeloEavValor::get_valor_campo( $string_ids_campos );
+        $valor_eav_inclusion = ModeloEavValor::get_valor_campo( $string_ids_campos );
+        if (in_array($valor_eav_inclusion, ['Si', 'Sí', '1', 1], true)) {
+            $estudiante->es_de_inclusion = 1;
+        }
 
         $string_ids_campos = '323-' . $inscripcion->id . '-core_campo_id-1571';
-        $estudiante->diagnostico_inclusion = ModeloEavValor::get_valor_campo( $string_ids_campos );
+        $valor_eav_diagnostico = ModeloEavValor::get_valor_campo( $string_ids_campos );
+        if (!empty($valor_eav_diagnostico)) {
+            $estudiante->diagnostico_inclusion = $valor_eav_diagnostico;
+        }
 
         return View::make('matriculas.formatos.inscripcion1',compact('inscripcion','descripcion_transaccion','empresa','vista','estudiante') )->render();
     }

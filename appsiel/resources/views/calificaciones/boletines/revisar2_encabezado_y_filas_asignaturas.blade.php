@@ -55,7 +55,7 @@
             }
             
             $tbody .=  \View::make('calificaciones.boletines.revisar2_incluir_celda_logros',[
-                            'escala'=>$escala,'periodo_id'=>$periodo->id,'curso_id'=>$estudiante->curso_id,'asignatura_id'=>$asignatura->id, 'obj_calificacion' => $obj_calificacion, 'id_estudiante' => $estudiante->id, 'metas_del_curso_en_el_periodo' => $metas_del_curso_en_el_periodo])->render();
+                            'escala'=>$escala,'periodo_id'=>$periodo->id,'curso_id'=>$estudiante->curso_id,'asignatura_id'=>$asignatura->id, 'obj_calificacion' => $obj_calificacion, 'id_estudiante' => $estudiante->id, 'es_de_inclusion' => isset($estudiante->es_de_inclusion) ? $estudiante->es_de_inclusion : 0, 'metas_del_curso_en_el_periodo' => $metas_del_curso_en_el_periodo])->render();
 
             $tbody.='</tr>';
 

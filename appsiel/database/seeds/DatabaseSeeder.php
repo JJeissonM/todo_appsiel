@@ -67,6 +67,10 @@ class DatabaseSeeder extends Seeder
                 'tables' => ['vtas_pos_puntos_de_ventas', 'sys_modelos', 'sys_campos', 'sys_modelo_tiene_campos'],
             ],
             [
+                'class' => AcademicInclusionFieldsSeeder::class,
+                'tables' => ['sys_modelos', 'sys_campos', 'sys_modelo_tiene_campos'],
+            ],
+            [
                 'class' => NominaActualizacionSueldosSeeder::class,
                 'tables' => ['permissions', 'roles', 'role_has_permissions'],
             ],

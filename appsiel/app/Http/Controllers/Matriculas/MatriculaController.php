@@ -101,12 +101,14 @@ class MatriculaController extends ModeloController
     public function crear_nuevo(Request $request)
     {
         $id_modelo = (int)Input::get('id_modelo');
+        $estudiante = null;
 
         if ( $id_modelo == 66) { // Inscripciones
             // LLAMAR AL FORMULARIO PARA CREAR UNA NUEVA MATRICULA, SEGÚN EL DOC. ID DEL ESTUDIANTE
             $inscripcion = Inscripcion::find( $request->id_inscripcion );
 
             $tercero = Tercero::find( $inscripcion->core_tercero_id );
+            $estudiante = Estudiante::get_estudiante_x_tercero_id($tercero->id);
 
             $id_modelo = 19; // Matriculas
         }else{
@@ -114,6 +116,7 @@ class MatriculaController extends ModeloController
             $matricula_activa = Matricula::find( $request->id_inscripcion );
 
             $tercero = $matricula_activa->estudiante->tercero;
+            $estudiante = $matricula_activa->estudiante;
         }        
 
         // Se obtiene el modelo según la variable modelo_id  de la url
@@ -127,6 +130,8 @@ class MatriculaController extends ModeloController
                     unset($lista_campos[$key]);
                 }
             }
+
+            $lista_campos = array_values($lista_campos);
         }
 
         //Algunas personalizaciones
@@ -159,6 +164,12 @@ class MatriculaController extends ModeloController
                     }
 
                     break;
+                case 'es_de_inclusion':
+                    $lista_campos[$i]['value'] = $estudiante == null ? 0 : ($estudiante->es_de_inclusion ? 1 : 0);
+                    break;
+                case 'diagnostico_inclusion':
+                    $lista_campos[$i]['value'] = $estudiante == null ? null : $estudiante->diagnostico_inclusion;
+                    break;
 
                 default:
                     # code...
@@ -172,7 +183,9 @@ class MatriculaController extends ModeloController
         ];
 
         // Consultar matriculas del estudiante
-        $estudiante = Estudiante::get_estudiante_x_tercero_id($tercero->id);
+        if ($estudiante == null) {
+            $estudiante = Estudiante::get_estudiante_x_tercero_id($tercero->id);
+        }
 
         $matriculas = [];
         $estudiante_existe = 0;
@@ -241,6 +254,12 @@ class MatriculaController extends ModeloController
             $estudiante->eps = $request->eps;
             $estudiante->save();
         }
+
+        $es_de_inclusion = $request->has('es_de_inclusion') ? (int)$request->es_de_inclusion : ($estudiante->es_de_inclusion ? 1 : 0);
+        $diagnostico_inclusion = $request->input('diagnostico_inclusion', $estudiante->diagnostico_inclusion);
+        $estudiante->es_de_inclusion = $es_de_inclusion;
+        $estudiante->diagnostico_inclusion = $diagnostico_inclusion;
+        $estudiante->save();
 
         $this->crear_y_asignar_usuario($estudiante);
 
@@ -459,6 +478,8 @@ class MatriculaController extends ModeloController
                     unset($lista_campos[$key]);
                 }
             }
+
+            $lista_campos = array_values($lista_campos);
         }
 
         //Algunas personalizaciones
@@ -549,6 +570,12 @@ class MatriculaController extends ModeloController
         $registro = Matricula::find($id);
 
         $registro->fill($datos)->save();
+
+        if ($registro->estudiante != null) {
+            $registro->estudiante->es_de_inclusion = $request->has('es_de_inclusion') ? (int)$request->es_de_inclusion : ($registro->estudiante->es_de_inclusion ? 1 : 0);
+            $registro->estudiante->diagnostico_inclusion = $request->input('diagnostico_inclusion', $registro->estudiante->diagnostico_inclusion);
+            $registro->estudiante->save();
+        }
 
         return redirect('matriculas/show/' . $registro->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('flash_message', 'Matrícula MODIFICADA correctamente. Código: ' . $registro->codigo);
     }

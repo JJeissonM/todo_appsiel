@@ -6,11 +6,20 @@ $(document).ready(function(){
 	var direccion = location.href;
 
 	var documento_inicial = parseInt( $("#numero_identificacion2").val() );
+	var core_tercero_id_inicial = $("#core_tercero_id").val();
 
-	$("#id_tipo_documento_id").val('');
-	$("#numero_identificacion2").focus();
+	if( direccion.search("edit") == -1)
+	{
+		$("#id_tipo_documento_id").val('');
+		$("#numero_identificacion2").focus();
+	}
+	else
+	{
+		restaurar_tipo_documento();
+		setTimeout(restaurar_tipo_documento, 300);
+	}
 
-	$(document).on('blur, keyup','#numero_identificacion2',function(){
+	$(document).on('blur keyup','#numero_identificacion2',function(){
 
 		if( direccion.search("edit") == -1)
 		{
@@ -63,9 +72,26 @@ $(document).ready(function(){
 		$('#tercero_existe').remove();
 		$('#bs_boton_guardar').show();
 
-		$.get( url + documento, function( respuesta ) 
+		$.get( url + documento, { core_tercero_id: core_tercero_id_inicial }, function( respuesta ) 
 		{
 			if ( respuesta == 'tercero_no_existe' ) 
+	        {
+	        	return false;
+	        }
+
+			if ( parseInt( documento ) === documento_inicial ) 
+	        {
+	        	return false;
+	        }
+
+	        if ( respuesta == 'ya_inscrito' )
+	        {
+	        	$('#bs_boton_guardar').hide();
+				$("#numero_identificacion2").parent().append('<div style="color:red;" id="tercero_existe">Ya existe otra persona con ese número de documento de identidad. Cambie el número o no podrá guardar el registro.</div>');
+	        	return false;
+	        }
+
+	        if ( respuesta.id != undefined && core_tercero_id_inicial != '' && parseInt( respuesta.id ) === parseInt( core_tercero_id_inicial ) ) 
 	        {
 	        	return false;
 	        }
@@ -74,9 +100,25 @@ $(document).ready(function(){
 	        if( parseInt( respuesta.numero_identificacion ) !== documento_inicial )
 			{
 				$('#bs_boton_guardar').hide();
-				$("#numero_identificacion2").parent().append('<div style="color:red;" id="tercero_existe">Ya existe otra persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro.</div>');
+				$("#numero_identificacion2").parent().append('<div style="color:red;" id="tercero_existe">Ya existe otra persona con ese número de documento de identidad. Cambie el número o no podrá guardar el registro.</div>');
 			}
 		});
+	}
+
+	function restaurar_tipo_documento()
+	{
+		var $tipo_documento = $("#id_tipo_documento_id");
+		var valor_inicial = $tipo_documento.attr("data-valor-inicial");
+
+		if ( valor_inicial == undefined || valor_inicial == '' )
+		{
+			return false;
+		}
+
+		if ( $tipo_documento.val() != valor_inicial )
+		{
+			$tipo_documento.val(valor_inicial).trigger('change');
+		}
 	}
 
 	function autollenar_formulario( data )
