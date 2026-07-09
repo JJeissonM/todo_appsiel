@@ -67,11 +67,6 @@
 
 			// Click para generar la consulta
 			$('#btn_generar').click(function(event){
-				if(!valida_campos()){
-					alert('Debe seleccionar un curso.');
-					return false;
-				}
-
 				$('#resultado_consulta').html( '' );
 				$('#div_cargando').show();
 
@@ -95,22 +90,11 @@
 						var url_aux = url_pdf.substr(0,n);
 						var new_url = url_aux + 'teso_pdf_reporte_cartera_por_curso?' + datos;
 					}
-					
-					
 					$('#btn_pdf').attr('href', new_url);
 				});
-			});
 
-			function valida_campos(){
-				var valida = true;
-				if( $('#curso_id').val() == '' )
-				{
-					valida = false;
-				}
-				return valida;
-			}
+			});
 		});
 
-		
-	</script>
+		</script>
 @endsection

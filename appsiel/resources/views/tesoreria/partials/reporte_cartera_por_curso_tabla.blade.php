@@ -1,3 +1,101 @@
+@php
+    if (!isset($reportes_cursos) || count($reportes_cursos) == 0) {
+        $reportes_cursos = [[
+            'curso' => $curso,
+            'filas' => $filas,
+            'total_columna' => $total_columna,
+            'total_columna_valor_cartera' => $total_columna_valor_cartera,
+            'total_columna_valor_pagado' => $total_columna_valor_pagado,
+            'gran_total' => $gran_total,
+            'total_valor_cartera' => $total_valor_cartera,
+            'total_valor_pagado' => $total_valor_pagado
+        ]];
+    }
+@endphp
+
+<div style="display: none;">
+<table class="report-table">
+    @foreach ($reportes_cursos as $reporte_curso_excel)
+        @php
+            $curso_excel = $reporte_curso_excel['curso'];
+            $filas_excel = $reporte_curso_excel['filas'];
+            $total_columna_excel = $reporte_curso_excel['total_columna'];
+            $total_columna_valor_cartera_excel = $reporte_curso_excel['total_columna_valor_cartera'];
+            $total_columna_valor_pagado_excel = $reporte_curso_excel['total_columna_valor_pagado'];
+            $gran_total_excel = $reporte_curso_excel['gran_total'];
+            $total_valor_cartera_excel = $reporte_curso_excel['total_valor_cartera'];
+            $total_valor_pagado_excel = $reporte_curso_excel['total_valor_pagado'];
+        @endphp
+        <tr>
+            <th colspan="14">{{ $titulo }} - Curso {{ $curso_excel->descripcion }}</th>
+        </tr>
+        <tr>
+            <th></th>
+            <th>Estudiante</th>
+            <th>MAT</th>
+            <th>FEB</th>
+            <th>MAR</th>
+            <th>ABR</th>
+            <th>MAY</th>
+            <th>JUN</th>
+            <th>JUL</th>
+            <th>AGO</th>
+            <th>SEP</th>
+            <th>OCT</th>
+            <th>NOV</th>
+            <th>{{ $lbl_total }}</th>
+        </tr>
+        @forelse ($filas_excel as $fila_excel)
+            <tr>
+                <td>{{ $fila_excel['num'] }}</td>
+                <td>{{ $fila_excel['estudiante'] }}</td>
+                <td>{!! $fila_excel['matricula'] !== '' ? $fila_excel['matricula'] : '&nbsp;' !!}</td>
+                @foreach ($fila_excel['meses'] as $mes_excel)
+                    <td>{!! $mes_excel !== '' ? $mes_excel : '&nbsp;' !!}</td>
+                @endforeach
+                <td>{!! $fila_excel['total_linea'] !== '' ? $fila_excel['total_linea'] : '&nbsp;' !!}</td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="14">No hay datos para mostrar.</td>
+            </tr>
+        @endforelse
+        <tr>
+            <td colspan="2">Totales</td>
+            @foreach ($total_columna_excel as $idx_excel => $total_excel)
+                @php
+                    $col_valor_cartera_excel = $total_columna_valor_cartera_excel[$idx_excel] ?? 0;
+                    $col_valor_pagado_excel = $total_columna_valor_pagado_excel[$idx_excel] ?? 0;
+                @endphp
+                <td>
+                    ${{ number_format($col_valor_pagado_excel, 0, ',', '.') }} / ${{ number_format($col_valor_cartera_excel, 0, ',', '.') }}
+                    Pend. ${{ number_format($total_excel, 0, ',', '.') }}
+                </td>
+            @endforeach
+            <td>
+                ${{ number_format($total_valor_pagado_excel, 0, ',', '.') }} / ${{ number_format($total_valor_cartera_excel, 0, ',', '.') }}
+                Pend. ${{ number_format($gran_total_excel, 0, ',', '.') }}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="14">&nbsp;</td>
+        </tr>
+    @endforeach
+</table>
+</div>
+
+@foreach ($reportes_cursos as $reporte_curso)
+@php
+    $curso = $reporte_curso['curso'];
+    $filas = $reporte_curso['filas'];
+    $total_columna = $reporte_curso['total_columna'];
+    $total_columna_valor_cartera = $reporte_curso['total_columna_valor_cartera'];
+    $total_columna_valor_pagado = $reporte_curso['total_columna_valor_pagado'];
+    $gran_total = $reporte_curso['gran_total'];
+    $total_valor_cartera = $reporte_curso['total_valor_cartera'];
+    $total_valor_pagado = $reporte_curso['total_valor_pagado'];
+@endphp
+
 <p style="text-align: center; font-size: 15px; font-weight: bold;">
     {{ $titulo }} <br/> Curso {{ $curso->descripcion }}
 </p>
@@ -88,3 +186,5 @@
         </tr>
     </tfoot>
 </table>
+<br/>
+@endforeach
