@@ -739,3 +739,6 @@ WHERE `naturaleza` = 'Devengo'
 INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES (NULL, 'Estado', 'select', 'status', '{\"DISPONIBLE\":\"DISPONIBLE\",\"RESERVADA\":\"RESERVADA\",\"OCUPADA\":\"OCUPADA\",\"LIMPIEZA\":\"LIMPIEZA\",\"MANTENIMIENTO\":\"MANTENIMIENTO\",\"BLOQUEADA\":\"BLOQUEADA\"}', 'ACTIVA', '', '', '1', '1', '0', '2026-07-01 10:18:24', NULL);
 
 
+ALTER TABLE `inv_doc_encabezados` ADD `bodega_destino_id` INT(10) UNSIGNED NULL AFTER `inv_bodega_id`, ADD INDEX (`bodega_destino_id`);
+
+
