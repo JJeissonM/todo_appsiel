@@ -742,3 +742,5 @@ INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `valu
 ALTER TABLE `inv_doc_encabezados` ADD `bodega_destino_id` INT(10) UNSIGNED NULL AFTER `inv_bodega_id`, ADD INDEX (`bodega_destino_id`);
 
 
+UPDATE `nom_elect_cat_cptos_dian` SET `codigo` = 'HORA_EXTRA_DIURNA' WHERE `descripcion` LIKE '%HORA_EXTRA_DIARIA%';
+UPDATE `nom_elect_cat_cptos_dian` SET `descripcion` = 'HORA_EXTRA_DIURNA' WHERE `descripcion` LIKE '%HORA_EXTRA_DIARIA%';
