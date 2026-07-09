@@ -326,7 +326,7 @@ class DocumentoSoporteService
          $cesantias_interest = 0;
          foreach ($registros as $registro) {
             if ($registro->concepto->modo_liquidacion_id == 16) { // Intereses de cesantías
-               $cesantias_interest = $registro->valor_devengo;
+               $cesantias_interest += $registro->valor_devengo;
             }
          }
 

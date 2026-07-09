@@ -13,6 +13,10 @@
                     $amount = $registro_periodo['amount-ns'];
                 }
 
+                if (isset($registro_periodo['cesantias-interest'])) {
+                    $amount += $registro_periodo['cesantias-interest'];
+                }
+
                 $total_devengos_periodo += $amount;
             }
 
@@ -142,6 +146,7 @@
                         if (isset($registro['amount-ns'])) {
                             $amount = $registro['amount-ns'];
                         } 
+                        $cesantias_interest = isset($registro['cesantias-interest']) ? $registro['cesantias-interest'] : 0;
 
                         $devengo = Form::TextoMoneda( $amount );
 
@@ -170,17 +175,17 @@
                         <td> {{ $deduccion }} </td>
                     </tr>
 
-                    @if(isset($registro['cesantias-interest']))
+                    @if($cesantias_interest != 0)
                         <tr>
                             <td>Intereses sobre cesantías</td>
                             <td style="text-align: center;">&nbsp;</td>
-                            <td> {{ Form::TextoMoneda($registro['cesantias-interest']) }} </td>
+                            <td> {{ Form::TextoMoneda($cesantias_interest) }} </td>
                             <td>&nbsp;</td>
                         </tr>
                     @endif
 
                     <?php
-                        $total_devengos += $amount;
+                        $total_devengos += $amount + $cesantias_interest;
                     ?>
                 @endforeach
 
