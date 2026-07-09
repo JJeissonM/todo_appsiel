@@ -29,6 +29,10 @@ class DatabaseSeeder extends Seeder
                 'tables' => ['permissions', 'roles', 'role_has_permissions'],
             ],
             [
+                'class' => CorePaisesGentilicioSeeder::class,
+                'tables' => ['core_paises'],
+            ],
+            [
                 'class' => ComprasRetencionesLineaSeeder::class,
                 'any_tables' => ['compras_doc_registros', 'contab_registros_retenciones'],
             ],

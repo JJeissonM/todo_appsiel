@@ -242,10 +242,13 @@ class HotelApplicationSeeder extends Seeder
             ));
         }
 
-        $this->getOrCreateHotelEavField('Fecha de nacimiento', 'fecha', 'hotel_guest_fecha_nacimiento', '', 'null', $textAttrs, 0);
-        $this->getOrCreateHotelEavField('Nacionalidad', 'bsText', 'hotel_guest_nacionalidad', '', 'null', $textAttrs, 0);
-        $this->getOrCreateHotelEavField('Procedencia', 'bsText', 'hotel_guest_procedencia', '', 'null', $textAttrs, 0);
-        $this->getOrCreateHotelEavField('Destino', 'bsText', 'hotel_guest_destino', '', 'null', $textAttrs, 0);
+        $modelId = (int)$this->modelIds['hotel_guests'];
+        $baseOrder = 100;
+
+        $this->attachModelField($modelId, $this->getOrCreateHotelEavField('Fecha de nacimiento', 'fecha', 'hotel_guest_fecha_nacimiento', '', '', $textAttrs, 0), $baseOrder);
+        $this->attachModelField($modelId, $this->getOrCreateHotelEavField('Nacionalidad', 'select', 'hotel_guest_nacionalidad', 'model_App\\Core\\Nacionalidad', '', $comboAttrs, 0), $baseOrder + 1);
+        $this->attachModelField($modelId, $this->getOrCreateHotelEavField('Procedencia', 'select', 'hotel_guest_procedencia', 'model_App\\Core\\Procedencia', '', $comboAttrs, 0), $baseOrder + 2);
+        $this->attachModelField($modelId, $this->getOrCreateHotelEavField('Destino', 'select', 'hotel_guest_destino', 'model_App\\Core\\Destino', '', $comboAttrs, 0), $baseOrder + 3);
     }
 
     private function copyModelFields($sourceModelKey, $targetModelKey)
