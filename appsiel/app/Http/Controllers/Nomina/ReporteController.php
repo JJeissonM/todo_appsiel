@@ -240,6 +240,7 @@ class ReporteController extends Controller
         $nom_agrupacion_id = (int)$request->nom_agrupacion_id;
         $nom_contrato_id = (int)$request->nom_contrato_id;
         $nom_concepto_id = (int)$request->nom_concepto_id;
+        $core_tercero_id = $this->get_core_tercero_id_desde_contrato( $nom_contrato_id );
 
         $detalla_empleados = $request->detalla_empleados;
         $operador2 = '=';
@@ -247,9 +248,9 @@ class ReporteController extends Controller
         $nom_doc_encabezado_id  = (int)$request->nom_doc_encabezado_id;
         if ( $nom_doc_encabezado_id == 0 )
         {
-            $movimientos = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id);
+            $movimientos = NomDocRegistro::listado_acumulados_por_tercero( $fecha_desde, $fecha_hasta, $nom_agrupacion_id, $core_tercero_id, $nom_concepto_id);
         }else{
-            $movimientos = NomDocRegistro::listado_acumulados_documento( $nom_doc_encabezado_id, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id);
+            $movimientos = NomDocRegistro::listado_acumulados_documento_por_tercero( $nom_doc_encabezado_id, $nom_agrupacion_id, $core_tercero_id, $nom_concepto_id);
         }
         
         $documento_nomina = NomDocEncabezado::find( $nom_doc_encabezado_id );
@@ -275,7 +276,15 @@ class ReporteController extends Controller
                             ->unique('core_tercero_id')
                             ->values();
         }else{
-            $empleados =  NomContrato::with('tercero', 'grupo_empleado', 'cargo')->where( 'id', $nom_contrato_id )->get();
+            $ids_contrato_por_empleado = $movimientos->groupBy('core_tercero_id')->map(function ($registros) use ($nom_contrato_id) {
+                return $registros->first()->nom_contrato_id ?: $nom_contrato_id;
+            })->filter()->values()->toArray();
+
+            $empleados =  NomContrato::with('tercero', 'grupo_empleado', 'cargo')
+                            ->whereIn( 'id', count($ids_contrato_por_empleado) ? $ids_contrato_por_empleado : [ $nom_contrato_id ] )
+                            ->get()
+                            ->unique('core_tercero_id')
+                            ->values();
         }
 
         $vista = View::make('nomina.reportes.listado_acumulados2', compact('movimientos','conceptos','empleados','detalla_empleados','agrupacion','fecha_desde', 'fecha_hasta','valores_a_mostrar', 'documento_nomina' ))->render();
@@ -283,6 +292,23 @@ class ReporteController extends Controller
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
         return $vista;
+    }
+
+    protected function get_core_tercero_id_desde_contrato( $nom_contrato_id )
+    {
+        if ( (int)$nom_contrato_id == 0 )
+        {
+            return 0;
+        }
+
+        $contrato = NomContrato::find( (int)$nom_contrato_id );
+
+        if ( is_null( $contrato ) )
+        {
+            return 0;
+        }
+
+        return (int)$contrato->core_tercero_id;
     }
 
     /**
