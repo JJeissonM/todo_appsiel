@@ -51,7 +51,11 @@ class HotelOrderController extends Controller
         }
 
         try {
-            (new HotelService())->createLine($order, $request->all());
+            $service = new HotelService();
+            DB::transaction(function () use ($order, $request, $service) {
+                $service->createLine($order, $request->all());
+                $service->validateStockForOpenOrder($order);
+            });
         } catch (\Exception $e) {
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }
@@ -70,7 +74,11 @@ class HotelOrderController extends Controller
         ));
 
         try {
-            (new HotelService())->updateLine($order, $line, $request->all());
+            $service = new HotelService();
+            DB::transaction(function () use ($order, $line, $request, $service) {
+                $service->updateLine($order, $line, $request->all());
+                $service->validateStockForOpenOrder($order);
+            });
         } catch (\Exception $e) {
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }
@@ -124,6 +132,8 @@ class HotelOrderController extends Controller
                     $this->validateLineData($lineData, false);
                     $service->createLine($order, $lineData);
                 }
+
+                $service->validateStockForOpenOrder($order);
             });
         } catch (\Exception $e) {
             return redirect()->back()->with('mensaje_error', $e->getMessage());

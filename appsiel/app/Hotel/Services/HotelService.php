@@ -12,6 +12,7 @@ use App\Hotel\HotelReservation;
 use App\Hotel\HotelRoom;
 use App\Hotel\HotelStay;
 use App\Hotel\HotelStayGuest;
+use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
 use App\Ventas\Cliente;
 use App\Ventas\Services\PricesServices;
@@ -392,6 +393,7 @@ class HotelService
             if (is_null($cliente) || count($order->lines) == 0) {
                 throw new \Exception('El pedido no tiene cliente valido o lineas para facturar.');
             }
+            $service->validateStockForOpenOrder($order);
 
             $tipoTransaccionId = (int)config('ventas.factura_ventas_tipo_transaccion_id', 23);
             $tipoDocAppId = (int)config('ventas.factura_ventas_tipo_doc_app_id', 18);
@@ -444,6 +446,7 @@ class HotelService
             if (is_null($cliente) || count($order->lines) == 0) {
                 throw new \Exception('El pedido no tiene cliente valido o lineas para facturar.');
             }
+            $service->validateStockForOpenOrder($order);
 
             $pdv = !empty($order->pdv_id) ? Pdv::find((int)$order->pdv_id) : $service->currentCashierPdvOrFail();
             if (is_null($pdv)) {
@@ -558,6 +561,80 @@ class HotelService
         }
 
         return $url;
+    }
+
+    public function validateStockForOpenOrder(HotelOrderHeader $order, $date = null)
+    {
+        if ($this->allowsNegativeInventory()) {
+            return true;
+        }
+
+        $date = is_null($date) ? date('Y-m-d') : $date;
+        $order = HotelOrderHeader::where('empresa_id', $order->empresa_id)
+            ->where('id', $order->id)
+            ->with('lines.product', 'stay.room.bodega')
+            ->first();
+
+        if (is_null($order)) {
+            throw new \Exception('No se pudo validar el inventario del pedido hotelero.');
+        }
+
+        $items = array();
+        foreach ($order->lines as $line) {
+            $producto = $line->product;
+            if (!$this->productConsumesStock($producto)) {
+                continue;
+            }
+
+            $bodegaId = $this->lineBodegaId($line);
+            $key = $bodegaId . '-' . $line->producto_id;
+
+            if (!isset($items[$key])) {
+                $items[$key] = array(
+                    'producto_id' => (int)$line->producto_id,
+                    'bodega_id' => $bodegaId,
+                    'producto' => !is_null($producto) ? $producto->descripcion : 'Producto ' . $line->producto_id,
+                    'bodega' => $this->warehouseDescription($bodegaId),
+                    'quantity' => 0,
+                );
+            }
+
+            $items[$key]['quantity'] += (float)$line->quantity;
+        }
+
+        foreach ($items as $item) {
+            $stock = (float)InvMovimiento::get_existencia_actual($item['producto_id'], $item['bodega_id'], $date);
+            if (((float)$item['quantity'] - $stock) > 0.0001) {
+                throw new \Exception(
+                    'Stock insuficiente para ' . $item['producto'] .
+                    ' en la bodega ' . $item['bodega'] .
+                    '. Disponible: ' . $stock .
+                    ', solicitado: ' . $item['quantity'] . '.'
+                );
+            }
+        }
+
+        return true;
+    }
+
+    private function allowsNegativeInventory()
+    {
+        return (int)config('ventas.permitir_inventarios_negativos') == 1;
+    }
+
+    private function productConsumesStock($producto)
+    {
+        return !is_null($producto) && $producto->tipo != 'servicio';
+    }
+
+    private function warehouseDescription($bodegaId)
+    {
+        $bodega = DB::table('inv_bodegas')->where('id', (int)$bodegaId)->first();
+        if (is_null($bodega)) {
+            return (string)$bodegaId;
+        }
+
+        return $bodega->descripcion . ' (' . $bodegaId . ')';
     }
 
     private function createStandardInvoiceLine($docId, HotelOrderLine $line)

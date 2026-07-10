@@ -25,14 +25,10 @@
                         @endif
                     </h4>
                     <table class="table table-bordered">
-                        <tr><th>Huesped principal</th><td>{{ $stay->mainGuest && $stay->mainGuest->tercero ? $stay->mainGuest->tercero->descripcion : $stay->main_cliente_id }}</td></tr>
-                        <tr><th>Check-in</th><td>{{ $stay->check_in_at }}</td></tr>
-                        <tr><th>Salida esperada</th><td>{{ $stay->expected_check_out_at }}</td></tr>
-                        <tr><th>Dias estadia</th><td>{{ $stay->stayDays() }}</td></tr>
-                        <tr><th>Check-out</th><td>{{ $stay->check_out_at }}</td></tr>
-                        <tr><th>Huespedes</th><td>{{ $stay->total_guests }} ({{ $stay->adults_count }} adultos, {{ $stay->children_count }} niños)</td></tr>
-                        <tr><th>Estado</th><td>{{ $stay->status }}</td></tr>
-                        <tr><th>Notas</th><td>{{ $stay->notes }}</td></tr>
+                        <tr><th>Huesped principal</th><td>{{ $stay->mainGuest && $stay->mainGuest->tercero ? $stay->mainGuest->tercero->descripcion : $stay->main_cliente_id }}</td><th>Huespedes</th><td>{{ $stay->total_guests }} ({{ $stay->adults_count }} adultos, {{ $stay->children_count }} niños)</td></tr>
+                        <tr><th>Check-in</th><td>{{ $stay->check_in_at }}</td><th>Check-out</th><td>{{ $stay->check_out_at }}</td></tr>
+                        <tr><th>Salida esperada</th><td>{{ $stay->expected_check_out_at }}</td><th>Dias estadia</th><td>{{ $stay->stayDays() }}</td></tr>
+                        <tr><th>Notas</th><td>{{ $stay->notes }}</td><th>Estado</th><td>{{ $stay->status }}</td></tr>
                     </table>
 
 
@@ -54,10 +50,11 @@
                             @endif
                         @endif
                     </div>
-                    @if(isset($cancelBlockMessage) && $cancelBlockMessage != '')
+                    <!-- @ if(isset($cancelBlockMessage) && $cancelBlockMessage != '')
                         <br><br>
                         <div class="alert alert-warning">{{ $cancelBlockMessage }}</div>
-                    @endif
+                    @ endif
+                    -->
                 </div>
 
                 <div class="col-md-4">
