@@ -221,7 +221,7 @@ class DocumentoSoporteService
          
          $concepto = $registro_concepto->all()[0]->concepto;
 
-         if ($concepto->naturaleza == 'devengo') {
+         if ($concepto->naturaleza == 'devengo' && $concepto->id != (int)config('nomina.nomina.concepto_a_pagar_pasante_sena')) {
 
             $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_devengo'),$registros,$horas_dia_laboral);
             if (!empty($value_json)) {
