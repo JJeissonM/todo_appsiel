@@ -229,7 +229,14 @@ class DocumentoSoporteService
             }
             
          }else{
-            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_deduccion'),$registros,$horas_dia_laboral);
+
+            $campo = 'valor_deduccion';
+
+            if ($concepto->id == (int)config('nomina.concepto_a_pagar_pasante_sena')) {
+               $campo = 'valor_devengo';
+            }
+            
+            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum($campo),$registros,$horas_dia_laboral);
             if (!empty($value_json)) {
                $line_deductions[] = $value_json;
             }
