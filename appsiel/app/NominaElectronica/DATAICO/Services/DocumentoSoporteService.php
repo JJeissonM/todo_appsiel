@@ -50,8 +50,8 @@ class DocumentoSoporteService
          'nom_contrato_id' => $datos_doc_soporte['empleado']->id,
          'descripcion' => '',
          'head_data_json' => json_encode( $this->get_head_data_to_store( $datos_doc_soporte ) ),
-         'accruals_json' => json_encode( $this->remove_status_line( $datos_doc_soporte['accruals'] ) ),
-         'deductions_json' => json_encode( $this->remove_status_line( $datos_doc_soporte['deductions'] ) ),
+         'accruals_json' => json_encode( isset($datos_doc_soporte['accruals']) ? $this->remove_status_line( $datos_doc_soporte['accruals'] ) : [] ),
+         'deductions_json' => json_encode( isset($datos_doc_soporte['deductions']) ? $this->remove_status_line( $datos_doc_soporte['deductions'] ) : [] ),
          'employee_json' => json_encode( $datos_doc_soporte['employee'] ),
          'estado' => 'Sin enviar'
       ];
