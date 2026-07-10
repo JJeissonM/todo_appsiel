@@ -235,7 +235,7 @@ class DocumentoSoporteService
             if ($concepto->id == (int)config('nomina.concepto_a_pagar_pasante_sena')) {
                $campo = 'valor_devengo';
             }
-            
+
             $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum($campo),$registros,$horas_dia_laboral);
             if (!empty($value_json)) {
                $line_deductions[] = $value_json;
@@ -251,7 +251,7 @@ class DocumentoSoporteService
          }
       }
 
-      if (!$has_basico && !(int)$empleado->es_pasante_sena) {
+      if (!$has_basico) {
          $line_accruals[] = [
             'code' => 'BASICO',
             'amount' => 0,
