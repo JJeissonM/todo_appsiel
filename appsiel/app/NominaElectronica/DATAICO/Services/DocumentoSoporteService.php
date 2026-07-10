@@ -244,7 +244,7 @@ class DocumentoSoporteService
          }
       }
 
-      if (!$has_basico) {
+      if (!$has_basico && !(int)$empleado->es_pasante_sena) {
          $line_accruals[] = [
             'code' => 'BASICO',
             'amount' => 0,
@@ -274,7 +274,7 @@ class DocumentoSoporteService
 
       $codigo_cpto_dian = $this->normalize_dian_code($concepto->cpto_dian->codigo, $concepto->descripcion);
 
-      $skip = false;   
+      $skip = false;
       if($concepto->modo_liquidacion_id ==  16) { // Intereses de cesantías. Se agrega como subconcepto de las Cesantías
 
          foreach ($registros as $registro) {
