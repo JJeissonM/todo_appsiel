@@ -221,7 +221,7 @@ class DocumentoSoporteService
          
          $concepto = $registro_concepto->all()[0]->concepto;
 
-         if ($concepto->naturaleza == 'devengo' && $concepto->id != (int)config('nomina.concepto_a_pagar_pasante_sena')) {
+         if ($concepto->naturaleza == 'devengo') {
 
             $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_devengo'),$registros,$horas_dia_laboral);
             if (!empty($value_json)) {
@@ -229,14 +229,7 @@ class DocumentoSoporteService
             }
             
          }else{
-
-            $campo = 'valor_deduccion';
-
-            if ($concepto->id == (int)config('nomina.concepto_a_pagar_pasante_sena')) {
-               $campo = 'valor_devengo';
-            }
-
-            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum($campo),$registros,$horas_dia_laboral);
+            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_deduccion'),$registros,$horas_dia_laboral);
             if (!empty($value_json)) {
                $line_deductions[] = $value_json;
             }
@@ -259,10 +252,17 @@ class DocumentoSoporteService
          ];
       }
 
-      return [
+      $data = [
          'accruals' => $line_accruals,
          'deductions' => $line_deductions
       ];
+
+      if($line_deductions == null || count($line_deductions) == 0)
+      {
+         unset($data['deductions']);  
+      }
+
+      return $data;
    }
 
    public function get_linea_empleado($registro_concepto, $concepto, $amount, $registros, $horas_dia_laboral)
