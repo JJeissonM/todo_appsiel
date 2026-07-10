@@ -47,17 +47,18 @@ class HotelService
             return null;
         }
 
-        $arr_wheres = array(
-            'core_empresa_id' => $this->empresaId(),
-            'estado' => 'Abierto',
-            'cajero_default_id' => Auth::user()->id,
-        );
+        $query = Pdv::where('core_empresa_id', $this->empresaId())
+            ->where(function ($q) {
+                $q->where('estado', '<>', 'Inactivo')
+                    ->orWhereNull('estado')
+                    ->orWhere('estado', '');
+            });
 
-        if ($this->userCanViewDashboardWithoutPdv()) {
-            unset($arr_wheres['cajero_default_id']);
+        if (!$this->userCanViewDashboardWithoutPdv()) {
+            $query->where('cajero_default_id', Auth::user()->id);
         }
 
-        return Pdv::where($arr_wheres)
+        return $query
             ->orderBy('id')
             ->first();
     }
