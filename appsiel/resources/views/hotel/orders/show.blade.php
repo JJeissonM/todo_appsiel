@@ -38,6 +38,10 @@
             </table>
 
             <h4>Lineas del pedido</h4>
+            @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
+                <form method="POST" id="hotel_order_lines_form" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/save-lines')) }}">
+                    {{ csrf_field() }}
+            @endif
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>
@@ -49,49 +53,32 @@
                             <th>Vlr. Dcto. ($)</th>
                             <th>Impuesto</th>
                             <th>Total</th>
-                            <th>Accion</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="hotel_order_lines_body">
                         <?php $total = 0; ?>
                         @foreach($order->lines as $line)
                             <?php $total += $line->line_total; ?>
                             <tr>
-                                <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines/'.$line->id.'/update')) }}">
-                                    {{ csrf_field() }}
-                                    <td style="white-space: normal;">{{ $line->product ? $line->product->descripcion : $line->producto_id }}</td>
-                                    <td>{{ $line->bodega ? $line->bodega->descripcion : $line->inv_bodega_id }}</td>
-                                    <td class="text-right">
-                                        ${{ number_format($line->unit_price, 2, ',', '.')   }}
-                                        <input type="hidden" name="unit_price" value="{{ $line->unit_price }}">
-                                    </td>
-                                    <td><input type="text" name="quantity" class="form-control input-sm text-right" value="{{ $line->quantity }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;"></td>
-                                    <td><input type="text" name="discount" class="form-control input-sm text-right" value="{{ $line->discount }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;"></td>
-                                    <td class="text-right">
-                                        ${{ number_format($line->tax_value, 2, ',', '.') }}
-                                        <input type="hidden" name="tax_value" value="{{ $line->tax_value }}">
-                                    </td>
-                                    <td class="text-right">
-                                        ${{ number_format($line->line_total, 2, ',', '.') }}
-                                    </td>
-                                    <td>
-                                        @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
-                                            <button class="btn btn-warning btn-xs">Actualizar</button>
-                                        @endif
-                                </form>
-                                        @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
-                                            <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines/'.$line->id.'/delete')) }}" style="display:inline-block;">
-                                                {{ csrf_field() }}
-                                                <button class="btn btn-danger btn-xs" onclick="return confirm('Eliminar linea?')">Eliminar</button>
-                                            </form>
-                                        @endif
-                                    </td>
+                                <td style="white-space: normal;">{{ $line->product ? $line->product->descripcion : $line->producto_id }}</td>
+                                <td>{{ $line->bodega ? $line->bodega->descripcion : $line->inv_bodega_id }}</td>
+                                <td class="text-right">
+                                    ${{ number_format($line->unit_price, 2, ',', '.')   }}
+                                    <input type="hidden" name="lines[{{ $line->id }}][unit_price]" value="{{ $line->unit_price }}">
+                                </td>
+                                <td><input type="text" name="lines[{{ $line->id }}][quantity]" class="form-control input-sm text-right" value="{{ $line->quantity }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;"></td>
+                                <td><input type="text" name="lines[{{ $line->id }}][discount]" class="form-control input-sm text-right" value="{{ $line->discount }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;"></td>
+                                <td class="text-right">
+                                    ${{ number_format($line->tax_value, 2, ',', '.') }}
+                                </td>
+                                <td class="text-right">
+                                    ${{ number_format($line->line_total, 2, ',', '.') }}
+                                </td>
                             </tr>
                         @endforeach
-                        <tr>
+                        <tr id="hotel_order_total_row">
                             <th colspan="6" class="text-right">Total</th>
                             <th class="text-right">{{ number_format($total, 2, ',', '.') }}</th>
-                            <th>&nbsp;</th>
                         </tr>
                     </tbody>
                 </table>
@@ -99,15 +86,13 @@
 
             @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
                 <h4>Agregar consumo</h4>
-                <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines')) }}">
-                    {{ csrf_field() }}
                     <input type="hidden" name="room_id" value="{{ $order->stay ? $order->stay->room_id : '' }}">
                     <input type="hidden" id="hotel_inv_bodega_id" value="{{ $roomBodegaId }}">
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Producto/Servicio</label>
-                                <select name="producto_id" id="hotel_producto_id" class="form-control" required>
+                                <select id="hotel_producto_id" class="form-control">
                                     @foreach($products as $key => $label)
                                         <option value="{{ $key }}">{{ $label }}</option>
                                     @endforeach
@@ -117,7 +102,7 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Cantidad</label>
-                                <input type="text" name="quantity" id="hotel_quantity" class="form-control" value="1">
+                                <input type="text" id="hotel_quantity" class="form-control" value="1">
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -129,16 +114,17 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Precio</label>
-                                <input type="text" name="unit_price" id="hotel_unit_price" class="form-control" placeholder="Automático">
+                                <input type="text" id="hotel_unit_price" class="form-control" placeholder="Automático">
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <input type="hidden" name="source_type" value="MANUAL">
-                                <button class="btn btn-primary" title="Agregar línea"><i class="fa fa-plus"></i></button>
+                                <label>&nbsp;</label>
+                                <button class="btn btn-info btn-block" type="button" id="hotel_add_pending_line"><i class="fa fa-plus"></i> Agregar</button>
                             </div>
                         </div>
                     </div>
+                    <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> Guardar cambios</button>
                     <br>
                 </form>
             @endif
@@ -283,6 +269,9 @@
             var $cantidad = $('#hotel_quantity');
             var $stock = $('#hotel_stock');
             var $bodega = $('#hotel_inv_bodega_id');
+            var hotelRoomId = "{{ $order->stay ? $order->stay->room_id : '' }}";
+            var hotelBodegaLabel = {!! json_encode($roomBodegaLabel) !!};
+            var hotelNewLineIndex = 0;
             var $formaPago = $('#hotel_forma_pago');
             var $mediosPagoPanel = $('#hotel_medios_pago_panel');
             var $invoiceCustomerPicker = $('#hotel_invoice_customer_picker');
@@ -360,6 +349,82 @@
 
             $producto.on('change', cargarPrecioProducto);
             cargarPrecioProducto();
+
+            function hotelEscapeHtml(value) {
+                return $('<div/>').text(value || '').html();
+            }
+
+            function hotelProductLabel() {
+                var text = $producto.find('option:selected').text() || '';
+                return $.trim(text);
+            }
+
+            function hotelAppendPendingLine() {
+                var productoId = $producto.val();
+                var productLabel = hotelProductLabel();
+                var quantity = $cantidad.val();
+                var unitPrice = $precio.val();
+
+                if (!productoId) {
+                    alert('Debe seleccionar un producto o servicio.');
+                    return false;
+                }
+
+                if (parseFloat(quantity) <= 0 || isNaN(parseFloat(quantity))) {
+                    alert('La cantidad debe ser mayor a cero.');
+                    return false;
+                }
+
+                if (unitPrice === '') {
+                    unitPrice = '0';
+                }
+
+                if (parseFloat(unitPrice) < 0 || isNaN(parseFloat(unitPrice))) {
+                    alert('El precio debe ser mayor o igual a cero.');
+                    return false;
+                }
+
+                var rowIndex = hotelNewLineIndex++;
+                var lineTotal = parseFloat(quantity) * parseFloat(unitPrice);
+                var rowHtml =
+                    '<tr class="hotel-pending-line">' +
+                        '<td style="white-space: normal;">' + hotelEscapeHtml(productLabel) +
+                            '<input type="hidden" name="new_lines[' + rowIndex + '][producto_id]" value="' + hotelEscapeHtml(productoId) + '">' +
+                            '<input type="hidden" name="new_lines[' + rowIndex + '][room_id]" value="' + hotelEscapeHtml(hotelRoomId) + '">' +
+                            '<input type="hidden" name="new_lines[' + rowIndex + '][source_type]" value="MANUAL">' +
+                        '</td>' +
+                        '<td>' + hotelEscapeHtml(hotelBodegaLabel) + '</td>' +
+                        '<td class="text-right">$' + parseFloat(unitPrice).toFixed(2) +
+                            '<input type="hidden" name="new_lines[' + rowIndex + '][unit_price]" value="' + hotelEscapeHtml(unitPrice) + '">' +
+                        '</td>' +
+                        '<td><input type="text" name="new_lines[' + rowIndex + '][quantity]" class="form-control input-sm text-right" value="' + hotelEscapeHtml(quantity) + '" style="font-size: 14px;"></td>' +
+                        '<td><input type="text" name="new_lines[' + rowIndex + '][discount]" class="form-control input-sm text-right" value="0" style="font-size: 14px;"></td>' +
+                        '<td class="text-right">$0.00</td>' +
+                        '<td class="text-right">$' + lineTotal.toFixed(2) + '</td>' +
+                    '</tr>';
+
+                $('#hotel_order_total_row').before(rowHtml);
+                $producto.val('').trigger('change');
+                $cantidad.val('1');
+                $precio.val('');
+                $stock.val('');
+                return true;
+            }
+
+            $('#hotel_add_pending_line').on('click', function() {
+                hotelAppendPendingLine();
+            });
+
+            $('#hotel_order_lines_form').on('submit', function(event) {
+                if ($producto.val()) {
+                    if (!hotelAppendPendingLine()) {
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+
+                return true;
+            });
 
             function hotelParseMoney(value) {
                 value = (value || '').toString();

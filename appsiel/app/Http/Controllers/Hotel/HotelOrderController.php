@@ -17,6 +17,7 @@ use App\VentasPos\Services\FacturaPosService;
 use App\VentasPos\Services\PosPaymentModalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HotelOrderController extends Controller
 {
@@ -91,6 +92,46 @@ class HotelOrderController extends Controller
         return redirect(HotelBreadcrumb::url('hotel/orders/' . $order->id))->with('flash_message', 'Linea eliminada correctamente.');
     }
 
+    public function saveLines(Request $request, $id)
+    {
+        $order = $this->findOrder($id);
+        $service = new HotelService();
+        $lines = is_array($request->lines) ? $request->lines : array();
+        $newLine = is_array($request->new_line) ? $request->new_line : array();
+        $newLines = is_array($request->new_lines) ? $request->new_lines : array();
+
+        if (!$order->canEditLines()) {
+            return redirect()->back()->with('mensaje_error', 'El pedido no permite modificar lineas.');
+        }
+
+        try {
+            DB::transaction(function () use ($order, $service, $lines, $newLine, $newLines) {
+                foreach ($lines as $lineId => $lineData) {
+                    $line = $this->findLine($order, $lineId);
+                    $this->validateLineData($lineData, true);
+                    $service->updateLine($order, $line, $lineData);
+                }
+
+                if (isset($newLine['producto_id']) && (int)$newLine['producto_id'] > 0) {
+                    $newLines[] = $newLine;
+                }
+
+                foreach ($newLines as $lineData) {
+                    if (!isset($lineData['producto_id']) || (int)$lineData['producto_id'] <= 0) {
+                        continue;
+                    }
+
+                    $this->validateLineData($lineData, false);
+                    $service->createLine($order, $lineData);
+                }
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->with('mensaje_error', $e->getMessage());
+        }
+
+        return redirect(HotelBreadcrumb::url('hotel/orders/' . $order->id))->with('flash_message', 'Pedido hotelero actualizado correctamente.');
+    }
+
     public function generateStandardInvoice($id)
     {
         $order = $this->findOrder($id);
@@ -155,6 +196,28 @@ class HotelOrderController extends Controller
     private function findLine(HotelOrderHeader $order, $lineId)
     {
         return HotelOrderLine::where('empresa_id', Auth::user()->empresa_id)->where('hotel_order_id', $order->id)->where('id', $lineId)->firstOrFail();
+    }
+
+    private function validateLineData($data, $requireUnitPrice)
+    {
+        $quantity = isset($data['quantity']) ? (float)$data['quantity'] : 0;
+        if ($quantity <= 0) {
+            throw new \Exception('La cantidad debe ser mayor a cero.');
+        }
+
+        if ($requireUnitPrice || (isset($data['unit_price']) && $data['unit_price'] !== '')) {
+            if (!isset($data['unit_price']) || !is_numeric($data['unit_price']) || (float)$data['unit_price'] < 0) {
+                throw new \Exception('El precio debe ser mayor o igual a cero.');
+            }
+        }
+
+        if (isset($data['discount']) && $data['discount'] !== '' && (!is_numeric($data['discount']) || (float)$data['discount'] < 0)) {
+            throw new \Exception('El descuento debe ser mayor o igual a cero.');
+        }
+
+        if (isset($data['producto_id']) && (int)$data['producto_id'] > 0 && is_null(InvProducto::find((int)$data['producto_id']))) {
+            throw new \Exception('El producto no existe.');
+        }
     }
 
     private function productsList()
