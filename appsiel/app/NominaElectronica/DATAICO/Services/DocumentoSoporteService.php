@@ -103,9 +103,11 @@ class DocumentoSoporteService
          }
       }
 
-      foreach ($datos_doc_soporte['deductions'] as $line) {
-         if ( isset($line['status']) && $line['status'] == 'error' ) {
-            return true;
+      if ( isset($datos_doc_soporte['deductions']) ) {
+         foreach ($datos_doc_soporte['deductions'] as $line) {
+            if ( isset($line['status']) && $line['status'] == 'error' ) {
+               return true;
+            }
          }
       }
 
