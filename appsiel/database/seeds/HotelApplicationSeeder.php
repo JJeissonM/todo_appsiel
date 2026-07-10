@@ -156,11 +156,12 @@ class HotelApplicationSeeder extends Seeder
             $this->field(1, 'Numero', 'bsText', 'room_number', '', 'null', $textAttrs, 1),
             $this->field(2, 'Tipo', 'select', 'room_type', $roomTypes, 'SENCILLA', '', 1),
             $this->field(3, 'Producto/servicio', 'select', 'inv_producto_id', 'model_App\\Inventarios\\InvProducto', 'null', $comboAttrs, 1),
-            $this->field(4, 'Piso', 'bsText', 'floor', '', 'null', $textAttrs, 0),
-            $this->field(5, 'Capacidad', 'bsText', 'capacity', '', '1', $textAttrs, 1),
-            $this->field(6, 'Estado', 'select', 'status', $roomStatuses, 'DISPONIBLE', '', 1),
-            $this->field(7, 'Descripcion', 'bsTextArea', 'description', '', 'null', $textAttrs, 0),
-            $this->field(8, 'Activa', 'select', 'is_active', $yesNo, '1', '', 1),
+            $this->field(4, 'Bodega minibar', 'select', 'inv_bodega_id', 'model_App\\Inventarios\\InvBodega', 'null', $comboAttrs, 1),
+            $this->field(5, 'Piso', 'bsText', 'floor', '', 'null', $textAttrs, 0),
+            $this->field(6, 'Capacidad', 'bsText', 'capacity', '', '1', $textAttrs, 1),
+            $this->field(7, 'Estado', 'select', 'status', $roomStatuses, 'DISPONIBLE', '', 1),
+            $this->field(8, 'Descripcion', 'bsTextArea', 'description', '', 'null', $textAttrs, 0),
+            $this->field(9, 'Activa', 'select', 'is_active', $yesNo, '1', '', 1),
         ));
 
         $this->seedModelFields('stays', array(
@@ -207,13 +208,14 @@ class HotelApplicationSeeder extends Seeder
             $this->field(1, 'Pedido hotelero', 'select', 'hotel_order_id', 'model_App\\Hotel\\HotelOrderHeader', 'null', $comboAttrs, 1),
             $this->field(2, 'Producto', 'select', 'producto_id', 'model_App\\Inventarios\\InvProducto', 'null', $comboAttrs, 1),
             $this->field(3, 'Habitacion', 'select', 'room_id', 'model_App\\Hotel\\HotelRoom', 'null', $comboAttrs, 0),
-            $this->field(4, 'Descripcion', 'bsText', 'description', '', 'null', $textAttrs, 0),
-            $this->field(5, 'Cantidad', 'bsText', 'quantity', '', '1', $textAttrs, 1),
-            $this->field(6, 'Precio unitario', 'bsText', 'unit_price', '', '0', $textAttrs, 1),
-            $this->field(7, 'Descuento', 'bsText', 'discount', '', '0', $textAttrs, 0),
-            $this->field(8, 'Impuesto', 'bsText', 'tax_value', '', '0', $textAttrs, 0),
-            $this->field(9, 'Tipo origen', 'select', 'source_type', $sourceTypes, 'MANUAL', '', 1),
-            $this->field(10, 'Origen ID', 'bsText', 'source_id', '', 'null', $textAttrs, 0),
+            $this->field(4, 'Bodega', 'select', 'inv_bodega_id', 'model_App\\Inventarios\\InvBodega', 'null', $comboAttrs, 1),
+            $this->field(5, 'Descripcion', 'bsText', 'description', '', 'null', $textAttrs, 0),
+            $this->field(6, 'Cantidad', 'bsText', 'quantity', '', '1', $textAttrs, 1),
+            $this->field(7, 'Precio unitario', 'bsText', 'unit_price', '', '0', $textAttrs, 1),
+            $this->field(8, 'Descuento', 'bsText', 'discount', '', '0', $textAttrs, 0),
+            $this->field(9, 'Impuesto', 'bsText', 'tax_value', '', '0', $textAttrs, 0),
+            $this->field(10, 'Tipo origen', 'select', 'source_type', $sourceTypes, 'MANUAL', '', 1),
+            $this->field(11, 'Origen ID', 'bsText', 'source_id', '', 'null', $textAttrs, 0),
         ));
 
         $this->seedHotelGuestFields($textAttrs, $comboAttrs);

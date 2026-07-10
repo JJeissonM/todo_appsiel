@@ -23,9 +23,9 @@ class HotelRoom extends Model
 
     protected $table = 'hotel_rooms';
 
-    protected $fillable = array('empresa_id', 'room_number', 'room_type', 'inv_producto_id', 'floor', 'capacity', 'status', 'description', 'is_active');
+    protected $fillable = array('empresa_id', 'room_number', 'room_type', 'inv_producto_id', 'inv_bodega_id', 'floor', 'capacity', 'status', 'description', 'is_active');
 
-    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Numero', 'Tipo', 'Producto', 'Piso', 'Capacidad', 'Estado', 'Activa');
+    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Numero', 'Tipo', 'Producto', 'Bodega minibar', 'Piso', 'Capacidad', 'Estado', 'Activa');
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
 
@@ -72,6 +72,11 @@ class HotelRoom extends Model
         return $this->belongsTo('App\Inventarios\InvProducto', 'inv_producto_id');
     }
 
+    public function bodega()
+    {
+        return $this->belongsTo('App\Inventarios\InvBodega', 'inv_bodega_id');
+    }
+
     public function stays()
     {
         return $this->hasMany('App\Hotel\HotelStay', 'room_id');
@@ -103,11 +108,12 @@ class HotelRoom extends Model
                 'hotel_rooms.room_number AS campo1',
                 'hotel_rooms.room_type AS campo2',
                 'inv_productos.descripcion AS campo3',
-                'hotel_rooms.floor AS campo4',
-                'hotel_rooms.capacity AS campo5',
-                'hotel_rooms.status AS campo6',
-                DB::raw('IF(hotel_rooms.is_active = 1, "Si", "No") AS campo7'),
-                'hotel_rooms.id AS campo8'
+                'inv_bodegas.descripcion AS campo4',
+                'hotel_rooms.floor AS campo5',
+                'hotel_rooms.capacity AS campo6',
+                'hotel_rooms.status AS campo7',
+                DB::raw('IF(hotel_rooms.is_active = 1, "Si", "No") AS campo8'),
+                'hotel_rooms.id AS campo9'
             )
             ->orderBy('hotel_rooms.room_number')
             ->paginate($nro_registros);
@@ -120,6 +126,7 @@ class HotelRoom extends Model
                 'hotel_rooms.room_number AS NUMERO',
                 'hotel_rooms.room_type AS TIPO',
                 'inv_productos.descripcion AS PRODUCTO',
+                'inv_bodegas.descripcion AS BODEGA_MINIBAR',
                 'hotel_rooms.floor AS PISO',
                 'hotel_rooms.capacity AS CAPACIDAD',
                 'hotel_rooms.status AS ESTADO',
@@ -160,7 +167,8 @@ class HotelRoom extends Model
 
     private static function queryForIndex($search)
     {
-        $query = self::leftJoin('inv_productos', 'inv_productos.id', '=', 'hotel_rooms.inv_producto_id');
+        $query = self::leftJoin('inv_productos', 'inv_productos.id', '=', 'hotel_rooms.inv_producto_id')
+            ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'hotel_rooms.inv_bodega_id');
 
         if (Auth::check()) {
             $query->where('hotel_rooms.empresa_id', Auth::user()->empresa_id);
@@ -172,7 +180,8 @@ class HotelRoom extends Model
                     ->orWhere('hotel_rooms.room_type', 'LIKE', '%' . $search . '%')
                     ->orWhere('hotel_rooms.floor', 'LIKE', '%' . $search . '%')
                     ->orWhere('hotel_rooms.status', 'LIKE', '%' . $search . '%')
-                    ->orWhere('inv_productos.descripcion', 'LIKE', '%' . $search . '%');
+                    ->orWhere('inv_productos.descripcion', 'LIKE', '%' . $search . '%')
+                    ->orWhere('inv_bodegas.descripcion', 'LIKE', '%' . $search . '%');
             });
         }
 

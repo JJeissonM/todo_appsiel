@@ -330,12 +330,15 @@ class HotelService
         $discount = isset($data['discount']) ? (float)$data['discount'] : 0;
         $taxData = $this->calculateTaxData($producto->id, $order->cliente_id, $quantity, $unitPrice, $discount);
         $taxValue = $taxData['valor_impuesto_total'];
+        $roomId = isset($data['room_id']) && $data['room_id'] != '' ? (int)$data['room_id'] : $this->orderRoomId($order);
+        $bodegaId = $this->roomBodegaIdForOrder($order, $roomId);
 
         return HotelOrderLine::create(array(
             'empresa_id' => $order->empresa_id,
             'hotel_order_id' => $order->id,
             'producto_id' => $producto->id,
-            'room_id' => isset($data['room_id']) && $data['room_id'] != '' ? (int)$data['room_id'] : null,
+            'room_id' => $roomId > 0 ? $roomId : null,
+            'inv_bodega_id' => $bodegaId,
             'description' => isset($data['description']) && $data['description'] != '' ? $data['description'] : $producto->descripcion,
             'quantity' => $quantity,
             'unit_price' => $unitPrice,
@@ -570,6 +573,7 @@ class HotelService
     private function invoiceLineData(HotelOrderLine $line, $header, $clienteId = null)
     {
         $producto = $line->product;
+        $bodegaId = $this->lineBodegaId($line);
         if (is_null($clienteId)) {
             $clienteId = !is_null($line->order) ? $line->order->cliente_id : 0;
         }
@@ -578,6 +582,7 @@ class HotelService
         return $header + array(
             'vtas_motivo_id' => (int)config('ventas_pos.recetas_motivo_salida_id', 10),
             'inv_producto_id' => $line->producto_id,
+            'inv_bodega_id' => $bodegaId,
             'impuesto_id' => !is_null($producto) ? $producto->impuesto_id : null,
             'precio_unitario' => $line->unit_price,
             'cantidad' => $line->quantity,
@@ -643,6 +648,49 @@ class HotelService
 
         $price = (new PricesServices())->get_item_price($listaPreciosId, date('Y-m-d'), $productoId, $clienteId);
         return is_null($price) ? 0 : $price;
+    }
+
+    private function orderRoomId(HotelOrderHeader $order)
+    {
+        if (!is_null($order->stay) && !is_null($order->stay->room)) {
+            return (int)$order->stay->room->id;
+        }
+
+        $stay = !is_null($order->stay) ? $order->stay : HotelStay::find($order->stay_id);
+        return !is_null($stay) ? (int)$stay->room_id : 0;
+    }
+
+    private function roomBodegaIdForOrder(HotelOrderHeader $order, $roomId)
+    {
+        $room = null;
+        if (!is_null($order->stay) && !is_null($order->stay->room) && (int)$order->stay->room->id == (int)$roomId) {
+            $room = $order->stay->room;
+        }
+
+        if (is_null($room) && (int)$roomId > 0) {
+            $room = HotelRoom::where('empresa_id', $order->empresa_id)->where('id', (int)$roomId)->first();
+        }
+
+        if (is_null($room) || (int)$room->inv_bodega_id <= 0) {
+            throw new \Exception('La habitacion no tiene una bodega de minibar asociada.');
+        }
+
+        return (int)$room->inv_bodega_id;
+    }
+
+    private function lineBodegaId(HotelOrderLine $line)
+    {
+        if ((int)$line->inv_bodega_id > 0) {
+            return (int)$line->inv_bodega_id;
+        }
+
+        $order = !is_null($line->order) ? $line->order : HotelOrderHeader::find($line->hotel_order_id);
+        if (is_null($order)) {
+            throw new \Exception('No se pudo determinar el pedido hotelero de la linea.');
+        }
+
+        $roomId = (int)$line->room_id > 0 ? (int)$line->room_id : $this->orderRoomId($order);
+        return $this->roomBodegaIdForOrder($order, $roomId);
     }
 
     private function roomIsAvailableForCheckIn($room, $reservation)

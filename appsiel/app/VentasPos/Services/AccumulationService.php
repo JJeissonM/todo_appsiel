@@ -186,7 +186,7 @@ class AccumulationService
                 }
                 
                 $datos_linea = $datos;
-                $datos_linea['inv_bodega_id'] = $obj_inv_serv->get_bodega_id_producto($linea->inv_producto_id, $bodega_default_id, $buscar_bodega_cocina);
+                $datos_linea['inv_bodega_id'] = !empty($linea->inv_bodega_id) ? (int)$linea->inv_bodega_id : $obj_inv_serv->get_bodega_id_producto($linea->inv_producto_id, $bodega_default_id, $buscar_bodega_cocina);
 
                 // Movimiento de Ventas
                 VtasMovimiento::create( $datos_linea + $linea->toArray() );

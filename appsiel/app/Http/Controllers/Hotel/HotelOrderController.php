@@ -146,7 +146,10 @@ class HotelOrderController extends Controller
 
     private function findOrder($id)
     {
-        return HotelOrderHeader::where('empresa_id', Auth::user()->empresa_id)->where('id', $id)->with('stay.room', 'cliente.tercero', 'lines.product', 'posInvoice.tipo_documento_app', 'salesInvoice.tipo_documento_app')->firstOrFail();
+        return HotelOrderHeader::where('empresa_id', Auth::user()->empresa_id)
+            ->where('id', $id)
+            ->with('stay.room.bodega', 'cliente.tercero', 'lines.product', 'lines.bodega', 'posInvoice.tipo_documento_app', 'salesInvoice.tipo_documento_app')
+            ->firstOrFail();
     }
 
     private function findLine(HotelOrderHeader $order, $lineId)

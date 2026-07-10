@@ -1182,13 +1182,21 @@ class InventarioController extends TransaccionController
             $precio = $producto->precio_venta;
         }
 
+        $bodega_id = (int)Input::get('bodega_id');
+        $existencia_actual = 0;
+        if ($bodega_id > 0 && $producto->tipo != 'servicio') {
+            $existencia_actual = InvMovimiento::get_existencia_actual($producto->id, $bodega_id, $fecha);
+        }
+
         return response()->json(array(
             'id' => $producto->id,
             'descripcion' => $producto->descripcion,
             'tipo' => $producto->tipo,
             'precio_venta' => $precio,
             'unit_price' => $precio,
-            'precio_unitario' => $precio
+            'precio_unitario' => $precio,
+            'stock' => $existencia_actual,
+            'existencia_actual' => $existencia_actual
         ));
     }
     

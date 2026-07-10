@@ -3,6 +3,8 @@
 @section('content')
     <?php $hotelUrl = 'App\\Hotel\\Support\\HotelBreadcrumb'; ?>
     <?php $form_create = array('campos' => array(array('tipo' => 'cliente_autocomplete'))); ?>
+    <?php $roomBodegaId = $order->stay && $order->stay->room ? (int)$order->stay->room->inv_bodega_id : 0; ?>
+    <?php $roomBodegaLabel = $order->stay && $order->stay->room && $order->stay->room->bodega ? $order->stay->room->bodega->descripcion : ''; ?>
     {{ Form::bsMigaPan($miga_pan) }}
     @include('layouts.mensajes')
 
@@ -32,6 +34,7 @@
                     <td>
                         {{ $order->creador_por() ? $order->creador_por()->first()->name : '' }}
                     </td></tr>
+                <tr><th>Bodega minibar</th><td colspan="3">{{ $roomBodegaLabel }}</td></tr>
             </table>
 
             <h4>Lineas del pedido</h4>
@@ -40,6 +43,7 @@
                     <thead>
                         <tr>
                             <th style="width: 25%;">Producto</th>
+                            <th>Bodega</th>
                             <th>Precio</th>
                             <th>Cantidad</th>
                             <th>Vlr. Dcto. ($)</th>
@@ -56,6 +60,7 @@
                                 <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines/'.$line->id.'/update')) }}">
                                     {{ csrf_field() }}
                                     <td style="white-space: normal;">{{ $line->product ? $line->product->descripcion : $line->producto_id }}</td>
+                                    <td>{{ $line->bodega ? $line->bodega->descripcion : $line->inv_bodega_id }}</td>
                                     <td class="text-right">
                                         ${{ number_format($line->unit_price, 2, ',', '.')   }}
                                         <input type="hidden" name="unit_price" value="{{ $line->unit_price }}">
@@ -84,7 +89,7 @@
                             </tr>
                         @endforeach
                         <tr>
-                            <th colspan="5" class="text-right">Total</th>
+                            <th colspan="6" class="text-right">Total</th>
                             <th class="text-right">{{ number_format($total, 2, ',', '.') }}</th>
                             <th>&nbsp;</th>
                         </tr>
@@ -96,6 +101,8 @@
                 <h4>Agregar consumo</h4>
                 <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines')) }}">
                     {{ csrf_field() }}
+                    <input type="hidden" name="room_id" value="{{ $order->stay ? $order->stay->room_id : '' }}">
+                    <input type="hidden" id="hotel_inv_bodega_id" value="{{ $roomBodegaId }}">
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -107,13 +114,19 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <div class="form-group">
                                 <label>Cantidad</label>
                                 <input type="text" name="quantity" id="hotel_quantity" class="form-control" value="1">
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Stock</label>
+                                <input type="text" id="hotel_stock" class="form-control" placeholder="Stock" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
                             <div class="form-group">
                                 <label>Precio</label>
                                 <input type="text" name="unit_price" id="hotel_unit_price" class="form-control" placeholder="Automático">
@@ -268,6 +281,8 @@
             var $precio = $('#hotel_unit_price');
             var $descripcion = $('#hotel_line_description');
             var $cantidad = $('#hotel_quantity');
+            var $stock = $('#hotel_stock');
+            var $bodega = $('#hotel_inv_bodega_id');
             var $formaPago = $('#hotel_forma_pago');
             var $mediosPagoPanel = $('#hotel_medios_pago_panel');
             var $invoiceCustomerPicker = $('#hotel_invoice_customer_picker');
@@ -296,17 +311,21 @@
                 if (!productoId) {
                     $precio.val('');
                     $precio.attr('placeholder', 'Automatico');
+                    $stock.val('');
+                    $stock.attr('placeholder', 'Stock');
                     return;
                 }
 
                 $precio.attr('placeholder', 'Consultando...');
+                $stock.attr('placeholder', 'Consultando...');
 
                 $.get("{{ url('inv_consultar_productos') }}", {
                     producto_id: productoId,
                     cliente_id: "{{ $order->cliente_id }}",
                     lista_precios_id: "{{ $order->cliente ? $order->cliente->lista_precios_id : '' }}",
                     fecha: "{{ date('Y-m-d') }}",
-                    cantidad: $cantidad.val()
+                    cantidad: $cantidad.val(),
+                    bodega_id: $bodega.val()
                 }).done(function(respuesta) {
                     respuesta = normalizarRespuesta(respuesta);
 
@@ -322,9 +341,20 @@
                         $descripcion.val(respuesta.descripcion);
                     }
 
+                    if (respuesta.stock !== undefined && respuesta.stock !== null && respuesta.stock !== '') {
+                        $stock.val(respuesta.stock);
+                    } else if (respuesta.existencia_actual !== undefined && respuesta.existencia_actual !== null && respuesta.existencia_actual !== '') {
+                        $stock.val(respuesta.existencia_actual);
+                    } else {
+                        $stock.val('0');
+                    }
+
                     $precio.attr('placeholder', 'Automatico');
+                    $stock.attr('placeholder', 'Stock');
                 }).fail(function() {
                     $precio.attr('placeholder', 'Automatico');
+                    $stock.val('');
+                    $stock.attr('placeholder', 'Stock');
                 });
             }
 

@@ -53,10 +53,7 @@ class HotelRoomsTableSeeder extends Seeder
                 continue;
             }
 
-            DB::table('hotel_rooms')->updateOrInsert(array(
-                'empresa_id' => $empresaId,
-                'room_number' => $room[0],
-            ), array(
+            $roomData = array(
                 'empresa_id' => $empresaId,
                 'room_number' => $room[0],
                 'room_type' => $room[1],
@@ -67,7 +64,42 @@ class HotelRoomsTableSeeder extends Seeder
                 'description' => 'Habitacion de ejemplo creada por el seeder de Gestion Hotelera.',
                 'is_active' => 1,
                 'updated_at' => date('Y-m-d H:i:s'),
-            ));
+            );
+
+            if (Schema::hasColumn('hotel_rooms', 'inv_bodega_id')) {
+                $roomData['inv_bodega_id'] = $this->getOrCreateRoomWarehouse($empresaId, $room[0]);
+            }
+
+            DB::table('hotel_rooms')->updateOrInsert(array(
+                'empresa_id' => $empresaId,
+                'room_number' => $room[0],
+            ), $roomData);
+        }
+
+        $this->ensureWarehousesForExistingRooms($empresaId);
+    }
+
+    private function ensureWarehousesForExistingRooms($empresaId)
+    {
+        if (!Schema::hasTable('hotel_rooms') || !Schema::hasColumn('hotel_rooms', 'inv_bodega_id')) {
+            return;
+        }
+
+        $rooms = DB::table('hotel_rooms')
+            ->where('empresa_id', $empresaId)
+            ->where(function ($query) {
+                $query->whereNull('inv_bodega_id')->orWhere('inv_bodega_id', 0);
+            })
+            ->get();
+
+        foreach ($rooms as $room) {
+            $bodegaId = $this->getOrCreateRoomWarehouse($empresaId, $room->room_number);
+            if ($bodegaId > 0) {
+                DB::table('hotel_rooms')->where('id', $room->id)->update(array(
+                    'inv_bodega_id' => $bodegaId,
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ));
+            }
         }
     }
 
@@ -180,6 +212,39 @@ class HotelRoomsTableSeeder extends Seeder
         return $serviceId;
     }
 
+    private function getOrCreateRoomWarehouse($empresaId, $roomNumber)
+    {
+        if (!Schema::hasTable('inv_bodegas')) {
+            return null;
+        }
+
+        $description = 'MINIBAR HAB. ' . $roomNumber;
+        $warehouseId = (int)DB::table('inv_bodegas')
+            ->where('core_empresa_id', $empresaId)
+            ->where('descripcion', $description)
+            ->value('id');
+
+        $now = date('Y-m-d H:i:s');
+        $data = array(
+            'core_empresa_id' => $empresaId,
+            'descripcion' => $description,
+            'estado' => 'Activo',
+            'updated_at' => $now,
+        );
+
+        $data = $this->onlyExistingColumns('inv_bodegas', $data);
+
+        if ($warehouseId > 0) {
+            DB::table('inv_bodegas')->where('id', $warehouseId)->update($data);
+            return $warehouseId;
+        }
+
+        $data['created_at'] = $now;
+        $data = $this->onlyExistingColumns('inv_bodegas', $data);
+
+        return (int)DB::table('inv_bodegas')->insertGetId($data);
+    }
+
     private function getTaxId()
     {
         $taxId = $this->getFirstId('contab_impuestos');
@@ -193,6 +258,17 @@ class HotelRoomsTableSeeder extends Seeder
         }
 
         return (int)DB::table($table)->orderBy('id')->value('id');
+    }
+
+    private function onlyExistingColumns($table, $data)
+    {
+        foreach (array_keys($data) as $column) {
+            if (!Schema::hasColumn($table, $column)) {
+                unset($data[$column]);
+            }
+        }
+
+        return $data;
     }
 
     private function warn($message)
