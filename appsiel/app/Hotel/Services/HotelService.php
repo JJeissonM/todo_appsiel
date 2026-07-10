@@ -47,9 +47,17 @@ class HotelService
             return null;
         }
 
-        return Pdv::where('core_empresa_id', $this->empresaId())
-            ->where('estado', '<>', 'Inactivo')
-            ->where('cajero_default_id', Auth::user()->id)
+        $arr_wheres = array(
+            'core_empresa_id' => $this->empresaId(),
+            'estado' => 'Abierto',
+            'cajero_default_id' => Auth::user()->id,
+        );
+
+        if ($this->userCanViewDashboardWithoutPdv()) {
+            unset($arr_wheres['cajero_default_id']);
+        }
+
+        return Pdv::where($arr_wheres)
             ->orderBy('id')
             ->first();
     }
@@ -134,6 +142,24 @@ class HotelService
 
             return $stay;
         });
+    }
+
+    public function userCanViewDashboardWithoutPdv()
+    {
+        $user = Auth::user();
+        $rolesSinFiltro = config('filtrado_registros.roles_sin_filtro', array());
+
+        if (is_null($user)) {
+            return false;
+        }
+
+        foreach ($user->roles as $role) {
+            if (in_array($role->name, $rolesSinFiltro)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function createOrderForStay(HotelStay $stay, $includeRoomLine = false)

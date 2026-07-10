@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Core\Services\ResolucionFacturacionService;
 use App\Core\TipoDocApp;
 use App\CxC\CxcMovimiento;
+use App\Hotel\HotelRoom;
 use App\Inventarios\InvProducto;
 use App\Ventas\Cliente;
 use App\VentasPos\Services\FacturaPosService;
@@ -158,6 +159,11 @@ class HotelOrderController extends Controller
         $rows = InvProducto::where('core_empresa_id', Auth::user()->empresa_id)->where('estado', 'Activo')->orderBy('descripcion')->get();
         $options = array('' => '');
         foreach ($rows as $row) {
+
+            if ( HotelRoom::where('inv_producto_id', $row->id)->exists() ) {
+                continue; // Skip products that are linked to hotel rooms
+            }
+            
             $options[$row->id] = $row->id . ' - ' . $row->descripcion;
         }
         return $options;

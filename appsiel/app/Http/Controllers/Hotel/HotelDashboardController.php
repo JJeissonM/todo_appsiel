@@ -82,9 +82,10 @@ class HotelDashboardController extends Controller
 
     private function pdvData(Request $request)
     {
-        $pdv = (new HotelService())->currentCashierPdv();
+        $hotelService = new HotelService();
+        $pdv = $hotelService->currentCashierPdv();
         $returnTo = $request->fullUrl();
-        $isAdmin = $this->userCanViewDashboardWithoutPdv();
+        $isAdmin = $hotelService->userCanViewDashboardWithoutPdv();
 
         if (is_null($pdv)) {
             return array(
@@ -138,24 +139,6 @@ class HotelDashboardController extends Controller
             'arqueo_url' => 'web/create?id=20&id_modelo=158&vista=tesoreria.arqueo_caja.create&teso_caja_id=' . $pdv->caja_default_id . '&pdv_id=' . $pdv->id,
             'factura_directa_url' => 'pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=' . $pdv->id . '&action=create',
         );
-    }
-
-    private function userCanViewDashboardWithoutPdv()
-    {
-        $user = Auth::user();
-        $rolesSinFiltro = config('filtrado_registros.roles_sin_filtro', array());
-
-        if (is_null($user)) {
-            return false;
-        }
-
-        foreach ($user->roles as $role) {
-            if (in_array($role->name, $rolesSinFiltro)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private function syncTodayReservations($empresaId)

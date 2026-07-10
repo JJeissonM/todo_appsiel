@@ -13,7 +13,7 @@
                     <h3>Estadia #{{ $stay->id }} - Habitacion {{ $stay->room ? $stay->room->room_number : $stay->room_id }}</h3>
                 </div>
                 <div class="col-md-4 text-right">
-                    &nbsp;
+                    <a href="{{ url($hotelUrl::url('hotel?id=22')) }}" class="btn btn-default btn-sm">Volver</a>
                 </div>
             </div>
             <div class="row">
@@ -37,7 +37,6 @@
 
 
                     <div class="btn-group" role="group">
-                        <a href="{{ url($hotelUrl::url('hotel?id=22')) }}" class="btn btn-default btn-sm">Volver</a>
 
                         @if($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA)
                             <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/orders')) }}" style="display:inline-block;">

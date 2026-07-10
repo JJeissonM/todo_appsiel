@@ -102,7 +102,7 @@ class HotelRoom extends Model
             ->select(
                 'hotel_rooms.room_number AS campo1',
                 'hotel_rooms.room_type AS campo2',
-                DB::raw('CONCAT(inv_productos.id, " ", inv_productos.descripcion) AS campo3'),
+                'inv_productos.descripcion AS campo3',
                 'hotel_rooms.floor AS campo4',
                 'hotel_rooms.capacity AS campo5',
                 'hotel_rooms.status AS campo6',

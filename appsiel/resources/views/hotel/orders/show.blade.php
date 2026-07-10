@@ -17,11 +17,8 @@
                 </div>
             </div>
             <table class="table table-bordered">
-                <tr><th>Cliente</th><td>{{ $order->cliente && $order->cliente->tercero ? $order->cliente->tercero->descripcion : $order->cliente_id }}</td></tr>
-                <tr><th>Habitacion</th><td>{{ $order->stay && $order->stay->room ? $order->stay->room->room_number : '' }}</td></tr>
-                <tr><th>Fecha</th><td>{{ $order->order_date }}</td></tr>
-                <tr><th>Estado</th><td>{{ $order->status }}</td></tr>
-                <tr>
+                <tr><th>Cliente</th><td>{{ $order->cliente && $order->cliente->tercero ? $order->cliente->tercero->descripcion : $order->cliente_id }}</td><th>Estado</th><td>{{ $order->status }}</td></tr>
+                <tr><th>Habitacion</th><td>{{ $order->stay && $order->stay->room ? $order->stay->room->room_number : '' }}</td>
                     <th>Factura</th>
                     <td>
                         @if($order->invoiceUrl() != '')
@@ -29,19 +26,23 @@
                         @else
                             {{ $order->invoiceLabel() }}
                         @endif
-                    </td>
-                </tr>
+                    </td></tr>
+                <tr><th>Fecha</th><td>{{ $order->order_date }}</td>
+                    <th>Creado por:</th>
+                    <td>
+                        {{ $order->creador_por() ? $order->creador_por()->first()->name : '' }}
+                    </td></tr>
             </table>
 
             <h4>Lineas del pedido</h4>
             <div class="table-responsive">
-                <table class="table table-bordered table-striped">
+                <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th style="width: 25%;">Producto</th>
-                            <th>Cantidad</th>
                             <th>Precio</th>
-                            <th>Descuento</th>
+                            <th>Cantidad</th>
+                            <th>Vlr. Dcto. ($)</th>
                             <th>Impuesto</th>
                             <th>Total</th>
                             <th>Accion</th>
@@ -55,11 +56,19 @@
                                 <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines/'.$line->id.'/update')) }}">
                                     {{ csrf_field() }}
                                     <td style="white-space: normal;">{{ $line->product ? $line->product->descripcion : $line->producto_id }}</td>
-                                    <td><input type="text" name="quantity" class="form-control input-sm text-right" value="{{ $line->quantity }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
-                                    <td><input type="text" name="unit_price" class="form-control input-sm text-right" value="{{ $line->unit_price }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
-                                    <td><input type="text" name="discount" class="form-control input-sm text-right" value="{{ $line->discount }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
-                                    <td><input type="text" name="tax_value" class="form-control input-sm text-right" value="{{ $line->tax_value }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
-                                    <td class="text-right">{{ number_format($line->line_total, 2, ',', '.') }}</td>
+                                    <td class="text-right">
+                                        ${{ number_format($line->unit_price, 2, ',', '.')   }}
+                                        <input type="hidden" name="unit_price" value="{{ $line->unit_price }}">
+                                    </td>
+                                    <td><input type="text" name="quantity" class="form-control input-sm text-right" value="{{ $line->quantity }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;"></td>
+                                    <td><input type="text" name="discount" class="form-control input-sm text-right" value="{{ $line->discount }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;"></td>
+                                    <td class="text-right">
+                                        ${{ number_format($line->tax_value, 2, ',', '.') }}
+                                        <input type="hidden" name="tax_value" value="{{ $line->tax_value }}">
+                                    </td>
+                                    <td class="text-right">
+                                        ${{ number_format($line->line_total, 2, ',', '.') }}
+                                    </td>
                                     <td>
                                         @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
                                             <button class="btn btn-warning btn-xs">Actualizar</button>
@@ -185,27 +194,15 @@
             <div class="marco_formulario">
                 <h5>Generar factura</h5>
                 <hr>
-                <!-- <form method="POST" action="{ { url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-standard-invoice')) }}" style="display:inline-block;">
-                    {{ csrf_field() }}
-                    <button class="btn btn-success" onclick="return confirm('Generar factura estandar?')">Generar factura estandar</button>
-                </form>
-                -->
                 <form method="POST" id="hotel_generate_pos_invoice_form" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-pos-invoice')) }}" style="display:block;">
                     {{ csrf_field() }}
                     <label>Tipo de factura:</label>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="invoice_document_type" value="pos" checked>
-                            Factura POS
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="invoice_document_type" value="electronic">
-                            Factura electronica
-                        </label>
-                    </div>
+                    <select name="invoice_document_type" class="form-control" style="display:inline-block; width:auto;">
+                        <option value="pos">POS int.</option>
+                        <option value="electronic">F.E.</option>
+                    </select>
 
+                    <br>
                     <label>Facturar a:</label>
                     <div class="radio">
                         <label>

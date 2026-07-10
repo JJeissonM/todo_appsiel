@@ -98,6 +98,11 @@ class HotelOrderHeader extends Model
         return $this->status == self::STATUS_ABIERTO;
     }
 
+    public function creador_por()
+    {
+        return $this->belongsTo('App\User', 'created_by');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return self::queryForIndex($search)
@@ -170,10 +175,10 @@ class HotelOrderHeader extends Model
             }
 
             if (!is_null($doc) && !is_null($doc->tipo_documento_app)) {
-                return 'POS ' . $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo;
+                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo;
             }
 
-            return 'POS #' . $this->pos_doc_id;
+            return $this->pos_doc_id;
         }
 
         if ($this->invoice_type == self::INVOICE_STANDARD && !empty($this->sales_doc_id)) {
@@ -183,10 +188,10 @@ class HotelOrderHeader extends Model
             }
 
             if (!is_null($doc) && !is_null($doc->tipo_documento_app)) {
-                return 'Ventas ' . $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo;
+                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo;
             }
 
-            return 'Ventas #' . $this->sales_doc_id;
+            return $this->sales_doc_id;
         }
 
         return '';
