@@ -261,7 +261,7 @@ class DocumentoSoporteService
 
       if($line_deductions == null || count($line_deductions) == 0)
       {
-         unset($data['deductions']);  
+         unset($data['deductions']);
       }
 
       return $data;
