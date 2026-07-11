@@ -240,7 +240,7 @@
                     <input type="hidden" name="object_anticipos" id="hotel_object_anticipos" value="null">
                     <input type="hidden" id="hotel_electronic_resolution_status" value="{{ isset($electronicResolutionValidation->status) ? $electronicResolutionValidation->status : 'error' }}">
                     <input type="hidden" id="hotel_electronic_resolution_message" value="{{ isset($electronicResolutionValidation->message) ? $electronicResolutionValidation->message : 'No fue posible validar la resolucion de facturacion electronica.' }}">
-                    <button class="btn btn-primary" onclick="return confirm('Generar factura?')"> <i class="fa fa-save"></i> Guardar </button>
+                    <button class="btn btn-primary" onclick="return confirm('Generar factura?')"> <i class="fa fa-save"></i> Guardar Factura</button>
                 </form>
                 <br><br><br><br>
             </div>

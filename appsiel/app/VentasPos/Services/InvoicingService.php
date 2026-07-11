@@ -129,6 +129,7 @@ class InvoicingService
 
             $linea_datos = ['vtas_motivo_id' => (int)$request->inv_motivo_id] +
                             ['inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id] +
+                            ['inv_bodega_id' => $this->resolveLineWarehouseId($lineas_registros[$i], $doc_encabezado, $request)] +
                             ['impuesto_id' => $impuesto_id] +
                             ['precio_unitario' => (float)$lineas_registros[$i]->precio_unitario] +
                             ['cantidad' => (float)$lineas_registros[$i]->cantidad] +
@@ -404,6 +405,44 @@ class InvoicingService
         return $default;
     }
 
+    protected function resolveLineWarehouseId($linea, $invoice = null, Request $request = null)
+    {
+        $inv_bodega_id = 0;
+
+        if (is_object($linea) && isset($linea->inv_bodega_id)) {
+            $inv_bodega_id = (int)$linea->inv_bodega_id;
+        }
+
+        if ($inv_bodega_id <= 0) {
+            $inv_bodega_id = (int)$this->get_line_value($linea, 'inv_bodega_id', 0);
+        }
+
+        if ($inv_bodega_id <= 0 && !is_null($request)) {
+            $inv_bodega_id = (int)$request->get('inv_bodega_id', 0);
+        }
+
+        if ($inv_bodega_id <= 0 && !is_null($invoice) && !is_null($invoice->pdv)) {
+            $inv_bodega_id = (int)$invoice->pdv->bodega_default_id;
+        }
+
+        if ($inv_bodega_id <= 0 && !is_null($invoice) && (int)$invoice->pdv_id > 0) {
+            $pdv = Pdv::find((int)$invoice->pdv_id);
+            if (!is_null($pdv)) {
+                $inv_bodega_id = (int)$pdv->bodega_default_id;
+            }
+        }
+
+        if ($inv_bodega_id <= 0) {
+            $inv_bodega_id = (int)config('ventas.inv_bodega_id');
+        }
+
+        if ($inv_bodega_id <= 0) {
+            throw new \InvalidArgumentException('No se pudo determinar la bodega de inventarios para la factura POS.');
+        }
+
+        return $inv_bodega_id;
+    }
+
     public function crear_movimiento_pos($invoice)
     {
         $datos = $invoice->toArray();
@@ -418,9 +457,12 @@ class InvoicingService
 
         $lineas_registros = $invoice->lineas_registros;
         foreach ($lineas_registros as $linea)
-        {            
+        {
+            $linea_datos = $linea->toArray();
+            $linea_datos['inv_bodega_id'] = $this->resolveLineWarehouseId($linea, $invoice);
+
             // Movimiento POS
-            Movimiento::create( $datos + $linea->toArray() );
+            Movimiento::create( $datos + $linea_datos );
         }
     }
 }

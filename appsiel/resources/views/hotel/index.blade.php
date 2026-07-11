@@ -459,7 +459,7 @@
             </div>
         @else
             <div class="alert alert-info">
-                Para usar el dashboard de Gestion Hotelera debe realizar la apertura del punto de venta POS asociado al cajero.
+                La apertura del turno habilita el Dashboard Gestión Hotelera.
             </div>
         @endif
 

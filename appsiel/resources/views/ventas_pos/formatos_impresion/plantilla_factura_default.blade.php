@@ -175,6 +175,7 @@
                     <br>
                     <span style="font-size: 1.1em; font-weight: bold;">
                         <b>Detalle: &nbsp;&nbsp;</b> <div class="lbl_descripcion_doc_encabezado" style="display: inline;"> {{$datos_factura->lbl_descripcion_doc_encabezado}} </div>
+                        @include('hotel.partials.pos_invoice_stay_details')
                     </span>
                 </td>
             </tr>

@@ -121,6 +121,7 @@
     <tr>        
         <td colspan="2" style="border: solid 1px #ddd;">
             <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+            @include('hotel.partials.sales_invoice_stay_details')
         </td>
     </tr>
 @endsection

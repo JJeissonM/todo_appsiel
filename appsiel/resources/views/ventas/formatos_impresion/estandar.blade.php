@@ -36,6 +36,7 @@ Cliente:
     @include('ventas.formatos_impresion.detalles_factura_medica')
     <br>
     <b>Detalle: &nbsp;&nbsp;</b> {!! $doc_encabezado->descripcion !!}
+    @include('hotel.partials.sales_invoice_stay_details')
 @endsection
 
 @section('tabla_registros_1')
@@ -111,4 +112,3 @@ Cliente:
 @include('transaccion.registros_contables')
 @include('transaccion.auditoria')
 @endsection
-

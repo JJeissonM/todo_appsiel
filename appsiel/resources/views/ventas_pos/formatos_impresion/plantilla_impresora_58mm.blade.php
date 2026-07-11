@@ -112,6 +112,7 @@
             <tr>
                 <td colspan="2">
                     <b>Detalle: &nbsp;&nbsp;</b> <div class="lbl_descripcion_doc_encabezado" style="display: inline;"> </div>
+                    @include('hotel.partials.pos_invoice_stay_details')
                 </td>
             </tr>
         </table>        

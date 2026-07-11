@@ -6,6 +6,7 @@
     $item_reporte = "";
     
     $user = \Auth::user();
+    $menu_permission_names = Permission::lists('name')->toArray();
     
     if( $user != null)
     {
@@ -23,6 +24,11 @@
                                         <ul class="dropdown-menu sub-menu" style="background-color: #42A3DC !important;">';
                                             foreach($reportes as $un_reporte)
                                             {
+
+                                                if( trim((string)$un_reporte->url_form_action) == '' || !in_array($un_reporte->url_form_action, $menu_permission_names) || !$user->hasPermissionTo($un_reporte->url_form_action) ){
+                                                    continue;
+                                                }
+
                                                 $item_reporte .= '<li> <a href="'.url('vista_reporte?id='.$un_reporte->core_app_id.'&reporte_id='.$un_reporte->id).'" style="color: #FFFFFF !important;">'.$un_reporte->descripcion.'</a>
                                                                 </li>';
                                             }

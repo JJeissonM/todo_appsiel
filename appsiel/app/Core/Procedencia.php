@@ -2,6 +2,6 @@
 
 namespace App\Core;
 
-class Procedencia extends Pais
+class Procedencia extends Ciudad
 {
 }
