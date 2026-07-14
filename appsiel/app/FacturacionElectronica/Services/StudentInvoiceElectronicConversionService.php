@@ -19,7 +19,7 @@ class StudentInvoiceElectronicConversionService
 
         $query = VtasDocEncabezado::with(['tipo_documento_app', 'tercero', 'datos_auxiliares_estudiante'])
             ->where('core_tipo_transaccion_id', $standardTransactionId)
-            ->whereHas('datos_auxiliares_estudiante');
+            ->has('datos_auxiliares_estudiante');
 
         if (!empty($filters['empresa_id'])) {
             $query->where('core_empresa_id', (int)$filters['empresa_id']);
