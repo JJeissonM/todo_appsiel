@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         // Commands\Inspire::class,
         Commands\RunSqlFileWithChecks::class,
         Commands\CorregirMedioRecaudoMovimientos::class,
+        Commands\ConvertirFacturasEstudiantesElectronicas::class,
     ];
 
     /**
