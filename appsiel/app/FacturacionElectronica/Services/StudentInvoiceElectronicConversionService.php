@@ -38,11 +38,11 @@ class StudentInvoiceElectronicConversionService
         }
 
         if (!empty($filters['created_from'])) {
-            $query->whereDate('created_at', '>=', $filters['created_from']);
+            $query->where('created_at', '>=', $filters['created_from'] . ' 00:00:00');
         }
 
         if (!empty($filters['created_to'])) {
-            $query->whereDate('created_at', '<=', $filters['created_to']);
+            $query->where('created_at', '<=', $filters['created_to'] . ' 23:59:59');
         }
 
         return $query->orderBy('id');
