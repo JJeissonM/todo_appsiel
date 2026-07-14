@@ -279,8 +279,11 @@
                         $stay = $room->activeStay->first();
                         $todayReservation = $room->activeTodayReservation->first();
                         $guestName = '';
+                        $expected_check_out_at = '';
                         if ($stay && $stay->mainGuest && $stay->mainGuest->tercero) {
                             $guestName = $stay->mainGuest->tercero->descripcion;
+
+                            $expected_check_out_at = Carbon\Carbon::parse($stay->expected_check_out_at)->format('d/m/Y');
                         } elseif ($todayReservation && $todayReservation->cliente && $todayReservation->cliente->tercero) {
                             $guestName = 'Reserva: ' . $todayReservation->cliente->tercero->descripcion;
                         }
@@ -293,7 +296,7 @@
                                     {{ $room->description != '' ? $room->description : ucfirst(strtolower($room->room_type)) }}
                                 </div>
                                 <div class="hotel-room-meta">
-                                    Piso: {{ $room->floor ? $room->floor : 'N/A' }} &nbsp; Cap: {{ $room->capacity }}
+                                    F.S.: {{ $expected_check_out_at }}
                                     @if($guestName != '')
                                         <br>{{ substr($guestName, 0, 34) }}
                                     @endif
