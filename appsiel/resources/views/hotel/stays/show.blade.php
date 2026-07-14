@@ -39,13 +39,17 @@
                                 {{ csrf_field() }}
                                 <button class="btn btn-primary btn-sm">Nuevo pedido</button>
                             </form>
-                            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#hotelCheckOutModal">Check-out</button>
+                            @if(isset($checkOutBlockMessage) && $checkOutBlockMessage != '')
+                                <button type="button" class="btn btn-success btn-sm" disabled title="{{ $checkOutBlockMessage }}">Check-out</button>
+                            @else
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#hotelCheckOutModal">Check-out</button>
+                            @endif
                             @if(isset($cancelBlockMessage) && $cancelBlockMessage != '')
                                 <button type="button" class="btn btn-danger btn-sm" disabled title="{{ $cancelBlockMessage }}">Anular</button>
                             @else
                                 <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/cancel')) }}" style="display:inline-block;">
                                     {{ csrf_field() }}
-                                    <button class="btn btn-danger btn-sm" onclick="return confirm('Anular estadia?')">Anular</button>
+                                    <button class="btn btn-danger btn-sm hotel-confirm-submit" data-message="Anular estadia?">Anular</button>
                                 </form>
                             @endif
                         @endif
@@ -55,6 +59,10 @@
                         <div class="alert alert-warning">{{ $cancelBlockMessage }}</div>
                     @ endif
                     -->
+                    @if(isset($checkOutBlockMessage) && $checkOutBlockMessage != '')
+                        <br><br>
+                        <div class="alert alert-warning">{{ $checkOutBlockMessage }}</div>
+                    @endif
                 </div>
 
                 <div class="col-md-4">
@@ -182,4 +190,30 @@
 @section('scripts')
     @parent
     @include('hotel.partials.cliente_autocomplete_scripts')
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.hotel-confirm-submit').on('click', function(event) {
+                event.preventDefault();
+
+                var $button = $(this);
+                var $form = $button.closest('form');
+                var message = $button.data('message') || 'Confirmar accion?';
+
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire({
+                        title: 'Confirmar',
+                        text: message,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Aceptar',
+                        cancelButtonText: 'Cancelar'
+                    }).then(function(result) {
+                        if (result && (result.isConfirmed || result.value)) {
+                            $form.submit();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 @endsection

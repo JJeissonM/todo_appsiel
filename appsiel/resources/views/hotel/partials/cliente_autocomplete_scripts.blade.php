@@ -147,7 +147,14 @@
                         message = xhr.responseJSON.message;
                     }
 
-                    alert(message);
+                    if (typeof Swal !== 'undefined' && Swal.fire) {
+                        Swal.fire({
+                            title: 'Atencion',
+                            text: message,
+                            icon: 'warning',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
                 }).always(function () {
                     $button.prop('disabled', false).html(originalHtml);
                 });

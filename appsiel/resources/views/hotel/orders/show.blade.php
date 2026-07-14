@@ -114,7 +114,7 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label>Precio</label>
-                                <input type="text" id="hotel_unit_price" class="form-control" placeholder="Automático">
+                                <input type="text" id="hotel_unit_price" class="form-control" placeholder="Automático" {{ $canEditHotelOrderPrice ? '' : 'readonly' }}>
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -240,7 +240,7 @@
                     <input type="hidden" name="object_anticipos" id="hotel_object_anticipos" value="null">
                     <input type="hidden" id="hotel_electronic_resolution_status" value="{{ isset($electronicResolutionValidation->status) ? $electronicResolutionValidation->status : 'error' }}">
                     <input type="hidden" id="hotel_electronic_resolution_message" value="{{ isset($electronicResolutionValidation->message) ? $electronicResolutionValidation->message : 'No fue posible validar la resolucion de facturacion electronica.' }}">
-                    <button class="btn btn-primary" onclick="return confirm('Generar factura?')"> <i class="fa fa-save"></i> Guardar Factura</button>
+                    <button class="btn btn-primary" type="submit"> <i class="fa fa-save"></i> Guardar Factura</button>
                 </form>
                 <br><br><br><br>
             </div>
@@ -277,6 +277,37 @@
             var $invoiceCustomerPicker = $('#hotel_invoice_customer_picker');
             var hotelOrderTotal = {{ (float)$order->lines->sum('line_total') }};
             var hotelAdvanceObjects = [];
+            var hotelCanEditUnitPrice = {{ $canEditHotelOrderPrice ? 'true' : 'false' }};
+            var hotelSelectedTaxRate = 0;
+
+            function hotelSwalAlert(message, icon) {
+                icon = icon || 'warning';
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire({
+                        title: 'Atencion',
+                        text: message,
+                        icon: icon,
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            }
+
+            function hotelSwalConfirm(message, onConfirm) {
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire({
+                        title: 'Confirmar',
+                        text: message,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Aceptar',
+                        cancelButtonText: 'Cancelar'
+                    }).then(function(result) {
+                        if (result && (result.isConfirmed || result.value)) {
+                            onConfirm();
+                        }
+                    });
+                }
+            }
 
             if ($.fn.select2) {
                 $producto.select2();
@@ -302,6 +333,7 @@
                     $precio.attr('placeholder', 'Automatico');
                     $stock.val('');
                     $stock.attr('placeholder', 'Stock');
+                    hotelSelectedTaxRate = 0;
                     return;
                 }
 
@@ -338,12 +370,18 @@
                         $stock.val('0');
                     }
 
+                    hotelSelectedTaxRate = respuesta.tasa_impuesto !== undefined && respuesta.tasa_impuesto !== null && respuesta.tasa_impuesto !== '' ? parseFloat(respuesta.tasa_impuesto) : 0;
+                    if (isNaN(hotelSelectedTaxRate)) {
+                        hotelSelectedTaxRate = 0;
+                    }
+
                     $precio.attr('placeholder', 'Automatico');
                     $stock.attr('placeholder', 'Stock');
                 }).fail(function() {
                     $precio.attr('placeholder', 'Automatico');
                     $stock.val('');
                     $stock.attr('placeholder', 'Stock');
+                    hotelSelectedTaxRate = 0;
                 });
             }
 
@@ -366,26 +404,31 @@
                 var unitPrice = $precio.val();
 
                 if (!productoId) {
-                    alert('Debe seleccionar un producto o servicio.');
+                    hotelSwalAlert('Debe seleccionar un producto o servicio.');
                     return false;
                 }
 
                 if (parseFloat(quantity) <= 0 || isNaN(parseFloat(quantity))) {
-                    alert('La cantidad debe ser mayor a cero.');
+                    hotelSwalAlert('La cantidad debe ser mayor a cero.');
                     return false;
                 }
 
-                if (unitPrice === '') {
+                if (unitPrice === '' && hotelCanEditUnitPrice) {
                     unitPrice = '0';
                 }
 
-                if (parseFloat(unitPrice) < 0 || isNaN(parseFloat(unitPrice))) {
-                    alert('El precio debe ser mayor o igual a cero.');
+                if (unitPrice !== '' && (parseFloat(unitPrice) < 0 || isNaN(parseFloat(unitPrice)))) {
+                    hotelSwalAlert('El precio debe ser mayor o igual a cero.');
                     return false;
                 }
 
                 var rowIndex = hotelNewLineIndex++;
-                var lineTotal = parseFloat(quantity) * parseFloat(unitPrice);
+                var displayPrice = unitPrice === '' ? 'Automatico' : '$' + parseFloat(unitPrice).toFixed(2);
+                var lineTotal = unitPrice === '' ? 0 : parseFloat(quantity) * parseFloat(unitPrice);
+                var taxValue = 0;
+                if (hotelSelectedTaxRate > 0 && lineTotal > 0) {
+                    taxValue = lineTotal - (lineTotal / (1 + (hotelSelectedTaxRate / 100)));
+                }
                 var rowHtml =
                     '<tr class="hotel-pending-line">' +
                         '<td style="white-space: normal;">' + hotelEscapeHtml(productLabel) +
@@ -394,12 +437,12 @@
                             '<input type="hidden" name="new_lines[' + rowIndex + '][source_type]" value="MANUAL">' +
                         '</td>' +
                         '<td>' + hotelEscapeHtml(hotelBodegaLabel) + '</td>' +
-                        '<td class="text-right">$' + parseFloat(unitPrice).toFixed(2) +
+                        '<td class="text-right">' + hotelEscapeHtml(displayPrice) +
                             '<input type="hidden" name="new_lines[' + rowIndex + '][unit_price]" value="' + hotelEscapeHtml(unitPrice) + '">' +
                         '</td>' +
                         '<td><input type="text" name="new_lines[' + rowIndex + '][quantity]" class="form-control input-sm text-right" value="' + hotelEscapeHtml(quantity) + '" style="font-size: 14px;"></td>' +
                         '<td><input type="text" name="new_lines[' + rowIndex + '][discount]" class="form-control input-sm text-right" value="0" style="font-size: 14px;"></td>' +
-                        '<td class="text-right">$0.00</td>' +
+                        '<td class="text-right">$' + taxValue.toFixed(2) + '</td>' +
                         '<td class="text-right">$' + lineTotal.toFixed(2) + '</td>' +
                     '</tr>';
 
@@ -581,7 +624,7 @@
                 var remaining = hotelOrderTotal - totalPayments;
 
                 if (remaining <= 1) {
-                    alert('El pedido ya tiene medios de pago por el total.');
+                    hotelSwalAlert('El pedido ya tiene medios de pago por el total.');
                     return;
                 }
 
@@ -676,27 +719,6 @@
                 $form.removeAttr('target');
             }
 
-            function validateElectronicResolutionBeforeSubmit(event) {
-                if ($('input[name="invoice_document_type"]:checked').val() !== 'electronic') {
-                    return true;
-                }
-
-                var status = $('#hotel_electronic_resolution_status').val();
-                var message = $('#hotel_electronic_resolution_message').val();
-
-                if (status === 'error') {
-                    event.preventDefault();
-                    alert(message);
-                    return false;
-                }
-
-                if (status === 'warning' && message !== '') {
-                    return confirm(message + "\n\nDesea continuar con la generacion de la factura electronica?");
-                }
-
-                return true;
-            }
-
             $('#hotel_generate_pos_invoice_form').on('submit', function(event) {
                 var $form = $(this);
                 var rows = hotelPaymentRows();
@@ -705,41 +727,62 @@
                 var hasAdvances = hotelAdvanceObjects.length > 0;
                 var invoiceCustomerMode = $('input[name="invoice_customer_mode"]:checked').val();
 
-                if (invoiceCustomerMode === 'other' && $('#hotel_invoice_cliente_id').val() === '') {
-                    event.preventDefault();
-                    alert('Debe seleccionar el cliente a quien se emitira la factura.');
-                    return false;
-                }
-
-                if (!validateElectronicResolutionBeforeSubmit(event)) {
-                    return false;
-                }
-
-                if (formaPago === 'credito' && !hasAdvances) {
-                    $('#hotel_lineas_registros_medios_recaudos').val('[]');
-                    $('#hotel_object_anticipos').val('null');
-                    prepareHotelInvoiceSubmit($form);
+                if ($form.data('hotel-confirmed') == '1') {
                     return true;
                 }
 
-                if (rows.length === 0) {
-                    event.preventDefault();
-                    alert('Debe ingresar los medios de pago para facturar de contado o aplicar anticipos.');
+                event.preventDefault();
+
+                if (invoiceCustomerMode === 'other' && $('#hotel_invoice_cliente_id').val() === '') {
+                    hotelSwalAlert('Debe seleccionar el cliente a quien se emitira la factura.');
                     return false;
                 }
 
-                if (Math.abs(totalPayments - hotelOrderTotal) > 1) {
-                    event.preventDefault();
-                    alert('El valor total de los medios de pago debe ser igual al total del pedido hotelero.');
-                    return false;
+                function submitAfterConfirm() {
+                    if (formaPago === 'credito' && !hasAdvances) {
+                        $('#hotel_lineas_registros_medios_recaudos').val('[]');
+                        $('#hotel_object_anticipos').val('null');
+                    } else {
+                        if (rows.length === 0) {
+                            hotelSwalAlert('Debe ingresar los medios de pago para facturar de contado o aplicar anticipos.');
+                            return false;
+                        }
+
+                        if (Math.abs(totalPayments - hotelOrderTotal) > 1) {
+                            hotelSwalAlert('El valor total de los medios de pago debe ser igual al total del pedido hotelero.');
+                            return false;
+                        }
+
+                        $('#hotel_lineas_registros_medios_recaudos').val(JSON.stringify(rows));
+                        $('#hotel_object_anticipos').val(hasAdvances ? $.map(hotelAdvanceObjects, function(advance) {
+                            return JSON.stringify(advance);
+                        }).join(',') : 'null');
+                    }
+
+                    hotelSwalConfirm('Generar factura?', function() {
+                        prepareHotelInvoiceSubmit($form);
+                        $form.data('hotel-confirmed', '1');
+                        $form.submit();
+                    });
                 }
 
-                $('#hotel_lineas_registros_medios_recaudos').val(JSON.stringify(rows));
-                $('#hotel_object_anticipos').val(hasAdvances ? $.map(hotelAdvanceObjects, function(advance) {
-                    return JSON.stringify(advance);
-                }).join(',') : 'null');
-                prepareHotelInvoiceSubmit($form);
-                return true;
+                if ($('input[name="invoice_document_type"]:checked').val() === 'electronic') {
+                    var status = $('#hotel_electronic_resolution_status').val();
+                    var message = $('#hotel_electronic_resolution_message').val();
+
+                    if (status === 'error') {
+                        hotelSwalAlert(message);
+                        return false;
+                    }
+
+                    if (status === 'warning' && message !== '') {
+                        hotelSwalConfirm(message + "\n\nDesea continuar con la generacion de la factura electronica?", submitAfterConfirm);
+                        return false;
+                    }
+                }
+
+                submitAfterConfirm();
+                return false;
             });
         });
     </script>

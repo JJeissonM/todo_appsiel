@@ -257,8 +257,9 @@
                     <div class="col-md-4 text-right">
                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#hotelGuestCreateModal"><i class="fa fa-plus"></i> Huesped</button>
                         <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $reservationModelId))) }}" class="btn btn-info"><i class="fa fa-calendar"></i> Reserva</a>
+
                         @if($dashboardCanTransact)
-                            <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId))) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a>
+                            <!-- <a href="{ { url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId))) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a> -->
                             <a href="{{ url($pdvData['factura_directa_url']) }}" class="btn btn-success" target="_blank"><i class="fa fa-calculator"></i> Fact. Directa</a>
                         @endif
                     </div>
@@ -275,9 +276,15 @@
             <div class="hotel-grid">
                 @foreach($rooms as $room)
                     <?php
-                        $statusClass = 'hotel-room-' . strtolower($room->status);
                         $stay = $room->activeStay->first();
                         $todayReservation = $room->activeTodayReservation->first();
+                        $dashboardStatus = $room->status;
+                        if ($stay) {
+                            $dashboardStatus = App\Hotel\HotelRoom::STATUS_OCUPADA;
+                        } elseif ($todayReservation && $dashboardStatus == App\Hotel\HotelRoom::STATUS_DISPONIBLE) {
+                            $dashboardStatus = App\Hotel\HotelRoom::STATUS_RESERVADA;
+                        }
+                        $statusClass = 'hotel-room-' . strtolower($dashboardStatus);
                         $guestName = '';
                         $expected_check_out_at = '';
                         if ($stay && $stay->mainGuest && $stay->mainGuest->tercero) {
@@ -303,12 +310,12 @@
                                 </div>
                             </div>
                             <div class="hotel-room-status">
-                                {{ $room->status }} <i class="fa fa-arrow-circle-right"></i>
+                                {{ $dashboardStatus }} <i class="fa fa-arrow-circle-right"></i>
                             </div>
                             <div class="hotel-room-actions">
                                 <!-- <a href="{ { url('web/'.$room->id.'?id='.$appId.'&id_modelo='.$roomModelId) }}" class="btn btn-default btn-xs" title="Ver habitacion"><i class="fa fa-eye"></i></a> -->
 
-                                @if($room->status == App\Hotel\HotelRoom::STATUS_DISPONIBLE && $room->is_active)
+                                @if($dashboardStatus == App\Hotel\HotelRoom::STATUS_DISPONIBLE && $room->is_active)
                                     @if($dashboardCanTransact)
                                         <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
                                     @endif
@@ -325,22 +332,23 @@
                                         <input type="hidden" name="return_to" value="{{ $returnTo }}">
                                         <button class="btn btn-danger btn-xs" title="Bloquear"><i class="fa fa-lock"></i></button>
                                     </form>
-                                @elseif($room->status == App\Hotel\HotelRoom::STATUS_RESERVADA && $todayReservation)
+                                @elseif($dashboardStatus == App\Hotel\HotelRoom::STATUS_RESERVADA && $todayReservation)
                                     @if($dashboardCanTransact)
                                         <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id, 'main_cliente_id' => $todayReservation->cliente_id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
                                     @endif
                                     <form method="POST" action="{{ url($hotelUrl::url('hotel/reservations/'.$todayReservation->id.'/cancel', array('id_modelo' => $reservationModelId))) }}" style="display:inline-block;">
                                         {{ csrf_field() }}
-                                        <button class="btn btn-danger btn-xs" onclick="return confirm('Anular reserva?')"><i class="fa fa-ban"></i> Anular</button>
+                                        <button class="btn btn-danger btn-xs hotel-confirm-submit" data-message="Anular reserva?"><i class="fa fa-ban"></i> Anular</button>
                                     </form>
-                                @elseif($room->status == App\Hotel\HotelRoom::STATUS_OCUPADA && $stay)
+                                @elseif($dashboardStatus == App\Hotel\HotelRoom::STATUS_OCUPADA && $stay)
                                     <a href="{{ url('hotel/stays/'.$stay->id.'?id='.$appId.'&id_modelo='.$stayModelId) }}" class="btn btn-danger btn-xs"><i class="fa fa-user"></i> Estadia</a>
                                     <?php
                                         $dashboardOrder = null;
+                                        $dashboardOpenOrdersCount = 0;
                                         foreach ($stay->orders as $stayOrder) {
                                             if ($stayOrder->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO) {
+                                                $dashboardOpenOrdersCount++;
                                                 $dashboardOrder = $stayOrder;
-                                                break;
                                             }
                                         }
                                         if (is_null($dashboardOrder)) {
@@ -350,14 +358,23 @@
                                     @if($dashboardOrder)
                                         <a href="{{ url($hotelUrl::url('hotel/orders/'.$dashboardOrder->id, array('id_modelo' => $orderModelId))) }}" class="btn btn-primary btn-xs"><i class="fa fa-shopping-cart"></i> Pedido</a>
                                     @endif
-                                    <button type="button"
-                                            class="btn btn-success btn-xs hotel-dashboard-checkout-btn"
-                                            data-action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/check-out', array('id_modelo' => $stayModelId))) }}"
-                                            data-room="{{ $room->room_number }}"
-                                            data-checkout-at="{{ date('Y-m-d\\TH:i') }}">
-                                        <i class="fa fa-sign-out"></i> Check-out
-                                    </button>
-                                @elseif($room->status == App\Hotel\HotelRoom::STATUS_LIMPIEZA)
+                                    @if($dashboardOpenOrdersCount > 0)
+                                        <button type="button"
+                                                class="btn btn-success btn-xs"
+                                                disabled
+                                                title="No se puede registrar check-out porque la estadia tiene pedidos hoteleros abiertos pendientes por facturar.">
+                                            <i class="fa fa-sign-out"></i> Check-out
+                                        </button>
+                                    @else
+                                        <button type="button"
+                                                class="btn btn-success btn-xs hotel-dashboard-checkout-btn"
+                                                data-action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/check-out', array('id_modelo' => $stayModelId))) }}"
+                                                data-room="{{ $room->room_number }}"
+                                                data-checkout-at="{{ date('Y-m-d\\TH:i') }}">
+                                            <i class="fa fa-sign-out"></i> Check-out
+                                        </button>
+                                    @endif
+                                @elseif($dashboardStatus == App\Hotel\HotelRoom::STATUS_LIMPIEZA)
                                     <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
                                         {{ csrf_field() }}
                                         <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_DISPONIBLE }}">
@@ -413,7 +430,7 @@
                                     <td>
                                         <form method="POST" action="{{ url($hotelUrl::url('hotel/reservations/'.$reservation->id.'/cancel', array('id_modelo' => $reservationModelId))) }}" style="display:inline-block;">
                                             {{ csrf_field() }}
-                                            <button class="btn btn-danger btn-xs" onclick="return confirm('Anular reserva?')">Anular</button>
+                                            <button class="btn btn-danger btn-xs hotel-confirm-submit" data-message="Anular reserva?">Anular</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -541,6 +558,29 @@
                 $('#hotel_dashboard_check_out_at').val(checkOutAt);
                 $('#hotel_dashboard_check_out_room_text').text('Registrar check-out de la habitacion ' + room + '.');
                 $('#hotelDashboardCheckOutModal').modal('show');
+            });
+
+            $('.hotel-confirm-submit').on('click', function(event) {
+                event.preventDefault();
+
+                var $button = $(this);
+                var $form = $button.closest('form');
+                var message = $button.data('message') || 'Confirmar accion?';
+
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire({
+                        title: 'Confirmar',
+                        text: message,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Aceptar',
+                        cancelButtonText: 'Cancelar'
+                    }).then(function(result) {
+                        if (result && (result.isConfirmed || result.value)) {
+                            $form.submit();
+                        }
+                    });
+                }
             });
         });
     </script>

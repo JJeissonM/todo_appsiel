@@ -35,8 +35,38 @@
             <hr>
             <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/deactivate')) }}">
                 {{ csrf_field() }}
-                <button class="btn btn-danger" onclick="return confirm('Desea desactivar esta habitacion?')">Desactivar</button>
+                <button class="btn btn-danger hotel-confirm-submit" data-message="Desea desactivar esta habitacion?">Desactivar</button>
             </form>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    @parent
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.hotel-confirm-submit').on('click', function(event) {
+                event.preventDefault();
+
+                var $button = $(this);
+                var $form = $button.closest('form');
+                var message = $button.data('message') || 'Confirmar accion?';
+
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire({
+                        title: 'Confirmar',
+                        text: message,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Aceptar',
+                        cancelButtonText: 'Cancelar'
+                    }).then(function(result) {
+                        if (result && (result.isConfirmed || result.value)) {
+                            $form.submit();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 @endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Hotel;
 use App\CxC\CxcMovimiento;
 use App\Hotel\HotelReservation;
 use App\Hotel\HotelRoom;
+use App\Hotel\HotelStay;
 use App\Hotel\Services\HotelService;
 use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
@@ -32,6 +33,7 @@ class HotelDashboardController extends Controller
         $dashboardCanTransact = !empty($pdvData['can_transact']);
 
         if ($dashboardEnabled) {
+            $this->syncActiveStayRooms($empresaId);
             $this->syncTodayReservations($empresaId);
         }
 
@@ -139,6 +141,24 @@ class HotelDashboardController extends Controller
             'arqueo_url' => 'web/create?id=20&id_modelo=158&vista=tesoreria.arqueo_caja.create&teso_caja_id=' . $pdv->caja_default_id . '&pdv_id=' . $pdv->id,
             'factura_directa_url' => 'pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=' . $pdv->id . '&action=create',
         );
+    }
+
+    private function syncActiveStayRooms($empresaId)
+    {
+        $activeRoomIds = HotelStay::where('empresa_id', $empresaId)
+            ->where('status', HotelStay::STATUS_ACTIVA)
+            ->whereNotNull('room_id')
+            ->lists('room_id')
+            ->toArray();
+
+        if (count($activeRoomIds) == 0) {
+            return;
+        }
+
+        HotelRoom::where('empresa_id', $empresaId)
+            ->whereIn('id', $activeRoomIds)
+            ->where('status', '<>', HotelRoom::STATUS_OCUPADA)
+            ->update(array('status' => HotelRoom::STATUS_OCUPADA));
     }
 
     private function syncTodayReservations($empresaId)

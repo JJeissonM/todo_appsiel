@@ -43,9 +43,11 @@ class HotelStayController extends Controller
         $stay = $this->findStay($id);
         $clients = $this->clientsList();
         $anticipos = $this->anticiposCliente($stay);
-        $cancelBlockMessage = (new HotelService())->getCancelInvoiceBlockMessage($stay);
+        $hotelService = new HotelService();
+        $cancelBlockMessage = $hotelService->getCancelInvoiceBlockMessage($stay);
+        $checkOutBlockMessage = $hotelService->getCheckOutOpenOrdersBlockMessage($stay);
         $miga_pan = $this->breadcrumb('Estadia #' . $stay->id);
-        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'cancelBlockMessage', 'miga_pan'));
+        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'cancelBlockMessage', 'checkOutBlockMessage', 'miga_pan'));
     }
 
     public function createCheckIn()
@@ -98,16 +100,7 @@ class HotelStayController extends Controller
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }
 
-        $message = 'Check-out registrado correctamente.';
-        $openOrders = HotelOrderHeader::where('empresa_id', Auth::user()->empresa_id)
-            ->where('stay_id', $stay->id)
-            ->where('status', HotelOrderHeader::STATUS_ABIERTO)
-            ->count();
-        if ($openOrders > 0) {
-            return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('mensaje_error', 'La estadia fue cerrada, pero el pedido hotelero aun no ha sido facturado.');
-        }
-
-        return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('flash_message', $message);
+        return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('flash_message', 'Check-out registrado correctamente.');
     }
 
     public function createOrder($id)

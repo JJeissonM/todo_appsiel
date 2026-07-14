@@ -34,8 +34,9 @@ class HotelOrderController extends Controller
         $paymentData = $this->paymentData();
         $anticipos = $this->anticiposCliente($order);
         $electronicResolutionValidation = $this->electronicResolutionValidation();
+        $canEditHotelOrderPrice = $this->canEditHotelOrderPrice();
 
-        return view('hotel.orders.show', compact('order', 'products', 'anticipos', 'miga_pan', 'electronicResolutionValidation') + $paymentData);
+        return view('hotel.orders.show', compact('order', 'products', 'anticipos', 'miga_pan', 'electronicResolutionValidation', 'canEditHotelOrderPrice') + $paymentData);
     }
 
     public function addLine(Request $request, $id)
@@ -46,14 +47,20 @@ class HotelOrderController extends Controller
             'quantity' => 'required|numeric|min:0.01',
         ));
 
-        if ($request->unit_price !== null && $request->unit_price !== '') {
+        if ($this->canEditHotelOrderPrice() && $request->unit_price !== null && $request->unit_price !== '') {
             $this->validate($request, array('unit_price' => 'numeric|min:0'));
         }
 
         try {
             $service = new HotelService();
-            DB::transaction(function () use ($order, $request, $service) {
-                $service->createLine($order, $request->all());
+            $canEditPrice = $this->canEditHotelOrderPrice();
+            DB::transaction(function () use ($order, $request, $service, $canEditPrice) {
+                $data = $request->all();
+                if (!$canEditPrice && isset($data['unit_price'])) {
+                    unset($data['unit_price']);
+                }
+
+                $service->createLine($order, $data);
                 $service->validateStockForOpenOrder($order);
             });
         } catch (\Exception $e) {
@@ -68,15 +75,24 @@ class HotelOrderController extends Controller
         $order = $this->findOrder($id);
         $line = $this->findLine($order, $lineId);
 
-        $this->validate($request, array(
+        $rules = array(
             'quantity' => 'required|numeric|min:0.01',
-            'unit_price' => 'required|numeric|min:0',
-        ));
+        );
+        if ($this->canEditHotelOrderPrice()) {
+            $rules['unit_price'] = 'required|numeric|min:0';
+        }
+        $this->validate($request, $rules);
 
         try {
             $service = new HotelService();
-            DB::transaction(function () use ($order, $line, $request, $service) {
-                $service->updateLine($order, $line, $request->all());
+            $canEditPrice = $this->canEditHotelOrderPrice();
+            DB::transaction(function () use ($order, $line, $request, $service, $canEditPrice) {
+                $data = $request->all();
+                if (!$canEditPrice && isset($data['unit_price'])) {
+                    unset($data['unit_price']);
+                }
+
+                $service->updateLine($order, $line, $data);
                 $service->validateStockForOpenOrder($order);
             });
         } catch (\Exception $e) {
@@ -107,16 +123,21 @@ class HotelOrderController extends Controller
         $lines = is_array($request->lines) ? $request->lines : array();
         $newLine = is_array($request->new_line) ? $request->new_line : array();
         $newLines = is_array($request->new_lines) ? $request->new_lines : array();
+        $canEditPrice = $this->canEditHotelOrderPrice();
 
         if (!$order->canEditLines()) {
             return redirect()->back()->with('mensaje_error', 'El pedido no permite modificar lineas.');
         }
 
         try {
-            DB::transaction(function () use ($order, $service, $lines, $newLine, $newLines) {
+            DB::transaction(function () use ($order, $service, $lines, $newLine, $newLines, $canEditPrice) {
                 foreach ($lines as $lineId => $lineData) {
                     $line = $this->findLine($order, $lineId);
-                    $this->validateLineData($lineData, true);
+                    if (!$canEditPrice && isset($lineData['unit_price'])) {
+                        unset($lineData['unit_price']);
+                    }
+
+                    $this->validateLineData($lineData, $canEditPrice);
                     $service->updateLine($order, $line, $lineData);
                 }
 
@@ -127,6 +148,10 @@ class HotelOrderController extends Controller
                 foreach ($newLines as $lineData) {
                     if (!isset($lineData['producto_id']) || (int)$lineData['producto_id'] <= 0) {
                         continue;
+                    }
+
+                    if (!$canEditPrice && isset($lineData['unit_price'])) {
+                        unset($lineData['unit_price']);
                     }
 
                     $this->validateLineData($lineData, false);
@@ -140,6 +165,33 @@ class HotelOrderController extends Controller
         }
 
         return redirect(HotelBreadcrumb::url('hotel/orders/' . $order->id))->with('flash_message', 'Pedido hotelero actualizado correctamente.');
+    }
+
+    private function canEditHotelOrderPrice()
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        if (method_exists($user, 'can')) {
+            try {
+                if ($user->can('editar_precio_total_en_linea_registro_factura_pos')) {
+                    return true;
+                }
+            } catch (\Exception $e) {
+                // Algunas instalaciones antiguas pueden no tener este permiso sembrado.
+            }
+        }
+
+        if (method_exists($user, 'hasRole')) {
+            if ($user->hasRole('SuperAdmin') || $user->hasRole('Administrador') || $user->hasRole('Admin Colegio')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function generateStandardInvoice($id)

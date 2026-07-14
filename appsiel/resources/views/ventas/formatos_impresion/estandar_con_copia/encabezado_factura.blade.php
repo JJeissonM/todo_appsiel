@@ -38,19 +38,7 @@
     </tr>
 </table>
 
-@if($doc_encabezado->estado == 'Anulado')
-    <div class="lbl_doc_anulado">
-        Documento Anulado
-    </div>
-@endif
-
 <div class="subhead">
-
-    @if($doc_encabezado->estado == 'Anulado')
-    <div class="lbl_doc_anulado">
-        Documento Anulado
-    </div>
-    @endif
 
     <?php
         $elaboro = $doc_encabezado->creado_por;

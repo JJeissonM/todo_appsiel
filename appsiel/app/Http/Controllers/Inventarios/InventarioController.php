@@ -1195,6 +1195,7 @@ class InventarioController extends TransaccionController
             'precio_venta' => $precio,
             'unit_price' => $precio,
             'precio_unitario' => $precio,
+            'tasa_impuesto' => (float)InvProducto::get_tasa_impuesto($producto->id),
             'stock' => $existencia_actual,
             'existencia_actual' => $existencia_actual
         ));

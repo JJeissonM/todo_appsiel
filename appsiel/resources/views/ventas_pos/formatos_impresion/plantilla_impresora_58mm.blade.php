@@ -18,15 +18,6 @@
             page-break-after: always;
         }
 
-        .lbl_doc_anulado{
-            background-color: rgba(253, 1, 1, 0.33);
-            width: 100%;
-            top: 300px;
-            transform: rotate(-45deg);
-            text-align: center;
-            font-size: 2em;
-        }
-        
         .encabezado td {
             font-weight: bold;
             text-align: center;
@@ -34,6 +25,7 @@
     </style>
 </head>
 <body>
+    @include('ventas.incluir.documento_anulado_watermark')
     <?php
         $tamanino_fuente_2 = '0.7em';
         $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;

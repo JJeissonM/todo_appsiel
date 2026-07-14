@@ -223,6 +223,11 @@ class HotelService
                 throw new \Exception('La fecha y hora de check-out no puede ser menor que el check-in.');
             }
 
+            $openOrdersMessage = $service->getCheckOutOpenOrdersBlockMessage($stay);
+            if ($openOrdersMessage != '') {
+                throw new \Exception($openOrdersMessage);
+            }
+
             $stay->check_out_at = $normalizedCheckOutAt;
             $stay->status = HotelStay::STATUS_CERRADA;
             $stay->closed_by = $service->userId();
@@ -236,6 +241,20 @@ class HotelService
 
             return $stay;
         });
+    }
+
+    public function getCheckOutOpenOrdersBlockMessage(HotelStay $stay)
+    {
+        $openOrders = HotelOrderHeader::where('empresa_id', $stay->empresa_id)
+            ->where('stay_id', $stay->id)
+            ->where('status', HotelOrderHeader::STATUS_ABIERTO)
+            ->count();
+
+        if ($openOrders > 0) {
+            return 'No se puede registrar check-out porque la estadia tiene pedidos hoteleros abiertos pendientes por facturar.';
+        }
+
+        return '';
     }
 
     public function cancelStay(HotelStay $stay)
@@ -410,7 +429,7 @@ class HotelService
                 'fecha' => date('Y-m-d'),
                 'core_tercero_id' => $cliente->core_tercero_id,
                 'cliente_id' => $cliente->id,
-                'descripcion' => 'Factura generada desde pedido hotelero ' . $order->document_number,
+                'descripcion' => '',
                 'estado' => 'Activo',
                 'creado_por' => Auth::user()->email,
                 'forma_pago' => $cliente->forma_pago(),
@@ -496,7 +515,7 @@ class HotelService
                 'forma_pago' => $formaPago,
                 'fecha_vencimiento' => $cliente->fecha_vencimiento_pago(date('Y-m-d')),
                 'lineas_registros_medios_recaudos' => $lineasRegistrosMediosRecaudos,
-                'descripcion' => 'Factura POS generada desde pedido hotelero ' . $order->document_number,
+                'descripcion' => '',
                 'valor_total' => $totalOrder,
                 'valor_ajuste_al_peso' => 0,
                 'valor_total_cambio' => 0,
@@ -634,7 +653,7 @@ class HotelService
             return (string)$bodegaId;
         }
 
-        return $bodega->descripcion . ' (' . $bodegaId . ')';
+        return $bodega->descripcion;
     }
 
     private function createStandardInvoiceLine($docId, HotelOrderLine $line)
@@ -715,7 +734,17 @@ class HotelService
 
     private function getTaxRate($productoId, $clienteId)
     {
-        return (float)Impuesto::get_tasa((int)$productoId, 0, (int)$clienteId);
+        $tasa = (float)Impuesto::get_tasa((int)$productoId, 0, (int)$clienteId);
+        if ($tasa > 0) {
+            return $tasa;
+        }
+
+        if (!config('configuracion.liquidacion_impuestos')) {
+            return 0;
+        }
+
+        // En pedidos hoteleros prima el impuesto configurado en el producto.
+        return (float)InvProducto::get_tasa_impuesto((int)$productoId);
     }
 
     private function getProductPrice($productoId, $clienteId)
