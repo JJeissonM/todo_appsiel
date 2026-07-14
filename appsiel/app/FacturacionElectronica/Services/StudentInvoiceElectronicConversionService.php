@@ -19,7 +19,9 @@ class StudentInvoiceElectronicConversionService
 
         $query = VtasDocEncabezado::with(['tipo_documento_app', 'tercero', 'datos_auxiliares_estudiante'])
             ->where('core_tipo_transaccion_id', $standardTransactionId)
-            ->has('datos_auxiliares_estudiante');
+            ->whereIn('id', function ($subQuery) {
+                $subQuery->select('vtas_doc_encabezado_id')->from('sga_facturas_estudiantes');
+            });
 
         if (!empty($filters['empresa_id'])) {
             $query->where('core_empresa_id', (int)$filters['empresa_id']);
@@ -106,7 +108,9 @@ class StudentInvoiceElectronicConversionService
                 'consecutivo' => $nuevoConsecutivo,
             ];
 
-            $existeDestino = VtasDocEncabezado::where($destino)->where('id', '<>', $documento->id)->exists();
+            $existeDestinoQuery = VtasDocEncabezado::query();
+            $this->aplicarWheres($existeDestinoQuery, $destino);
+            $existeDestino = $existeDestinoQuery->where('id', '<>', $documento->id)->exists();
             if ($existeDestino) {
                 $this->registrarTraza($documento, $origen, $destino, 'error', $filters, 'Ya existe un documento con el destino asignado.', $modificadoPor);
                 throw new \Exception('Ya existe un documento con el destino asignado: ' . $this->label($destino));
@@ -173,31 +177,33 @@ class StudentInvoiceElectronicConversionService
                 continue;
             }
 
-            $conteos[$tabla] = DB::table($tabla)->where($origen)->update($this->agregarUpdatedAtSiExiste($tabla, $updates));
+            $query = DB::table($tabla);
+            $this->aplicarWheres($query, $origen);
+            $conteos[$tabla] = $query->update($this->agregarUpdatedAtSiExiste($tabla, $updates));
         }
 
-        $conteos['cxc_abonos_doc_cxc'] = DB::table('cxc_abonos')
-            ->where([
-                'core_empresa_id' => $origen['core_empresa_id'],
-                'doc_cxc_transacc_id' => $origen['core_tipo_transaccion_id'],
-                'doc_cxc_tipo_doc_id' => $origen['core_tipo_doc_app_id'],
-                'doc_cxc_consecutivo' => $origen['consecutivo'],
-            ])
-            ->update([
+        $queryAbonosCxc = DB::table('cxc_abonos');
+        $this->aplicarWheres($queryAbonosCxc, [
+            'core_empresa_id' => $origen['core_empresa_id'],
+            'doc_cxc_transacc_id' => $origen['core_tipo_transaccion_id'],
+            'doc_cxc_tipo_doc_id' => $origen['core_tipo_doc_app_id'],
+            'doc_cxc_consecutivo' => $origen['consecutivo'],
+        ]);
+        $conteos['cxc_abonos_doc_cxc'] = $queryAbonosCxc->update([
                 'doc_cxc_transacc_id' => $destino['core_tipo_transaccion_id'],
                 'doc_cxc_tipo_doc_id' => $destino['core_tipo_doc_app_id'],
                 'doc_cxc_consecutivo' => $destino['consecutivo'],
                 'modificado_por' => $modificadoPor,
             ] + $this->updatedAtSiExiste('cxc_abonos'));
 
-        $conteos['cxc_abonos_doc_cruce'] = DB::table('cxc_abonos')
-            ->where([
-                'core_empresa_id' => $origen['core_empresa_id'],
-                'doc_cruce_transacc_id' => $origen['core_tipo_transaccion_id'],
-                'doc_cruce_tipo_doc_id' => $origen['core_tipo_doc_app_id'],
-                'doc_cruce_consecutivo' => $origen['consecutivo'],
-            ])
-            ->update([
+        $queryAbonosCruce = DB::table('cxc_abonos');
+        $this->aplicarWheres($queryAbonosCruce, [
+            'core_empresa_id' => $origen['core_empresa_id'],
+            'doc_cruce_transacc_id' => $origen['core_tipo_transaccion_id'],
+            'doc_cruce_tipo_doc_id' => $origen['core_tipo_doc_app_id'],
+            'doc_cruce_consecutivo' => $origen['consecutivo'],
+        ]);
+        $conteos['cxc_abonos_doc_cruce'] = $queryAbonosCruce->update([
                 'doc_cruce_transacc_id' => $destino['core_tipo_transaccion_id'],
                 'doc_cruce_tipo_doc_id' => $destino['core_tipo_doc_app_id'],
                 'doc_cruce_consecutivo' => $destino['consecutivo'],
@@ -205,6 +211,15 @@ class StudentInvoiceElectronicConversionService
             ] + $this->updatedAtSiExiste('cxc_abonos'));
 
         return $conteos;
+    }
+
+    protected function aplicarWheres($query, array $wheres)
+    {
+        foreach ($wheres as $column => $value) {
+            $query->where($column, '=', $value);
+        }
+
+        return $query;
     }
 
     protected function agregarUpdatedAtSiExiste($tabla, array $values)
