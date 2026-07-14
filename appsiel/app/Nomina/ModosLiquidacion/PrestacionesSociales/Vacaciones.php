@@ -12,6 +12,7 @@ use App\Nomina\AgrupacionConcepto;
 use App\Nomina\LibroVacacion;
 use App\Nomina\ProgramacionVacacion;
 use App\Nomina\PrestacionesLiquidadas;
+use App\Nomina\ParametroLegal;
 
 use App\Nomina\ModosLiquidacion\Estrategias\PrestacionSocial;
 use Illuminate\Support\Facades\Auth;
@@ -92,7 +93,7 @@ class Vacaciones implements Estrategia
             }
 
             $valores = get_valores_devengo_deduccion( 'devengo',  $valor_total_vacaciones );
-            $cantidad_horas = $dias_pendientes * (float)config('nomina.horas_dia_laboral');
+            $cantidad_horas = $dias_pendientes * ParametroLegal::horas_dia_laboral_para_fecha($liquidacion['documento_nomina']->fecha);
 
             return [ 
                         [
@@ -146,7 +147,7 @@ class Vacaciones implements Estrategia
             $programacion_vacaciones->save();
 
             // Almacenar registro para los días no hábiles
-            $this->crear_registro_concepto_vacaciones_dias_no_habiles( $programacion_vacaciones->id, $liquidacion['documento_nomina'], $liquidacion['empleado'], $libro_vacaciones->dias_no_habiles * (float)config('nomina.horas_dia_laboral') );
+            $this->crear_registro_concepto_vacaciones_dias_no_habiles( $programacion_vacaciones->id, $liquidacion['documento_nomina'], $liquidacion['empleado'], $libro_vacaciones->dias_no_habiles * ParametroLegal::horas_dia_laboral_para_fecha($liquidacion['documento_nomina']->fecha) );
 
             $this->actualizar_libro_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'], $libro_vacaciones );
         }        
@@ -155,7 +156,7 @@ class Vacaciones implements Estrategia
 
         return [
                     [
-                        'cantidad_horas' => $cantidad_dias_amortizar * (float)config('nomina.horas_dia_laboral'), // Se almacenan solo los días a amortizar, el resto del tiempo de vacaciones se almacenan en el documento siguiente de nómina
+                        'cantidad_horas' => $cantidad_dias_amortizar * ParametroLegal::horas_dia_laboral_para_fecha($liquidacion['documento_nomina']->fecha), // Se almacenan solo los días a amortizar, el resto del tiempo de vacaciones se almacenan en el documento siguiente de nómina
                         'valor_devengo' => $valores->devengo,
                         'valor_deduccion' => $valores->deduccion,
                         'novedad_tnl_id' => $this->novedad_id,
@@ -212,7 +213,7 @@ class Vacaciones implements Estrategia
 
         $this->tabla_resumen['base_liquidacion'] = $parametros_prestacion->base_liquidacion;
 
-        $this->tabla_resumen['cantidad_dias_salario'] = (float)config('nomina.horas_laborales') / (float)config('nomina.horas_dia_laboral');
+        $this->tabla_resumen['cantidad_dias_salario'] = ParametroLegal::horas_laborales_para_fecha($fecha_final) / ParametroLegal::horas_dia_laboral_para_fecha($fecha_final);
 
         switch ( $parametros_prestacion->base_liquidacion )
         {
@@ -594,7 +595,7 @@ class Vacaciones implements Estrategia
         {
             // 1. Actualiza programación de vacaciones (TNL)
             $programacion_vacaciones = ProgramacionVacacion::find( $novedad->id );
-            $cantidad_dias_amortizar = $registro->cantidad_horas / (float)config('nomina.horas_dia_laboral');
+            $cantidad_dias_amortizar = $registro->cantidad_horas / ParametroLegal::horas_dia_laboral_para_fecha($registro->fecha);
 
             $this->actualizar_dias_amortizados_programacion( $programacion_vacaciones, -1 * $cantidad_dias_amortizar );
             $programacion_vacaciones->save();

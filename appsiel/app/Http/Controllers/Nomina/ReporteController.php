@@ -23,6 +23,7 @@ use App\Nomina\NomEntidad;
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
+use App\Nomina\ParametroLegal;
 
 use App\Nomina\ParametroInformacionExogena;
 use App\Nomina\ConsolidadoPrestacionesSociales;
@@ -487,7 +488,7 @@ class ReporteController extends Controller
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                             ->sum( 'cantidad_horas' );
 
-        return ( $cantidad_horas_laboradas / (float)config('nomina.horas_dia_laboral') );
+        return ( $cantidad_horas_laboradas / ParametroLegal::horas_dia_laboral_para_fecha($fecha_final) );
     }
 
     /*

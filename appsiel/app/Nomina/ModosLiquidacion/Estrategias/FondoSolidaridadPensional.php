@@ -5,6 +5,7 @@ namespace App\Nomina\ModosLiquidacion\Estrategias;
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\AgrupacionConcepto;
+use App\Nomina\ParametroLegal;
 
 class FondoSolidaridadPensional implements Estrategia
 {
@@ -31,9 +32,8 @@ class FondoSolidaridadPensional implements Estrategia
                     ];
         }
 
-        $smmlv = (float)config('nomina.SMMLV');
-
         $lapso_documento = $liquidacion['documento_nomina']->lapso();
+        $smmlv = ParametroLegal::smmlv_para_fecha($lapso_documento->fecha_final);
 
 		$conceptos_de_la_agrupacion = AgrupacionConcepto::find( $liquidacion['concepto']->nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 		

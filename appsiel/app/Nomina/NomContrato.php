@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Core\Tercero;
 use App\Nomina\MovimientoIbcEmpleado;
 use App\Nomina\NomDocRegistro;
+use App\Nomina\ParametroLegal;
 use App\Nomina\CambioSalario;
 use App\Nomina\ParametrosRetefuenteEmpleado;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -106,7 +107,7 @@ class NomContrato extends Model
 
     protected function get_horas_laborales_para_salario()
     {
-        $horas_laborales = (float)config('nomina.horas_laborales');
+        $horas_laborales = ParametroLegal::horas_laborales_para_fecha();
 
         if ($horas_laborales <= 0) {
             $horas_laborales = (float)$this->horas_laborales;
@@ -121,7 +122,7 @@ class NomContrato extends Model
 
     protected function get_horas_dia_laboral_para_salario()
     {
-        $horas_dia_laboral = (float)config('nomina.horas_dia_laboral');
+        $horas_dia_laboral = ParametroLegal::horas_dia_laboral_para_fecha();
 
         if ($horas_dia_laboral <= 0) {
             $horas_dia_laboral = $this->get_horas_laborales_para_salario() / 30;
@@ -395,7 +396,7 @@ class NomContrato extends Model
             $registro->contrato_hasta = date('2099-12-30');
         }
 
-        $horas_laborales = config('nomina.horas_laborales');
+        $horas_laborales = ParametroLegal::horas_laborales_para_fecha();
         if (isset($datos['horas_laborales']) && $datos['horas_laborales'] != '')
         {
             $horas_laborales = $datos['horas_laborales'];
@@ -452,7 +453,7 @@ class NomContrato extends Model
                                 );
         }
 
-        $horas_laborales = config('nomina.horas_laborales');
+        $horas_laborales = ParametroLegal::horas_laborales_para_fecha();
         if (isset($datos['horas_laborales']) && $datos['horas_laborales'] != '')
         {
             $horas_laborales = $datos['horas_laborales'];

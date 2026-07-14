@@ -4,6 +4,7 @@ namespace App\Nomina\ModosLiquidacion\Estrategias;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\NomDocRegistro;
+use App\Nomina\ParametroLegal;
 
 use Carbon\Carbon;
 
@@ -14,9 +15,12 @@ use Illuminate\Support\Facades\Auth;
 class TiempoLaborado implements Estrategia
 {
 	protected $vacaciones_programadas;
+    protected $fecha_referencia;
 
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
+        $this->fecha_referencia = $liquidacion['documento_nomina']->fecha;
+
 		// Para salario integral
 		if ( ( (int)config('nomina.concepto_salario_integral') == $liquidacion['concepto']->id ) && !$liquidacion['empleado']->salario_integral )
 		{
@@ -239,7 +243,7 @@ class TiempoLaborado implements Estrategia
                 $horasMensualesPactadas = (float)$diasMes * $this->get_horas_dia_laboral();
             }
 
-            $horasBaseMes = (float)config('nomina.horas_laborales');
+            $horasBaseMes = ParametroLegal::horas_laborales_para_fecha($documento_nomina->fecha);
             if ( $horasBaseMes <= 0 )
             {
                 $horasBaseMes = 240;
@@ -269,6 +273,8 @@ class TiempoLaborado implements Estrategia
 
 	public function liquidacion_pasante_sena( $documento_nomina, $empleado)
 	{
+        $this->fecha_referencia = $documento_nomina->fecha;
+
 		$concepto_id = (int)config('nomina.concepto_a_pagar_pasante_sena');
 
 		$cant = NomDocRegistro::where( 'nom_doc_encabezado_id', $documento_nomina->id)
@@ -281,8 +287,8 @@ class TiempoLaborado implements Estrategia
         }
 
 		// Liquidar concepto de sostenimiento y apoyo
-		$valor_devengo_mes = (float)config('nomina.SMMLV') * (float)config('nomina.porcentaje_liquidacon_pasante_sena') / 100;
-        $horasBaseMes = (float)config('nomina.horas_laborales');
+		$valor_devengo_mes = ParametroLegal::smmlv_para_fecha($documento_nomina->fecha) * (float)config('nomina.porcentaje_liquidacon_pasante_sena') / 100;
+        $horasBaseMes = ParametroLegal::horas_laborales_para_fecha($documento_nomina->fecha);
         if ( $horasBaseMes <= 0 )
         {
             $horasBaseMes = 240;
@@ -316,6 +322,6 @@ class TiempoLaborado implements Estrategia
 
     protected function get_horas_dia_laboral()
     {
-        return (float)config('nomina.horas_dia_laboral');
+        return ParametroLegal::horas_dia_laboral_para_fecha($this->fecha_referencia);
     }
 }

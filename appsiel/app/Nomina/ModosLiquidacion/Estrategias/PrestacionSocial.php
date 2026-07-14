@@ -9,6 +9,7 @@ use Carbon\Carbon;
 
 use App\Nomina\NovedadTnl;
 use App\Nomina\NomDocRegistro;
+use App\Nomina\ParametroLegal;
 
 use App\Nomina\AgrupacionConcepto;
 
@@ -53,7 +54,7 @@ class PrestacionSocial
             }
         }
 
-        $dias_totales_laborados = $dias_calendario - $cantidad_horas_laboradas / (float)config('nomina.horas_dia_laboral');
+        $dias_totales_laborados = $dias_calendario - $cantidad_horas_laboradas / ParametroLegal::horas_dia_laboral_para_fecha($fecha_final);
 
         return $dias_totales_laborados;
     }

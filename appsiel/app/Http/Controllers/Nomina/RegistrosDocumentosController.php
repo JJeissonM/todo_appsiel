@@ -10,6 +10,7 @@ use App\Nomina\NomConcepto;
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
+use App\Nomina\ParametroLegal;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 
@@ -236,7 +237,7 @@ class RegistrosDocumentosController extends TransaccionController
                 return false;
             }
 
-            $salario_x_hora = $sueldo / config('nomina')['horas_laborales'];
+            $salario_x_hora = $sueldo / ParametroLegal::horas_laborales_para_fecha($datos['fecha']);
 
             $valor_a_liquidar = $concepto->get_valor_hora_porcentaje_sobre_basico($salario_x_hora, $cantidad_horas);           
 
@@ -369,7 +370,7 @@ class RegistrosDocumentosController extends TransaccionController
                 return false;
             }
 
-            $salario_x_hora = $sueldo / config('nomina')['horas_laborales'];
+            $salario_x_hora = $sueldo / ParametroLegal::horas_laborales_para_fecha($registro->fecha);
 
             $valor_a_liquidar = $concepto->get_valor_hora_porcentaje_sobre_basico($salario_x_hora, $cantidad_horas);
 

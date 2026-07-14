@@ -5,6 +5,7 @@ namespace App\Nomina\Services;
 use App\Nomina\NomContrato;
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
+use App\Nomina\ParametroLegal;
 use App\Nomina\RegistroTurno;
 use Carbon\Carbon;
 
@@ -23,7 +24,7 @@ class LiquidacionPorTurnosService
 
         $devengo_turnos = 0;
         $cantidad_horas = 0;
-        $horas_dia_laboral = (float)config('nomina.horas_dia_laboral');
+        $horas_dia_laboral = ParametroLegal::horas_dia_laboral_para_fecha($documento->fecha);
         foreach ($registros_turnos as $registro_turno)
         {
             $devengo_turnos += $registro_turno->valor;
