@@ -678,11 +678,25 @@ class NominaElectronicaController extends TransaccionController
 
         if ( is_null($doc_encabezado) )
         {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'Documento no encontrado.'
+                ], 404);
+            }
+
             return redirect()->back()->with('mensaje_error','Documento no encontrado.');
         }
 
         if ( $doc_encabezado->estado != 'Sin enviar' )
         {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'Solo se pueden recalcular documentos en estado Sin enviar.'
+                ], 422);
+            }
+
             return redirect($redirect_url)->with('mensaje_error','Solo se pueden recalcular documentos en estado Sin enviar.');
         }
 
@@ -690,7 +704,21 @@ class NominaElectronicaController extends TransaccionController
 
         if ( !$resultado['ok'] )
         {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => $resultado['message']
+                ], 422);
+            }
+
             return redirect($redirect_url)->with('mensaje_error', $resultado['message']);
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'ok' => true,
+                'message' => $resultado['message']
+            ]);
         }
 
         return redirect($redirect_url)->with('flash_message', $resultado['message']);

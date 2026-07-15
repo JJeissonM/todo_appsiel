@@ -225,6 +225,39 @@
             });
         }
 
+        function recalcularDocumento(documentoId) {
+            return fetch("{{ url('nom_electronica_recalcular_doc_soporte') }}/" + documentoId, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                credentials: 'same-origin'
+            }).then(function (response) {
+                return response.json().catch(function () {
+                    return {};
+                }).then(function (data) {
+                    if (!response.ok) {
+                        throw data;
+                    }
+                    return data;
+                });
+            });
+        }
+
+        function recalcularYEnviarDocumento(documentoId, fila) {
+            return recalcularDocumento(documentoId).then(function () {
+                if (fila) {
+                    var estado = fila.querySelector('.col-estado');
+                    if (estado) {
+                        estado.textContent = 'Enviando...';
+                    }
+                }
+                return enviarDocumento(documentoId);
+            });
+        }
+
         function marcarFilaError(fila, textoEstado) {
             fila.classList.remove('warning');
             fila.classList.add('danger');
@@ -276,10 +309,10 @@
             fila.classList.add('warning');
             var estado = fila.querySelector('.col-estado');
             if (estado) {
-                estado.textContent = 'Enviando...';
+                estado.textContent = 'Recalculando...';
             }
 
-            enviarDocumento(documentoId)
+            recalcularYEnviarDocumento(documentoId, fila)
                 .then(function () {
                     enviados++;
                     pendientes = Math.max(pendientes - 1, 0);
@@ -342,10 +375,10 @@
             fila.classList.add('warning');
             var estado = fila.querySelector('.col-estado');
             if (estado) {
-                estado.textContent = 'Enviando...';
+                estado.textContent = 'Recalculando...';
             }
 
-            enviarDocumento(documentoId)
+            recalcularYEnviarDocumento(documentoId, fila)
                 .then(function (data) {
                     enviados++;
                     pendientes = Math.max(pendientes - 1, 0);
