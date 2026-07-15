@@ -30,8 +30,6 @@
 		@if( $doc_encabezado->estado == 'Sin enviar' )
 			<a class="btn-gmail" href="#" id="btn_abrir_modal_recalcular_doc_soporte" title="Recalcular documento"><i class="fa fa-refresh"></i></a>
 		@endif
-        <a class="btn-gmail btn-enviar-doc-soporte-show" href="#" data-documento-id="{{ $doc_encabezado->id }}" title="Enviar"> <i class="fa fa-send"></i> </a>
-        <i class="fa fa-circle" style="color: orange;"> Sin enviar </i>
 	@endif
 
 @endsection
