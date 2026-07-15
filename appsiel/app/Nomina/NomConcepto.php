@@ -20,7 +20,7 @@ class NomConcepto extends Model
     */
     protected $fillable = ['modo_liquidacion_id', 'naturaleza', 'porcentaje_sobre_basico', 'valor_fijo', 'descripcion', 'abreviatura', 'forma_parte_basico', 'nom_agrupacion_id', 'cpto_dian_id', 'estado'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Modo Liquidación', 'Descripción', 'Abreviatura', '% del básico', 'Vlr. Fijo', 'Naturaleza', 'Parte del básico', 'Agrupación', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Modo Liquidación', 'Descripción', 'Abreviatura', '% del básico', 'Vlr. Fijo', 'Naturaleza', 'Cpto. DIAN', 'Agrupación', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
@@ -83,7 +83,7 @@ class NomConcepto extends Model
                 'nom_conceptos.porcentaje_sobre_basico AS campo4',
                 'nom_conceptos.valor_fijo AS campo5',
                 'nom_conceptos.naturaleza AS campo6',
-                DB::raw('IF(nom_conceptos.forma_parte_basico=0,REPLACE(nom_conceptos.forma_parte_basico,0,"No"),REPLACE(nom_conceptos.forma_parte_basico,1,"Si")) AS campo7'),
+                'nom_conceptos.cpto_dian AS campo7',
                 'nom_agrupaciones_conceptos.descripcion AS campo8',
                 'nom_conceptos.estado AS campo9',
                 'nom_conceptos.id AS campo10'
@@ -111,6 +111,7 @@ class NomConcepto extends Model
                 'nom_conceptos.porcentaje_sobre_basico AS %_DEL_BÁSICO',
                 'nom_conceptos.valor_fijo AS VLR_FIJO',
                 'nom_conceptos.naturaleza AS NATURALEZA',
+                'nom_conceptos.cpto_dian AS CPTO_DIAN',
                 'nom_agrupaciones_conceptos.descripcion AS AGRUPACIÓN',
                 'nom_conceptos.forma_parte_basico AS FORMA_PARTE_BASICO',
                 'nom_conceptos.estado AS ESTADO',
