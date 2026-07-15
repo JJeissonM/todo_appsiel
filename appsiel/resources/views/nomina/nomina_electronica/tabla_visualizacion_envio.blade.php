@@ -20,7 +20,8 @@
                 $total_devengos_periodo += $amount;
             }
 
-            foreach ($comprobante_periodo['deductions'] as $registro_periodo) {
+            $deductions_periodo = isset($comprobante_periodo['deductions']) ? $comprobante_periodo['deductions'] : [];
+            foreach ($deductions_periodo as $registro_periodo) {
                 $amount = 0;
                 if (isset($registro_periodo['amount'])) {
                     $amount = $registro_periodo['amount'];
@@ -86,7 +87,7 @@
                 }
             }
             
-            $registros = $comprobante['deductions'];
+            $registros = isset($comprobante['deductions']) ? $comprobante['deductions'] : [];
             foreach ($registros as $registro )
             {
                 if (isset($registro['status']) && $registro['status'] == 'error') 
@@ -194,7 +195,7 @@
                 ?>
 
                 <?php
-                    $registros = $comprobante['deductions'];
+                    $registros = isset($comprobante['deductions']) ? $comprobante['deductions'] : [];
                 ?>
                 @foreach ($registros as $registro )
                     <?php

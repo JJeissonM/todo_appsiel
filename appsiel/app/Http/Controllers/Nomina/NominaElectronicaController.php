@@ -220,7 +220,7 @@ class NominaElectronicaController extends TransaccionController
             }
         }
         
-        $deductions = $datos_doc_soporte['deductions'];
+        $deductions = isset($datos_doc_soporte['deductions']) ? $datos_doc_soporte['deductions'] : [];
         foreach ($deductions as $line) {
             if ( isset($line['status']) && $line['status'] == 'error' ) {
                 $hay_errores = true;
