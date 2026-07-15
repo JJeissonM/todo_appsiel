@@ -331,6 +331,8 @@ class NominaElectronicaController extends TransaccionController
                 'mensajes' => $mensajes,
                 'dian_messages_raw' => $resultado->dian_messages,
                 'objeto_json_enviado' => $resultado->objeto_json_enviado,
+                'request_xml' => $resultado->request_xml,
+                'response_xml' => $resultado->response_xml,
             ]
         ]);
     }
@@ -401,11 +403,20 @@ class NominaElectronicaController extends TransaccionController
 
         $response = null;
         $array_respuesta = [];
+        $raw_response_body = '';
+        $request_metadata = [
+            'url' => config('nomina.url_servicio_emision'),
+            'headers' => [
+                'content-type' => 'application/json',
+                'auth-token' => '[OCULTO]'
+            ],
+            'body' => $payload_documento
+        ];
 
         try {
             $client = new Client();
 
-            $response = $client->post( config('nomina.url_servicio_emision'), [
+            $response = $client->post( $request_metadata['url'], [
                 'headers' => [
                               'content-type' => 'application/json',
                               'auth-token' => config('nomina.tokenPassword')
@@ -420,7 +431,8 @@ class NominaElectronicaController extends TransaccionController
              $array_respuesta = [
                 'codigo' => 0,
                 'dian_status' => 'DIAN_RECHAZADO',
-                'dian_messages' => [ 'No fue posible conectar con Dataico. Verifique DNS/salida a internet del servidor. Detalle: ' . $e->getMessage() ]
+                'dian_messages' => [ 'No fue posible conectar con Dataico. Verifique DNS/salida a internet del servidor. Detalle: ' . $e->getMessage() ],
+                'response_xml' => $this->build_dataico_response_evidence(null, '', $e)
             ];
          } catch (\GuzzleHttp\Exception\RequestException $e) {
              $response = $e->getResponse();
@@ -429,25 +441,29 @@ class NominaElectronicaController extends TransaccionController
                 $array_respuesta = [
                     'codigo' => 0,
                     'dian_status' => 'DIAN_RECHAZADO',
-                    'dian_messages' => [ $e->getMessage() ]
+                    'dian_messages' => [ $e->getMessage() ],
+                    'response_xml' => $this->build_dataico_response_evidence(null, '', $e)
                 ];
              }
          } catch (\GuzzleHttp\Exception\TransferException $e) {
              $array_respuesta = [
                 'codigo' => 0,
                 'dian_status' => 'DIAN_RECHAZADO',
-                'dian_messages' => [ 'No fue posible completar la comunicación con Dataico. Detalle: ' . $e->getMessage() ]
+                'dian_messages' => [ 'No fue posible completar la comunicación con Dataico. Detalle: ' . $e->getMessage() ],
+                'response_xml' => $this->build_dataico_response_evidence(null, '', $e)
             ];
          }
 
         if ( !is_null($response) )
         {
-            $array_respuesta = json_decode( (string) $response->getBody(), true );
+            $raw_response_body = (string) $response->getBody();
+            $array_respuesta = json_decode( $raw_response_body, true );
             if ( !is_array($array_respuesta) )
             {
                 $array_respuesta = [];
             }
             $array_respuesta['codigo'] = $response->getStatusCode();
+            $array_respuesta['response_xml'] = $this->build_dataico_response_evidence($response, $raw_response_body);
         }
 
         if (isset($array_respuesta['errors'])) {
@@ -461,6 +477,15 @@ class NominaElectronicaController extends TransaccionController
             $array_respuesta['dian_status'] = 'DIAN_RECHAZADO';
             $array_respuesta['dian_messages'] = isset($array_respuesta['dian_messages']) ? $array_respuesta['dian_messages'] : [ 'Respuesta inválida o incompleta del proveedor tecnológico. El documento no fue confirmado como enviado.' ];
         }
+
+        if ( empty($array_respuesta['dian_messages']) && $array_respuesta['dian_status'] != 'DIAN_ACEPTADO' )
+        {
+            $array_respuesta['dian_messages'] = [
+                'DATAICO no retornó mensajes DIAN para este rechazo o respuesta no aceptada. Revise response_xml para ver el HTTP status, headers y cuerpo bruto de la respuesta del proveedor.'
+            ];
+        }
+
+        $array_respuesta['request_xml'] = json_encode($request_metadata, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
         $doc_soporte_service->store_resultado_envio_documento( $document_header, $array_respuesta, $json_doc_electronico_enviado );
 
@@ -488,6 +513,28 @@ class NominaElectronicaController extends TransaccionController
         ];
     }
 
+    protected function build_dataico_response_evidence($response = null, $raw_response_body = '', \Exception $exception = null)
+    {
+        $evidence = [
+            'http_status' => is_null($response) ? null : $response->getStatusCode(),
+            'reason_phrase' => is_null($response) ? null : $response->getReasonPhrase(),
+            'headers' => is_null($response) ? [] : $response->getHeaders(),
+            'body_raw' => $raw_response_body,
+            'body_json' => json_decode($raw_response_body, true)
+        ];
+
+        if (!is_null($exception)) {
+            $evidence['exception'] = [
+                'class' => get_class($exception),
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine()
+            ];
+        }
+
+        return json_encode($evidence, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
+
     protected function normalizar_mensajes_dian($mensajes)
     {
         if (is_string($mensajes)) {
@@ -499,6 +546,12 @@ class NominaElectronicaController extends TransaccionController
 
         if (!is_array($mensajes)) {
             $mensajes = [ (string) $mensajes ];
+        }
+
+        if (empty($mensajes)) {
+            return [
+                'El proveedor tecnológico no retornó mensajes DIAN para este intento. Revise la evidencia técnica guardada en request_xml/response_xml.'
+            ];
         }
 
         $resultado = [];
