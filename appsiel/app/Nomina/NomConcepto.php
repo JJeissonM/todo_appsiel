@@ -76,6 +76,7 @@ class NomConcepto extends Model
     {
         return NomConcepto::leftJoin('nom_modos_liquidacion', 'nom_modos_liquidacion.id', '=', 'nom_conceptos.modo_liquidacion_id')
             ->leftJoin('nom_agrupaciones_conceptos', 'nom_agrupaciones_conceptos.id', '=', 'nom_conceptos.nom_agrupacion_id')
+            ->leftJoin('nom_elect_cat_cptos_dian', 'nom_elect_cat_cptos_dian.id', '=', 'nom_conceptos.cpto_dian_id')
             ->select(
                 'nom_modos_liquidacion.descripcion AS campo1',
                 'nom_conceptos.descripcion AS campo2',
@@ -83,7 +84,7 @@ class NomConcepto extends Model
                 'nom_conceptos.porcentaje_sobre_basico AS campo4',
                 'nom_conceptos.valor_fijo AS campo5',
                 'nom_conceptos.naturaleza AS campo6',
-                'nom_conceptos.cpto_dian AS campo7',
+                'nom_elect_cat_cptos_dian.codigo AS campo7',
                 'nom_agrupaciones_conceptos.descripcion AS campo8',
                 'nom_conceptos.estado AS campo9',
                 'nom_conceptos.id AS campo10'
@@ -104,6 +105,7 @@ class NomConcepto extends Model
     {
         $string = NomConcepto::leftJoin('nom_modos_liquidacion', 'nom_modos_liquidacion.id', '=', 'nom_conceptos.modo_liquidacion_id')
             ->leftJoin('nom_agrupaciones_conceptos', 'nom_agrupaciones_conceptos.id', '=', 'nom_conceptos.nom_agrupacion_id')
+            ->leftJoin('nom_elect_cat_cptos_dian', 'nom_elect_cat_cptos_dian.id', '=', 'nom_conceptos.cpto_dian_id')
             ->select(
                 'nom_modos_liquidacion.descripcion AS MODO_LIQUIDACIÓN',
                 'nom_conceptos.descripcion AS DESCRIPCIÓN',
@@ -111,7 +113,7 @@ class NomConcepto extends Model
                 'nom_conceptos.porcentaje_sobre_basico AS %_DEL_BÁSICO',
                 'nom_conceptos.valor_fijo AS VLR_FIJO',
                 'nom_conceptos.naturaleza AS NATURALEZA',
-                'nom_conceptos.cpto_dian AS CPTO_DIAN',
+                'nom_elect_cat_cptos_dian.codigo AS CPTO_DIAN',
                 'nom_agrupaciones_conceptos.descripcion AS AGRUPACIÓN',
                 'nom_conceptos.forma_parte_basico AS FORMA_PARTE_BASICO',
                 'nom_conceptos.estado AS ESTADO',
