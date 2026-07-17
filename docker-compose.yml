@@ -54,3 +54,4 @@ volumes:
 
 networks:
   appsiel_10_net:
+    driver: bridge
