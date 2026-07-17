@@ -123,6 +123,7 @@ class HotelOrderController extends Controller
         $lines = is_array($request->lines) ? $request->lines : array();
         $newLine = is_array($request->new_line) ? $request->new_line : array();
         $newLines = is_array($request->new_lines) ? $request->new_lines : array();
+        $deletedLines = is_array($request->deleted_lines) ? $request->deleted_lines : array();
         $canEditPrice = $this->canEditHotelOrderPrice();
 
         if (!$order->canEditLines()) {
@@ -130,7 +131,21 @@ class HotelOrderController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($order, $service, $lines, $newLine, $newLines, $canEditPrice) {
+            DB::transaction(function () use ($order, $service, $lines, $newLine, $newLines, $deletedLines, $canEditPrice) {
+                foreach ($deletedLines as $lineId) {
+                    $lineId = (int)$lineId;
+                    if ($lineId <= 0) {
+                        continue;
+                    }
+
+                    $line = $this->findLine($order, $lineId);
+                    $service->deleteLine($order, $line);
+
+                    if (isset($lines[$lineId])) {
+                        unset($lines[$lineId]);
+                    }
+                }
+
                 foreach ($lines as $lineId => $lineData) {
                     $line = $this->findLine($order, $lineId);
                     if (!$canEditPrice && isset($lineData['unit_price'])) {
