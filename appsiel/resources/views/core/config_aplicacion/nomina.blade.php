@@ -345,7 +345,7 @@
 									$proveedor_tecnologico_default = $parametros['proveedor_tecnologico_default'];
 								}
 							?>
-							{{ Form::bsSelect('proveedor_tecnologico_default', $proveedor_tecnologico_default, 'Proveedor tecnológico', ['DATAICO' => 'DATAICO', 'TFHKA' => 'The Fatory HKA'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('proveedor_tecnologico_default', $proveedor_tecnologico_default, 'Proveedor tecnológico', ['DATAICO' => 'DATAICO', 'TFHKA' => 'The Fatory HKA', 'OSEI' => 'OSEI'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -358,7 +358,7 @@
 									$nom_elec_ambiente = $parametros['nom_elec_ambiente'];
 								}
 							?>
-							{{ Form::bsSelect('nom_elec_ambiente', $nom_elec_ambiente, 'Ambiente', [ ''=>'', 'PRUEBAS' => 'PRUEBAS', 'PRODUCCION' => 'PRODUCCION'], ['class'=>'form-control', 'required'=>'required']) }}
+							{{ Form::bsSelect('nom_elec_ambiente', $nom_elec_ambiente, 'Ambiente', [ ''=>'', 'TESTING' => 'TESTING (solo OSEI, sin DIAN)', 'PRUEBAS' => 'PRUEBAS (DIAN_TEST)', 'PRODUCCION' => 'PRODUCCION (DIAN_PRODUCTION)'], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -534,32 +534,59 @@
 
 				</div>
 
-				<div class="row">
+ 				<div class="row">
 
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php
-								$modalidad_asignada = '2';
-								if( isset($parametros['modalidad_asignada'] ) )
-								{
-									$modalidad_asignada = $parametros['modalidad_asignada'];
-								}
-							?>
-							{{ Form::bsSelect('modalidad_asignada', $modalidad_asignada, 'Modalidad asignada', ['1' => 'Automática', '2' => 'Manual Con Prefijo', '3' => 'Manual Sin Prefijo', '4' => 'Manual Contingencia'], ['class'=>'form-control']) }}
-						</div>
-					</div>
+ 					<div class="col-md-6">
+ 						<div class="row" style="padding:5px;">
+ 							<?php
+ 								$modalidad_asignada = '2';
+ 								if( isset($parametros['modalidad_asignada'] ) )
+ 								{
+ 									$modalidad_asignada = $parametros['modalidad_asignada'];
+ 								}
+ 							?>
+ 							{{ Form::bsSelect('modalidad_asignada', $modalidad_asignada, 'Modalidad asignada', ['1' => 'Automática', '2' => 'Manual Con Prefijo', '3' => 'Manual Sin Prefijo', '4' => 'Manual Contingencia'], ['class'=>'form-control']) }}
+ 						</div>
+ 					</div>
 
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							&nbsp;
-						</div>
-					</div>
+ 					<div class="col-md-6">
+ 						<div class="row" style="padding:5px;">
+ 							&nbsp;
+ 						</div>
+ 					</div>
 
-				</div>
+ 				</div>
 
-				<br><br>
+ 				<h4> Parámetros de Proxy (si aplica)  </h4>
+ 				<hr>
+ 				<div class="row">
 
-				<div style="width: 100%; text-align: center;">
+ 					<div class="col-md-6">
+ 						<div class="row" style="padding:5px;">
+ 							<?php
+ 								$proxy_url = '';
+ 								if( isset($parametros['proxy_url'] ) )
+ 								{
+ 									$proxy_url = $parametros['proxy_url'];
+ 								}
+ 							?>
+ 							{{ Form::bsText('proxy_url', $proxy_url, 'URL Proxy (ej: http://proxy.ejemplo.com:8080) - Solo si hay bloqueo de red', ['class'=>'form-control']) }}
+ 						</div>
+ 					</div>
+
+ 					<div class="col-md-6">
+ 						<div class="row" style="padding:5px;">
+ 							<span class="help-block" style="color: #856404; font-size: 12px;">
+ 								<strong>Nota:</strong> Si el servidor OSEI no responde por bloqueo de firewall, configure aquí la URL del proxy corporativo.
+ 							</span>
+ 						</div>
+ 					</div>
+
+ 				</div>
+
+ 				<br><br>
+
+ 				<div style="width: 100%; text-align: center;">
 					<div class="row" style="margin: 5px;"> {{ Form::bsButtonsForm( url()->previous() ) }} </div>
 
 					{{ Form::hidden('url_id',Input::get('id')) }}

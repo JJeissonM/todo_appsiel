@@ -14,6 +14,7 @@ use App\Nomina\ValueObjects\LapsoNomina;
 
 use App\NominaElectronica\DATAICO\DocumentoSoporte;
 use App\NominaElectronica\DATAICO\Services\DocumentoSoporteService;
+use App\NominaElectronica\Services\OseiPayrollService;
 use App\NominaElectronica\ResultadoEnvioDocumento;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 use GuzzleHttp\Client;
@@ -360,7 +361,6 @@ class NominaElectronicaController extends TransaccionController
     protected function procesar_envio_documento($document_id)
     {
         $tiempo_inicio = microtime(true);
-        $doc_soporte_service = new DocumentoSoporteService();
         $document_header = DocumentoSoporte::with('empleado', 'tipo_documento_app')->find($document_id);
 
         if (is_null($document_header)) {
@@ -381,18 +381,78 @@ class NominaElectronicaController extends TransaccionController
             ];
         }
 
+        $proveedor = config('nomina.proveedor_tecnologico_default', 'DATAICO');
+
+        // ── ENVÍO A OSEI ──
+        if (strtoupper($proveedor) === 'OSEI') {
+            try {
+                $oseiService = new OseiPayrollService();
+                $resultado = $oseiService->enviarDocumento($document_header);
+
+                if ($resultado['ok']) {
+                    $document_header->estado = 'Enviado';
+                    $document_header->save();
+                }
+
+                return $resultado;
+            } catch ( \Throwable $e ) {
+                \Log::error('OSEl: Error enviando documento.', [
+                    'documento_id' => $document_header->id,
+                    'error' => $e->getMessage(),
+                ]);
+
+                return [
+                    'ok' => false,
+                    'documento_id' => (int)$document_header->id,
+                    'documento' => $document_header->get_value_to_show(),
+                    'message' => 'OSEl: ' . $e->getMessage()
+                ];
+            }
+        }
+
+        // ── ENVÍO A DATAICO (original) ──
+        $doc_soporte_service = new DocumentoSoporteService();
+
+        $proveedor = config('nomina.proveedor_tecnologico_default', 'DATAICO');
+
+        // ── ENVÍO A OSEI ──
+        if (strtoupper($proveedor) === 'OSEI') {
+            try {
+                $oseiService = new OseiPayrollService();
+                $resultado = $oseiService->enviarDocumento($document_header);
+
+                if ($resultado['ok']) {
+                    $document_header->estado = 'Enviado';
+                    $document_header->save();
+                }
+
+                return $resultado;
+            } catch ( \Throwable $e ) {
+                \Log::error('OSEl: Error enviando documento.', [
+                    'documento_id' => $document_header->id,
+                    'error' => $e->getMessage(),
+                ]);
+
+                return [
+                    'ok' => false,
+                    'documento_id' => (int)$document_header->id,
+                    'documento' => $document_header->get_value_to_show(),
+                    'message' => 'OSEl: ' . $e->getMessage()
+                ];
+            }
+        }
+
+        // ── ENVÍO A DATAICO (original) ──
+        $doc_soporte_service = new DocumentoSoporteService();
+
         try {
             $payload_documento = $document_header->get_json_to_send();
             $json_doc_electronico_enviado = json_encode($payload_documento, JSON_UNESCAPED_UNICODE);
         } catch ( \Throwable $e ) {
-            $this->registrar_error_nomina_electronica('No se pudo construir el JSON de documento soporte de nomina electronica.', [
+            $this->registrar_error_nomina_electronica('No se pudo construir el JSON de documento soporte.', [
                 'documento_id' => $document_header->id,
-                'core_tipo_doc_app_id' => $document_header->core_tipo_doc_app_id,
                 'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
             ]);
-
             return [
                 'ok' => false,
                 'documento_id' => (int)$document_header->id,
@@ -403,30 +463,16 @@ class NominaElectronicaController extends TransaccionController
 
         $response = null;
         $array_respuesta = [];
-        $raw_response_body = '';
-        $request_metadata = [
-            'url' => config('nomina.url_servicio_emision'),
-            'headers' => [
-                'content-type' => 'application/json',
-                'auth-token' => '[OCULTO]'
-            ],
-            'body' => $payload_documento
-        ];
 
         try {
             $client = new Client();
-
             $response = $client->post( $request_metadata['url'], [
                 'headers' => [
                               'content-type' => 'application/json',
                               'auth-token' => config('nomina.tokenPassword')
                            ],
                 'body' => $json_doc_electronico_enviado,
-                'http_errors' => false,
-                'connect_timeout' => 10,
-                'timeout' => 60
             ]);
-
          } catch (\GuzzleHttp\Exception\ConnectException $e) {
              $array_respuesta = [
                 'codigo' => 0,
@@ -436,8 +482,7 @@ class NominaElectronicaController extends TransaccionController
             ];
          } catch (\GuzzleHttp\Exception\RequestException $e) {
              $response = $e->getResponse();
-             if ( is_null($response) )
-             {
+             if ( is_null($response) ) {
                 $array_respuesta = [
                     'codigo' => 0,
                     'dian_status' => 'DIAN_RECHAZADO',
@@ -454,12 +499,10 @@ class NominaElectronicaController extends TransaccionController
             ];
          }
 
-        if ( !is_null($response) )
-        {
+        if ( !is_null($response) ) {
             $raw_response_body = (string) $response->getBody();
             $array_respuesta = json_decode( $raw_response_body, true );
-            if ( !is_array($array_respuesta) )
-            {
+            if ( !is_array($array_respuesta) ) {
                 $array_respuesta = [];
             }
             $array_respuesta['codigo'] = $response->getStatusCode();
@@ -471,11 +514,10 @@ class NominaElectronicaController extends TransaccionController
             $array_respuesta['dian_status'] = 'DIAN_RECHAZADO';
         }
 
-        if ( !isset($array_respuesta['dian_status']) )
-        {
+        if ( !isset($array_respuesta['dian_status']) ) {
             $array_respuesta['codigo'] = isset($array_respuesta['codigo']) ? $array_respuesta['codigo'] : 0;
             $array_respuesta['dian_status'] = 'DIAN_RECHAZADO';
-            $array_respuesta['dian_messages'] = isset($array_respuesta['dian_messages']) ? $array_respuesta['dian_messages'] : [ 'Respuesta inválida o incompleta del proveedor tecnológico. El documento no fue confirmado como enviado.' ];
+            $array_respuesta['dian_messages'] = isset($array_respuesta['dian_messages']) ? $array_respuesta['dian_messages'] : [ 'Respuesta inválida o incompleta del proveedor tecnológico.' ];
         }
 
         if ( empty($array_respuesta['dian_messages']) && $array_respuesta['dian_status'] != 'DIAN_ACEPTADO' )
@@ -492,7 +534,6 @@ class NominaElectronicaController extends TransaccionController
         if ($array_respuesta['dian_status'] == 'DIAN_ACEPTADO') {
             $document_header->estado = 'Enviado';
             $document_header->save();
-
             return [
                 'ok' => true,
                 'documento_id' => (int)$document_header->id,
@@ -502,8 +543,7 @@ class NominaElectronicaController extends TransaccionController
             ];
         }
 
-        $mensajes = $this->normalizar_mensajes_dian(isset($array_respuesta['dian_messages']) ? $array_respuesta['dian_messages'] : []);
-
+        $mensajes = $this->normalizar_mensajes_dian($array_respuesta['dian_messages'] ?? []);
         return [
             'ok' => false,
             'documento_id' => (int)$document_header->id,
