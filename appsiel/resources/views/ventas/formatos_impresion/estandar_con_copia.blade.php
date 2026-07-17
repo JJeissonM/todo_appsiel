@@ -25,15 +25,6 @@
             clear: both;
         }
 
-        .lbl_doc_anulado {
-            background-color: rgba(253, 1, 1, 0.33);
-            width: 100%;
-            top: 300px;
-            transform: rotate(-45deg);
-            text-align: center;
-            font-size: 2em;
-        }
-
         .generado_por{
             /*background-color: blueviolet;*/
             position: absolute;
@@ -78,6 +69,7 @@
 </head>
 
 <body>
+    @include('ventas.incluir.documento_anulado_watermark')
 
     <?php 
         $total_cantidad = 0;

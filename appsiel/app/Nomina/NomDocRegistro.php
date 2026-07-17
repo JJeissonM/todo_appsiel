@@ -4,6 +4,7 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class NomDocRegistro extends Model
 {
@@ -184,6 +185,58 @@ class NomDocRegistro extends Model
                             ->select('nom_doc_registros.id', 'nom_doc_registros.nom_doc_encabezado_id', 'nom_doc_registros.core_tercero_id', 'nom_doc_registros.nom_contrato_id', 'nom_doc_registros.fecha', 'nom_doc_registros.core_empresa_id', 'nom_doc_registros.porcentaje', 'nom_doc_registros.detalle', 'nom_doc_registros.nom_concepto_id', 'nom_doc_registros.nom_cuota_id', 'nom_doc_registros.nom_prestamo_id', 'nom_doc_registros.novedad_tnl_id', 'nom_doc_registros.cantidad_horas', 'nom_doc_registros.valor_devengo', 'nom_doc_registros.valor_deduccion', 'nom_doc_registros.estado', 'nom_doc_registros.creado_por', 'nom_doc_registros.modificado_por')
                             ->distinct('nom_doc_registros.id')
                             ->get();
+    }
+
+    public static function listado_acumulados_por_tercero($fecha_desde, $fecha_hasta, $nom_agrupacion_id, $core_tercero_id, $nom_concepto_id)
+    {
+        $query = self::query()
+                    ->where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id)
+                    ->whereBetween('nom_doc_registros.fecha', [ $fecha_desde, $fecha_hasta ]);
+
+        return self::get_listado_acumulados_agrupado($query, $nom_agrupacion_id, $core_tercero_id, $nom_concepto_id);
+    }
+
+    public static function listado_acumulados_documento_por_tercero( $nom_doc_encabezado_id, $nom_agrupacion_id, $core_tercero_id, $nom_concepto_id)
+    {
+        $query = self::query()
+                    ->where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id)
+                    ->where('nom_doc_registros.nom_doc_encabezado_id', $nom_doc_encabezado_id);
+
+        return self::get_listado_acumulados_agrupado($query, $nom_agrupacion_id, $core_tercero_id, $nom_concepto_id);
+    }
+
+    protected static function get_listado_acumulados_agrupado($query, $nom_agrupacion_id, $core_tercero_id, $nom_concepto_id)
+    {
+        if ( $nom_agrupacion_id != 0 )
+        {
+            $query->join('nom_agrupacion_tiene_conceptos', 'nom_agrupacion_tiene_conceptos.nom_concepto_id', '=', 'nom_doc_registros.nom_concepto_id')
+                    ->where('nom_agrupacion_tiene_conceptos.nom_agrupacion_id', $nom_agrupacion_id);
+        }
+
+        if ( $core_tercero_id != 0 )
+        {
+            $query->where('nom_doc_registros.core_tercero_id', $core_tercero_id);
+        }
+
+        if ( $nom_concepto_id != 0 )
+        {
+            $query->where('nom_doc_registros.nom_concepto_id', $nom_concepto_id);
+        }
+
+        return $query->select(
+                            DB::raw('MIN(nom_doc_registros.id) AS id'),
+                            DB::raw('MIN(nom_doc_registros.nom_doc_encabezado_id) AS nom_doc_encabezado_id'),
+                            'nom_doc_registros.core_tercero_id',
+                            DB::raw('MIN(nom_doc_registros.nom_contrato_id) AS nom_contrato_id'),
+                            DB::raw('MIN(nom_doc_registros.fecha) AS fecha'),
+                            'nom_doc_registros.core_empresa_id',
+                            'nom_doc_registros.nom_concepto_id',
+                            DB::raw('SUM(nom_doc_registros.cantidad_horas) AS cantidad_horas'),
+                            DB::raw('SUM(nom_doc_registros.valor_devengo) AS valor_devengo'),
+                            DB::raw('SUM(nom_doc_registros.valor_deduccion) AS valor_deduccion')
+                        )
+                        ->groupBy('nom_doc_registros.core_tercero_id', 'nom_doc_registros.core_empresa_id', 'nom_doc_registros.nom_concepto_id')
+                        ->get();
     }
 
     public static function movimientos_entidades_salud($fecha_desde, $fecha_hasta, array $entidades)

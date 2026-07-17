@@ -37,6 +37,13 @@ class TerceroController extends Controller
             return 'tercero_no_existe';
         }        
 
+        $core_tercero_id_actual = (int)Input::get('core_tercero_id');
+        if ( $core_tercero_id_actual > 0 && (int)$tercero->id === $core_tercero_id_actual )
+        {
+            $tercero->email2 = $tercero->email;
+            return response()->json( $tercero->toArray() );
+        }
+
         $inscripcion = Inscripcion::where('core_tercero_id',$tercero->id)
                                     ->get()->first();
 

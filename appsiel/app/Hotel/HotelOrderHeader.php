@@ -5,8 +5,11 @@ namespace App\Hotel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use App\Ventas\VtasDocEncabezado;
+use App\Ventas\VtasDocRegistro;
 use App\VentasPos\FacturaPos;
+use App\VentasPos\DocRegistro;
 
 class HotelOrderHeader extends Model
 {
@@ -98,6 +101,11 @@ class HotelOrderHeader extends Model
         return $this->status == self::STATUS_ABIERTO;
     }
 
+    public function creador_por()
+    {
+        return $this->belongsTo('App\User', 'created_by');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return self::queryForIndex($search)
@@ -170,10 +178,10 @@ class HotelOrderHeader extends Model
             }
 
             if (!is_null($doc) && !is_null($doc->tipo_documento_app)) {
-                return 'POS ' . $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo;
+                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo;
             }
 
-            return 'POS #' . $this->pos_doc_id;
+            return $this->pos_doc_id;
         }
 
         if ($this->invoice_type == self::INVOICE_STANDARD && !empty($this->sales_doc_id)) {
@@ -183,10 +191,10 @@ class HotelOrderHeader extends Model
             }
 
             if (!is_null($doc) && !is_null($doc->tipo_documento_app)) {
-                return 'Ventas ' . $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo;
+                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo;
             }
 
-            return 'Ventas #' . $this->sales_doc_id;
+            return $this->sales_doc_id;
         }
 
         return '';
@@ -203,6 +211,168 @@ class HotelOrderHeader extends Model
         }
 
         return '';
+    }
+
+    public static function reopenOrdersForCancelledSalesInvoice($salesDocId, $relatedPosDocId = null)
+    {
+        return self::reopenOrdersForCancelledInvoice((int)$salesDocId, (int)$relatedPosDocId);
+    }
+
+    public static function reopenOrdersForCancelledPosInvoice($posDocId)
+    {
+        return self::reopenOrdersForCancelledInvoice(null, (int)$posDocId);
+    }
+
+    protected static function reopenOrdersForCancelledInvoice($salesDocId = null, $posDocId = null)
+    {
+        if (!self::hotelTablesAreAvailable()) {
+            return 0;
+        }
+
+        $salesDocId = (int)$salesDocId;
+        $posDocId = (int)$posDocId;
+
+        if ($salesDocId <= 0 && $posDocId <= 0) {
+            return 0;
+        }
+
+        $query = self::where('status', self::STATUS_FACTURADO)
+            ->where(function ($q) use ($salesDocId, $posDocId) {
+                if ($salesDocId > 0) {
+                    $q->orWhere('sales_doc_id', $salesDocId);
+                }
+
+                if ($posDocId > 0) {
+                    $q->orWhere('pos_doc_id', $posDocId);
+                }
+            });
+
+        $count = 0;
+        foreach ($query->get() as $order) {
+            self::restoreMissingLinesFromCancelledInvoice($order, $salesDocId, $posDocId);
+
+            $order->status = self::STATUS_ABIERTO;
+
+            if ($salesDocId > 0 && (int)$order->sales_doc_id == $salesDocId) {
+                $order->sales_doc_id = null;
+            }
+
+            if ($posDocId > 0 && (int)$order->pos_doc_id == $posDocId) {
+                $order->pos_doc_id = null;
+            }
+
+            if (empty($order->sales_doc_id) && empty($order->pos_doc_id)) {
+                $order->invoice_type = null;
+            }
+
+            $order->save();
+            $count++;
+        }
+
+        return $count;
+    }
+
+    protected static function restoreMissingLinesFromCancelledInvoice($order, $salesDocId = null, $posDocId = null)
+    {
+        if ($order->lines()->count() > 0) {
+            return;
+        }
+
+        $records = array();
+        if ($posDocId > 0 && (int)$order->pos_doc_id == (int)$posDocId && Schema::hasTable('vtas_pos_doc_registros')) {
+            $records = DocRegistro::where('vtas_pos_doc_encabezado_id', (int)$posDocId)->get();
+        }
+
+        if (count($records) == 0 && $salesDocId > 0 && (int)$order->sales_doc_id == (int)$salesDocId && Schema::hasTable('vtas_doc_registros')) {
+            $records = VtasDocRegistro::where('vtas_doc_encabezado_id', (int)$salesDocId)->get();
+        }
+
+        if (count($records) == 0) {
+            return;
+        }
+
+        $room = null;
+        $stay = HotelStay::find((int)$order->stay_id);
+        if (!is_null($stay) && (int)$stay->room_id > 0) {
+            $room = HotelRoom::find((int)$stay->room_id);
+        }
+
+        foreach ($records as $record) {
+            $productoId = (int)self::valueFromModel($record, 'inv_producto_id', 0);
+            if ($productoId <= 0) {
+                continue;
+            }
+
+            $quantity = (float)self::valueFromModel($record, 'cantidad', 1);
+            $unitPrice = (float)self::valueFromModel($record, 'precio_unitario', 0);
+            $discount = (float)self::valueFromModel($record, 'valor_total_descuento', 0);
+            $taxValue = (float)self::valueFromModel($record, 'valor_impuesto', 0) * $quantity;
+            $lineTotal = (float)self::valueFromModel($record, 'precio_total', HotelOrderLine::calculateTotal($quantity, $unitPrice, $discount, $taxValue));
+            $bodegaId = (int)self::valueFromModel($record, 'inv_bodega_id', 0);
+
+            if ($bodegaId <= 0 && !is_null($room) && (int)$room->inv_bodega_id > 0) {
+                $bodegaId = (int)$room->inv_bodega_id;
+            }
+
+            $description = self::productDescription($productoId);
+            $sourceType = HotelOrderLine::SOURCE_PRODUCT;
+            $sourceId = $productoId;
+
+            if (!is_null($room) && (int)$room->inv_producto_id == $productoId) {
+                $sourceType = HotelOrderLine::SOURCE_ROOM;
+                $sourceId = (int)$room->id;
+            }
+
+            HotelOrderLine::create(array(
+                'empresa_id' => $order->empresa_id,
+                'hotel_order_id' => $order->id,
+                'producto_id' => $productoId,
+                'room_id' => !is_null($room) ? (int)$room->id : null,
+                'inv_bodega_id' => $bodegaId > 0 ? $bodegaId : null,
+                'description' => $description,
+                'quantity' => $quantity,
+                'unit_price' => $unitPrice,
+                'discount' => $discount,
+                'tax_value' => $taxValue,
+                'line_total' => $lineTotal,
+                'source_type' => $sourceType,
+                'source_id' => $sourceId,
+            ));
+        }
+    }
+
+    protected static function valueFromModel($model, $key, $default = null)
+    {
+        if (is_object($model) && method_exists($model, 'getAttributes')) {
+            $attributes = $model->getAttributes();
+            if (array_key_exists($key, $attributes)) {
+                return $attributes[$key];
+            }
+        }
+
+        if (is_object($model) && isset($model->$key)) {
+            return $model->$key;
+        }
+
+        return $default;
+    }
+
+    protected static function productDescription($productoId)
+    {
+        $producto = DB::table('inv_productos')->where('id', (int)$productoId)->first();
+        if (!is_null($producto) && isset($producto->descripcion)) {
+            return $producto->descripcion;
+        }
+
+        return 'Producto ' . (int)$productoId;
+    }
+
+    protected static function hotelTablesAreAvailable()
+    {
+        $enabledValue = strtolower((string)env('HOTEL_MODULE_ENABLED', false));
+        $enabled = in_array($enabledValue, array('1', 'true', 'yes', 'on'));
+
+        return $enabled && Schema::hasTable('hotel_order_headers') && Schema::hasTable('hotel_order_lines');
     }
 
     private static function queryForIndex($search)

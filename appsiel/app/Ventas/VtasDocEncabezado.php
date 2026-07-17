@@ -285,6 +285,10 @@ class VtasDocEncabezado extends Model
         }            
 
         $app_id = 13; // Ventas
+        if ( in_array( (int)$this->core_tipo_transaccion_id, [52, 53] ) )
+        {
+            $app_id = 21; // Facturación electrónica
+        }
 
         $enlace = '<a href="' . url( $url . $this->id . '?id=' . $app_id . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
 

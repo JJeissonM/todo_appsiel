@@ -1,13 +1,15 @@
 <?php
 
     $tiempo_a_liquidar = [
+        '105'=>'Una Quincena (105 horas)',
         '110'=>'Una Quincena (110 horas)',
         '117'=>'Una Quincena (117.5 horas)',
         '115'=>'Una Quincena (115 horas)',
         '120'=>'Una Quincena (120 horas)',
-        '240'=>'Un mes (240 horas)',
-        '230'=>'Un mes (230 horas)',
+        '210'=>'Un mes (210 horas)',
         '220'=>'Un mes (220 horas)',
+        '230'=>'Un mes (230 horas)',
+        '240'=>'Un mes (240 horas)',
         '9999'=>'Órdenes de trabajo'
     ];
     $color = 'red';

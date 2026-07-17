@@ -72,7 +72,9 @@ class Calificacion extends Model
                 DB::raw($raw_nombre_completo),
                 'sga_asignaturas.descripcion AS campo5',
                 'sga_calificaciones.calificacion AS campo6',
-                'sga_calificaciones.id AS campo7')
+                'sga_calificaciones.creado_por AS campo7',
+                'sga_periodos.fecha_hasta AS campo8',
+                'sga_calificaciones.id AS campo9')
             ->orderBy('sga_calificaciones.created_at','DESC')
             ->get();
 
@@ -81,7 +83,7 @@ class Calificacion extends Model
         if (count($collection) > 0) {
             if (strlen($search) > 0) {
                 $nuevaColeccion = $collection->filter(function ($c) use ($search) {
-                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7], $search)) {
+                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8, $c->campo9], $search)) {
                         return $c;
                     }
                 });
@@ -169,13 +171,17 @@ class Calificacion extends Model
                 'sga_cursos.descripcion AS CURSO',
                 DB::raw($raw_nombre_completo),
                 'sga_asignaturas.descripcion AS ASIGNATURA',
-                'sga_calificaciones.calificacion AS CALIFICACIÓN'
+                'sga_calificaciones.calificacion AS CALIFICACIÓN',
+                'sga_calificaciones.creado_por AS CREADO_POR',
+                'sga_periodos.fecha_hasta AS FECHA_CIERRE'
             )->orWhere("sga_calificaciones.anio", "LIKE", "%$search%")
             ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres)'), "LIKE", "%$search%")
             ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_calificaciones.calificacion", "LIKE", "%$search%")
+            ->orWhere("sga_calificaciones.creado_por", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.fecha_hasta", "LIKE", "%$search%")
             ->orderBy('sga_calificaciones.created_at', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);

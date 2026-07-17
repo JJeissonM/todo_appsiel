@@ -78,22 +78,27 @@
 					</div>
 				</div>
 
-				<div class="row">
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
+				@if($modulo_facturacion_electronica_activo)
+					<div class="row">
+						<div class="col-md-6">
 							<div class="row" style="padding:5px;">
 								<div class="form-group">
 									{{ Form::bsSelect( 'generar_fact_electronica', null, '*Enviar facturas electrónicas', [ '' => '', '1' => 'Si', '0' => 'No' ], [ 'required' => 'required' ] ) }}
 								</div>
 							</div>
 						</div>
+						<div class="col-md-6">
+							&nbsp;
+						</div>
 					</div>
-					<div class="col-md-6">
-						&nbsp;
-					</div>
-				</div>
+				@endif
 
 				<br><br>
+				@if(!$modulo_facturacion_electronica_activo)
+					<div class="alert alert-info">
+						<i class="fa fa-info-circle"></i> El módulo de facturación electrónica no está activo. Se generarán facturas de venta sin envío a la DIAN.
+					</div>
+				@endif
 
 				{{ Form::hidden('url_id',Input::get('id'))}}
 				{{ Form::hidden('url_id_modelo',Input::get('id_modelo'))}}
@@ -148,11 +153,23 @@
 			  	<br/>
 			</div>
 
-			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-			  <div class="modal-dialog modal-dialog-centered" role="document" align="center">
-			  		Espere por favor... <br/>
-			        <img src="{{ asset('assets/img/spinning-wheel.gif') }}" width="40px" height="40px">
-			  </div>
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modal_progreso_titulo" aria-hidden="true">
+				<div class="modal-dialog modal-sm" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title" id="modal_progreso_titulo">Procesando</h4>
+						</div>
+						<div class="modal-body" align="center">
+							<img src="{{ asset('assets/img/spinning-wheel.gif') }}" width="40px" height="40px">
+							<p id="modal_progreso_texto" style="margin-top: 15px;">Espere por favor...</p>
+							<div class="progress" style="display:none;" id="modal_progreso_barra_contenedor">
+								<div id="modal_progreso_barra" class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0%;">
+									0%
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<div id="btn_imprimir_lote" class="pull-right" style="display: none;">
@@ -201,7 +218,7 @@
 			$('#fecha').focus();
 			$('#core_tercero_id').removeAttr("required");
 
-			$('#btn_generar_consulta_preliminar_cxc').click(function(e){			
+			$('#btn_generar_consulta_preliminar_cxc').click(function(e){
 				e.preventDefault();
 
 				if ( !validar_requeridos() )
@@ -215,13 +232,13 @@
 					return false;
 				}
 
-				$('#myModal').modal({keyboard: false, backdrop: "static"});
+				mostrar_modal('Consultando', 'Buscando registros pendientes...', 0, false);
 				var form = $('#form_generar_consulta_preliminar_cxc');
 				var url = form.attr('action').replace("facturacion_masiva_estudiantes", "facturacion_masiva_estudiantes/generar_consulta_preliminar");
 
 				data = form.serialize();
-				$.post(url,data,function( resultado ){					
-					$('#myModal').modal('hide');
+				$.post(url,data,function( resultado ){
+					ocultar_modal();
 					$('#lbl_tabla').html('Detalles <br> <span class="small" style="color: red;"> Nota: A las filas de color rojo no se les creará factura </span>');
 					$('#tablas_registros').find('thead').html( resultado.thead );
 					$('#tablas_registros').find('tbody').html( resultado.tbody );
@@ -229,6 +246,14 @@
 					$('#total_precio_total').html( '$' + resultado.precio_total );
 					$('#total_cantidad_registros').html( resultado.cantidad_registros );
 					$('#total_cantidad_estudiantes').html( resultado.cantidad_estudiantes );
+					$('#confirmacion').prop('checked', false);
+					$('#btn_guardar_cxc').prop('disabled', false);
+					$('#btn_imprimir_lote').hide();
+					$('#btn_enviar_email_lote').hide();
+					calcular_totales();
+				}).fail(function(){
+					ocultar_modal();
+					alert('No fue posible generar la consulta preliminar.');
 				});
 			});
 
@@ -251,44 +276,8 @@
 					if(!confirm("¿Realmente desea generar todas las facturas consultadas?")){
 						return false;
 					}else{
-						$('#myModal').modal({keyboard: false, backdrop: "static"});
-
-						// Se transfoma la tabla a formato JSON a través de un plugin JQuery
-						var table = $('#tablas_registros').tableToJSON();
-
-						// Se asigna el objeto JSON a un campo oculto del formulario
-				 		$('#lineas_registros').val(JSON.stringify(table));
-
-						var form = $('#form_generar_consulta_preliminar_cxc');
-						var url = form.attr('action');
-						data = form.serialize();
-
-						$('#tablas_registros').find('thead').html( '' );
-						$('#tablas_registros').find('tbody').html( '' );
-
-						$.post(url,data,function(resultado){
-							$('#btn_generar_consulta_preliminar_cxc').hide();		
-							$('#myModal').modal('hide');
-							$('#lbl_tabla').html('Facturas generadas');
-							$('#tablas_registros').find('thead').html( resultado.thead );
-							$('#tablas_registros').find('tbody').html( resultado.tbody );
-
-
-							$('#total_precio_total').html( '$' + resultado.precio_total );
-							$('#total_cantidad_registros').html( resultado.cantidad_facturas );
-							$('#total_cantidad_estudiantes').html( resultado.cantidad_estudiantes );
-
-							$('#div_panel_derecho').html( resultado.mensaje );
-							
-							$('#btn_imprimir_lote').show(1000);
-							var enlace = $('#btn_imprimir_lote').find('a').attr('href');
-							$('#btn_imprimir_lote').find('a').attr( 'href', enlace );
-							
-							$('#btn_enviar_email_lote').show(1000);
-							var enlace2 = $('#btn_enviar_email_lote').find('a').attr('href');
-							$('#btn_enviar_email_lote').find('a').attr( 'href', enlace2 );
-						});
-					}						
+						crear_facturas_por_lotes();
+					}
 					
 				}else{
 					$('#confirmacion').focus();
@@ -306,17 +295,205 @@
 
 			function calcular_totales()
 			{
-				var sum = 0.0;
-				$('.valor').each(function() {
-				    sum += parseFloat( $(this).text() );
+				var total = 0;
+				var cantidad_registros = 0;
+				var estudiantes = {};
+
+				$('#tablas_registros tbody tr').each(function() {
+					var fila = $(this);
+					var linea_plan_pago_id = parseInt(fila.find('td:eq(0)').text(), 10);
+					if (!linea_plan_pago_id) {
+						return true;
+					}
+
+					total += parseMoney(fila.find('td:eq(1)').text());
+					cantidad_registros++;
+					estudiantes[$.trim(fila.find('td:eq(2)').text())] = true;
 				});
 
-				$('#total_facturas').text( "$" + sum.toFixed(2) );
-				$('#total_precio_total').html( "$" + sum.toFixed(2) );
-				$('#total_cantidad_registros').html( '-' );
-				$('#total_cantidad_estudiantes').html( '-' );
+				$('#total_facturas').text( "$" + formatMoney(total) );
+				$('#total_precio_total').html( "$" + formatMoney(total) );
+				$('#total_cantidad_registros').html( cantidad_registros );
+				$('#total_cantidad_estudiantes').html( contar_propiedades(estudiantes) );
 			}
 
-		});
+			function crear_facturas_por_lotes()
+			{
+				var lineas = obtener_lineas_validas();
+				if (lineas.length == 0) {
+					alert('No hay líneas válidas para crear facturas.');
+					return false;
+				}
+
+				var form = $('#form_generar_consulta_preliminar_cxc');
+				var url = form.attr('action');
+				var lote = Date.now().toString();
+				var tamano_lote = 5;
+				var lotes = [];
+				var acumulado = {
+					tbody: '',
+					precio_total: 0,
+					cantidad_facturas: 0,
+					estudiantes: {},
+					empresa_id: 0,
+					core_tipo_doc_app_id: 0,
+					consec_desde: 0,
+					consec_hasta: 0,
+					mensaje: ''
+				};
+
+				for (var i = 0; i < lineas.length; i += tamano_lote) {
+					lotes.push(lineas.slice(i, i + tamano_lote));
+				}
+
+				$('#btn_guardar_cxc').prop('disabled', true);
+				$('#tablas_registros').find('thead').html('');
+				$('#tablas_registros').find('tbody').html('');
+				mostrar_modal('Creando facturas', 'Preparando lote 1 de ' + lotes.length + '...', 0, true);
+
+				procesar_lote(0);
+
+				function procesar_lote(indice)
+				{
+					if (indice >= lotes.length) {
+						finalizar_creacion(acumulado);
+						return;
+					}
+
+					var porcentaje = Math.round((indice / lotes.length) * 100);
+					actualizar_modal('Creando facturas', 'Procesando lote ' + (indice + 1) + ' de ' + lotes.length + '...', porcentaje);
+
+					$.post(url, crear_payload_lote(form, lotes[indice], lote), function(resultado) {
+						acumulado.tbody += resultado.tbody;
+						acumulado.precio_total += parseMoney(resultado.precio_total);
+						acumulado.cantidad_facturas += parseInt(resultado.cantidad_facturas, 10) || 0;
+						acumulado.mensaje = resultado.mensaje;
+						acumulado.empresa_id = resultado.empresa_id || acumulado.empresa_id;
+						acumulado.core_tipo_doc_app_id = resultado.core_tipo_doc_app_id || acumulado.core_tipo_doc_app_id;
+						if (resultado.consec_desde && (acumulado.consec_desde == 0 || resultado.consec_desde < acumulado.consec_desde)) {
+							acumulado.consec_desde = resultado.consec_desde;
+						}
+						if (resultado.consec_hasta && resultado.consec_hasta > acumulado.consec_hasta) {
+							acumulado.consec_hasta = resultado.consec_hasta;
+						}
+
+						$.each(lotes[indice], function(key, linea) {
+							acumulado.estudiantes[linea.Estudiante] = true;
+						});
+
+						$('#tablas_registros').find('thead').html(resultado.thead);
+						$('#tablas_registros').find('tbody').append(resultado.tbody);
+						$('#total_precio_total').html('$' + formatMoney(acumulado.precio_total));
+						$('#total_cantidad_registros').html(acumulado.cantidad_facturas);
+						$('#total_cantidad_estudiantes').html(contar_propiedades(acumulado.estudiantes));
+
+						procesar_lote(indice + 1);
+					}).fail(function() {
+						ocultar_modal();
+						$('#btn_guardar_cxc').prop('disabled', false);
+						$('#div_panel_derecho').html('<div class="alert alert-danger"><strong>Error.</strong> No fue posible procesar el lote ' + (indice + 1) + ' de ' + lotes.length + '.</div>');
+					});
+				}
+			}
+
+			function finalizar_creacion(acumulado)
+			{
+				actualizar_modal('Creando facturas', 'Proceso finalizado.', 100);
+				setTimeout(function(){
+					ocultar_modal();
+				}, 400);
+
+				$('#btn_generar_consulta_preliminar_cxc').hide();
+				$('#lbl_tabla').html('Facturas generadas');
+				$('#total_precio_total').html('$' + formatMoney(acumulado.precio_total));
+				$('#total_cantidad_registros').html(acumulado.cantidad_facturas);
+				$('#total_cantidad_estudiantes').html(contar_propiedades(acumulado.estudiantes));
+				$('#div_panel_derecho').html(acumulado.mensaje);
+
+				if (acumulado.empresa_id && acumulado.core_tipo_doc_app_id && acumulado.consec_desde && acumulado.consec_hasta) {
+					$('#btn_imprimir_lote').show(1000);
+					$('#btn_imprimir_lote').find('a').attr('href', base_lote_url('cxc/imprimir_lote/') + '/' + acumulado.empresa_id + '/' + acumulado.core_tipo_doc_app_id + '/' + acumulado.consec_desde + '/' + acumulado.consec_hasta);
+
+					$('#btn_enviar_email_lote').show(1000);
+					$('#btn_enviar_email_lote').find('a').attr('href', base_lote_url('cxc/enviar_email_lote/') + '/' + acumulado.empresa_id + '/' + acumulado.core_tipo_doc_app_id + '/' + acumulado.consec_desde + '/' + acumulado.consec_hasta);
+				}
+			}
+
+			function obtener_lineas_validas()
+			{
+				return $('#tablas_registros').tableToJSON().filter(function(linea) {
+					return parseInt(linea.linea_plan_pago_id, 10) > 0;
+				});
+			}
+
+			function crear_payload_lote(form, lineas, lote)
+			{
+				var campos = form.serializeArray();
+				for (var i = 0; i < campos.length; i++) {
+					if (campos[i].name == 'lineas_registros') {
+						campos[i].value = JSON.stringify(lineas);
+					}
+				}
+				campos.push({name: 'lote', value: lote});
+				return $.param(campos);
+			}
+
+			function mostrar_modal(titulo, texto, porcentaje, mostrar_barra)
+			{
+				$('#modal_progreso_titulo').text(titulo);
+				$('#modal_progreso_texto').text(texto);
+				$('#modal_progreso_barra_contenedor').toggle(mostrar_barra);
+				actualizar_barra(porcentaje);
+				$('#myModal').modal({keyboard: false, backdrop: "static"});
+			}
+
+			function actualizar_modal(titulo, texto, porcentaje)
+			{
+				$('#modal_progreso_titulo').text(titulo);
+				$('#modal_progreso_texto').text(texto);
+				actualizar_barra(porcentaje);
+			}
+
+			function actualizar_barra(porcentaje)
+			{
+				$('#modal_progreso_barra').css('width', porcentaje + '%').text(porcentaje + '%');
+			}
+
+			function ocultar_modal()
+			{
+				$('#myModal').modal('hide');
+			}
+
+			function parseMoney(valor)
+			{
+				valor = $.trim((valor || '').toString());
+				valor = valor.replace(/[^0-9,-]/g, '').replace(/\./g, '').replace(',', '.');
+				var numero = parseFloat(valor);
+				return isNaN(numero) ? 0 : numero;
+			}
+
+			function formatMoney(valor)
+			{
+				return Math.round(valor).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+			}
+
+			function contar_propiedades(objeto)
+			{
+				var total = 0;
+				for (var propiedad in objeto) {
+					if (objeto.hasOwnProperty(propiedad)) {
+						total++;
+					}
+				}
+				return total;
+			}
+
+			function base_lote_url(ruta)
+			{
+				var base = "{{ url('/') }}";
+				return base + '/' + ruta.replace(/^\/|\/$/g, '');
+			}
+
+			});
 	</script>
 @endsection

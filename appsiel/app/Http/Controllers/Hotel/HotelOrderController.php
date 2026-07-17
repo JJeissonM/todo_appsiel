@@ -10,12 +10,14 @@ use App\Http\Controllers\Controller;
 use App\Core\Services\ResolucionFacturacionService;
 use App\Core\TipoDocApp;
 use App\CxC\CxcMovimiento;
+use App\Hotel\HotelRoom;
 use App\Inventarios\InvProducto;
 use App\Ventas\Cliente;
 use App\VentasPos\Services\FacturaPosService;
 use App\VentasPos\Services\PosPaymentModalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HotelOrderController extends Controller
 {
@@ -32,8 +34,9 @@ class HotelOrderController extends Controller
         $paymentData = $this->paymentData();
         $anticipos = $this->anticiposCliente($order);
         $electronicResolutionValidation = $this->electronicResolutionValidation();
+        $canEditHotelOrderPrice = $this->canEditHotelOrderPrice();
 
-        return view('hotel.orders.show', compact('order', 'products', 'anticipos', 'miga_pan', 'electronicResolutionValidation') + $paymentData);
+        return view('hotel.orders.show', compact('order', 'products', 'anticipos', 'miga_pan', 'electronicResolutionValidation', 'canEditHotelOrderPrice') + $paymentData);
     }
 
     public function addLine(Request $request, $id)
@@ -44,12 +47,22 @@ class HotelOrderController extends Controller
             'quantity' => 'required|numeric|min:0.01',
         ));
 
-        if ($request->unit_price !== null && $request->unit_price !== '') {
+        if ($this->canEditHotelOrderPrice() && $request->unit_price !== null && $request->unit_price !== '') {
             $this->validate($request, array('unit_price' => 'numeric|min:0'));
         }
 
         try {
-            (new HotelService())->createLine($order, $request->all());
+            $service = new HotelService();
+            $canEditPrice = $this->canEditHotelOrderPrice();
+            DB::transaction(function () use ($order, $request, $service, $canEditPrice) {
+                $data = $request->all();
+                if (!$canEditPrice && isset($data['unit_price'])) {
+                    unset($data['unit_price']);
+                }
+
+                $service->createLine($order, $data);
+                $service->validateStockForOpenOrder($order);
+            });
         } catch (\Exception $e) {
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }
@@ -62,13 +75,26 @@ class HotelOrderController extends Controller
         $order = $this->findOrder($id);
         $line = $this->findLine($order, $lineId);
 
-        $this->validate($request, array(
+        $rules = array(
             'quantity' => 'required|numeric|min:0.01',
-            'unit_price' => 'required|numeric|min:0',
-        ));
+        );
+        if ($this->canEditHotelOrderPrice()) {
+            $rules['unit_price'] = 'required|numeric|min:0';
+        }
+        $this->validate($request, $rules);
 
         try {
-            (new HotelService())->updateLine($order, $line, $request->all());
+            $service = new HotelService();
+            $canEditPrice = $this->canEditHotelOrderPrice();
+            DB::transaction(function () use ($order, $line, $request, $service, $canEditPrice) {
+                $data = $request->all();
+                if (!$canEditPrice && isset($data['unit_price'])) {
+                    unset($data['unit_price']);
+                }
+
+                $service->updateLine($order, $line, $data);
+                $service->validateStockForOpenOrder($order);
+            });
         } catch (\Exception $e) {
             return redirect()->back()->with('mensaje_error', $e->getMessage());
         }
@@ -88,6 +114,84 @@ class HotelOrderController extends Controller
         }
 
         return redirect(HotelBreadcrumb::url('hotel/orders/' . $order->id))->with('flash_message', 'Linea eliminada correctamente.');
+    }
+
+    public function saveLines(Request $request, $id)
+    {
+        $order = $this->findOrder($id);
+        $service = new HotelService();
+        $lines = is_array($request->lines) ? $request->lines : array();
+        $newLine = is_array($request->new_line) ? $request->new_line : array();
+        $newLines = is_array($request->new_lines) ? $request->new_lines : array();
+        $canEditPrice = $this->canEditHotelOrderPrice();
+
+        if (!$order->canEditLines()) {
+            return redirect()->back()->with('mensaje_error', 'El pedido no permite modificar lineas.');
+        }
+
+        try {
+            DB::transaction(function () use ($order, $service, $lines, $newLine, $newLines, $canEditPrice) {
+                foreach ($lines as $lineId => $lineData) {
+                    $line = $this->findLine($order, $lineId);
+                    if (!$canEditPrice && isset($lineData['unit_price'])) {
+                        unset($lineData['unit_price']);
+                    }
+
+                    $this->validateLineData($lineData, $canEditPrice);
+                    $service->updateLine($order, $line, $lineData);
+                }
+
+                if (isset($newLine['producto_id']) && (int)$newLine['producto_id'] > 0) {
+                    $newLines[] = $newLine;
+                }
+
+                foreach ($newLines as $lineData) {
+                    if (!isset($lineData['producto_id']) || (int)$lineData['producto_id'] <= 0) {
+                        continue;
+                    }
+
+                    if (!$canEditPrice && isset($lineData['unit_price'])) {
+                        unset($lineData['unit_price']);
+                    }
+
+                    $this->validateLineData($lineData, false);
+                    $service->createLine($order, $lineData);
+                }
+
+                $service->validateStockForOpenOrder($order);
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->with('mensaje_error', $e->getMessage());
+        }
+
+        return redirect(HotelBreadcrumb::url('hotel/orders/' . $order->id))->with('flash_message', 'Pedido hotelero actualizado correctamente.');
+    }
+
+    private function canEditHotelOrderPrice()
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        if (method_exists($user, 'can')) {
+            try {
+                if ($user->can('editar_precio_total_en_linea_registro_factura_pos')) {
+                    return true;
+                }
+            } catch (\Exception $e) {
+                // Algunas instalaciones antiguas pueden no tener este permiso sembrado.
+            }
+        }
+
+        if (method_exists($user, 'hasRole')) {
+            if ($user->hasRole('SuperAdmin') || $user->hasRole('Administrador') || $user->hasRole('Admin Colegio')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function generateStandardInvoice($id)
@@ -145,7 +249,10 @@ class HotelOrderController extends Controller
 
     private function findOrder($id)
     {
-        return HotelOrderHeader::where('empresa_id', Auth::user()->empresa_id)->where('id', $id)->with('stay.room', 'cliente.tercero', 'lines.product', 'posInvoice.tipo_documento_app', 'salesInvoice.tipo_documento_app')->firstOrFail();
+        return HotelOrderHeader::where('empresa_id', Auth::user()->empresa_id)
+            ->where('id', $id)
+            ->with('stay.room.bodega', 'cliente.tercero', 'lines.product', 'lines.bodega', 'posInvoice.tipo_documento_app', 'salesInvoice.tipo_documento_app')
+            ->firstOrFail();
     }
 
     private function findLine(HotelOrderHeader $order, $lineId)
@@ -153,11 +260,38 @@ class HotelOrderController extends Controller
         return HotelOrderLine::where('empresa_id', Auth::user()->empresa_id)->where('hotel_order_id', $order->id)->where('id', $lineId)->firstOrFail();
     }
 
+    private function validateLineData($data, $requireUnitPrice)
+    {
+        $quantity = isset($data['quantity']) ? (float)$data['quantity'] : 0;
+        if ($quantity <= 0) {
+            throw new \Exception('La cantidad debe ser mayor a cero.');
+        }
+
+        if ($requireUnitPrice || (isset($data['unit_price']) && $data['unit_price'] !== '')) {
+            if (!isset($data['unit_price']) || !is_numeric($data['unit_price']) || (float)$data['unit_price'] < 0) {
+                throw new \Exception('El precio debe ser mayor o igual a cero.');
+            }
+        }
+
+        if (isset($data['discount']) && $data['discount'] !== '' && (!is_numeric($data['discount']) || (float)$data['discount'] < 0)) {
+            throw new \Exception('El descuento debe ser mayor o igual a cero.');
+        }
+
+        if (isset($data['producto_id']) && (int)$data['producto_id'] > 0 && is_null(InvProducto::find((int)$data['producto_id']))) {
+            throw new \Exception('El producto no existe.');
+        }
+    }
+
     private function productsList()
     {
         $rows = InvProducto::where('core_empresa_id', Auth::user()->empresa_id)->where('estado', 'Activo')->orderBy('descripcion')->get();
         $options = array('' => '');
         foreach ($rows as $row) {
+
+            if ( HotelRoom::where('inv_producto_id', $row->id)->exists() ) {
+                continue; // Skip products that are linked to hotel rooms
+            }
+            
             $options[$row->id] = $row->id . ' - ' . $row->descripcion;
         }
         return $options;

@@ -132,6 +132,15 @@ class AccumulationService
     {
         $invoice = FacturaPos::find($invoice_id);
 
+        if ($invoice->estado == 'Contabilizado') {
+            return 1;
+        }
+
+        if ($invoice->estado == 'Acumulado') {
+            $this->accounting_one_invoice($invoice_id);
+            return 1;
+        }
+
         if ($invoice->estado != 'Pendiente') {
             return 1;
         }
@@ -186,11 +195,14 @@ class AccumulationService
                 }
                 
                 $datos_linea = $datos;
-                $datos_linea['inv_bodega_id'] = $obj_inv_serv->get_bodega_id_producto($linea->inv_producto_id, $bodega_default_id, $buscar_bodega_cocina);
+                $datos_linea['inv_bodega_id'] = $this->getInvoiceLineBodegaId($invoice, $linea, $obj_inv_serv);
 
                 // Movimiento de Ventas
                 VtasMovimiento::create( $datos_linea + $linea->toArray() );
                 
+                if (empty($linea->inv_bodega_id)) {
+                    $linea->inv_bodega_id = $datos_linea['inv_bodega_id'];
+                }
                 $linea->estado = 'Acumulado';
                 $linea->save();
             }
@@ -321,10 +333,11 @@ class AccumulationService
 
         $invoice_lines = $invoice->lineas_registros;
         $obj_sales_serv = new SalesServices();
+        $obj_inv_serv = new InventoriesServices();
 
         foreach ( $invoice_lines as $invoice_line )
         {
-            if( $invoice_line->estado == 'Pendiente')
+            if( $invoice_line->estado == 'Pendiente' || $invoice_line->estado == 'Contabilizado')
             {
                 continue;
             }
@@ -332,9 +345,13 @@ class AccumulationService
             $data_invoice_line = $invoice->toArray() + $invoice_line->toArray();
 
             $data_invoice_line['estado'] = 'Activo';
+            $data_invoice_line['inv_bodega_id'] = $this->getInvoiceLineBodegaId($invoice, $invoice_line, $obj_inv_serv);
 
             $obj_sales_serv->contabilizar_movimiento_credito( $data_invoice_line, $detalle_operacion );
 
+            if (empty($invoice_line->inv_bodega_id)) {
+                $invoice_line->inv_bodega_id = $data_invoice_line['inv_bodega_id'];
+            }
             $invoice_line->estado = 'Contabilizado';
             $invoice_line->save();
         }
@@ -385,5 +402,30 @@ class AccumulationService
         // Actualizar encabezado de factura
         $invoice->estado = 'Contabilizado';
         $invoice->save();
+    }
+
+    protected function getInvoiceLineBodegaId($invoice, $invoice_line, $obj_inv_serv = null)
+    {
+        if (!empty($invoice_line->inv_bodega_id)) {
+            return (int)$invoice_line->inv_bodega_id;
+        }
+
+        $bodega_default_id = 0;
+        $buscar_bodega_cocina = false;
+        if (!is_null($invoice) && !is_null($invoice->pdv)) {
+            $bodega_default_id = (int)$invoice->pdv->bodega_default_id;
+            $buscar_bodega_cocina = (int)$invoice->pdv->crear_ensamble_de_recetas === 1;
+        }
+
+        if (is_null($obj_inv_serv)) {
+            $obj_inv_serv = new InventoriesServices();
+        }
+
+        $bodega_id = $obj_inv_serv->get_bodega_id_producto($invoice_line->inv_producto_id, $bodega_default_id, $buscar_bodega_cocina);
+        if ((int)$bodega_id <= 0) {
+            throw new \Exception('No se pudo determinar la bodega para acumular el producto ' . $invoice_line->inv_producto_id . ' en la factura POS.');
+        }
+
+        return (int)$bodega_id;
     }
 }

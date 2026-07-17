@@ -3,6 +3,8 @@
 @section('content')
     <?php $hotelUrl = 'App\\Hotel\\Support\\HotelBreadcrumb'; ?>
     <?php $form_create = array('campos' => array(array('tipo' => 'cliente_autocomplete'))); ?>
+    <?php $roomBodegaId = $order->stay && $order->stay->room ? (int)$order->stay->room->inv_bodega_id : 0; ?>
+    <?php $roomBodegaLabel = $order->stay && $order->stay->room && $order->stay->room->bodega ? $order->stay->room->bodega->descripcion : ''; ?>
     {{ Form::bsMigaPan($miga_pan) }}
     @include('layouts.mensajes')
 
@@ -17,11 +19,8 @@
                 </div>
             </div>
             <table class="table table-bordered">
-                <tr><th>Cliente</th><td>{{ $order->cliente && $order->cliente->tercero ? $order->cliente->tercero->descripcion : $order->cliente_id }}</td></tr>
-                <tr><th>Habitacion</th><td>{{ $order->stay && $order->stay->room ? $order->stay->room->room_number : '' }}</td></tr>
-                <tr><th>Fecha</th><td>{{ $order->order_date }}</td></tr>
-                <tr><th>Estado</th><td>{{ $order->status }}</td></tr>
-                <tr>
+                <tr><th>Cliente</th><td>{{ $order->cliente && $order->cliente->tercero ? $order->cliente->tercero->descripcion : $order->cliente_id }}</td><th>Estado</th><td>{{ $order->status }}</td></tr>
+                <tr><th>Habitacion</th><td>{{ $order->stay && $order->stay->room ? $order->stay->room->room_number : '' }}</td>
                     <th>Factura</th>
                     <td>
                         @if($order->invoiceUrl() != '')
@@ -29,55 +28,57 @@
                         @else
                             {{ $order->invoiceLabel() }}
                         @endif
-                    </td>
-                </tr>
+                    </td></tr>
+                <tr><th>Fecha</th><td>{{ $order->order_date }}</td>
+                    <th>Creado por:</th>
+                    <td>
+                        {{ $order->creador_por() ? $order->creador_por()->first()->name : '' }}
+                    </td></tr>
+                <tr><th>Bodega minibar</th><td colspan="3">{{ $roomBodegaLabel }}</td></tr>
             </table>
 
             <h4>Lineas del pedido</h4>
+            @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
+                <form method="POST" id="hotel_order_lines_form" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/save-lines')) }}">
+                    {{ csrf_field() }}
+            @endif
             <div class="table-responsive">
-                <table class="table table-bordered table-striped">
+                <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th style="width: 25%;">Producto</th>
-                            <th>Cantidad</th>
+                            <th>Bodega</th>
                             <th>Precio</th>
-                            <th>Descuento</th>
+                            <th>Cantidad</th>
+                            <th>Vlr. Dcto. ($)</th>
                             <th>Impuesto</th>
                             <th>Total</th>
-                            <th>Accion</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="hotel_order_lines_body">
                         <?php $total = 0; ?>
                         @foreach($order->lines as $line)
                             <?php $total += $line->line_total; ?>
                             <tr>
-                                <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines/'.$line->id.'/update')) }}">
-                                    {{ csrf_field() }}
-                                    <td style="white-space: normal;">{{ $line->product ? $line->product->descripcion : $line->producto_id }}</td>
-                                    <td><input type="text" name="quantity" class="form-control input-sm text-right" value="{{ $line->quantity }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
-                                    <td><input type="text" name="unit_price" class="form-control input-sm text-right" value="{{ $line->unit_price }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
-                                    <td><input type="text" name="discount" class="form-control input-sm text-right" value="{{ $line->discount }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
-                                    <td><input type="text" name="tax_value" class="form-control input-sm text-right" value="{{ $line->tax_value }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }}></td>
-                                    <td class="text-right">{{ number_format($line->line_total, 2, ',', '.') }}</td>
-                                    <td>
-                                        @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
-                                            <button class="btn btn-warning btn-xs">Actualizar</button>
-                                        @endif
-                                </form>
-                                        @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
-                                            <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines/'.$line->id.'/delete')) }}" style="display:inline-block;">
-                                                {{ csrf_field() }}
-                                                <button class="btn btn-danger btn-xs" onclick="return confirm('Eliminar linea?')">Eliminar</button>
-                                            </form>
-                                        @endif
-                                    </td>
+                                <td style="white-space: normal;">{{ $line->product ? $line->product->descripcion : $line->producto_id }}</td>
+                                <td>{{ $line->bodega ? $line->bodega->descripcion : $line->inv_bodega_id }}</td>
+                                <td class="text-right">
+                                    ${{ number_format($line->unit_price, 2, ',', '.')   }}
+                                    <input type="hidden" name="lines[{{ $line->id }}][unit_price]" value="{{ $line->unit_price }}">
+                                </td>
+                                <td><input type="text" name="lines[{{ $line->id }}][quantity]" class="form-control input-sm text-right" value="{{ $line->quantity }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;"></td>
+                                <td><input type="text" name="lines[{{ $line->id }}][discount]" class="form-control input-sm text-right" value="{{ $line->discount }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;"></td>
+                                <td class="text-right">
+                                    ${{ number_format($line->tax_value, 2, ',', '.') }}
+                                </td>
+                                <td class="text-right">
+                                    ${{ number_format($line->line_total, 2, ',', '.') }}
+                                </td>
                             </tr>
                         @endforeach
-                        <tr>
-                            <th colspan="5" class="text-right">Total</th>
+                        <tr id="hotel_order_total_row">
+                            <th colspan="6" class="text-right">Total</th>
                             <th class="text-right">{{ number_format($total, 2, ',', '.') }}</th>
-                            <th>&nbsp;</th>
                         </tr>
                     </tbody>
                 </table>
@@ -85,38 +86,45 @@
 
             @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
                 <h4>Agregar consumo</h4>
-                <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/lines')) }}">
-                    {{ csrf_field() }}
+                    <input type="hidden" name="room_id" value="{{ $order->stay ? $order->stay->room_id : '' }}">
+                    <input type="hidden" id="hotel_inv_bodega_id" value="{{ $roomBodegaId }}">
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Producto/Servicio</label>
-                                <select name="producto_id" id="hotel_producto_id" class="form-control" required>
+                                <select id="hotel_producto_id" class="form-control">
                                     @foreach($products as $key => $label)
                                         <option value="{{ $key }}">{{ $label }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <div class="form-group">
                                 <label>Cantidad</label>
-                                <input type="text" name="quantity" id="hotel_quantity" class="form-control" value="1">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Precio</label>
-                                <input type="text" name="unit_price" id="hotel_unit_price" class="form-control" placeholder="Automático">
+                                <input type="text" id="hotel_quantity" class="form-control" value="1">
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <input type="hidden" name="source_type" value="MANUAL">
-                                <button class="btn btn-primary" title="Agregar línea"><i class="fa fa-plus"></i></button>
+                                <label>Stock</label>
+                                <input type="text" id="hotel_stock" class="form-control" placeholder="Stock" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Precio</label>
+                                <input type="text" id="hotel_unit_price" class="form-control" placeholder="Automático" {{ $canEditHotelOrderPrice ? '' : 'readonly' }}>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button class="btn btn-info btn-block" type="button" id="hotel_add_pending_line"><i class="fa fa-plus"></i> Agregar</button>
                             </div>
                         </div>
                     </div>
+                    <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> Guardar cambios</button>
                     <br>
                 </form>
             @endif
@@ -185,27 +193,15 @@
             <div class="marco_formulario">
                 <h5>Generar factura</h5>
                 <hr>
-                <!-- <form method="POST" action="{ { url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-standard-invoice')) }}" style="display:inline-block;">
-                    {{ csrf_field() }}
-                    <button class="btn btn-success" onclick="return confirm('Generar factura estandar?')">Generar factura estandar</button>
-                </form>
-                -->
                 <form method="POST" id="hotel_generate_pos_invoice_form" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/generate-pos-invoice')) }}" style="display:block;">
                     {{ csrf_field() }}
                     <label>Tipo de factura:</label>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="invoice_document_type" value="pos" checked>
-                            Factura POS
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="invoice_document_type" value="electronic">
-                            Factura electronica
-                        </label>
-                    </div>
+                    <select name="invoice_document_type" class="form-control" style="display:inline-block; width:auto;">
+                        <option value="pos">POS int.</option>
+                        <option value="electronic">F.E.</option>
+                    </select>
 
+                    <br>
                     <label>Facturar a:</label>
                     <div class="radio">
                         <label>
@@ -244,7 +240,7 @@
                     <input type="hidden" name="object_anticipos" id="hotel_object_anticipos" value="null">
                     <input type="hidden" id="hotel_electronic_resolution_status" value="{{ isset($electronicResolutionValidation->status) ? $electronicResolutionValidation->status : 'error' }}">
                     <input type="hidden" id="hotel_electronic_resolution_message" value="{{ isset($electronicResolutionValidation->message) ? $electronicResolutionValidation->message : 'No fue posible validar la resolucion de facturacion electronica.' }}">
-                    <button class="btn btn-primary" onclick="return confirm('Generar factura?')"> <i class="fa fa-save"></i> Guardar </button>
+                    <button class="btn btn-primary" type="submit"> <i class="fa fa-save"></i> Guardar Factura</button>
                 </form>
                 <br><br><br><br>
             </div>
@@ -271,11 +267,47 @@
             var $precio = $('#hotel_unit_price');
             var $descripcion = $('#hotel_line_description');
             var $cantidad = $('#hotel_quantity');
+            var $stock = $('#hotel_stock');
+            var $bodega = $('#hotel_inv_bodega_id');
+            var hotelRoomId = "{{ $order->stay ? $order->stay->room_id : '' }}";
+            var hotelBodegaLabel = {!! json_encode($roomBodegaLabel) !!};
+            var hotelNewLineIndex = 0;
             var $formaPago = $('#hotel_forma_pago');
             var $mediosPagoPanel = $('#hotel_medios_pago_panel');
             var $invoiceCustomerPicker = $('#hotel_invoice_customer_picker');
             var hotelOrderTotal = {{ (float)$order->lines->sum('line_total') }};
             var hotelAdvanceObjects = [];
+            var hotelCanEditUnitPrice = {{ $canEditHotelOrderPrice ? 'true' : 'false' }};
+            var hotelSelectedTaxRate = 0;
+
+            function hotelSwalAlert(message, icon) {
+                icon = icon || 'warning';
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire({
+                        title: 'Atencion',
+                        text: message,
+                        icon: icon,
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            }
+
+            function hotelSwalConfirm(message, onConfirm) {
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire({
+                        title: 'Confirmar',
+                        text: message,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Aceptar',
+                        cancelButtonText: 'Cancelar'
+                    }).then(function(result) {
+                        if (result && (result.isConfirmed || result.value)) {
+                            onConfirm();
+                        }
+                    });
+                }
+            }
 
             if ($.fn.select2) {
                 $producto.select2();
@@ -299,17 +331,22 @@
                 if (!productoId) {
                     $precio.val('');
                     $precio.attr('placeholder', 'Automatico');
+                    $stock.val('');
+                    $stock.attr('placeholder', 'Stock');
+                    hotelSelectedTaxRate = 0;
                     return;
                 }
 
                 $precio.attr('placeholder', 'Consultando...');
+                $stock.attr('placeholder', 'Consultando...');
 
                 $.get("{{ url('inv_consultar_productos') }}", {
                     producto_id: productoId,
                     cliente_id: "{{ $order->cliente_id }}",
                     lista_precios_id: "{{ $order->cliente ? $order->cliente->lista_precios_id : '' }}",
                     fecha: "{{ date('Y-m-d') }}",
-                    cantidad: $cantidad.val()
+                    cantidad: $cantidad.val(),
+                    bodega_id: $bodega.val()
                 }).done(function(respuesta) {
                     respuesta = normalizarRespuesta(respuesta);
 
@@ -325,14 +362,112 @@
                         $descripcion.val(respuesta.descripcion);
                     }
 
+                    if (respuesta.stock !== undefined && respuesta.stock !== null && respuesta.stock !== '') {
+                        $stock.val(respuesta.stock);
+                    } else if (respuesta.existencia_actual !== undefined && respuesta.existencia_actual !== null && respuesta.existencia_actual !== '') {
+                        $stock.val(respuesta.existencia_actual);
+                    } else {
+                        $stock.val('0');
+                    }
+
+                    hotelSelectedTaxRate = respuesta.tasa_impuesto !== undefined && respuesta.tasa_impuesto !== null && respuesta.tasa_impuesto !== '' ? parseFloat(respuesta.tasa_impuesto) : 0;
+                    if (isNaN(hotelSelectedTaxRate)) {
+                        hotelSelectedTaxRate = 0;
+                    }
+
                     $precio.attr('placeholder', 'Automatico');
+                    $stock.attr('placeholder', 'Stock');
                 }).fail(function() {
                     $precio.attr('placeholder', 'Automatico');
+                    $stock.val('');
+                    $stock.attr('placeholder', 'Stock');
+                    hotelSelectedTaxRate = 0;
                 });
             }
 
             $producto.on('change', cargarPrecioProducto);
             cargarPrecioProducto();
+
+            function hotelEscapeHtml(value) {
+                return $('<div/>').text(value || '').html();
+            }
+
+            function hotelProductLabel() {
+                var text = $producto.find('option:selected').text() || '';
+                return $.trim(text);
+            }
+
+            function hotelAppendPendingLine() {
+                var productoId = $producto.val();
+                var productLabel = hotelProductLabel();
+                var quantity = $cantidad.val();
+                var unitPrice = $precio.val();
+
+                if (!productoId) {
+                    hotelSwalAlert('Debe seleccionar un producto o servicio.');
+                    return false;
+                }
+
+                if (parseFloat(quantity) <= 0 || isNaN(parseFloat(quantity))) {
+                    hotelSwalAlert('La cantidad debe ser mayor a cero.');
+                    return false;
+                }
+
+                if (unitPrice === '' && hotelCanEditUnitPrice) {
+                    unitPrice = '0';
+                }
+
+                if (unitPrice !== '' && (parseFloat(unitPrice) < 0 || isNaN(parseFloat(unitPrice)))) {
+                    hotelSwalAlert('El precio debe ser mayor o igual a cero.');
+                    return false;
+                }
+
+                var rowIndex = hotelNewLineIndex++;
+                var displayPrice = unitPrice === '' ? 'Automatico' : '$' + parseFloat(unitPrice).toFixed(2);
+                var lineTotal = unitPrice === '' ? 0 : parseFloat(quantity) * parseFloat(unitPrice);
+                var taxValue = 0;
+                if (hotelSelectedTaxRate > 0 && lineTotal > 0) {
+                    taxValue = lineTotal - (lineTotal / (1 + (hotelSelectedTaxRate / 100)));
+                }
+                var rowHtml =
+                    '<tr class="hotel-pending-line">' +
+                        '<td style="white-space: normal;">' + hotelEscapeHtml(productLabel) +
+                            '<input type="hidden" name="new_lines[' + rowIndex + '][producto_id]" value="' + hotelEscapeHtml(productoId) + '">' +
+                            '<input type="hidden" name="new_lines[' + rowIndex + '][room_id]" value="' + hotelEscapeHtml(hotelRoomId) + '">' +
+                            '<input type="hidden" name="new_lines[' + rowIndex + '][source_type]" value="MANUAL">' +
+                        '</td>' +
+                        '<td>' + hotelEscapeHtml(hotelBodegaLabel) + '</td>' +
+                        '<td class="text-right">' + hotelEscapeHtml(displayPrice) +
+                            '<input type="hidden" name="new_lines[' + rowIndex + '][unit_price]" value="' + hotelEscapeHtml(unitPrice) + '">' +
+                        '</td>' +
+                        '<td><input type="text" name="new_lines[' + rowIndex + '][quantity]" class="form-control input-sm text-right" value="' + hotelEscapeHtml(quantity) + '" style="font-size: 14px;"></td>' +
+                        '<td><input type="text" name="new_lines[' + rowIndex + '][discount]" class="form-control input-sm text-right" value="0" style="font-size: 14px;"></td>' +
+                        '<td class="text-right">$' + taxValue.toFixed(2) + '</td>' +
+                        '<td class="text-right">$' + lineTotal.toFixed(2) + '</td>' +
+                    '</tr>';
+
+                $('#hotel_order_total_row').before(rowHtml);
+                $producto.val('').trigger('change');
+                $cantidad.val('1');
+                $precio.val('');
+                $stock.val('');
+                return true;
+            }
+
+            $('#hotel_add_pending_line').on('click', function() {
+                hotelAppendPendingLine();
+            });
+
+            $('#hotel_order_lines_form').on('submit', function(event) {
+                if ($producto.val()) {
+                    if (!hotelAppendPendingLine()) {
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+
+                return true;
+            });
 
             function hotelParseMoney(value) {
                 value = (value || '').toString();
@@ -489,7 +624,7 @@
                 var remaining = hotelOrderTotal - totalPayments;
 
                 if (remaining <= 1) {
-                    alert('El pedido ya tiene medios de pago por el total.');
+                    hotelSwalAlert('El pedido ya tiene medios de pago por el total.');
                     return;
                 }
 
@@ -584,27 +719,6 @@
                 $form.removeAttr('target');
             }
 
-            function validateElectronicResolutionBeforeSubmit(event) {
-                if ($('input[name="invoice_document_type"]:checked').val() !== 'electronic') {
-                    return true;
-                }
-
-                var status = $('#hotel_electronic_resolution_status').val();
-                var message = $('#hotel_electronic_resolution_message').val();
-
-                if (status === 'error') {
-                    event.preventDefault();
-                    alert(message);
-                    return false;
-                }
-
-                if (status === 'warning' && message !== '') {
-                    return confirm(message + "\n\nDesea continuar con la generacion de la factura electronica?");
-                }
-
-                return true;
-            }
-
             $('#hotel_generate_pos_invoice_form').on('submit', function(event) {
                 var $form = $(this);
                 var rows = hotelPaymentRows();
@@ -613,41 +727,62 @@
                 var hasAdvances = hotelAdvanceObjects.length > 0;
                 var invoiceCustomerMode = $('input[name="invoice_customer_mode"]:checked').val();
 
-                if (invoiceCustomerMode === 'other' && $('#hotel_invoice_cliente_id').val() === '') {
-                    event.preventDefault();
-                    alert('Debe seleccionar el cliente a quien se emitira la factura.');
-                    return false;
-                }
-
-                if (!validateElectronicResolutionBeforeSubmit(event)) {
-                    return false;
-                }
-
-                if (formaPago === 'credito' && !hasAdvances) {
-                    $('#hotel_lineas_registros_medios_recaudos').val('[]');
-                    $('#hotel_object_anticipos').val('null');
-                    prepareHotelInvoiceSubmit($form);
+                if ($form.data('hotel-confirmed') == '1') {
                     return true;
                 }
 
-                if (rows.length === 0) {
-                    event.preventDefault();
-                    alert('Debe ingresar los medios de pago para facturar de contado o aplicar anticipos.');
+                event.preventDefault();
+
+                if (invoiceCustomerMode === 'other' && $('#hotel_invoice_cliente_id').val() === '') {
+                    hotelSwalAlert('Debe seleccionar el cliente a quien se emitira la factura.');
                     return false;
                 }
 
-                if (Math.abs(totalPayments - hotelOrderTotal) > 1) {
-                    event.preventDefault();
-                    alert('El valor total de los medios de pago debe ser igual al total del pedido hotelero.');
-                    return false;
+                function submitAfterConfirm() {
+                    if (formaPago === 'credito' && !hasAdvances) {
+                        $('#hotel_lineas_registros_medios_recaudos').val('[]');
+                        $('#hotel_object_anticipos').val('null');
+                    } else {
+                        if (rows.length === 0) {
+                            hotelSwalAlert('Debe ingresar los medios de pago para facturar de contado o aplicar anticipos.');
+                            return false;
+                        }
+
+                        if (Math.abs(totalPayments - hotelOrderTotal) > 1) {
+                            hotelSwalAlert('El valor total de los medios de pago debe ser igual al total del pedido hotelero.');
+                            return false;
+                        }
+
+                        $('#hotel_lineas_registros_medios_recaudos').val(JSON.stringify(rows));
+                        $('#hotel_object_anticipos').val(hasAdvances ? $.map(hotelAdvanceObjects, function(advance) {
+                            return JSON.stringify(advance);
+                        }).join(',') : 'null');
+                    }
+
+                    hotelSwalConfirm('Generar factura?', function() {
+                        prepareHotelInvoiceSubmit($form);
+                        $form.data('hotel-confirmed', '1');
+                        $form.submit();
+                    });
                 }
 
-                $('#hotel_lineas_registros_medios_recaudos').val(JSON.stringify(rows));
-                $('#hotel_object_anticipos').val(hasAdvances ? $.map(hotelAdvanceObjects, function(advance) {
-                    return JSON.stringify(advance);
-                }).join(',') : 'null');
-                prepareHotelInvoiceSubmit($form);
-                return true;
+                if ($('input[name="invoice_document_type"]:checked').val() === 'electronic') {
+                    var status = $('#hotel_electronic_resolution_status').val();
+                    var message = $('#hotel_electronic_resolution_message').val();
+
+                    if (status === 'error') {
+                        hotelSwalAlert(message);
+                        return false;
+                    }
+
+                    if (status === 'warning' && message !== '') {
+                        hotelSwalConfirm(message + "\n\nDesea continuar con la generacion de la factura electronica?", submitAfterConfirm);
+                        return false;
+                    }
+                }
+
+                submitAfterConfirm();
+                return false;
             });
         });
     </script>

@@ -38,19 +38,7 @@
     </tr>
 </table>
 
-@if($doc_encabezado->estado == 'Anulado')
-    <div class="lbl_doc_anulado">
-        Documento Anulado
-    </div>
-@endif
-
 <div class="subhead">
-
-    @if($doc_encabezado->estado == 'Anulado')
-    <div class="lbl_doc_anulado">
-        Documento Anulado
-    </div>
-    @endif
 
     <?php
         $elaboro = $doc_encabezado->creado_por;
@@ -94,6 +82,7 @@
                     @include('matriculas.facturas.datos_estudiante')
                     @include('ventas.formatos_impresion.detalles_factura_medica')
                     <b>Detalle: &nbsp;&nbsp;</b> {!! $doc_encabezado->descripcion !!}
+                    @include('hotel.partials.sales_invoice_stay_details')
                 </td>
         </table>    
     </div>

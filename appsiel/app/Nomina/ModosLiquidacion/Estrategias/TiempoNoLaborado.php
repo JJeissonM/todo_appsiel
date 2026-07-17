@@ -8,6 +8,7 @@ use Carbon\Carbon;
 
 use App\Nomina\NovedadTnl;
 use App\Nomina\NomDocRegistro;
+use App\Nomina\ParametroLegal;
 use Illuminate\Support\Facades\Auth;
 
 class TiempoNoLaborado implements Estrategia
@@ -17,6 +18,7 @@ class TiempoNoLaborado implements Estrategia
 	protected $valor_a_pagar_arl = 0;
 	protected $valor_a_pagar_afp = 0;
 	protected $valor_a_pagar_empresa = 0;
+    protected $fecha_referencia;
 	
 	/*
 		tipo_novedad_tnl: { incapacidad | permiso_remunerado | permiso_no_remunerado | suspencion }
@@ -25,6 +27,7 @@ class TiempoNoLaborado implements Estrategia
 	*/
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
+        $this->fecha_referencia = $liquidacion['documento_nomina']->fecha;
 		$lapso_documento = $liquidacion['documento_nomina']->lapso();
 
 		$novedades = NovedadTnl::where( [
@@ -275,9 +278,9 @@ class TiempoNoLaborado implements Estrategia
 		// El IBC almacenado es el del mes anterior; si no existe, se toma el sueldo
 		$valor_hora = $empleado->valor_ibc() / $horas_laborales;
 		// Se debe respetar al salario mínimo
-		if( $valor_hora < (float)config('nomina.SMMLV') / $this->get_horas_laborales() )
+		if( $valor_hora < ParametroLegal::smmlv_para_fecha($this->fecha_referencia) / $this->get_horas_laborales() )
 		{
-			$valor_hora = (float)config('nomina.SMMLV') / $this->get_horas_laborales();
+			$valor_hora = ParametroLegal::smmlv_para_fecha($this->fecha_referencia) / $this->get_horas_laborales();
 		}
 
 		$valor_total_liquidar = $valor_hora * $cantidad_horas_a_liquidar;
@@ -434,6 +437,7 @@ class TiempoNoLaborado implements Estrategia
 
 	public function retirar(NomDocRegistro $registro)
 	{
+        $this->fecha_referencia = $registro->fecha;
 		$novedad = $registro->novedad_tnl;
 		
 		if( is_null( $novedad ) )
@@ -569,7 +573,7 @@ class TiempoNoLaborado implements Estrategia
 
 	protected function get_horas_dia_laboral()
     {
-		$horas_dia_laboral = (float)config('nomina.horas_dia_laboral');
+		$horas_dia_laboral = ParametroLegal::horas_dia_laboral_para_fecha($this->fecha_referencia);
 
 		if ( $horas_dia_laboral <= 0 )
 		{
@@ -581,7 +585,7 @@ class TiempoNoLaborado implements Estrategia
 
 	protected function get_horas_laborales()
 	{
-		$horas_laborales = (float)config('nomina.horas_laborales');
+		$horas_laborales = ParametroLegal::horas_laborales_para_fecha($this->fecha_referencia);
 
 		if ( $horas_laborales <= 0 )
 		{

@@ -3,6 +3,7 @@
 namespace App\Nomina\Services;
 
 use App\Nomina\NomContrato;
+use App\Nomina\ParametroLegal;
 
 class Cotizante51Service
 {
@@ -29,7 +30,7 @@ class Cotizante51Service
     public function getIbcProporcionalPorDias($diasLaborados, $smmlv = null)
     {
         $dias = $this->normalizarDias((int)$diasLaborados);
-        $smmlv = is_null($smmlv) ? (float)config('nomina.SMMLV') : (float)$smmlv;
+        $smmlv = is_null($smmlv) ? ParametroLegal::smmlv_para_fecha() : (float)$smmlv;
 
         if ($dias <= 0.9) {
             return 0;
@@ -53,7 +54,7 @@ class Cotizante51Service
     public function getIbcRiesgosLaborales(NomContrato $empleado, $ibcBase, $smmlv = null)
     {
         if ($this->esCotizante51($empleado)) {
-            return is_null($smmlv) ? (float)config('nomina.SMMLV') : (float)$smmlv;
+            return is_null($smmlv) ? ParametroLegal::smmlv_para_fecha() : (float)$smmlv;
         }
 
         return (float)$ibcBase;

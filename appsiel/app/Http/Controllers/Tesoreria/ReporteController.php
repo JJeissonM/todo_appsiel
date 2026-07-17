@@ -474,7 +474,7 @@ class ReporteController extends TesoreriaController
 
         $todos_los_cursos = Curso::where('estado', 'Activo')->where('id_colegio', $colegio->id)->OrderBy('id')->get();
 
-        $cursos[''] = '';
+        $cursos[''] = 'Todos los cursos';
         foreach ($todos_los_cursos as $fila) {
             $cursos[$fila->id] = $fila->descripcion;
         }
@@ -567,6 +567,13 @@ class ReporteController extends TesoreriaController
     {
         $this->actualizar_estado_cartera();
 
+        $curso_id = trim((string)$curso_id);
+        $curso_id_para_consulta = $curso_id == '' ? null : $curso_id;
+        if (empty($colegio_id)) {
+            $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()->first();
+            $colegio_id = is_null($colegio) ? null : $colegio->id;
+        }
+
         $concepto_matricula_id = config('matriculas.inv_producto_id_default_matricula');
         $concepto_pension_id = config('matriculas.inv_producto_id_default_pension');
 
@@ -600,7 +607,13 @@ class ReporteController extends TesoreriaController
                 '</div>';
         }
 
-        $todas_las_matriculas_del_curso = Matricula::estudiantes_matriculados($curso_id, $periodo_lectivo_id, null);
+        $todas_las_matriculas_del_curso = Matricula::estudiantes_matriculados($curso_id_para_consulta, $periodo_lectivo_id, null);
+        if (is_null($curso_id_para_consulta) && !empty($colegio_id)) {
+            $todas_las_matriculas_del_curso = $todas_las_matriculas_del_curso->where('id_colegio', $colegio_id);
+        }
+        $todas_las_matriculas_del_curso = $todas_las_matriculas_del_curso->sortBy(function ($matricula) {
+            return $matricula->curso_descripcion . ' ' . $matricula->nombre_completo;
+        });
 
         $format_money = function ($valor) {
             return '$' . number_format($valor, 0, ',', '.');
@@ -620,15 +633,19 @@ class ReporteController extends TesoreriaController
                 break;
         }
 
-        $curso = Curso::find($curso_id);
+        $curso = Curso::find($curso_id_para_consulta);
+        if (is_null($curso)) {
+            $curso = (object)['descripcion' => 'Todos los cursos'];
+        }
 
         $filas = [];
         $fila = 1;
-        $total_columna = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        $total_columna_valor_cartera = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        $total_columna_valor_pagado = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $total_columna = array_fill(0, 11, 0);
+        $total_columna_valor_cartera = array_fill(0, 11, 0);
+        $total_columna_valor_pagado = array_fill(0, 11, 0);
         $total_valor_cartera = 0;
         $total_valor_pagado = 0;
+        $reportes_cursos = [];
 
         $config_campo_visualizar_en_reporte_cartera = config('tesoreria.campo_visualizar_en_reporte_cartera');
 
@@ -636,6 +653,10 @@ class ReporteController extends TesoreriaController
         {
             $total_linea = 0;
             $total_cartera_linea = 0;
+            $total_pagado_linea = 0;
+            $total_columna_linea = array_fill(0, 11, 0);
+            $total_columna_valor_cartera_linea = array_fill(0, 11, 0);
+            $total_columna_valor_pagado_linea = array_fill(0, 11, 0);
             $num_columna = 0;
             $fila_data = [
                 'num' => $fila,
@@ -675,8 +696,11 @@ class ReporteController extends TesoreriaController
                     if ( $valor_pagado_linea < 0 ) { $valor_pagado_linea = 0; }
                     $total_valor_cartera += $linea_cartera->valor_cartera;
                     $total_valor_pagado += $valor_pagado_linea;
+                    $total_pagado_linea += $valor_pagado_linea;
                     $total_columna_valor_cartera[$num_columna] += $linea_cartera->valor_cartera;
                     $total_columna_valor_pagado[$num_columna] += $valor_pagado_linea;
+                    $total_columna_valor_cartera_linea[$num_columna] += $linea_cartera->valor_cartera;
+                    $total_columna_valor_pagado_linea[$num_columna] += $valor_pagado_linea;
                     $total_cartera_linea += $linea_cartera->valor_cartera;
 
                     switch ($tipo_reporte) {
@@ -710,8 +734,9 @@ class ReporteController extends TesoreriaController
 
                     $fila_data['matricula'] = $subtabla;
                     $total_columna[$num_columna] += $saldo_pendiente;
-                    $num_columna++;
+                    $total_columna_linea[$num_columna] += $saldo_pendiente;
                 }
+                $num_columna++;
 
                 //Pension
                 $cartera_pension = TesoPlanPagosEstudiante::where('id_libreta',$libreta_pagos->id)
@@ -721,8 +746,11 @@ class ReporteController extends TesoreriaController
 
                 for ($i=2; $i < 12; $i++)
                 {
-                    $aplico_mes = false; // aplicó mes, es decir, si hay valor de pension en ese mes
                     $mes_columna = str_repeat(0, 2-strlen($i) ).$i;
+                    $saldo_pendiente_mes = 0;
+                    $valor_cartera_mes = 0;
+                    $valor_pagado_mes = 0;
+                    $subtablas_mes = [];
 
                     foreach ( $cartera_pension as $linea_cartera )
                     {
@@ -734,15 +762,16 @@ class ReporteController extends TesoreriaController
                             if ( $valor_pagado_linea < 0 ) { $valor_pagado_linea = 0; }
                             $total_valor_cartera += $linea_cartera->valor_cartera;
                             $total_valor_pagado += $valor_pagado_linea;
-                            $total_columna_valor_cartera[$num_columna] += $linea_cartera->valor_cartera;
-                            $total_columna_valor_pagado[$num_columna] += $valor_pagado_linea;
+                            $total_pagado_linea += $valor_pagado_linea;
                             $total_cartera_linea += $linea_cartera->valor_cartera;
+                            $valor_cartera_mes += $linea_cartera->valor_cartera;
+                            $valor_pagado_mes += $valor_pagado_linea;
 
                             switch ($tipo_reporte) {
                                 case '0':
                                 	$saldo_pendiente = $linea_cartera->saldo_pendiente;
-                                    $subtabla = $this->get_tabla_anidada($linea_cartera->id, $saldo_pendiente, $linea_cartera->valor_cartera, $linea_cartera->concepto);
                                     $total_linea += $valor_pagado_linea;
+                                    $subtablas_mes[] = $this->get_tabla_anidada($linea_cartera->id, $saldo_pendiente, $linea_cartera->valor_cartera, $linea_cartera->concepto);
 
                                     break;
 
@@ -754,7 +783,6 @@ class ReporteController extends TesoreriaController
                                     }else{
                                         $saldo_pendiente = 0;
                                     }
-                                    $subtabla = $format_money($saldo_pendiente);
                                     break;
 
                                 default:
@@ -762,29 +790,35 @@ class ReporteController extends TesoreriaController
                                     break;
                             }
 
-                            if ( $subtabla == '$0') {
-                                   $subtabla = '';
-                               }
-
-                            $fila_data['meses'][] = $subtabla;
-                            $aplico_mes = true;
-
-                            if ( !isset( $total_columna[$num_columna] ) )
-                            {
-                                dd( [ 'No existe datos para la columna: ' . $num_columna, $linea_cartera, $linea_cartera->estudiante->tercero->descripcion ] );
-                            }
-                            $total_columna[$num_columna] += $saldo_pendiente;
-                            $num_columna++;
+                            $saldo_pendiente_mes += $saldo_pendiente;
                         }
                     }
 
-                    if ( !$aplico_mes)
+                    $subtabla = '';
+                    if ($valor_cartera_mes > 0 || $saldo_pendiente_mes > 0)
                     {
-                        $fila_data['meses'][] = '';
+                        switch ($tipo_reporte) {
+                            case '0':
+                                $subtabla = implode('<br/>', $subtablas_mes);
+                                break;
+                            case '1':
+                                $subtabla = $format_money($saldo_pendiente_mes);
+                                break;
+                        }
 
-                        $total_columna[$num_columna] += 0;
-                        $num_columna++;
+                        if ( $subtabla == '$0') {
+                            $subtabla = '';
+                        }
                     }
+
+                    $fila_data['meses'][] = $subtabla;
+                    $total_columna_valor_cartera[$num_columna] += $valor_cartera_mes;
+                    $total_columna_valor_pagado[$num_columna] += $valor_pagado_mes;
+                    $total_columna[$num_columna] += $saldo_pendiente_mes;
+                    $total_columna_valor_cartera_linea[$num_columna] += $valor_cartera_mes;
+                    $total_columna_valor_pagado_linea[$num_columna] += $valor_pagado_mes;
+                    $total_columna_linea[$num_columna] += $saldo_pendiente_mes;
+                    $num_columna++;
                 }
 
 
@@ -801,6 +835,31 @@ class ReporteController extends TesoreriaController
 
                 $fila_data['total_linea'] = $total_linea;
                 $filas[] = $fila_data;
+                $curso_key = empty($una_matricula->curso_id) ? 'sin_curso' : $una_matricula->curso_id;
+                if (!isset($reportes_cursos[$curso_key])) {
+                    $reportes_cursos[$curso_key] = [
+                        'curso' => (object)['descripcion' => empty($una_matricula->curso_descripcion) ? 'Sin curso' : $una_matricula->curso_descripcion],
+                        'filas' => [],
+                        'total_columna' => array_fill(0, 11, 0),
+                        'total_columna_valor_cartera' => array_fill(0, 11, 0),
+                        'total_columna_valor_pagado' => array_fill(0, 11, 0),
+                        'gran_total' => 0,
+                        'total_valor_cartera' => 0,
+                        'total_valor_pagado' => 0
+                    ];
+                }
+
+                $fila_data['num'] = count($reportes_cursos[$curso_key]['filas']) + 1;
+                $reportes_cursos[$curso_key]['filas'][] = $fila_data;
+                $reportes_cursos[$curso_key]['total_valor_cartera'] += $total_cartera_linea;
+                $reportes_cursos[$curso_key]['total_valor_pagado'] += $total_pagado_linea;
+                for ($i=0; $i < 11; $i++)
+                {
+                    $reportes_cursos[$curso_key]['total_columna'][$i] += $total_columna_linea[$i];
+                    $reportes_cursos[$curso_key]['total_columna_valor_cartera'][$i] += $total_columna_valor_cartera_linea[$i];
+                    $reportes_cursos[$curso_key]['total_columna_valor_pagado'][$i] += $total_columna_valor_pagado_linea[$i];
+                    $reportes_cursos[$curso_key]['gran_total'] += $total_columna_linea[$i];
+                }
                 $fila++;
 
             }else{
@@ -826,6 +885,7 @@ class ReporteController extends TesoreriaController
                 'total_columna' => $total_columna,
                 'total_columna_valor_cartera' => $total_columna_valor_cartera,
                 'total_columna_valor_pagado' => $total_columna_valor_pagado,
+                'reportes_cursos' => array_values($reportes_cursos),
                 'gran_total' => $gran_total,
                 'total_valor_cartera' => $total_valor_cartera,
                 'total_valor_pagado' => $total_valor_pagado

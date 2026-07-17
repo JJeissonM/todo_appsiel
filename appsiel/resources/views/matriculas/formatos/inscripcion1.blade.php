@@ -96,10 +96,10 @@
         </td>
     </tr>
 
-    @if($estudiante->es_de_inclusion != null)
+    @if((new App\Matriculas\Services\InclusionEstudianteService())->esDeInclusion($estudiante))
         <tr>
             <td style="border: solid 1px black;" colspan="2">
-                <b>¿El estudiante es de inclusión?:</b> {{ $estudiante->es_de_inclusion }}
+                <b>¿El estudiante es de inclusión?:</b> Si
             </td>
             <td style="border: solid 1px black;" colspan="2">
                 <b>Diagnóstico de inclusión:</b> {{ $estudiante->diagnostico_inclusion }}
@@ -111,7 +111,7 @@
 <br>
 @include('matriculas.estudiantes.datos_basicos_padres')
 
-    @if($estudiante->es_de_inclusion == null)
+    @if(!(new App\Matriculas\Services\InclusionEstudianteService())->esDeInclusion($estudiante))
         <br><br>
     @endif
 

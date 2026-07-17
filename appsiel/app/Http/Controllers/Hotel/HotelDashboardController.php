@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Hotel;
 use App\CxC\CxcMovimiento;
 use App\Hotel\HotelReservation;
 use App\Hotel\HotelRoom;
+use App\Hotel\HotelStay;
 use App\Hotel\Services\HotelService;
 use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
@@ -32,6 +33,7 @@ class HotelDashboardController extends Controller
         $dashboardCanTransact = !empty($pdvData['can_transact']);
 
         if ($dashboardEnabled) {
+            $this->syncActiveStayRooms($empresaId);
             $this->syncTodayReservations($empresaId);
         }
 
@@ -82,9 +84,10 @@ class HotelDashboardController extends Controller
 
     private function pdvData(Request $request)
     {
-        $pdv = (new HotelService())->currentCashierPdv();
+        $hotelService = new HotelService();
+        $pdv = $hotelService->currentCashierPdv();
         $returnTo = $request->fullUrl();
-        $isAdmin = $this->userCanViewDashboardWithoutPdv();
+        $isAdmin = $hotelService->userCanViewDashboardWithoutPdv();
 
         if (is_null($pdv)) {
             return array(
@@ -140,22 +143,22 @@ class HotelDashboardController extends Controller
         );
     }
 
-    private function userCanViewDashboardWithoutPdv()
+    private function syncActiveStayRooms($empresaId)
     {
-        $user = Auth::user();
-        $rolesSinFiltro = config('filtrado_registros.roles_sin_filtro', array());
+        $activeRoomIds = HotelStay::where('empresa_id', $empresaId)
+            ->where('status', HotelStay::STATUS_ACTIVA)
+            ->whereNotNull('room_id')
+            ->lists('room_id')
+            ->toArray();
 
-        if (is_null($user)) {
-            return false;
+        if (count($activeRoomIds) == 0) {
+            return;
         }
 
-        foreach ($user->roles as $role) {
-            if (in_array($role->name, $rolesSinFiltro)) {
-                return true;
-            }
-        }
-
-        return false;
+        HotelRoom::where('empresa_id', $empresaId)
+            ->whereIn('id', $activeRoomIds)
+            ->where('status', '<>', HotelRoom::STATUS_OCUPADA)
+            ->update(array('status' => HotelRoom::STATUS_OCUPADA));
     }
 
     private function syncTodayReservations($empresaId)

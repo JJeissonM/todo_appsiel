@@ -127,21 +127,20 @@ class HotelGuest extends Cliente
 
     public function get_campos_adicionales_create($lista_campos)
     {
-        $lista_campos = parent::get_campos_adicionales_create($lista_campos);
-        return $this->appendHotelEavFields($lista_campos);
+        return parent::get_campos_adicionales_create($lista_campos);
     }
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
         $lista_campos = parent::get_campos_adicionales_edit($lista_campos, $registro);
-        $lista_campos = $this->setTerceroValues($lista_campos, $registro);
-        return $this->appendHotelEavFields($lista_campos, $registro);
+        return $this->setTerceroValues($lista_campos, $registro);
     }
 
     public function show_adicional($lista_campos, $registro)
     {
         $lista_campos = $this->setTerceroValues($lista_campos, $registro);
-        return $this->appendHotelEavFields($lista_campos, $registro, true);
+
+        return $this->prepareShowFields($lista_campos, $registro);
     }
 
     public function hotelAutocompleteLabel()
@@ -176,33 +175,161 @@ class HotelGuest extends Cliente
         return $lista_campos;
     }
 
-    private function appendHotelEavFields($lista_campos, $registro = null, $showMode = false)
+    private function prepareShowFields($lista_campos, $registro)
     {
-        foreach (self::hotelEavFields() as $fieldName => $definition) {
-            $campo = self::findHotelEavField($fieldName, $definition);
-            if (is_null($campo)) {
+        $fields = array();
+        $allowedNames = array(
+            'tipo',
+            'id_tipo_documento_id',
+            'numero_identificacion',
+            'descripcion',
+            'direccion1',
+            'codigo_ciudad',
+            'telefono1',
+            'email',
+            'estado',
+        );
+
+        foreach ($lista_campos as $campo) {
+            if (!isset($campo['name'])) {
                 continue;
             }
 
-            $value = !is_null($registro) ? self::getEavValue($registro->id, $campo->id) : 'null';
+            if ($campo['name'] == 'core_campo_id-ID') {
+                $campo = $this->prepareHotelEavShowField($campo, $registro);
+                if (!is_null($campo)) {
+                    $fields[] = $campo;
+                }
 
-            $lista_campos[] = array(
-                'id' => $campo->id,
-                'descripcion' => $definition['label'],
-                'tipo' => $definition['type'],
-                'name' => 'core_campo_id-ID',
-                'opciones' => '',
-                'value' => $value,
-                'show_value' => $value,
-                'atributos' => array('class' => 'form-control'),
-                'definicion' => '',
-                'requerido' => 0,
-                'editable' => $showMode ? 0 : 1,
-                'unico' => 0,
-            );
+                continue;
+            }
+
+            if (!in_array($campo['name'], $allowedNames)) {
+                continue;
+            }
+
+            $campo['show_value'] = $this->getGuestShowValue($campo);
+            $fields[] = $campo;
         }
 
-        return $lista_campos;
+        return $fields;
+    }
+
+    private function prepareHotelEavShowField($campo, $registro)
+    {
+        $definition = $this->hotelEavDefinitionByLabel($campo['descripcion']);
+        if (is_null($definition)) {
+            return null;
+        }
+
+        $value = self::getEavValue($registro->id, $campo['id']);
+        $campo['value'] = $value;
+        $campo['show_value'] = $this->getHotelEavShowValue($definition, $value);
+
+        return $campo;
+    }
+
+    private function hotelEavDefinitionByLabel($label)
+    {
+        foreach (self::hotelEavFields() as $fieldName => $definition) {
+            if ($definition['label'] == $label) {
+                $definition['name'] = $fieldName;
+                return $definition;
+            }
+        }
+
+        return null;
+    }
+
+    private function getGuestShowValue($campo)
+    {
+        $value = isset($campo['value']) ? $campo['value'] : '';
+
+        switch ($campo['name']) {
+            case 'id_tipo_documento_id':
+                return $this->getTableDescription('core_tipos_docs_id', $value);
+            case 'codigo_ciudad':
+                return $this->getCityDescription($value);
+            default:
+                return $this->cleanShowValue($value);
+        }
+    }
+
+    private function getHotelEavShowValue($definition, $value)
+    {
+        if ($value === '' || is_null($value)) {
+            return '';
+        }
+
+        switch ($definition['name']) {
+            case self::FIELD_NACIONALIDAD:
+                return $this->getCountryGentilicio($value);
+            case self::FIELD_PROCEDENCIA:
+            case self::FIELD_DESTINO:
+                return $this->getTableDescription('core_paises', $value);
+            default:
+                return $this->cleanShowValue($value);
+        }
+    }
+
+    private function getCountryGentilicio($paisId)
+    {
+        $pais = \DB::table('core_paises')->where('id', $paisId)->first();
+        if (is_null($pais)) {
+            return '';
+        }
+
+        if (isset($pais->gentilicio) && trim($pais->gentilicio) != '') {
+            return $pais->gentilicio;
+        }
+
+        return isset($pais->descripcion) ? $pais->descripcion : '';
+    }
+
+    private function getCityDescription($cityId)
+    {
+        $city = \DB::table('core_ciudades')
+            ->leftJoin('core_departamentos', 'core_departamentos.id', '=', 'core_ciudades.core_departamento_id')
+            ->select('core_ciudades.descripcion as ciudad', 'core_departamentos.descripcion as departamento')
+            ->where('core_ciudades.id', $cityId)
+            ->first();
+
+        if (is_null($city)) {
+            return '';
+        }
+
+        if (!empty($city->departamento)) {
+            return $city->ciudad . ', ' . $city->departamento;
+        }
+
+        return $city->ciudad;
+    }
+
+    private function getTableDescription($table, $id)
+    {
+        if ($id === '' || is_null($id)) {
+            return '';
+        }
+
+        $row = \DB::table($table)->where('id', $id)->first();
+        if (is_null($row)) {
+            return '';
+        }
+
+        if (isset($row->descripcion)) {
+            return $row->descripcion;
+        }
+
+        return $this->cleanShowValue($id);
+    }
+
+    private function cleanShowValue($value)
+    {
+        if (is_null($value) || $value === 'null') {
+            return '';
+        }
+
+        return $value;
     }
 
     private function storeEavValues($datos, $clienteId)
@@ -267,9 +394,9 @@ class HotelGuest extends Cliente
     {
         return array(
             self::FIELD_FECHA_NACIMIENTO => array('label' => 'Fecha de nacimiento', 'type' => 'fecha'),
-            self::FIELD_NACIONALIDAD => array('label' => 'Nacionalidad', 'type' => 'bsText'),
-            self::FIELD_PROCEDENCIA => array('label' => 'Procedencia', 'type' => 'bsText'),
-            self::FIELD_DESTINO => array('label' => 'Destino', 'type' => 'bsText'),
+            self::FIELD_NACIONALIDAD => array('label' => 'Nacionalidad', 'type' => 'select'),
+            self::FIELD_PROCEDENCIA => array('label' => 'Procedencia', 'type' => 'select'),
+            self::FIELD_DESTINO => array('label' => 'Destino', 'type' => 'select'),
         );
     }
 
@@ -326,9 +453,9 @@ class HotelGuest extends Cliente
                 'core_terceros.numero_identificacion AS campo1',
                 'core_terceros.descripcion AS campo2',
                 'fecha_nacimiento.valor AS campo3',
-                'nacionalidad.valor AS campo4',
-                'procedencia.valor AS campo5',
-                'destino.valor AS campo6',
+                'pais_nacionalidad.gentilicio AS campo4',
+                'pais_procedencia.descripcion AS campo5',
+                'pais_destino.descripcion AS campo6',
                 'vtas_clientes.estado AS campo7',
                 'vtas_clientes.id AS campo8'
             );
@@ -348,9 +475,9 @@ class HotelGuest extends Cliente
                 'core_terceros.numero_identificacion AS IDENTIFICACION',
                 'core_terceros.descripcion AS HUESPED',
                 'fecha_nacimiento.valor AS FECHA_NACIMIENTO',
-                'nacionalidad.valor AS NACIONALIDAD',
-                'procedencia.valor AS PROCEDENCIA',
-                'destino.valor AS DESTINO',
+                'pais_nacionalidad.gentilicio AS NACIONALIDAD',
+                'pais_procedencia.descripcion AS PROCEDENCIA',
+                'pais_destino.descripcion AS DESTINO',
                 'vtas_clientes.estado AS ESTADO'
             );
 
@@ -386,7 +513,10 @@ class HotelGuest extends Cliente
                     ->where('destino.modelo_padre_id', '=', $modelId)
                     ->where('destino.modelo_entidad_id', '=', 0)
                     ->where('destino.core_campo_id', '=', isset($ids[self::FIELD_DESTINO]) ? $ids[self::FIELD_DESTINO] : 0);
-            });
+            })
+            ->leftJoin('core_paises as pais_nacionalidad', 'pais_nacionalidad.id', '=', 'nacionalidad.valor')
+            ->leftJoin('core_paises as pais_procedencia', 'pais_procedencia.id', '=', 'procedencia.valor')
+            ->leftJoin('core_paises as pais_destino', 'pais_destino.id', '=', 'destino.valor');
     }
 
     private static function applySearch($query, $search)
@@ -400,8 +530,11 @@ class HotelGuest extends Cliente
                 ->orWhere('core_terceros.descripcion', 'LIKE', "%$search%")
                 ->orWhere('fecha_nacimiento.valor', 'LIKE', "%$search%")
                 ->orWhere('nacionalidad.valor', 'LIKE', "%$search%")
+                ->orWhere('pais_nacionalidad.gentilicio', 'LIKE', "%$search%")
                 ->orWhere('procedencia.valor', 'LIKE', "%$search%")
+                ->orWhere('pais_procedencia.descripcion', 'LIKE', "%$search%")
                 ->orWhere('destino.valor', 'LIKE', "%$search%")
+                ->orWhere('pais_destino.descripcion', 'LIKE', "%$search%")
                 ->orWhere('vtas_clientes.estado', 'LIKE', "%$search%");
         });
     }

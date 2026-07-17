@@ -50,8 +50,8 @@ class DocumentoSoporteService
          'nom_contrato_id' => $datos_doc_soporte['empleado']->id,
          'descripcion' => '',
          'head_data_json' => json_encode( $this->get_head_data_to_store( $datos_doc_soporte ) ),
-         'accruals_json' => json_encode( $this->remove_status_line( $datos_doc_soporte['accruals'] ) ),
-         'deductions_json' => json_encode( $this->remove_status_line( $datos_doc_soporte['deductions'] ) ),
+         'accruals_json' => json_encode( isset($datos_doc_soporte['accruals']) ? $this->remove_status_line( $datos_doc_soporte['accruals'] ) : [] ),
+         'deductions_json' => json_encode( isset($datos_doc_soporte['deductions']) ? $this->remove_status_line( $datos_doc_soporte['deductions'] ) : [] ),
          'employee_json' => json_encode( $datos_doc_soporte['employee'] ),
          'estado' => 'Sin enviar'
       ];
@@ -103,9 +103,11 @@ class DocumentoSoporteService
          }
       }
 
-      foreach ($datos_doc_soporte['deductions'] as $line) {
-         if ( isset($line['status']) && $line['status'] == 'error' ) {
-            return true;
+      if ( isset($datos_doc_soporte['deductions']) ) {
+         foreach ($datos_doc_soporte['deductions'] as $line) {
+            if ( isset($line['status']) && $line['status'] == 'error' ) {
+               return true;
+            }
          }
       }
 
@@ -252,10 +254,17 @@ class DocumentoSoporteService
          ];
       }
 
-      return [
+      $data = [
          'accruals' => $line_accruals,
          'deductions' => $line_deductions
       ];
+
+      if($line_deductions == null || count($line_deductions) == 0)
+      {
+         unset($data['deductions']);
+      }
+
+      return $data;
    }
 
    public function get_linea_empleado($registro_concepto, $concepto, $amount, $registros, $horas_dia_laboral)
@@ -274,7 +283,7 @@ class DocumentoSoporteService
 
       $codigo_cpto_dian = $this->normalize_dian_code($concepto->cpto_dian->codigo, $concepto->descripcion);
 
-      $skip = false;   
+      $skip = false;
       if($concepto->modo_liquidacion_id ==  16) { // Intereses de cesantías. Se agrega como subconcepto de las Cesantías
 
          foreach ($registros as $registro) {
@@ -286,6 +295,7 @@ class DocumentoSoporteService
             return [];
          }
 
+         // Solo se pagan Intereses
          $one_line['percentage'] = 12;
          $one_line['cesantias-interest'] = $amount;
          $amount = 0;
@@ -325,7 +335,7 @@ class DocumentoSoporteService
          $cesantias_interest = 0;
          foreach ($registros as $registro) {
             if ($registro->concepto->modo_liquidacion_id == 16) { // Intereses de cesantías
-               $cesantias_interest = $registro->valor_devengo;
+               $cesantias_interest += $registro->valor_devengo;
             }
          }
 

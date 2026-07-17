@@ -15,21 +15,13 @@
           margin: 15px;
         }
         
-        .lbl_doc_anulado{
-            background-color: rgba(253, 1, 1, 0.33);
-            width: 100%;
-            top: 300px;
-            transform: rotate(-45deg);
-            text-align: center;
-            font-size: 2em;
-        }
-
         .row{
             width: 100%;
         }
     </style>
 </head>
 <body @if(Input::get('no_auto_print') != '1') onload="window.print()" @endif>
+    @include('ventas.incluir.documento_anulado_watermark')
     <?php        
         $url_img = '';
         if ( !empty($empresa->imagen) )
@@ -88,11 +80,6 @@
 
     </table>
     
-    @if($doc_encabezado->estado == 'Anulado')
-        <div class="lbl_doc_anulado">
-            Documento Anulado
-        </div>
-    @endif
 </div>
     
 

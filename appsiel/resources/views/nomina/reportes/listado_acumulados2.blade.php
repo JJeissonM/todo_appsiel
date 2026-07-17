@@ -53,6 +53,10 @@
                 $totales_cantidad_horas = array_fill(0, count( $conceptos->toArray() ), 0);
 
                 $fila = '';
+                $movimientos_por_empleado_concepto = $movimientos->keyBy(function ($movimiento) {
+                    return $movimiento->core_tercero_id . '-' . $movimiento->nom_concepto_id;
+                });
+
             	foreach( $empleados as $empleado )
             	{	                
 	                $fila .= '<tr class="fila-'.$j.'">';
@@ -69,9 +73,12 @@
 
                     foreach( $conceptos as $concepto )
                     {
-                    		$devengo = $movimientos->whereLoose( 'core_tercero_id', $empleado->core_tercero_id )->whereLoose( 'nom_concepto_id', $concepto->id )->sum('valor_devengo');
-                    		$deduccion = $movimientos->whereLoose( 'core_tercero_id', $empleado->core_tercero_id )->whereLoose( 'nom_concepto_id', $concepto->id )->sum('valor_deduccion');
-                    		$cantidad_horas = $movimientos->whereLoose( 'core_tercero_id', $empleado->core_tercero_id )->whereLoose( 'nom_concepto_id', $concepto->id )->sum('cantidad_horas');
+                        $llave_movimiento = $empleado->core_tercero_id . '-' . $concepto->id;
+                        $movimiento = $movimientos_por_empleado_concepto->get( $llave_movimiento );
+
+                    		$devengo = is_null( $movimiento ) ? 0 : $movimiento->valor_devengo;
+                    		$deduccion = is_null( $movimiento ) ? 0 : $movimiento->valor_deduccion;
+                    		$cantidad_horas = is_null( $movimiento ) ? 0 : $movimiento->cantidad_horas;
 
 	                	$fila .= '<td> ' . dibuja_contenido_celda( $devengo, $deduccion, $cantidad_horas, $valores_a_mostrar ) . ' </td>';
 

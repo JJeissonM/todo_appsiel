@@ -37,11 +37,13 @@ use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 
 use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\TesoPlanPagosEstudiante;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Matriculas\Services\FacturaEstudiantesService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 
@@ -69,6 +71,10 @@ class FacturaEstudianteController extends TransaccionController
         $lista_campos = ModeloController::personalizar_campos($this->transaccion->id, $this->transaccion, $lista_campos, $cantidad_campos, 'create', null);
 
         $estudiante = Estudiante::find( Input::get('estudiante_id') );
+        if ( FacturaAuxEstudiante::cartera_ya_tiene_factura( Input::get('cartera_id') ) )
+        {
+            return redirect( 'tesoreria/ver_plan_pagos/' . Input::get('libreta_id') . '?id=3&id_modelo=31&id_transaccion=' )->with( 'mensaje_error', FacturaAuxEstudiante::mensaje_factura_duplicada( Input::get('cartera_id') ) );
+        }
 
         $responsable_financiero_estudiante = $estudiante->responsable_financiero();
 
@@ -135,33 +141,50 @@ class FacturaEstudianteController extends TransaccionController
      */
     public function store(Request $request)
     {
-        // Crear documento de Ventas
-        $request['remision_doc_encabezado_id'] = 0;
+        $cartera_estudiante_id = (int)$request->cartera_estudiante_id;
 
-        if (!isset($request['vendedor_id'])) {
-            $request['vendedor_id'] = 1;
+        try {
+            DB::transaction(function () use ($request, $cartera_estudiante_id) {
+                $registro_plan_pagos = TesoPlanPagosEstudiante::where('id', $cartera_estudiante_id)->lockForUpdate()->first();
+                if (is_null($registro_plan_pagos)) {
+                    throw new \Exception('La línea de cartera no existe.');
+                }
+
+                if (FacturaAuxEstudiante::cartera_ya_tiene_factura($cartera_estudiante_id)) {
+                    throw new \Exception(FacturaAuxEstudiante::mensaje_factura_duplicada($cartera_estudiante_id));
+                }
+
+                // Crear documento de Ventas
+                $request['remision_doc_encabezado_id'] = 0;
+
+                if (!isset($request['vendedor_id'])) {
+                    $request['vendedor_id'] = 1;
+                }
+
+                if (!isset($request['fecha_vencimiento'])) {
+                    $request['fecha_vencimiento'] = $request['fecha'];
+                }
+
+                if (!isset($request['forma_pago'])) {
+                    $request['forma_pago'] = 'credito';
+                }
+
+                $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
+
+                // Crear Líneas de registros del documento de ventas
+                $lineas_registros = json_decode($request->lineas_registros);
+                $request['creado_por'] = Auth::user()->email;
+                $request['registros_medio_pago'] = '[]';
+                VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
+
+                FacturaAuxEstudiante::create( [ 'vtas_doc_encabezado_id' => $doc_encabezado->id,
+                                                                'matricula_id' => (int)$request->matricula_id,
+                                                                'cartera_estudiante_id' => $cartera_estudiante_id
+                                                             ] );
+            });
+        } catch (\Exception $e) {
+            return redirect( 'tesoreria/ver_plan_pagos/' . (int)$request->libreta_id . '?id=3&id_modelo=31&id_transaccion=' )->with( 'mensaje_error', $e->getMessage() );
         }
-
-        if (!isset($request['fecha_vencimiento'])) {
-            $request['fecha_vencimiento'] = $request['fecha'];
-        }
-
-        if (!isset($request['forma_pago'])) {
-            $request['forma_pago'] = 'credito';
-        }        
-        
-        $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
-
-        // Crear Líneas de registros del documento de ventas
-        $lineas_registros = json_decode($request->lineas_registros);
-        $request['creado_por'] = Auth::user()->email;
-        $request['registros_medio_pago'] = '[]';
-        VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
-
-        $aux_factura = FacturaAuxEstudiante::create( [ 'vtas_doc_encabezado_id' => $doc_encabezado->id,
-                                                        'matricula_id' => (int)$request->matricula_id,
-                                                        'cartera_estudiante_id' => (int)$request->cartera_estudiante_id
-                                                     ] );
         
         return redirect( 'tesoreria/ver_plan_pagos/' . (int)$request->libreta_id . '?id=3&id_modelo=31&id_transaccion=' )->with( 'flash_message', 'Factura creada correctamente.');
 

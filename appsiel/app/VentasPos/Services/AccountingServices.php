@@ -30,7 +30,7 @@ class AccountingServices
     // Recontabilizar un documento dada su ID
     public function recontabilizar_factura( $documento_id )
     {
-        $documento = FacturaPos::find($documento_id);
+        $documento = FacturaPos::with('pdv')->find($documento_id);
 
         // Eliminar registros contables actuales
         ContabMovimiento::where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
@@ -47,7 +47,13 @@ class AccountingServices
         foreach ($registros_documento as $linea)
         {
             $detalle_operacion = 'Recontabilizado. ' . $linea->descripcion;
-            $obj_sales_serv->contabilizar_movimiento_credito( $documento->toArray() + $linea->toArray(), $detalle_operacion);
+            $datos_linea = $documento->toArray() + $linea->toArray();
+            $datos_linea['inv_bodega_id'] = $this->resolveLineWarehouseId($linea, $documento);
+            $obj_sales_serv->contabilizar_movimiento_credito( $datos_linea, $detalle_operacion);
+            if (empty($linea->inv_bodega_id)) {
+                $linea->inv_bodega_id = $datos_linea['inv_bodega_id'];
+                $linea->save();
+            }
             $total_documento += $linea->precio_total;
             $n++;
         }
@@ -58,6 +64,24 @@ class AccountingServices
         $obj_sales_serv->contabilizar_movimiento_debito_para_recontabilizacion( $documento );
 
         return true;
+    }
+
+    protected function resolveLineWarehouseId($linea, $documento)
+    {
+        if (!empty($linea->inv_bodega_id)) {
+            return (int)$linea->inv_bodega_id;
+        }
+
+        if (!is_null($documento) && !is_null($documento->pdv) && (int)$documento->pdv->bodega_default_id > 0) {
+            return (int)$documento->pdv->bodega_default_id;
+        }
+
+        $configBodegaId = (int)config('ventas.inv_bodega_id');
+        if ($configBodegaId > 0) {
+            return $configBodegaId;
+        }
+
+        throw new \Exception('No se pudo determinar la bodega para contabilizar la factura POS.');
     }
 
     public function reconstruir_movimientos_y_recontabilizar_factura($documento_id)

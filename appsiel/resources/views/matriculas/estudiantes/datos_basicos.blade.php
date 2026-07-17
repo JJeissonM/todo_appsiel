@@ -288,6 +288,12 @@
 					<strong>Diagnóstico</strong>
 					<p>{{ $estudiante->diagnostico ?: 'Sin dato' }}</p>
 				</div>
+				@if((new App\Matriculas\Services\InclusionEstudianteService())->esDeInclusion($estudiante))
+					<div class="col-md-4">
+						<strong>Estudiante de inclusión</strong>
+						<p>Si</p>
+					</div>
+				@endif
 				<div class="col-md-4">
 					<strong>Observaciones</strong>
 					<p>{{ $estudiante->observacion_general ?: 'Sin dato' }}</p>

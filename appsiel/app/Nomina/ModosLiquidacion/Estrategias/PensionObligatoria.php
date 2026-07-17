@@ -5,6 +5,7 @@ namespace App\Nomina\ModosLiquidacion\Estrategias;
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\AgrupacionConcepto;
 use App\Nomina\NomDocRegistro;
+use App\Nomina\ParametroLegal;
 use App\Nomina\Services\Cotizante51Service;
 
 class PensionObligatoria implements Estrategia
@@ -49,7 +50,7 @@ class PensionObligatoria implements Estrategia
 
         $total_IBC = ($total_ibc_devengos - $total_ibc_deducciones);
         if ($cotizante51Service->esCotizante51($liquidacion['empleado'])) {
-            $horasDiaLaboral = (float)config('nomina.horas_dia_laboral');
+            $horasDiaLaboral = ParametroLegal::horas_dia_laboral_para_fecha($liquidacion['documento_nomina']->fecha);
             $diasFallback = 0;
             if ($horasDiaLaboral > 0) {
                 $diasFallback = round($tiempo_a_liquidar / $horasDiaLaboral, 0);

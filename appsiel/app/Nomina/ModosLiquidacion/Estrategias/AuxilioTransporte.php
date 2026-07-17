@@ -4,6 +4,7 @@ namespace App\Nomina\ModosLiquidacion\Estrategias;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\NomDocRegistro;
+use App\Nomina\ParametroLegal;
 
 class AuxilioTransporte implements Estrategia
 {
@@ -12,12 +13,12 @@ class AuxilioTransporte implements Estrategia
 		$cantidad_horas = 0;
 		$valor_auxilio_empleado = 0;
 
-		$valor_auxilio_x_hora = $liquidacion['concepto']->valor_fijo / (float)config('nomina.horas_laborales');
+		$valor_auxilio_x_hora = $liquidacion['concepto']->valor_fijo / ParametroLegal::horas_laborales_para_fecha($liquidacion['documento_nomina']->fecha);
 
 		switch ( $liquidacion['empleado']->liquida_subsidio_transporte )
 		{
 			case '1': // Si liquida, si Salario <= 2 SMMLV
-				if ( $liquidacion['empleado']->sueldo <= ( (float)config('nomina.SMMLV') * 2 ) )
+				if ( $liquidacion['empleado']->sueldo <= ( ParametroLegal::smmlv_para_fecha($liquidacion['documento_nomina']->fecha) * 2 ) )
 				{
 					$cantidad_horas = $liquidacion['documento_nomina']->horas_liquidadas_tiempo_laborado_empleado( $liquidacion['empleado']->core_tercero_id );
 					$valor_auxilio_empleado =  $valor_auxilio_x_hora * $cantidad_horas;

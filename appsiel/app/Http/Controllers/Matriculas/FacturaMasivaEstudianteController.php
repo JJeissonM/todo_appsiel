@@ -16,6 +16,7 @@ use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\Matriculas\FacturaAuxEstudiante;
 use App\Ventas\VtasDocEncabezado;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 
 class FacturaMasivaEstudianteController extends TransaccionController
@@ -55,7 +56,9 @@ class FacturaMasivaEstudianteController extends TransaccionController
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $modelo, 'Crear: '.$tipo_transaccion->descripcion );
 
-        return view('matriculas.facturas.generacion_masiva', compact('form_create','id_transaccion','miga_pan') );//,'empresas'
+        $modulo_facturacion_electronica_activo = $this->modulo_facturacion_electronica_activo();
+
+        return view('matriculas.facturas.generacion_masiva', compact('form_create','id_transaccion','miga_pan','modulo_facturacion_electronica_activo') );//,'empresas'
     }
 
 
@@ -65,6 +68,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
     public function generar_consulta_preliminar(Request $request, TesoPlanPagosEstudiante $obj_planes_pagos)
     {
         $concepto_id = $request->concepto_id;
+        $generar_fact_electronica = $this->debe_generar_factura_electronica($request);
 
         if ( $concepto_id == '' )
         {
@@ -137,7 +141,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
                         $error_esta_en .= ' - Revisar teléfono - ';
                     }
 
-                    if ( (int)$request->generar_fact_electronica )
+                    if ( $generar_fact_electronica )
                     {
                         if ( $esta_bien_la_info )
                         {
@@ -156,8 +160,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
             }
 
             $btn_imprimir_factura = '';
-            $factura_estudiante = FacturaAuxEstudiante::where( 'cartera_estudiante_id', $registro_plan_pagos->id )->first();
-            if ( !is_null( $factura_estudiante ) ) // Si ya tiene factura
+            if ( FacturaAuxEstudiante::cartera_ya_tiene_factura( $registro_plan_pagos->id ) ) // Si ya tiene factura
             {
                 continue;
             }
@@ -232,14 +235,26 @@ class FacturaMasivaEstudianteController extends TransaccionController
      */
     public function store(Request $request)
     {
-        $lote = uniqid();
+        $lote = $request->lote == '' ? uniqid() : $request->lote;
         $tbody = '';
         $precio_total = 0;
         $i = 0;
         $cantidad_facturas = 0;
         $cantidad_estudiantes = 0;
+        $cantidad_errores = 0;
         $lineas_registros = json_decode( $request->lineas_registros );
+        if (is_null($lineas_registros)) {
+            $lineas_registros = [];
+        }
         $estudiante_anterior = 'estudiante_anterior';
+        $core_tipo_doc_app_id = 0;
+        $consec_desde = 0;
+        $consec_hasta = 0;
+        $generar_fact_electronica = $this->debe_generar_factura_electronica($request);
+        $cantidad_facturas_estandar = 0;
+        $cantidad_facturas_electronicas = 0;
+        $cantidad_facturas_enviadas_dian = 0;
+        $cantidad_facturas_sin_enviar_dian = 0;
         // POR CADA LINEA DE REGISTRO
         foreach ( $lineas_registros as $linea )
         {
@@ -251,6 +266,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
             $registro_plan_pagos = TesoPlanPagosEstudiante::find( $linea->linea_plan_pago_id );
 
             if ( $registro_plan_pagos == null ) {
+                $cantidad_errores++;
                 $tbody .= '<tr>
                         <td>' . $linea->Estudiante . '</td>
                         <td colspan="3"> <br><i class="fa fa-warning"></i> Error. No se generó la factura. El concepto ' . $linea->Concepto . ' no existe en la libreta del estudiante. ID Línea del plan de pagos = ' . $linea->linea_plan_pago_id . ' </td>
@@ -259,6 +275,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
             }
 
             if ( $registro_plan_pagos->estudiante == null ) {
+                $cantidad_errores++;
                 $tbody .= '<tr>
                         <td>' . $linea->Estudiante . '</td>
                         <td colspan="3"> <br><i class="fa fa-warning"></i> Error. No se generó la factura. Línea del plan de pagos NO tiene un estudiante asociado. Concepto = ' . $linea->Concepto . '. ID Línea del plan de pagos = ' . $linea->linea_plan_pago_id . ' </td>
@@ -267,6 +284,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
             }
 
             if ( $registro_plan_pagos->estudiante->matricula_activa() == null ) {
+                $cantidad_errores++;
                 $tbody .= '<tr>
                         <td>' . $linea->Estudiante . '</td>
                         <td colspan="3"> <br><i class="fa fa-warning"></i> Error. No se generó la factura. Estudiante no tiene una matrícula Activa. Concepto = ' . $linea->Concepto . '. ID Línea del plan de pagos = ' . $linea->linea_plan_pago_id . ' </td>
@@ -274,41 +292,84 @@ class FacturaMasivaEstudianteController extends TransaccionController
                 continue;
             }
 
-            $registro_plan_pagos->fecha = $request->fecha; // Aux. para asignar fecha a la factura
+            try {
+                $factura = DB::transaction(function () use ($registro_plan_pagos, $request, $lote, $generar_fact_electronica) {
+                    $registro_plan_pagos_bloqueado = TesoPlanPagosEstudiante::where('id', $registro_plan_pagos->id)->lockForUpdate()->first();
+                    if (is_null($registro_plan_pagos_bloqueado)) {
+                        throw new \Exception('La línea de cartera no existe.');
+                    }
 
-            $factura = $this->crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote, (int)$request->generar_fact_electronica, $request->fecha_vencimiento_factura );
+                    if (FacturaAuxEstudiante::cartera_ya_tiene_factura($registro_plan_pagos_bloqueado->id)) {
+                        throw new \Exception(FacturaAuxEstudiante::mensaje_factura_duplicada($registro_plan_pagos_bloqueado->id));
+                    }
+
+                    $registro_plan_pagos_bloqueado->fecha = $request->fecha; // Aux. para asignar fecha a la factura
+
+                    return $this->crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos_bloqueado, $lote, $generar_fact_electronica, $request->fecha_vencimiento_factura );
+                });
+            } catch (\Exception $e) {
+                $cantidad_errores++;
+                $tbody .= '<tr class="danger">
+                        <td>' . $linea->Estudiante . '</td>
+                        <td colspan="3"> <br><i class="fa fa-warning"></i> Error. No se generó la factura. ' . $e->getMessage() . ' </td>
+                    </tr>';
+                continue;
+            }
 
             $mensaje_alerta_fact_elect = '';
+            $estado_envio_factura = '<br><span class="label label-default">Factura estándar. No se enviará a la DIAN.</span>';
             $url_factura = 'ventas/' . $factura->id . '?id=13&id_modelo=139&id_transaccion=' . config('matriculas.transaccion_id_factura_estudiante');
 
-            if ( (int)$request->generar_fact_electronica )
+            if ( $generar_fact_electronica )
             {
+                $cantidad_facturas_electronicas++;
                 $url_factura = 'fe_factura/' . $factura->id . '?id=21&id_modelo=244&id_transaccion=52';
 
-                if ( empty( $factura->tipo_documento_app->resolucion_facturacion->toArray() ) )
+                if ( is_null($factura->tipo_documento_app) || empty( $factura->tipo_documento_app->resolucion_facturacion->toArray() ) )
                 {
-                    $mensaje_alerta_fact_elect = '<br><i class="fa fa-warning"></i>La factura no fue enviada hacia el proveedor tecnológico. El pefijo ' . $factura->tipo_documento_app->prefijo . ' no tiene una resolución asociada.';
-                }
-
-                $mensaje = $factura->enviar_al_proveedor_tecnologico();
-                
-                $mensaje_alerta_fact_elect = $mensaje->contenido;
-
-                if ( $mensaje->tipo != 'mensaje_error' )
-                {                
-                    $factura->estado = 'Enviada';
-                    $factura->save();
-                }else{
+                    $prefijo = is_null($factura->tipo_documento_app) ? '' : $factura->tipo_documento_app->prefijo;
+                    $mensaje_alerta_fact_elect = '<br><i class="fa fa-warning"></i>La factura no fue enviada hacia el proveedor tecnológico. El prefijo ' . $prefijo . ' no tiene una resolución asociada.';
                     $factura->estado = 'Contabilizado - Sin enviar';
                     $factura->save();
+                    $cantidad_facturas_sin_enviar_dian++;
+                    $estado_envio_factura = '<br><span class="label label-warning">Electrónica sin enviar a DIAN.</span>';
+                }else{
+                    $mensaje = $factura->enviar_al_proveedor_tecnologico();
+
+                    $mensaje_alerta_fact_elect = $mensaje->contenido;
+
+                    if ( $mensaje->tipo != 'mensaje_error' )
+                    {
+                        $factura->estado = 'Enviada';
+                        $factura->save();
+                        $cantidad_facturas_enviadas_dian++;
+                        $estado_envio_factura = '<br><span class="label label-success">Electrónica enviada a DIAN.</span>';
+                    }else{
+                        $factura->estado = 'Contabilizado - Sin enviar';
+                        $factura->save();
+                        $cantidad_facturas_sin_enviar_dian++;
+                        $estado_envio_factura = '<br><span class="label label-warning">Electrónica sin enviar a DIAN.</span>';
+                    }
                 }
-            }                
+            }else{
+                $cantidad_facturas_estandar++;
+            }
+
+            if ($core_tipo_doc_app_id == 0) {
+                $core_tipo_doc_app_id = (int)$factura->core_tipo_doc_app_id;
+            }
+            if ($consec_desde == 0 || (int)$factura->consecutivo < $consec_desde) {
+                $consec_desde = (int)$factura->consecutivo;
+            }
+            if ((int)$factura->consecutivo > $consec_hasta) {
+                $consec_hasta = (int)$factura->consecutivo;
+            }
 
             $tbody .= '<tr>
                         <td>' . $registro_plan_pagos->estudiante->tercero->descripcion . '</td>
                         <td>' . $registro_plan_pagos->estudiante->responsable_financiero()->tercero->descripcion . '</td>
                         <td> <a href="' . url( $url_factura ) . '" target="_blank" title="Vista previa">' . $factura->tipo_documento_app->prefijo . ' ' . $factura->consecutivo . '</a> </td>
-                        <td>' . number_format( $factura->valor_total, 0, ',', '.' ) . $mensaje_alerta_fact_elect . '</td>
+                        <td>' . number_format( $factura->valor_total, 0, ',', '.' ) . $estado_envio_factura . $mensaje_alerta_fact_elect . '</td>
                     </tr>';
 
             $precio_total += $factura->valor_total;
@@ -332,7 +393,15 @@ class FacturaMasivaEstudianteController extends TransaccionController
 
         $mensaje = '<div class="alert alert-success">
                       <strong>¡Transacción exitosa!</strong> Facturas creadas correctamente.
+                      <br>Estándar: ' . $cantidad_facturas_estandar . '. Electrónicas: ' . $cantidad_facturas_electronicas . '. Enviadas DIAN: ' . $cantidad_facturas_enviadas_dian . '. Sin enviar DIAN: ' . $cantidad_facturas_sin_enviar_dian . '.
                     </div>';
+
+        if ($cantidad_errores > 0) {
+            $mensaje = '<div class="alert alert-warning">
+                          <strong>Proceso finalizado con novedades.</strong> Se crearon ' . $cantidad_facturas . ' factura(s) y ' . $cantidad_errores . ' registro(s) no se pudieron procesar. Revise el detalle.
+                          <br>Estándar: ' . $cantidad_facturas_estandar . '. Electrónicas: ' . $cantidad_facturas_electronicas . '. Enviadas DIAN: ' . $cantidad_facturas_enviadas_dian . '. Sin enviar DIAN: ' . $cantidad_facturas_sin_enviar_dian . '.
+                        </div>';
+        }
         
         return response()->json( [ 
                         'thead' => $thead,
@@ -340,7 +409,16 @@ class FacturaMasivaEstudianteController extends TransaccionController
                         'precio_total' => number_format($precio_total, 0, ',', '.'),
                         'cantidad_facturas' => $cantidad_facturas,
                         'cantidad_estudiantes' => $cantidad_estudiantes,
-                        'mensaje' => $mensaje
+                        'mensaje' => $mensaje,
+                        'lote' => $lote,
+                        'empresa_id' => Auth::user()->empresa_id,
+                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                        'consec_desde' => $consec_desde,
+                        'consec_hasta' => $consec_hasta,
+                        'cantidad_facturas_estandar' => $cantidad_facturas_estandar,
+                        'cantidad_facturas_electronicas' => $cantidad_facturas_electronicas,
+                        'cantidad_facturas_enviadas_dian' => $cantidad_facturas_enviadas_dian,
+                        'cantidad_facturas_sin_enviar_dian' => $cantidad_facturas_sin_enviar_dian
                     ] );
     }
 
@@ -351,6 +429,10 @@ class FacturaMasivaEstudianteController extends TransaccionController
 
     public function crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote, $generar_fact_electronica, $fecha_vencimiento_factura )
     {
+        if (FacturaAuxEstudiante::cartera_ya_tiene_factura($registro_plan_pagos->id)) {
+            throw new \Exception(FacturaAuxEstudiante::mensaje_factura_duplicada($registro_plan_pagos->id));
+        }
+
         $request = $this->preparar_datos_factura_estudiante( $registro_plan_pagos, $lote, $generar_fact_electronica, $fecha_vencimiento_factura );
 
         $request['remision_doc_encabezado_id'] = 0;
@@ -378,11 +460,14 @@ class FacturaMasivaEstudianteController extends TransaccionController
 
         if( $generar_fact_electronica )
         {
-            $id_modelo = 244; // Factura Electrónica de Ventas
-            $id_transaccion = 52; // Factura Electrónica de Ventas
+            $id_transaccion = (int)config('facturacion_electronica.transaction_type_id_default', 52); // Factura Electrónica de Ventas
         }
 
         $tipo_transaccion = TipoTransaccion::find( $id_transaccion );
+        if( $generar_fact_electronica && !is_null($tipo_transaccion) )
+        {
+            $id_modelo = $tipo_transaccion->core_modelo_id;
+        }
         
         $datos = new Request;
         $datos["core_empresa_id"] = Auth::user()->empresa_id;
@@ -430,6 +515,33 @@ class FacturaMasivaEstudianteController extends TransaccionController
     public function crear_json_linea_registro_ventas( $inv_producto_id, $precio_unitario )
     {
         return '[{"inv_motivo_id":"10","inv_bodega_id":"1","inv_producto_id":"'.$inv_producto_id.'","costo_unitario":"0","precio_unitario":"'.$precio_unitario.'","base_impuesto":"'.$precio_unitario.'","tasa_impuesto":"0","valor_impuesto":"0","base_impuesto_total":"'.$precio_unitario.'","cantidad":"1","costo_total":"0","precio_total":"'.$precio_unitario.'","tasa_descuento":"0","valor_total_descuento":"0","Item":"","Motivo":"","Stock":"0","Cantidad":"1","Precio Unit. (IVA incluido)":"$0","Dcto. (%)":"0%","Dcto. Tot. ($)":"$ 0","IVA":"0%","Total":"$0"}]';
+    }
+
+    private function modulo_facturacion_electronica_activo()
+    {
+        $aplicacion_fe = \App\Sistema\Aplicacion::where('descripcion', 'Facturación electrónica')->first();
+        if ( is_null( $aplicacion_fe ) )
+        {
+            return false;
+        }
+
+        if ( $aplicacion_fe->estado != 'Activo' )
+        {
+            return false;
+        }
+
+        $modulo_fe_activo = config('facturacion_electronica.modulo_fe_activo');
+        if ( is_null($modulo_fe_activo) )
+        {
+            return true;
+        }
+
+        return (int)$modulo_fe_activo == 1;
+    }
+
+    private function debe_generar_factura_electronica(Request $request)
+    {
+        return $this->modulo_facturacion_electronica_activo() && (int)$request->generar_fact_electronica == 1;
     }
 
 }

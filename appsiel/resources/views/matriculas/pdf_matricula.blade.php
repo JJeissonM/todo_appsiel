@@ -285,6 +285,19 @@
             <td class="titulo2"> E.P.S.: </td>
             <td class="campo">{{ $estudiante->eps }}</td>
         </tr>
+
+        <?php 
+            $InclusionEstudianteService = new App\Matriculas\Services\InclusionEstudianteService();
+            $esDeInclusion = $InclusionEstudianteService->esDeInclusion($estudiante);
+        ?>
+        @if( $esDeInclusion )
+            <tr>
+                <td class="titulo2">Es de Inclusión: </td>
+                <td class="campo" colspan="3">{{ $esDeInclusion ? 'Sí' : 'No' }}</td>
+                <td class="titulo2"> Diagnóstico inclusión: </td>
+                <td class="campo">{{ $estudiante->diagnostico_inclusion }}</td>
+            </tr>
+        @endif
     </table>
 
     <table>

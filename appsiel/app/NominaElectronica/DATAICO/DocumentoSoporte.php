@@ -287,9 +287,10 @@ class DocumentoSoporte extends Model
 	   {
 	      $lapso = new LapsoNomina( $this->fecha );
 	      
-	      $document_header = $this->toArray();
+         $document_header = $this->toArray();
          $head_data = $this->get_head_data_stored();
          $prefix = $this->get_prefix_to_send($head_data);
+         $deductions = json_decode($document_header['deductions_json'],true);
 
 	      $data = [ 
 	         'env' => config('nomina.nom_elec_ambiente'),
@@ -303,14 +304,17 @@ class DocumentoSoporte extends Model
          'issue-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
          'payment-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
          'accruals' => $this->normalize_accruals_to_send(json_decode($document_header['accruals_json'],true)),
-         'deductions' => json_decode($document_header['deductions_json'],true),
          'employee' => json_decode($document_header['employee_json'],true),
          'software' => [
             'pin' => config('nomina.pin_software'),
             'test-set-id' => config('nomina.tokenEmpresa'),
             'dian-id' => config('nomina.tokenDian'),
          ]
-      ];
+	      ];
+
+      if ( is_array($deductions) && count($deductions) > 0 ) {
+         $data['deductions'] = $deductions;
+      }
 
       //dd('{"env":"PRODUCCION","prefix":"N","number":1,"salary":1854290.00,"periodicity":"MENSUAL","initial-settlement-date":"01/01/2023","final-settlement-date":"31/01/2023","issue-date":"04/04/2023","payment-date":"31/01/2023","accruals":[{"amount":51393.00,"code":"AUXILIO_DE_TRANSPORTE"},{"days":11,"amount":679906.0,"code":"BASICO"},{"days":19,"amount":1174384.0,"code":"VACACION"}],"deductions":[{"amount":74172.0,"percentage":4.0,"code":"SALUD"},{"amount":74172.0,"percentage":4.0,"code":"FONDO_PENSION"}],"employee":{"other-names":"PEDRO","second-last-name":"PICAPIEDRA","first-name":"","integral-salary":false,"fire-date":"31/12/2023","email":"pedro@hotmail.com","last-name":"BEDOYA","worker-type":"DEPENDIENTE","address":{"line":"CR 53 50 31","city":"101","department":"05"},"identification":"111111111","payment-means":"EFECTIVO","sub-code":"NO_APLICA","start-date":"18/01/2012","identification-type":"NIT","contract-type":"TERMINO_FIJO"},"software":{"pin":"4123412","test-set-id":"201b3830-cf33-4966-9e63-4e8dcc450457","dian-id":"d0e88268-a4ab-447d-918c-19c1c248b5c3"}}',json_encode($data));
 

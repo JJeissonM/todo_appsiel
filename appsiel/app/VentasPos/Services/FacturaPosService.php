@@ -426,6 +426,8 @@ class FacturaPosService
 
         // 6to. Se marca como anulado el documento
         $factura->update(['estado' => 'Anulado', 'remision_doc_encabezado_id' => '', 'modificado_por' => $modificado_por]);
+
+        \App\Hotel\HotelOrderHeader::reopenOrdersForCancelledPosInvoice($factura->id);
     }
 
     public function factura_tiene_abonos_cxc( $factura_id )

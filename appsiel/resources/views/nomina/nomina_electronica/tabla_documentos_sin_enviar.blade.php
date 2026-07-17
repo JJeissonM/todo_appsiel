@@ -21,7 +21,9 @@
             @foreach ($registros as $fila)
                 <tr id="fila_doc_{{ $fila->id }}" data-documento-id="{{ $fila->id }}">
                     <td>
-                        <a href="{{ url('/nom_electronica_enviar_documentos') . '/[' . $fila->id . ']' }}" class="btn btn-info btn-sm btn-enviar-individual"> <i class="fa fa-send"></i> Enviar </a>
+                        <button type="button" class="btn btn-info btn-sm btn-enviar-individual" data-documento-id="{{ $fila->id }}">
+                            <i class="fa fa-send"></i> Enviar
+                        </button>
                     </td>
                     <td> {{ $fila->fecha }} </td>
                     <td> {{ $fila->get_value_to_show() }} </td>
@@ -223,6 +225,39 @@
             });
         }
 
+        function recalcularDocumento(documentoId) {
+            return fetch("{{ url('nom_electronica_recalcular_doc_soporte') }}/" + documentoId, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                credentials: 'same-origin'
+            }).then(function (response) {
+                return response.json().catch(function () {
+                    return {};
+                }).then(function (data) {
+                    if (!response.ok) {
+                        throw data;
+                    }
+                    return data;
+                });
+            });
+        }
+
+        function recalcularYEnviarDocumento(documentoId, fila) {
+            return recalcularDocumento(documentoId).then(function () {
+                if (fila) {
+                    var estado = fila.querySelector('.col-estado');
+                    if (estado) {
+                        estado.textContent = 'Enviando...';
+                    }
+                }
+                return enviarDocumento(documentoId);
+            });
+        }
+
         function marcarFilaError(fila, textoEstado) {
             fila.classList.remove('warning');
             fila.classList.add('danger');
@@ -274,10 +309,10 @@
             fila.classList.add('warning');
             var estado = fila.querySelector('.col-estado');
             if (estado) {
-                estado.textContent = 'Enviando...';
+                estado.textContent = 'Recalculando...';
             }
 
-            enviarDocumento(documentoId)
+            recalcularYEnviarDocumento(documentoId, fila)
                 .then(function () {
                     enviados++;
                     pendientes = Math.max(pendientes - 1, 0);
@@ -316,7 +351,60 @@
         });
 
         document.addEventListener('click', function (e) {
-            if (procesando && e.target.closest('.btn-enviar-individual')) {
+            var btnEnviarIndividual = e.target.closest('.btn-enviar-individual');
+            if (!btnEnviarIndividual) {
+                return;
+            }
+
+            e.preventDefault();
+
+            if (procesando) {
+                return;
+            }
+
+            var documentoId = btnEnviarIndividual.getAttribute('data-documento-id');
+            var fila = document.getElementById('fila_doc_' + documentoId);
+
+            if (!fila) {
+                mostrarMensaje('warning', 'No fue posible identificar la fila del documento.');
+                return;
+            }
+
+            ocultarMensaje();
+            bloquearInterfaz(true);
+            fila.classList.add('warning');
+            var estado = fila.querySelector('.col-estado');
+            if (estado) {
+                estado.textContent = 'Recalculando...';
+            }
+
+            recalcularYEnviarDocumento(documentoId, fila)
+                .then(function (data) {
+                    enviados++;
+                    pendientes = Math.max(pendientes - 1, 0);
+                    actualizarContador();
+                    marcarFilaEnviada(fila);
+                    var tiempo = data.elapsed_seconds != null ? ' (' + data.elapsed_seconds + 's)' : '';
+                    mostrarMensaje('success', 'Documento enviado correctamente.' + tiempo);
+                })
+                .catch(function (error) {
+                    var mensajeError = error.message || 'Error no controlado durante el envio.';
+                    if (error.elapsed_seconds != null) {
+                        mensajeError += ' (' + error.elapsed_seconds + 's)';
+                    }
+                    marcarFilaError(fila, 'Pendiente - Error');
+                    mostrarMensaje('warning', 'Doc. ' + documentoId + ': ' + mensajeError);
+                })
+                .then(function () {
+                    bloquearInterfaz(false);
+                    if (pendientes === 0 && btnEnviarTodos) {
+                        btnEnviarTodos.style.display = 'none';
+                    }
+                });
+        });
+
+        document.addEventListener('click', function (e) {
+            if (procesando && e.target.closest('.btn-ver-ultimo-error')) {
                 e.preventDefault();
             }
         });

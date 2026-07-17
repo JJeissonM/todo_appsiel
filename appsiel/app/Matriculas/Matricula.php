@@ -31,6 +31,24 @@ class Matricula extends Model
     {
         return $this->belongsTo(Estudiante::class, 'id_estudiante');
     }
+
+    public function getEsDeInclusionAttribute()
+    {
+        if (array_key_exists('es_de_inclusion', $this->attributes)) {
+            return $this->attributes['es_de_inclusion'];
+        }
+
+        return $this->estudiante == null ? 0 : $this->estudiante->es_de_inclusion;
+    }
+
+    public function getDiagnosticoInclusionAttribute()
+    {
+        if (array_key_exists('diagnostico_inclusion', $this->attributes)) {
+            return $this->attributes['diagnostico_inclusion'];
+        }
+
+        return $this->estudiante == null ? null : $this->estudiante->diagnostico_inclusion;
+    }
     
     public function curso()
     {
@@ -62,6 +80,24 @@ class Matricula extends Model
     public function get_observacion_general()
     {
         return $this->observacion_general;
+    }
+
+    public function get_campos_adicionales_edit($lista_campos, $registro)
+    {
+        $cantidad_campos = count($lista_campos);
+
+        for ($i = 0; $i < $cantidad_campos; $i++) {
+            switch ($lista_campos[$i]['name']) {
+                case 'es_de_inclusion':
+                    $lista_campos[$i]['value'] = $registro->es_de_inclusion ? 1 : 0;
+                    break;
+                case 'diagnostico_inclusion':
+                    $lista_campos[$i]['value'] = $registro->diagnostico_inclusion;
+                    break;
+            }
+        }
+
+        return $lista_campos;
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -185,6 +221,8 @@ class Matricula extends Model
                 'sga_matriculas.periodo_lectivo_id',
                 'sga_matriculas.estado',
                 'sga_cursos.descripcion AS curso_descripcion',
+                'sga_estudiantes.es_de_inclusion',
+                'sga_estudiantes.diagnostico_inclusion',
                 'sga_estudiantes.genero',
                 'sga_estudiantes.imagen',
                 'sga_estudiantes.fecha_nacimiento',
@@ -244,6 +282,8 @@ class Matricula extends Model
                 'sga_matriculas.periodo_lectivo_id',
                 'sga_matriculas.estado',
                 'sga_cursos.descripcion AS curso_descripcion',
+                'sga_estudiantes.es_de_inclusion',
+                'sga_estudiantes.diagnostico_inclusion',
                 'sga_estudiantes.genero',
                 'sga_estudiantes.imagen',
                 'sga_estudiantes.fecha_nacimiento',
@@ -295,6 +335,8 @@ class Matricula extends Model
                 'sga_cursos.descripcion AS nombre_curso',
                 'sga_cursos.id AS curso_id',
                 'sga_matriculas.estado',
+                'sga_estudiantes.es_de_inclusion',
+                'sga_estudiantes.diagnostico_inclusion',
                 'sga_matriculas.requisitos',
                 'sga_matriculas.id'
             )
@@ -359,6 +401,8 @@ class Matricula extends Model
                 'sga_cursos.descripcion AS nombre_curso',
                 'sga_matriculas.created_at',
                 'sga_matriculas.estado',
+                'sga_estudiantes.es_de_inclusion',
+                'sga_estudiantes.diagnostico_inclusion',
                 'sga_matriculas.requisitos',
                 'sga_matriculas.id'
             )

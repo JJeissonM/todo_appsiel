@@ -13,7 +13,7 @@
                     <h3>Estadia #{{ $stay->id }} - Habitacion {{ $stay->room ? $stay->room->room_number : $stay->room_id }}</h3>
                 </div>
                 <div class="col-md-4 text-right">
-                    &nbsp;
+                    <a href="{{ url($hotelUrl::url('hotel?id=22')) }}" class="btn btn-default btn-sm">Volver</a>
                 </div>
             </div>
             <div class="row">
@@ -25,39 +25,43 @@
                         @endif
                     </h4>
                     <table class="table table-bordered">
-                        <tr><th>Huesped principal</th><td>{{ $stay->mainGuest && $stay->mainGuest->tercero ? $stay->mainGuest->tercero->descripcion : $stay->main_cliente_id }}</td></tr>
-                        <tr><th>Check-in</th><td>{{ $stay->check_in_at }}</td></tr>
-                        <tr><th>Salida esperada</th><td>{{ $stay->expected_check_out_at }}</td></tr>
-                        <tr><th>Dias estadia</th><td>{{ $stay->stayDays() }}</td></tr>
-                        <tr><th>Check-out</th><td>{{ $stay->check_out_at }}</td></tr>
-                        <tr><th>Huespedes</th><td>{{ $stay->total_guests }} ({{ $stay->adults_count }} adultos, {{ $stay->children_count }} niños)</td></tr>
-                        <tr><th>Estado</th><td>{{ $stay->status }}</td></tr>
-                        <tr><th>Notas</th><td>{{ $stay->notes }}</td></tr>
+                        <tr><th>Huesped principal</th><td>{{ $stay->mainGuest && $stay->mainGuest->tercero ? $stay->mainGuest->tercero->descripcion : $stay->main_cliente_id }}</td><th>Huespedes</th><td>{{ $stay->total_guests }} ({{ $stay->adults_count }} adultos, {{ $stay->children_count }} niños)</td></tr>
+                        <tr><th>Check-in</th><td>{{ $stay->check_in_at }}</td><th>Check-out</th><td>{{ $stay->check_out_at }}</td></tr>
+                        <tr><th>Salida esperada</th><td>{{ $stay->expected_check_out_at }}</td><th>Dias estadia</th><td>{{ $stay->stayDays() }}</td></tr>
+                        <tr><th>Notas</th><td>{{ $stay->notes }}</td><th>Estado</th><td>{{ $stay->status }}</td></tr>
                     </table>
 
 
                     <div class="btn-group" role="group">
-                        <a href="{{ url($hotelUrl::url('hotel?id=22')) }}" class="btn btn-default btn-sm">Volver</a>
 
                         @if($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA)
                             <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/orders')) }}" style="display:inline-block;">
                                 {{ csrf_field() }}
                                 <button class="btn btn-primary btn-sm">Nuevo pedido</button>
                             </form>
-                            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#hotelCheckOutModal">Check-out</button>
+                            @if(isset($checkOutBlockMessage) && $checkOutBlockMessage != '')
+                                <button type="button" class="btn btn-success btn-sm" disabled title="{{ $checkOutBlockMessage }}">Check-out</button>
+                            @else
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#hotelCheckOutModal">Check-out</button>
+                            @endif
                             @if(isset($cancelBlockMessage) && $cancelBlockMessage != '')
                                 <button type="button" class="btn btn-danger btn-sm" disabled title="{{ $cancelBlockMessage }}">Anular</button>
                             @else
                                 <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/cancel')) }}" style="display:inline-block;">
                                     {{ csrf_field() }}
-                                    <button class="btn btn-danger btn-sm" onclick="return confirm('Anular estadia?')">Anular</button>
+                                    <button class="btn btn-danger btn-sm hotel-confirm-submit" data-message="Anular estadia?">Anular</button>
                                 </form>
                             @endif
                         @endif
                     </div>
-                    @if(isset($cancelBlockMessage) && $cancelBlockMessage != '')
+                    <!-- @ if(isset($cancelBlockMessage) && $cancelBlockMessage != '')
                         <br><br>
                         <div class="alert alert-warning">{{ $cancelBlockMessage }}</div>
+                    @ endif
+                    -->
+                    @if(isset($checkOutBlockMessage) && $checkOutBlockMessage != '')
+                        <br><br>
+                        <div class="alert alert-warning">{{ $checkOutBlockMessage }}</div>
                     @endif
                 </div>
 
@@ -186,4 +190,30 @@
 @section('scripts')
     @parent
     @include('hotel.partials.cliente_autocomplete_scripts')
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.hotel-confirm-submit').on('click', function(event) {
+                event.preventDefault();
+
+                var $button = $(this);
+                var $form = $button.closest('form');
+                var message = $button.data('message') || 'Confirmar accion?';
+
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire({
+                        title: 'Confirmar',
+                        text: message,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Aceptar',
+                        cancelButtonText: 'Cancelar'
+                    }).then(function(result) {
+                        if (result && (result.isConfirmed || result.value)) {
+                            $form.submit();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 @endsection

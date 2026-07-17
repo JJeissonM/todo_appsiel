@@ -21,7 +21,7 @@ class Inscripcion extends Model
 	public $vistas = '{"create":"matriculas.inscripciones.en_linea.create"}';
 
     // El archivo js debe estar en la carpeta public
-    public $archivo_js = 'assets/js/matriculas/inscripcion.js';
+    public $archivo_js = 'assets/js/matriculas/inscripcion.js?v=20260708_2';
 
     public function tercero()
     {
@@ -31,6 +31,29 @@ class Inscripcion extends Model
     public function estudiante()
     {
         return Estudiante::where('core_tercero_id',$this->core_tercero_id)->get()->first();
+    }
+
+    public function getIdTipoDocumentoIdAttribute()
+    {
+        if ($this->tercero == null) {
+            return null;
+        }
+
+        return $this->tercero->id_tipo_documento_id;
+    }
+
+    public function getEsDeInclusionAttribute()
+    {
+        $estudiante = $this->estudiante();
+
+        return $estudiante == null ? 0 : $estudiante->es_de_inclusion;
+    }
+
+    public function getDiagnosticoInclusionAttribute()
+    {
+        $estudiante = $this->estudiante();
+
+        return $estudiante == null ? null : $estudiante->diagnostico_inclusion;
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -162,7 +185,10 @@ class Inscripcion extends Model
                     $lista_campos[$i]['value'] = $registro->tercero->apellido2;
                     break;
                 case 'id_tipo_documento_id':
-                    $lista_campos[$i]['value'] = $registro->tercero->id_tipo_documento_id;
+                case 'tipo_documento_id':
+                case 'tipo_doc_identidad_id':
+                    $lista_campos[$i]['value'] = (string)$registro->tercero->id_tipo_documento_id;
+                    $lista_campos[$i]['atributos']['data-valor-inicial'] = (string)$registro->tercero->id_tipo_documento_id;
                     break;
                 case 'numero_identificacion':
                     $lista_campos[$i]['value'] = $registro->tercero->numero_identificacion;
@@ -184,6 +210,12 @@ class Inscripcion extends Model
                     break;
                 case 'codigo_ciudad':
                     $lista_campos[$i]['value'] = $registro->tercero->codigo_ciudad;
+                    break;
+                case 'es_de_inclusion':
+                    $lista_campos[$i]['value'] = $registro->es_de_inclusion ? 1 : 0;
+                    break;
+                case 'diagnostico_inclusion':
+                    $lista_campos[$i]['value'] = $registro->diagnostico_inclusion;
                     break;
 
                 default:

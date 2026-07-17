@@ -13,10 +13,15 @@
                     $amount = $registro_periodo['amount-ns'];
                 }
 
+                if (isset($registro_periodo['cesantias-interest'])) {
+                    $amount += $registro_periodo['cesantias-interest'];
+                }
+
                 $total_devengos_periodo += $amount;
             }
 
-            foreach ($comprobante_periodo['deductions'] as $registro_periodo) {
+            $deductions_periodo = isset($comprobante_periodo['deductions']) ? $comprobante_periodo['deductions'] : [];
+            foreach ($deductions_periodo as $registro_periodo) {
                 $amount = 0;
                 if (isset($registro_periodo['amount'])) {
                     $amount = $registro_periodo['amount'];
@@ -33,7 +38,7 @@
     <table class="table table-bordered" style="width:100%; margin-bottom: 15px; font-size: 13px;">
         <thead>
             <tr style="background-color: #f5f5f5;">
-                <th colspan="4" style="text-align: center; font-size: 16px;">
+                <th colspan="5" style="text-align: center; font-size: 16px;">
                     Envío Nómina Electrónica
                 </th>
             </tr>
@@ -82,7 +87,7 @@
                 }
             }
             
-            $registros = $comprobante['deductions'];
+            $registros = isset($comprobante['deductions']) ? $comprobante['deductions'] : [];
             foreach ($registros as $registro )
             {
                 if (isset($registro['status']) && $registro['status'] == 'error') 
@@ -142,6 +147,7 @@
                         if (isset($registro['amount-ns'])) {
                             $amount = $registro['amount-ns'];
                         } 
+                        $cesantias_interest = isset($registro['cesantias-interest']) ? $registro['cesantias-interest'] : 0;
 
                         $devengo = Form::TextoMoneda( $amount );
 
@@ -170,8 +176,17 @@
                         <td> {{ $deduccion }} </td>
                     </tr>
 
+                    @if($cesantias_interest != 0)
+                        <tr>
+                            <td>Intereses sobre cesantías</td>
+                            <td style="text-align: center;">&nbsp;</td>
+                            <td> {{ Form::TextoMoneda($cesantias_interest) }} </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    @endif
+
                     <?php
-                        $total_devengos += $amount;
+                        $total_devengos += $amount + $cesantias_interest;
                     ?>
                 @endforeach
 
@@ -180,7 +195,7 @@
                 ?>
 
                 <?php
-                    $registros = $comprobante['deductions'];
+                    $registros = isset($comprobante['deductions']) ? $comprobante['deductions'] : [];
                 ?>
                 @foreach ($registros as $registro )
                     <?php

@@ -11,9 +11,13 @@ class Meta extends Model
 {
     protected $table = 'sga_metas';
 
-    protected $fillable = ['colegio_id', 'codigo', 'periodo_id', 'curso_id', 'asignatura_id', 'descripcion', 'estado'];
+    protected $fillable = ['colegio_id', 'codigo', 'periodo_id', 'curso_id', 'asignatura_id', 'descripcion', 'es_para_inclusion', 'estado'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Periodo', 'Curso', 'Asignatura', 'Descripción', 'Estado'];
+    protected $casts = [
+        'es_para_inclusion' => 'boolean',
+    ];
+
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Periodo', 'Curso', 'Asignatura', 'Descripción', 'Inclusión', 'Estado'];
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -25,8 +29,9 @@ class Meta extends Model
                 'sga_cursos.descripcion AS campo2',
                 'sga_asignaturas.descripcion AS campo3',
                 'sga_metas.descripcion AS campo4',
-                'sga_metas.estado AS campo5',
-                'sga_metas.id AS campo6'
+                DB::raw('IF(sga_metas.es_para_inclusion = 1, "Si", "No") AS campo5'),
+                'sga_metas.estado AS campo6',
+                'sga_metas.id AS campo7'
             )
             ->where("sga_periodos.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
@@ -49,6 +54,7 @@ class Meta extends Model
                 'sga_cursos.descripcion AS CURSO',
                 'sga_asignaturas.descripcion AS ASIGNATURA',
                 'sga_metas.descripcion AS DESCRIPCIÓN',
+                DB::raw('IF(sga_metas.es_para_inclusion = 1, "Si", "No") AS PROPÓSITO_PARA_INCLUSIÓN'),
                 'sga_metas.estado AS ESTADO'
             )
             ->where("sga_periodos.descripcion", "LIKE", "%$search%")
@@ -117,8 +123,9 @@ class Meta extends Model
                 'sga_cursos.descripcion AS campo2',
                 'sga_asignaturas.descripcion AS campo3',
                 'sga_metas.descripcion AS campo4',
-                'sga_metas.estado AS campo5',
-                'sga_metas.id AS campo6'
+                DB::raw('IF(sga_metas.es_para_inclusion = 1, "Si", "No") AS campo5'),
+                'sga_metas.estado AS campo6',
+                'sga_metas.id AS campo7'
             )
             ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
@@ -152,6 +159,7 @@ class Meta extends Model
                 'sga_cursos.descripcion AS CURSO',
                 'sga_asignaturas.descripcion AS ASIGNATURA',
                 'sga_metas.descripcion AS DESCRIPCIÓN',
+                DB::raw('IF(sga_metas.es_para_inclusion = 1, "Si", "No") AS PROPÓSITO_PARA_INCLUSIÓN'),
                 'sga_metas.estado AS ESTADO'
             )
             ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")

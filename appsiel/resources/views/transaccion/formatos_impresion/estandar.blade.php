@@ -6,19 +6,11 @@
     <link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
     <style type="text/css">        
 
-        .lbl_doc_anulado {
-            background-color: rgba(253, 1, 1, 0.33);
-            width: 100%;
-            top: 300px;
-            transform: rotate(-45deg);
-            text-align: center;
-            font-size: 2em;
-        }
-
     </style>
 </head>
 
 <body>
+    @include('ventas.incluir.documento_anulado_watermark')
 
     <table class="table">
         <tr>
@@ -49,19 +41,7 @@
         </tr>
     </table>
     
-    @if($doc_encabezado->estado == 'Anulado')
-        <div class="lbl_doc_anulado">
-            Documento Anulado
-        </div>
-    @endif
-
     <div class="subhead">
-
-        @if($doc_encabezado->estado == 'Anulado')
-        <div class="lbl_doc_anulado">
-            Documento Anulado
-        </div>
-        @endif
     
         <?php
             $elaboro = $doc_encabezado->creado_por;

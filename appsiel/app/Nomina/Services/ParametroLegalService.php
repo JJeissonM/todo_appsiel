@@ -39,11 +39,11 @@ class ParametroLegalService
 
         return (object)[
             'id' => null,
-            'smmlv' => (float)config('nomina.SMMLV'),
+            'smmlv' => 0,
             'auxilio_transporte' => 0,
-            'uvt' => (float)config('nomina.valor_uvt_actual'),
-            'horas_laborales' => (float)config('nomina.horas_laborales'),
-            'horas_dia_laboral' => (float)config('nomina.horas_dia_laboral'),
+            'uvt' => 0,
+            'horas_laborales' => 240,
+            'horas_dia_laboral' => 8,
             'normatividad' => 'Configuracion general de nomina',
         ];
     }
@@ -79,8 +79,9 @@ class ParametroLegalService
 
     protected function getParametroPorAnio($anio)
     {
-        $horasLaborales = (float)config('nomina.horas_laborales');
-        $horasDiaLaboral = (float)config('nomina.horas_dia_laboral');
+        $fechaReferencia = $anio . '-12-31';
+        $horasLaborales = ParametroLegal::horas_laborales_para_fecha($fechaReferencia);
+        $horasDiaLaboral = ParametroLegal::horas_dia_laboral_para_fecha($fechaReferencia);
 
         $parametros = [
             2024 => [

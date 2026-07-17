@@ -96,8 +96,14 @@ class InscripcionController extends ModeloController
                                             'core_tercero_id' => $tercero->id, 
                                             'genero' => $request->genero,
                                             'fecha_nacimiento' => $request->fecha_nacimiento, 
-                                            'ciudad_nacimiento' => $request->ciudad_nacimiento
+                                            'ciudad_nacimiento' => $request->ciudad_nacimiento,
+                                            'es_de_inclusion' => $request->has('es_de_inclusion') ? (int)$request->es_de_inclusion : 0,
+                                            'diagnostico_inclusion' => $request->input('diagnostico_inclusion')
                                         ] );
+        } else {
+            $estudiante->es_de_inclusion = $request->has('es_de_inclusion') ? (int)$request->es_de_inclusion : ($estudiante->es_de_inclusion ? 1 : 0);
+            $estudiante->diagnostico_inclusion = $request->input('diagnostico_inclusion', $estudiante->diagnostico_inclusion);
+            $estudiante->save();
         }
 
         // Almacenar datos restantes de la inscripcion
@@ -164,15 +170,29 @@ class InscripcionController extends ModeloController
         $descripcion_transaccion = 'Ficha de Inscripción';
 
         $estudiante = $inscripcion->estudiante();
+        if (is_null($estudiante)) {
+            $estudiante = (object)[
+                'es_de_inclusion' => $inscripcion->es_de_inclusion,
+                'diagnostico_inclusion' => $inscripcion->diagnostico_inclusion
+            ];
+        } elseif (empty($estudiante->diagnostico_inclusion)) {
+            $estudiante->diagnostico_inclusion = $inscripcion->diagnostico_inclusion;
+        }
 
         /**
          * 323 = ID Modelo de Inscripciones en linea
          */
         $string_ids_campos = '323-' . $inscripcion->id . '-core_campo_id-1570';
-        $estudiante->es_de_inclusion = ModeloEavValor::get_valor_campo( $string_ids_campos );
+        $valor_eav_inclusion = ModeloEavValor::get_valor_campo( $string_ids_campos );
+        if (in_array($valor_eav_inclusion, ['Si', 'Sí', '1', 1], true)) {
+            $estudiante->es_de_inclusion = 1;
+        }
 
         $string_ids_campos = '323-' . $inscripcion->id . '-core_campo_id-1571';
-        $estudiante->diagnostico_inclusion = ModeloEavValor::get_valor_campo( $string_ids_campos );
+        $valor_eav_diagnostico = ModeloEavValor::get_valor_campo( $string_ids_campos );
+        if (!empty($valor_eav_diagnostico)) {
+            $estudiante->diagnostico_inclusion = $valor_eav_diagnostico;
+        }
 
         $formato = 'formatos.inscripciones.estandar';
         if ( !in_array(config('matriculas.formato_default_fichas_incripcion_y_matricula'), [null,'']) ) {
@@ -194,6 +214,7 @@ class InscripcionController extends ModeloController
         $datos = array_merge( $request->all(), [ 'descripcion' => $descripcion ] );
         $datos['numero_identificacion'] = $request->numero_identificacion2;
         $datos['email'] = $request->email2;
+        $datos['id_tipo_documento_id'] = $this->getTipoDocumentoIdParaTercero($request, $registro);
 
         $registro->tercero->fill( $datos );
         $registro->tercero->save();
@@ -201,8 +222,32 @@ class InscripcionController extends ModeloController
         $registro->fill( $request->all() );
         $registro->save();
 
+        $estudiante = $registro->estudiante();
+        if ($estudiante != null) {
+            $estudiante->es_de_inclusion = $request->has('es_de_inclusion') ? (int)$request->es_de_inclusion : ($estudiante->es_de_inclusion ? 1 : 0);
+            $estudiante->diagnostico_inclusion = $request->input('diagnostico_inclusion', $estudiante->diagnostico_inclusion);
+            $estudiante->save();
+        }
+
         return redirect('matriculas/inscripcion/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Registro MODIFICADO correctamente.');
 	}
+
+    private function getTipoDocumentoIdParaTercero(Request $request, Inscripcion $registro)
+    {
+        if ($request->id_tipo_documento_id != null && $request->id_tipo_documento_id != '') {
+            return $request->id_tipo_documento_id;
+        }
+
+        if ($request->tipo_documento_id != null && $request->tipo_documento_id != '') {
+            return $request->tipo_documento_id;
+        }
+
+        if ($request->tipo_doc_identidad_id != null && $request->tipo_doc_identidad_id != '') {
+            return $request->tipo_doc_identidad_id;
+        }
+
+        return $registro->tercero->id_tipo_documento_id;
+    }
 
     public function creacion_masiva()
     {

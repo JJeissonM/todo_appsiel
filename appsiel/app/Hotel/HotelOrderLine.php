@@ -15,9 +15,9 @@ class HotelOrderLine extends Model
 
     protected $table = 'hotel_order_lines';
 
-    protected $fillable = array('empresa_id', 'hotel_order_id', 'producto_id', 'room_id', 'description', 'quantity', 'unit_price', 'discount', 'tax_value', 'line_total', 'source_type', 'source_id');
+    protected $fillable = array('empresa_id', 'hotel_order_id', 'producto_id', 'room_id', 'inv_bodega_id', 'description', 'quantity', 'unit_price', 'discount', 'tax_value', 'line_total', 'source_type', 'source_id');
 
-    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Pedido', 'Producto', 'Habitacion', 'Cantidad', 'Precio', 'Descuento', 'Impuesto', 'Total');
+    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Pedido', 'Producto', 'Habitacion', 'Bodega', 'Cantidad', 'Precio', 'Descuento', 'Impuesto', 'Total');
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
 
@@ -96,6 +96,11 @@ class HotelOrderLine extends Model
         return $this->belongsTo('App\Hotel\HotelRoom', 'room_id');
     }
 
+    public function bodega()
+    {
+        return $this->belongsTo('App\Inventarios\InvBodega', 'inv_bodega_id');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return self::queryForIndex($search)
@@ -103,12 +108,13 @@ class HotelOrderLine extends Model
                 DB::raw('CONCAT("PED-", hotel_order_lines.hotel_order_id) AS campo1'),
                 'inv_productos.descripcion AS campo2',
                 'hotel_rooms.room_number AS campo3',
-                'hotel_order_lines.quantity AS campo4',
-                'hotel_order_lines.unit_price AS campo5',
-                'hotel_order_lines.discount AS campo6',
-                'hotel_order_lines.tax_value AS campo7',
-                'hotel_order_lines.line_total AS campo8',
-                'hotel_order_lines.id AS campo9'
+                'inv_bodegas.descripcion AS campo4',
+                'hotel_order_lines.quantity AS campo5',
+                'hotel_order_lines.unit_price AS campo6',
+                'hotel_order_lines.discount AS campo7',
+                'hotel_order_lines.tax_value AS campo8',
+                'hotel_order_lines.line_total AS campo9',
+                'hotel_order_lines.id AS campo10'
             )
             ->orderBy('hotel_order_lines.id', 'DESC')
             ->paginate($nro_registros);
@@ -121,6 +127,7 @@ class HotelOrderLine extends Model
                 'hotel_order_lines.hotel_order_id AS PEDIDO',
                 'inv_productos.descripcion AS PRODUCTO',
                 'hotel_rooms.room_number AS HABITACION',
+                'inv_bodegas.descripcion AS BODEGA',
                 'hotel_order_lines.quantity AS CANTIDAD',
                 'hotel_order_lines.unit_price AS PRECIO',
                 'hotel_order_lines.discount AS DESCUENTO',
@@ -167,7 +174,8 @@ class HotelOrderLine extends Model
     {
         $query = self::leftJoin('hotel_order_headers', 'hotel_order_headers.id', '=', 'hotel_order_lines.hotel_order_id')
             ->leftJoin('inv_productos', 'inv_productos.id', '=', 'hotel_order_lines.producto_id')
-            ->leftJoin('hotel_rooms', 'hotel_rooms.id', '=', 'hotel_order_lines.room_id');
+            ->leftJoin('hotel_rooms', 'hotel_rooms.id', '=', 'hotel_order_lines.room_id')
+            ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'hotel_order_lines.inv_bodega_id');
 
         if (Auth::check()) {
             $query->where('hotel_order_lines.empresa_id', Auth::user()->empresa_id);
@@ -177,6 +185,7 @@ class HotelOrderLine extends Model
             $query->where(function ($q) use ($search) {
                 $q->where('inv_productos.descripcion', 'LIKE', '%' . $search . '%')
                     ->orWhere('hotel_rooms.room_number', 'LIKE', '%' . $search . '%')
+                    ->orWhere('inv_bodegas.descripcion', 'LIKE', '%' . $search . '%')
                     ->orWhere('hotel_order_lines.description', 'LIKE', '%' . $search . '%')
                     ->orWhere('hotel_order_lines.source_type', 'LIKE', '%' . $search . '%');
             });

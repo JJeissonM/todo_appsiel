@@ -85,6 +85,10 @@ class InventoriesServices
     {
         foreach ($cantidades_facturadas as $linea)
         {
+            if (!empty($linea->inv_bodega_id)) {
+                continue;
+            }
+
             $linea->inv_bodega_id = $this->get_bodega_id_producto($linea->inv_producto_id, $bodega_default_id, $buscar_bodega_cocina);
         }
 
@@ -322,7 +326,7 @@ class InventoriesServices
 
         foreach ($datos_remision['invoice_doc_lines'] as $linea)
         {
-            $datos_remision['invoice_doc_line_bodega_ids'][$linea->id] = $this->get_bodega_id_producto($linea->inv_producto_id, $bodega_default_id, $buscar_bodega_cocina);
+            $datos_remision['invoice_doc_line_bodega_ids'][$linea->id] = !empty($linea->inv_bodega_id) ? (int)$linea->inv_bodega_id : $this->get_bodega_id_producto($linea->inv_producto_id, $bodega_default_id, $buscar_bodega_cocina);
         }
 
         $bodegas_lineas = array_unique(array_values($datos_remision['invoice_doc_line_bodega_ids']));

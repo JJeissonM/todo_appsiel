@@ -2,6 +2,7 @@
 
 namespace App\Nomina;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class ParametroLegal extends Model
@@ -99,5 +100,83 @@ class ParametroLegal extends Model
         }
 
         return $vec;
+    }
+
+    public static function vigente_para_fecha($fecha)
+    {
+        $fecha_periodo = Carbon::parse($fecha)->format('Y-m-d');
+
+        return ParametroLegal::where('estado', 'Activo')
+            ->where('fecha_inicio', '<=', $fecha_periodo)
+            ->where(function ($query) use ($fecha_periodo) {
+                $query->whereNull('fecha_fin')
+                    ->orWhere('fecha_fin', '>=', $fecha_periodo);
+            })
+            ->orderBy('fecha_inicio', 'DESC')
+            ->first();
+    }
+
+    public static function horas_laborales_para_fecha($fecha = null, $valor_defecto = 240)
+    {
+        $parametro = self::vigente_para_fecha(self::normalizar_fecha_parametro($fecha));
+
+        if (!is_null($parametro) && (float)$parametro->horas_laborales > 0) {
+            return (float)$parametro->horas_laborales;
+        }
+
+        return (float)$valor_defecto;
+    }
+
+    public static function smmlv_para_fecha($fecha = null, $valor_defecto = 0)
+    {
+        $parametro = self::vigente_para_fecha(self::normalizar_fecha_parametro($fecha));
+
+        if (!is_null($parametro) && (float)$parametro->smmlv > 0) {
+            return (float)$parametro->smmlv;
+        }
+
+        return (float)$valor_defecto;
+    }
+
+    public static function auxilio_transporte_para_fecha($fecha = null, $valor_defecto = 0)
+    {
+        $parametro = self::vigente_para_fecha(self::normalizar_fecha_parametro($fecha));
+
+        if (!is_null($parametro) && (float)$parametro->auxilio_transporte > 0) {
+            return (float)$parametro->auxilio_transporte;
+        }
+
+        return (float)$valor_defecto;
+    }
+
+    public static function uvt_para_fecha($fecha = null, $valor_defecto = 0)
+    {
+        $parametro = self::vigente_para_fecha(self::normalizar_fecha_parametro($fecha));
+
+        if (!is_null($parametro) && (float)$parametro->uvt > 0) {
+            return (float)$parametro->uvt;
+        }
+
+        return (float)$valor_defecto;
+    }
+
+    public static function horas_dia_laboral_para_fecha($fecha = null, $valor_defecto = 8)
+    {
+        $parametro = self::vigente_para_fecha(self::normalizar_fecha_parametro($fecha));
+
+        if (!is_null($parametro) && (float)$parametro->horas_dia_laboral > 0) {
+            return (float)$parametro->horas_dia_laboral;
+        }
+
+        return (float)$valor_defecto;
+    }
+
+    protected static function normalizar_fecha_parametro($fecha)
+    {
+        if (is_null($fecha) || $fecha == '') {
+            return date('Y-m-d');
+        }
+
+        return $fecha;
     }
 }

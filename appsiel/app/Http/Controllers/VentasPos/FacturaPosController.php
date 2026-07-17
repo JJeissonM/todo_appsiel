@@ -1080,6 +1080,8 @@ class FacturaPosController extends TransaccionController
         // Se marca como anulado el documento
         $factura->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
 
+        \App\Hotel\HotelOrderHeader::reopenOrdersForCancelledPosInvoice($factura->id);
+
         $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
         if( $pedido != null )
         {

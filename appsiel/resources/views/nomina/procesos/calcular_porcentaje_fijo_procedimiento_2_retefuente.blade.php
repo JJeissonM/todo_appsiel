@@ -61,7 +61,7 @@
 								<label class="control-label col-sm-4" > <b> *Valor UVT actual: </b> </label>
 
 								<div class="col-sm-8">
-									{{ Form::text( 'valor_uvt_actual', (float)config('nomina.valor_uvt_actual'), [ 'class' => 'form-control', 'id' => 'valor_uvt_actual' ]) }}
+									{{ Form::text( 'valor_uvt_actual', App\Nomina\ParametroLegal::uvt_para_fecha(), [ 'class' => 'form-control', 'id' => 'valor_uvt_actual' ]) }}
 								</div>
 							</div>
 

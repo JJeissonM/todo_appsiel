@@ -213,253 +213,273 @@
         </div>
 
         @if($dashboardEnabled)
-        @if(!$dashboardCanTransact)
-            <div class="alert alert-info">
-                Dashboard en modo consulta. Para registrar check-in, facturas directas o pedidos POS se requiere un punto de venta abierto asociado al usuario.
-            </div>
-        @endif
-
-        <div class="marco_formulario">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="hotel-filters">
-                        <h4>Filtros</h4>
-                        <form method="GET" action="{{ url('hotel') }}" class="form-inline">
-                            @if(Input::get('id') != '')
-                                <input type="hidden" name="id" value="{{ Input::get('id') }}">
-                            @endif
-                            @if(Input::get('id_modelo') != '')
-                                <input type="hidden" name="id_modelo" value="{{ Input::get('id_modelo') }}">
-                            @endif
-                            @if(Input::get('id_transaccion') != '')
-                                <input type="hidden" name="id_transaccion" value="{{ Input::get('id_transaccion') }}">
-                            @endif
-
-                            <select name="floor" class="form-control" style="min-width: 260px;">
-                                <option value="">Seleccione el nivel/piso</option>
-                                @foreach($floors as $floor => $label)
-                                    <option value="{{ $floor }}" {{ Input::get('floor') == $floor ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
-                            </select>
-
-                            <select name="status" class="form-control" style="min-width: 210px;">
-                                <option value="">Todos los estados</option>
-                                @foreach($statuses as $status => $label)
-                                    <option value="{{ $status }}" {{ Input::get('status') == $status ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
-                            </select>
-
-                            <button class="btn btn-primary"><i class="fa fa-filter"></i></button>
-                            <a href="{{ url($hotelUrl::url('hotel')) }}" class="btn btn-default"><i class="fa fa-refresh"></i></a>
-                        </form>
-                    </div>
+            @if(!$dashboardCanTransact)
+                <div class="alert alert-info">
+                    La apertura del turno habilita el Dashboard Gestión Hotelera.
                 </div>
-                <div class="col-md-4 text-right">
-                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#hotelGuestCreateModal"><i class="fa fa-plus"></i> Huesped</button>
-                    <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $reservationModelId))) }}" class="btn btn-info"><i class="fa fa-calendar"></i> Reserva</a>
-                    @if($dashboardCanTransact)
-                        <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId))) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a>
-                        <a href="{{ url($pdvData['factura_directa_url']) }}" class="btn btn-success" target="_blank"><i class="fa fa-calculator"></i> Fact. Directa</a>
-                    @endif
-                </div>
-            </div>
+            @endif
 
-        </div>
+            <div class="marco_formulario">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="hotel-filters">
+                            <h4>Filtros</h4>
+                            <form method="GET" action="{{ url('hotel') }}" class="form-inline">
+                                @if(Input::get('id') != '')
+                                    <input type="hidden" name="id" value="{{ Input::get('id') }}">
+                                @endif
+                                @if(Input::get('id_modelo') != '')
+                                    <input type="hidden" name="id_modelo" value="{{ Input::get('id_modelo') }}">
+                                @endif
+                                @if(Input::get('id_transaccion') != '')
+                                    <input type="hidden" name="id_transaccion" value="{{ Input::get('id_transaccion') }}">
+                                @endif
 
-        <div class="hotel-summary">
-            @foreach($summary as $status => $count)
-                <span class="hotel-summary-item hotel-summary-{{ strtolower($status) }}">{{ $status }}: {{ $count }}</span>
-            @endforeach
-        </div>
+                                <select name="floor" class="form-control" style="min-width: 260px;">
+                                    <option value="">Seleccione el nivel/piso</option>
+                                    @foreach($floors as $floor => $label)
+                                        <option value="{{ $floor }}" {{ Input::get('floor') == $floor ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
 
-        <div class="hotel-grid">
-            @foreach($rooms as $room)
-                <?php
-                    $statusClass = 'hotel-room-' . strtolower($room->status);
-                    $stay = $room->activeStay->first();
-                    $todayReservation = $room->activeTodayReservation->first();
-                    $guestName = '';
-                    if ($stay && $stay->mainGuest && $stay->mainGuest->tercero) {
-                        $guestName = $stay->mainGuest->tercero->descripcion;
-                    } elseif ($todayReservation && $todayReservation->cliente && $todayReservation->cliente->tercero) {
-                        $guestName = 'Reserva: ' . $todayReservation->cliente->tercero->descripcion;
-                    }
-                ?>
-                <div class="hotel-room-wrap">
-                    <div class="hotel-room {{ $statusClass }}">
-                        <div class="hotel-room-main">
-                            <div class="hotel-room-number">HAB. {{ $room->room_number }}</div>
-                            <div class="hotel-room-type">
-                                {{ $room->description != '' ? $room->description : ucfirst(strtolower($room->room_type)) }}
-                            </div>
-                            <div class="hotel-room-meta">
-                                Piso: {{ $room->floor ? $room->floor : 'N/A' }} &nbsp; Cap: {{ $room->capacity }}
-                                @if($guestName != '')
-                                    <br>{{ substr($guestName, 0, 34) }}
-                                @endif
-                            </div>
-                        </div>
-                        <div class="hotel-room-status">
-                            {{ $room->status }} <i class="fa fa-arrow-circle-right"></i>
-                        </div>
-                        <div class="hotel-room-actions">
-                            <!-- <a href="{ { url('web/'.$room->id.'?id='.$appId.'&id_modelo='.$roomModelId) }}" class="btn btn-default btn-xs" title="Ver habitacion"><i class="fa fa-eye"></i></a> -->
+                                <select name="status" class="form-control" style="min-width: 210px;">
+                                    <option value="">Todos los estados</option>
+                                    @foreach($statuses as $status => $label)
+                                        <option value="{{ $status }}" {{ Input::get('status') == $status ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
 
-                            @if($room->status == App\Hotel\HotelRoom::STATUS_DISPONIBLE && $room->is_active)
-                                @if($dashboardCanTransact)
-                                    <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
-                                @endif
-                                <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $reservationModelId, 'room_id' => $room->id))) }}" class="btn btn-info btn-xs"><i class="fa fa-calendar"></i> Reservar</a>
-                                <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
-                                    {{ csrf_field() }}
-                                    <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_MANTENIMIENTO }}">
-                                    <input type="hidden" name="return_to" value="{{ $returnTo }}">
-                                    <button class="btn btn-warning btn-xs" title="Mantenimiento"><i class="fa fa-wrench"></i></button>
-                                </form>
-                                <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
-                                    {{ csrf_field() }}
-                                    <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_BLOQUEADA }}">
-                                    <input type="hidden" name="return_to" value="{{ $returnTo }}">
-                                    <button class="btn btn-danger btn-xs" title="Bloquear"><i class="fa fa-lock"></i></button>
-                                </form>
-                            @elseif($room->status == App\Hotel\HotelRoom::STATUS_RESERVADA && $todayReservation)
-                                @if($dashboardCanTransact)
-                                    <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id, 'main_cliente_id' => $todayReservation->cliente_id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
-                                @endif
-                                <form method="POST" action="{{ url($hotelUrl::url('hotel/reservations/'.$todayReservation->id.'/cancel', array('id_modelo' => $reservationModelId))) }}" style="display:inline-block;">
-                                    {{ csrf_field() }}
-                                    <button class="btn btn-danger btn-xs" onclick="return confirm('Anular reserva?')"><i class="fa fa-ban"></i> Anular</button>
-                                </form>
-                            @elseif($room->status == App\Hotel\HotelRoom::STATUS_OCUPADA && $stay)
-                                <a href="{{ url('hotel/stays/'.$stay->id.'?id='.$appId.'&id_modelo='.$stayModelId) }}" class="btn btn-danger btn-xs"><i class="fa fa-user"></i> Estadia</a>
-                                <?php
-                                    $dashboardOrder = null;
-                                    foreach ($stay->orders as $stayOrder) {
-                                        if ($stayOrder->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO) {
-                                            $dashboardOrder = $stayOrder;
-                                            break;
-                                        }
-                                    }
-                                    if (is_null($dashboardOrder)) {
-                                        $dashboardOrder = $stay->orders->first();
-                                    }
-                                ?>
-                                @if($dashboardOrder)
-                                    <a href="{{ url($hotelUrl::url('hotel/orders/'.$dashboardOrder->id, array('id_modelo' => $orderModelId))) }}" class="btn btn-primary btn-xs"><i class="fa fa-shopping-cart"></i> Pedido</a>
-                                @endif
-                                <button type="button"
-                                        class="btn btn-success btn-xs hotel-dashboard-checkout-btn"
-                                        data-action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/check-out', array('id_modelo' => $stayModelId))) }}"
-                                        data-room="{{ $room->room_number }}"
-                                        data-checkout-at="{{ date('Y-m-d\\TH:i') }}">
-                                    <i class="fa fa-sign-out"></i> Check-out
-                                </button>
-                            @elseif($room->status == App\Hotel\HotelRoom::STATUS_LIMPIEZA)
-                                <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
-                                    {{ csrf_field() }}
-                                    <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_DISPONIBLE }}">
-                                    <input type="hidden" name="return_to" value="{{ $returnTo }}">
-                                    <button class="btn btn-success btn-xs"><i class="fa fa-check"></i> Disponible</button>
-                                </form>
-                                <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
-                                    {{ csrf_field() }}
-                                    <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_MANTENIMIENTO }}">
-                                    <input type="hidden" name="return_to" value="{{ $returnTo }}">
-                                    <button class="btn btn-warning btn-xs"><i class="fa fa-wrench"></i></button>
-                                </form>
-                            @else
-                                <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
-                                    {{ csrf_field() }}
-                                    <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_DISPONIBLE }}">
-                                    <input type="hidden" name="return_to" value="{{ $returnTo }}">
-                                    <button class="btn btn-success btn-xs"><i class="fa fa-check"></i> Disponible</button>
-                                </form>
-                            @endif
+                                <button class="btn btn-primary"><i class="fa fa-filter"></i></button>
+                                <a href="{{ url($hotelUrl::url('hotel')) }}" class="btn btn-default"><i class="fa fa-refresh"></i></a>
+                            </form>
                         </div>
                     </div>
+                    <div class="col-md-4 text-right">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#hotelGuestCreateModal"><i class="fa fa-plus"></i> Huesped</button>
+                        <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $reservationModelId))) }}" class="btn btn-info"><i class="fa fa-calendar"></i> Reserva</a>
+
+                        @if($dashboardCanTransact)
+                            <!-- <a href="{ { url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId))) }}" class="btn btn-info"><i class="fa fa-sign-in"></i> Check-in</a> -->
+                            <a href="{{ url($pdvData['factura_directa_url']) }}" class="btn btn-success" target="_blank"><i class="fa fa-calculator"></i> Fact. Directa</a>
+                        @endif
+                    </div>
                 </div>
-            @endforeach
-        </div>
 
-        @if(count($rooms) == 0)
-            <div class="alert alert-info">No hay habitaciones para los filtros seleccionados.</div>
-        @endif
+            </div>
 
-        <div class="marco_formulario">
-            <h4>Reservas activas</h4>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Habitacion</th>
-                            <th>Huesped</th>
-                            <th>Desde</th>
-                            <th>Hasta</th>
-                            <th>Estado</th>
-                            <th>Accion</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($activeReservations as $reservation)
-                            <tr>
-                                <td>{{ $reservation->room ? $reservation->room->room_number : $reservation->room_id }}</td>
-                                <td>{{ $reservation->cliente && $reservation->cliente->tercero ? $reservation->cliente->tercero->descripcion : $reservation->cliente_id }}</td>
-                                <td>{{ $reservation->reserved_from }}</td>
-                                <td>{{ $reservation->reserved_until }}</td>
-                                <td>{{ $reservation->status }}</td>
-                                <td>
-                                    <form method="POST" action="{{ url($hotelUrl::url('hotel/reservations/'.$reservation->id.'/cancel', array('id_modelo' => $reservationModelId))) }}" style="display:inline-block;">
+            <div class="hotel-summary">
+                @foreach($summary as $status => $count)
+                    <span class="hotel-summary-item hotel-summary-{{ strtolower($status) }}">{{ $status }}: {{ $count }}</span>
+                @endforeach
+            </div>
+
+            <div class="hotel-grid">
+                @foreach($rooms as $room)
+                    <?php
+                        $stay = $room->activeStay->first();
+                        $todayReservation = $room->activeTodayReservation->first();
+                        $dashboardStatus = $room->status;
+                        if ($stay) {
+                            $dashboardStatus = App\Hotel\HotelRoom::STATUS_OCUPADA;
+                        } elseif ($todayReservation && $dashboardStatus == App\Hotel\HotelRoom::STATUS_DISPONIBLE) {
+                            $dashboardStatus = App\Hotel\HotelRoom::STATUS_RESERVADA;
+                        }
+                        $statusClass = 'hotel-room-' . strtolower($dashboardStatus);
+                        $guestName = '';
+                        $expected_check_out_at = '';
+                        if ($stay && $stay->mainGuest && $stay->mainGuest->tercero) {
+                            $guestName = $stay->mainGuest->tercero->descripcion;
+
+                            $expected_check_out_at = Carbon\Carbon::parse($stay->expected_check_out_at)->format('d/m/Y');
+                        } elseif ($todayReservation && $todayReservation->cliente && $todayReservation->cliente->tercero) {
+                            $guestName = 'Reserva: ' . $todayReservation->cliente->tercero->descripcion;
+                        }
+                    ?>
+                    <div class="hotel-room-wrap">
+                        <div class="hotel-room {{ $statusClass }}">
+                            <div class="hotel-room-main">
+                                <div class="hotel-room-number">HAB. {{ $room->room_number }}</div>
+                                <div class="hotel-room-type">
+                                    {{ $room->description != '' ? $room->description : ucfirst(strtolower($room->room_type)) }}
+                                </div>
+                                <div class="hotel-room-meta">
+                                    F.S.: {{ $expected_check_out_at }}
+                                    @if($guestName != '')
+                                        <br>{{ substr($guestName, 0, 34) }}
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="hotel-room-status">
+                                {{ $dashboardStatus }} <i class="fa fa-arrow-circle-right"></i>
+                            </div>
+                            <div class="hotel-room-actions">
+                                <!-- <a href="{ { url('web/'.$room->id.'?id='.$appId.'&id_modelo='.$roomModelId) }}" class="btn btn-default btn-xs" title="Ver habitacion"><i class="fa fa-eye"></i></a> -->
+
+                                @if($dashboardStatus == App\Hotel\HotelRoom::STATUS_DISPONIBLE && $room->is_active)
+                                    @if($dashboardCanTransact)
+                                        <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
+                                    @endif
+                                    <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $reservationModelId, 'room_id' => $room->id))) }}" class="btn btn-info btn-xs"><i class="fa fa-calendar"></i> Reservar</a>
+                                    <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
                                         {{ csrf_field() }}
-                                        <button class="btn btn-danger btn-xs" onclick="return confirm('Anular reserva?')">Anular</button>
+                                        <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_MANTENIMIENTO }}">
+                                        <input type="hidden" name="return_to" value="{{ $returnTo }}">
+                                        <button class="btn btn-warning btn-xs" title="Mantenimiento"><i class="fa fa-wrench"></i></button>
                                     </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                        @if(count($activeReservations) == 0)
-                            <tr>
-                                <td colspan="6">No hay reservas activas.</td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
+                                    <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
+                                        {{ csrf_field() }}
+                                        <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_BLOQUEADA }}">
+                                        <input type="hidden" name="return_to" value="{{ $returnTo }}">
+                                        <button class="btn btn-danger btn-xs" title="Bloquear"><i class="fa fa-lock"></i></button>
+                                    </form>
+                                @elseif($dashboardStatus == App\Hotel\HotelRoom::STATUS_RESERVADA && $todayReservation)
+                                    @if($dashboardCanTransact)
+                                        <a href="{{ url($hotelUrl::url('web/create', array('id_modelo' => $stayModelId, 'room_id' => $room->id, 'main_cliente_id' => $todayReservation->cliente_id))) }}" class="btn btn-success btn-xs"><i class="fa fa-sign-in"></i> Check-in</a>
+                                    @endif
+                                    <form method="POST" action="{{ url($hotelUrl::url('hotel/reservations/'.$todayReservation->id.'/cancel', array('id_modelo' => $reservationModelId))) }}" style="display:inline-block;">
+                                        {{ csrf_field() }}
+                                        <button class="btn btn-danger btn-xs hotel-confirm-submit" data-message="Anular reserva?"><i class="fa fa-ban"></i> Anular</button>
+                                    </form>
+                                @elseif($dashboardStatus == App\Hotel\HotelRoom::STATUS_OCUPADA && $stay)
+                                    <a href="{{ url('hotel/stays/'.$stay->id.'?id='.$appId.'&id_modelo='.$stayModelId) }}" class="btn btn-danger btn-xs"><i class="fa fa-user"></i> Estadia</a>
+                                    <?php
+                                        $dashboardOrder = null;
+                                        $dashboardOpenOrdersCount = 0;
+                                        foreach ($stay->orders as $stayOrder) {
+                                            if ($stayOrder->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO) {
+                                                $dashboardOpenOrdersCount++;
+                                                $dashboardOrder = $stayOrder;
+                                            }
+                                        }
+                                        if (is_null($dashboardOrder)) {
+                                            $dashboardOrder = $stay->orders->first();
+                                        }
+                                    ?>
+                                    @if($dashboardOrder)
+                                        <a href="{{ url($hotelUrl::url('hotel/orders/'.$dashboardOrder->id, array('id_modelo' => $orderModelId))) }}" class="btn btn-primary btn-xs"><i class="fa fa-shopping-cart"></i> Pedido</a>
+                                    @endif
+                                    @if($dashboardOpenOrdersCount > 0)
+                                        <button type="button"
+                                                class="btn btn-success btn-xs"
+                                                disabled
+                                                title="No se puede registrar check-out porque la estadia tiene pedidos hoteleros abiertos pendientes por facturar.">
+                                            <i class="fa fa-sign-out"></i> Check-out
+                                        </button>
+                                    @else
+                                        <button type="button"
+                                                class="btn btn-success btn-xs hotel-dashboard-checkout-btn"
+                                                data-action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/check-out', array('id_modelo' => $stayModelId))) }}"
+                                                data-room="{{ $room->room_number }}"
+                                                data-checkout-at="{{ date('Y-m-d\\TH:i') }}">
+                                            <i class="fa fa-sign-out"></i> Check-out
+                                        </button>
+                                    @endif
+                                @elseif($dashboardStatus == App\Hotel\HotelRoom::STATUS_LIMPIEZA)
+                                    <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
+                                        {{ csrf_field() }}
+                                        <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_DISPONIBLE }}">
+                                        <input type="hidden" name="return_to" value="{{ $returnTo }}">
+                                        <button class="btn btn-success btn-xs"><i class="fa fa-check"></i> Disponible</button>
+                                    </form>
+                                    <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
+                                        {{ csrf_field() }}
+                                        <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_MANTENIMIENTO }}">
+                                        <input type="hidden" name="return_to" value="{{ $returnTo }}">
+                                        <button class="btn btn-warning btn-xs"><i class="fa fa-wrench"></i></button>
+                                    </form>
+                                @else
+                                    <form method="POST" action="{{ url($hotelUrl::url('hotel/rooms/'.$room->id.'/status', array('id_modelo' => $roomModelId))) }}" style="display:inline-block;">
+                                        {{ csrf_field() }}
+                                        <input type="hidden" name="status" value="{{ App\Hotel\HotelRoom::STATUS_DISPONIBLE }}">
+                                        <input type="hidden" name="return_to" value="{{ $returnTo }}">
+                                        <button class="btn btn-success btn-xs"><i class="fa fa-check"></i> Disponible</button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-        </div>
 
-        <div class="marco_formulario">
-            <h4>Anticipos de clientes</h4>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Cliente</th>
-                            <th>Documento</th>
-                            <th>Fecha</th>
-                            <th>Detalle</th>
-                            <th>Saldo a favor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($customerAdvances as $advance)
+            @if(count($rooms) == 0)
+                <div class="alert alert-info">No hay habitaciones para los filtros seleccionados.</div>
+            @endif
+
+            <div class="marco_formulario">
+                <h4>Reservas activas</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
                             <tr>
-                                <td>{{ $advance->tercero }}</td>
-                                <td>{{ $advance->documento }}</td>
-                                <td>{{ $advance->fecha }}</td>
-                                <td>{{ $advance->detalle }}</td>
-                                <td class="text-right">{{ number_format(abs((float)$advance->saldo_pendiente), 2, ',', '.') }}</td>
+                                <th>Habitacion</th>
+                                <th>Huesped</th>
+                                <th>Desde</th>
+                                <th>Hasta</th>
+                                <th>Estado</th>
+                                <th>Accion</th>
                             </tr>
-                        @endforeach
-                        @if(count($customerAdvances) == 0)
-                            <tr>
-                                <td colspan="5">No hay anticipos de clientes pendientes por aplicar.</td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach($activeReservations as $reservation)
+                                <tr>
+                                    <td>{{ $reservation->room ? $reservation->room->room_number : $reservation->room_id }}</td>
+                                    <td>{{ $reservation->cliente && $reservation->cliente->tercero ? $reservation->cliente->tercero->descripcion : $reservation->cliente_id }}</td>
+                                    <td>{{ $reservation->reserved_from }}</td>
+                                    <td>{{ $reservation->reserved_until }}</td>
+                                    <td>{{ $reservation->status }}</td>
+                                    <td>
+                                        <form method="POST" action="{{ url($hotelUrl::url('hotel/reservations/'.$reservation->id.'/cancel', array('id_modelo' => $reservationModelId))) }}" style="display:inline-block;">
+                                            {{ csrf_field() }}
+                                            <button class="btn btn-danger btn-xs hotel-confirm-submit" data-message="Anular reserva?">Anular</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                            @if(count($activeReservations) == 0)
+                                <tr>
+                                    <td colspan="6">No hay reservas activas.</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+
+            <div class="marco_formulario">
+                <h4>Anticipos de clientes</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Documento</th>
+                                <th>Fecha</th>
+                                <th>Detalle</th>
+                                <th>Saldo a favor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($customerAdvances as $advance)
+                                <tr>
+                                    <td>{{ $advance->tercero }}</td>
+                                    <td>{{ $advance->documento }}</td>
+                                    <td>{{ $advance->fecha }}</td>
+                                    <td>{{ $advance->detalle }}</td>
+                                    <td class="text-right">{{ number_format(abs((float)$advance->saldo_pendiente), 2, ',', '.') }}</td>
+                                </tr>
+                            @endforeach
+                            @if(count($customerAdvances) == 0)
+                                <tr>
+                                    <td colspan="5">No hay anticipos de clientes pendientes por aplicar.</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         @else
             <div class="alert alert-info">
-                Para usar el dashboard de Gestion Hotelera debe realizar la apertura del punto de venta POS asociado al cajero.
+                La apertura del turno habilita el Dashboard Gestión Hotelera.
             </div>
         @endif
 
@@ -538,6 +558,29 @@
                 $('#hotel_dashboard_check_out_at').val(checkOutAt);
                 $('#hotel_dashboard_check_out_room_text').text('Registrar check-out de la habitacion ' + room + '.');
                 $('#hotelDashboardCheckOutModal').modal('show');
+            });
+
+            $('.hotel-confirm-submit').on('click', function(event) {
+                event.preventDefault();
+
+                var $button = $(this);
+                var $form = $button.closest('form');
+                var message = $button.data('message') || 'Confirmar accion?';
+
+                if (typeof Swal !== 'undefined' && Swal.fire) {
+                    Swal.fire({
+                        title: 'Confirmar',
+                        text: message,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Aceptar',
+                        cancelButtonText: 'Cancelar'
+                    }).then(function(result) {
+                        if (result && (result.isConfirmed || result.value)) {
+                            $form.submit();
+                        }
+                    });
+                }
             });
         });
     </script>

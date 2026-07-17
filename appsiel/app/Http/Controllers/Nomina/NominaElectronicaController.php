@@ -21,7 +21,7 @@ use GuzzleHttp\Client;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
-
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 
 class NominaElectronicaController extends TransaccionController
@@ -184,7 +184,7 @@ class NominaElectronicaController extends TransaccionController
 
             return $this->dibujar_vista();
         } catch ( \Throwable $e ) {
-            \Log::error('Error generando documento soporte de nomina electronica.', [
+            $this->registrar_error_nomina_electronica('Error generando documento soporte de nomina electronica.', [
                 'fecha_final_periodo' => $request->fecha_final_periodo,
                 'almacenar_registros' => $request->almacenar_registros,
                 'user_id' => Auth::check() ? Auth::user()->id : null,
@@ -221,7 +221,7 @@ class NominaElectronicaController extends TransaccionController
             }
         }
         
-        $deductions = $datos_doc_soporte['deductions'];
+        $deductions = isset($datos_doc_soporte['deductions']) ? $datos_doc_soporte['deductions'] : [];
         foreach ($deductions as $line) {
             if ( isset($line['status']) && $line['status'] == 'error' ) {
                 $hay_errores = true;
@@ -238,6 +238,18 @@ class NominaElectronicaController extends TransaccionController
     public function actualizar_datos_vista( $datos_doc_soporte )
     {
         $this->datos_vista[] = $datos_doc_soporte;
+    }
+
+    protected function registrar_error_nomina_electronica($mensaje, array $contexto)
+    {
+        try {
+            Log::error($mensaje, $contexto);
+            return;
+        } catch ( \Throwable $log_exception ) {
+            $contexto['log_error'] = $log_exception->getMessage();
+        }
+
+        error_log($mensaje . ' ' . json_encode($contexto));
     }
 
     public function dibujar_vista()
@@ -320,6 +332,8 @@ class NominaElectronicaController extends TransaccionController
                 'mensajes' => $mensajes,
                 'dian_messages_raw' => $resultado->dian_messages,
                 'objeto_json_enviado' => $resultado->objeto_json_enviado,
+                'request_xml' => $resultado->request_xml,
+                'response_xml' => $resultado->response_xml,
             ]
         ]);
     }
@@ -346,7 +360,8 @@ class NominaElectronicaController extends TransaccionController
 
     protected function procesar_envio_documento($document_id)
     {
-        $document_header = DocumentoSoporte::find($document_id);
+        $tiempo_inicio = microtime(true);
+        $document_header = DocumentoSoporte::with('empleado', 'tipo_documento_app')->find($document_id);
 
         if (is_null($document_header)) {
             return [
@@ -398,10 +413,43 @@ class NominaElectronicaController extends TransaccionController
         // ── ENVÍO A DATAICO (original) ──
         $doc_soporte_service = new DocumentoSoporteService();
 
+        $proveedor = config('nomina.proveedor_tecnologico_default', 'DATAICO');
+
+        // ── ENVÍO A OSEI ──
+        if (strtoupper($proveedor) === 'OSEI') {
+            try {
+                $oseiService = new OseiPayrollService();
+                $resultado = $oseiService->enviarDocumento($document_header);
+
+                if ($resultado['ok']) {
+                    $document_header->estado = 'Enviado';
+                    $document_header->save();
+                }
+
+                return $resultado;
+            } catch ( \Throwable $e ) {
+                \Log::error('OSEl: Error enviando documento.', [
+                    'documento_id' => $document_header->id,
+                    'error' => $e->getMessage(),
+                ]);
+
+                return [
+                    'ok' => false,
+                    'documento_id' => (int)$document_header->id,
+                    'documento' => $document_header->get_value_to_show(),
+                    'message' => 'OSEl: ' . $e->getMessage()
+                ];
+            }
+        }
+
+        // ── ENVÍO A DATAICO (original) ──
+        $doc_soporte_service = new DocumentoSoporteService();
+
         try {
-            $json_doc_electronico_enviado = json_encode($document_header->get_json_to_send());
+            $payload_documento = $document_header->get_json_to_send();
+            $json_doc_electronico_enviado = json_encode($payload_documento, JSON_UNESCAPED_UNICODE);
         } catch ( \Throwable $e ) {
-            \Log::error('No se pudo construir el JSON de documento soporte.', [
+            $this->registrar_error_nomina_electronica('No se pudo construir el JSON de documento soporte.', [
                 'documento_id' => $document_header->id,
                 'message' => $e->getMessage(),
             ]);
@@ -418,18 +466,19 @@ class NominaElectronicaController extends TransaccionController
 
         try {
             $client = new Client();
-            $response = $client->post( config('nomina.url_servicio_emision'), [
+            $response = $client->post( $request_metadata['url'], [
                 'headers' => [
                               'content-type' => 'application/json',
                               'auth-token' => config('nomina.tokenPassword')
                            ],
-                'json' => json_decode( $json_doc_electronico_enviado )
+                'body' => $json_doc_electronico_enviado,
             ]);
          } catch (\GuzzleHttp\Exception\ConnectException $e) {
              $array_respuesta = [
                 'codigo' => 0,
                 'dian_status' => 'DIAN_RECHAZADO',
-                'dian_messages' => [ 'No fue posible conectar con Dataico. Verifique DNS/salida a internet del servidor. Detalle: ' . $e->getMessage() ]
+                'dian_messages' => [ 'No fue posible conectar con Dataico. Verifique DNS/salida a internet del servidor. Detalle: ' . $e->getMessage() ],
+                'response_xml' => $this->build_dataico_response_evidence(null, '', $e)
             ];
          } catch (\GuzzleHttp\Exception\RequestException $e) {
              $response = $e->getResponse();
@@ -437,17 +486,27 @@ class NominaElectronicaController extends TransaccionController
                 $array_respuesta = [
                     'codigo' => 0,
                     'dian_status' => 'DIAN_RECHAZADO',
-                    'dian_messages' => [ $e->getMessage() ]
+                    'dian_messages' => [ $e->getMessage() ],
+                    'response_xml' => $this->build_dataico_response_evidence(null, '', $e)
                 ];
              }
+         } catch (\GuzzleHttp\Exception\TransferException $e) {
+             $array_respuesta = [
+                'codigo' => 0,
+                'dian_status' => 'DIAN_RECHAZADO',
+                'dian_messages' => [ 'No fue posible completar la comunicación con Dataico. Detalle: ' . $e->getMessage() ],
+                'response_xml' => $this->build_dataico_response_evidence(null, '', $e)
+            ];
          }
 
         if ( !is_null($response) ) {
-            $array_respuesta = json_decode( (string) $response->getBody(), true );
+            $raw_response_body = (string) $response->getBody();
+            $array_respuesta = json_decode( $raw_response_body, true );
             if ( !is_array($array_respuesta) ) {
                 $array_respuesta = [];
             }
             $array_respuesta['codigo'] = $response->getStatusCode();
+            $array_respuesta['response_xml'] = $this->build_dataico_response_evidence($response, $raw_response_body);
         }
 
         if (isset($array_respuesta['errors'])) {
@@ -461,6 +520,15 @@ class NominaElectronicaController extends TransaccionController
             $array_respuesta['dian_messages'] = isset($array_respuesta['dian_messages']) ? $array_respuesta['dian_messages'] : [ 'Respuesta inválida o incompleta del proveedor tecnológico.' ];
         }
 
+        if ( empty($array_respuesta['dian_messages']) && $array_respuesta['dian_status'] != 'DIAN_ACEPTADO' )
+        {
+            $array_respuesta['dian_messages'] = [
+                'DATAICO no retornó mensajes DIAN para este rechazo o respuesta no aceptada. Revise response_xml para ver el HTTP status, headers y cuerpo bruto de la respuesta del proveedor.'
+            ];
+        }
+
+        $array_respuesta['request_xml'] = json_encode($request_metadata, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
         $doc_soporte_service->store_resultado_envio_documento( $document_header, $array_respuesta, $json_doc_electronico_enviado );
 
         if ($array_respuesta['dian_status'] == 'DIAN_ACEPTADO') {
@@ -470,7 +538,8 @@ class NominaElectronicaController extends TransaccionController
                 'ok' => true,
                 'documento_id' => (int)$document_header->id,
                 'documento' => $document_header->get_value_to_show(),
-                'message' => 'Documento enviado correctamente.'
+                'message' => 'Documento enviado correctamente.',
+                'elapsed_seconds' => round(microtime(true) - $tiempo_inicio, 2)
             ];
         }
 
@@ -479,8 +548,31 @@ class NominaElectronicaController extends TransaccionController
             'ok' => false,
             'documento_id' => (int)$document_header->id,
             'documento' => $document_header->get_value_to_show(),
-            'message' => empty($mensajes) ? 'El documento fue rechazado por el proveedor tecnológico.' : implode(' | ', $mensajes)
+            'message' => empty($mensajes) ? 'El documento fue rechazado por el proveedor tecnológico.' : implode(' | ', $mensajes),
+            'elapsed_seconds' => round(microtime(true) - $tiempo_inicio, 2)
         ];
+    }
+
+    protected function build_dataico_response_evidence($response = null, $raw_response_body = '', \Exception $exception = null)
+    {
+        $evidence = [
+            'http_status' => is_null($response) ? null : $response->getStatusCode(),
+            'reason_phrase' => is_null($response) ? null : $response->getReasonPhrase(),
+            'headers' => is_null($response) ? [] : $response->getHeaders(),
+            'body_raw' => $raw_response_body,
+            'body_json' => json_decode($raw_response_body, true)
+        ];
+
+        if (!is_null($exception)) {
+            $evidence['exception'] = [
+                'class' => get_class($exception),
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine()
+            ];
+        }
+
+        return json_encode($evidence, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
 
     protected function normalizar_mensajes_dian($mensajes)
@@ -494,6 +586,12 @@ class NominaElectronicaController extends TransaccionController
 
         if (!is_array($mensajes)) {
             $mensajes = [ (string) $mensajes ];
+        }
+
+        if (empty($mensajes)) {
+            return [
+                'El proveedor tecnológico no retornó mensajes DIAN para este intento. Revise la evidencia técnica guardada en request_xml/response_xml.'
+            ];
         }
 
         $resultado = [];
@@ -620,11 +718,25 @@ class NominaElectronicaController extends TransaccionController
 
         if ( is_null($doc_encabezado) )
         {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'Documento no encontrado.'
+                ], 404);
+            }
+
             return redirect()->back()->with('mensaje_error','Documento no encontrado.');
         }
 
         if ( $doc_encabezado->estado != 'Sin enviar' )
         {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'Solo se pueden recalcular documentos en estado Sin enviar.'
+                ], 422);
+            }
+
             return redirect($redirect_url)->with('mensaje_error','Solo se pueden recalcular documentos en estado Sin enviar.');
         }
 
@@ -632,7 +744,21 @@ class NominaElectronicaController extends TransaccionController
 
         if ( !$resultado['ok'] )
         {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => $resultado['message']
+                ], 422);
+            }
+
             return redirect($redirect_url)->with('mensaje_error', $resultado['message']);
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'ok' => true,
+                'message' => $resultado['message']
+            ]);
         }
 
         return redirect($redirect_url)->with('flash_message', $resultado['message']);

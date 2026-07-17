@@ -23,9 +23,7 @@
         Imprimir
         {{ Form::bsBtnPrint( 'tesoreria/traslado_efectivo/traslado/imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
     @else
-        Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','estandar2'=>'Estándar v2','pos'=>'POS','colegio'=>'Colegio'],null, [ 'id' =>'formato_impresion_id' ]) }}
-        {{ Form::bsBtnPrint( 'tesoreria/recaudos_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
-        {{ Form::bsBtnEmail( 'teso_recaudo_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }} 
+         @include('tesoreria.recaudos.botones_imprimir_email')
     @endif
 @endsection
 

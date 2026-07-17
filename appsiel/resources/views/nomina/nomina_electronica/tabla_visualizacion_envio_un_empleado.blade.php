@@ -64,14 +64,11 @@
 
                     if ($amount == 0 && $cesantias_interest != 0) { // No se están pagando Cesantías
                         $descripcion_concepto .= ' (Intereses)';
-                        $amount = $cesantias_interest;
-                    }
-
-                    if ($cesantias_interest != 0) {
+                    }elseif ($cesantias_interest != 0) {
                         $descripcion_concepto .= ' (Cesantías + Intereses)';
                     }                                
 
-                    $devengo = Form::TextoMoneda( $amount );
+                    $devengo = Form::TextoMoneda( $amount + $cesantias_interest);
 
                     if ( isset($registro['days']))
                     {
@@ -97,7 +94,7 @@
                 </tr>
 
                 <?php
-                    $total_devengos += $amount;
+                    $total_devengos += $amount + $cesantias_interest;
                 ?>
             @endforeach
 

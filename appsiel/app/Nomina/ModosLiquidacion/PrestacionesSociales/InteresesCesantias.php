@@ -7,6 +7,7 @@ use App\Nomina\ParametroLiquidacionPrestacionesSociales;
 
 use App\Nomina\NomDocRegistro;
 use App\Nomina\AgrupacionConcepto;
+use App\Nomina\ParametroLegal;
 
 use App\Nomina\PrestacionesLiquidadas;
 
@@ -84,7 +85,7 @@ class InteresesCesantias implements Estrategia
 
         return [
                     [
-                        'cantidad_horas' => $dias_totales_liquidacion * (float)config('nomina.horas_dia_laboral'),
+                        'cantidad_horas' => $dias_totales_liquidacion * ParametroLegal::horas_dia_laboral_para_fecha($this->fecha_final_liquidacion),
                         'valor_devengo' => $valores->devengo,
                         'valor_deduccion' => $valores->deduccion,
                         'tabla_resumen' => $this->tabla_resumen
@@ -120,7 +121,7 @@ class InteresesCesantias implements Estrategia
 
         $this->tabla_resumen['base_liquidacion'] = $parametros_prestacion->base_liquidacion;
 
-        $this->tabla_resumen['cantidad_dias_salario'] = (float)config('nomina.horas_laborales') / (float)config('nomina.horas_dia_laboral');
+        $this->tabla_resumen['cantidad_dias_salario'] = ParametroLegal::horas_laborales_para_fecha($fecha_final) / ParametroLegal::horas_dia_laboral_para_fecha($fecha_final);
 
         switch ($parametros_prestacion->base_liquidacion)
         {

@@ -6,6 +6,7 @@ use App\Contabilidad\ContabMovimiento;
 use App\Core\EncabezadoDocumentoTransaccion;
 use App\CxC\CxcAbono;
 use App\CxC\CxcMovimiento;
+use App\Hotel\HotelOrderHeader;
 use App\Http\Controllers\Inventarios\InventarioController;
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvMovimiento;
@@ -113,6 +114,8 @@ class DocumentHeaderService
             $this->actualizar_cantidades_pendientes( $pedido, 'sumar' );              
         }
 
+        $hotel_related_pos_doc_id = $document_header->ventas_doc_relacionado_id;
+
         // 8vo. Se marca como anulado el documento
         $document_header->update([
             'estado'=>'Anulado',
@@ -120,6 +123,8 @@ class DocumentHeaderService
             'ventas_doc_relacionado_id' => 0,
             'modificado_por' => $modificado_por
         ]);
+
+        HotelOrderHeader::reopenOrdersForCancelledSalesInvoice($document_header->id, $hotel_related_pos_doc_id);
 
         return (object)[
             'status'=>'flash_message',
