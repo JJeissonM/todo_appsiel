@@ -22,6 +22,7 @@ use App\Sistema\Services\ImagenService;
 use App\Sistema\Services\ModeloService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Schema;
 
 class ModeloController extends Controller
 {
@@ -329,7 +330,7 @@ class ModeloController extends Controller
                     $this->validate($request, [$lista_campos[$i]['name'] => 'required']);
                 }
 
-                if ($lista_campos[$i]['unico'])
+                if ($lista_campos[$i]['unico'] && Schema::hasColumn($nombre_tabla, $lista_campos[$i]['name']))
                 {
                     $this->validate($request, [$lista_campos[$i]['name'] => 'unique:' . $nombre_tabla]);
                 }
@@ -441,7 +442,7 @@ class ModeloController extends Controller
                     $this->validate($request, [$lista_campos[$i]['name'] => 'required']);
                 }
                 
-                if ($lista_campos[$i]['unico']) 
+                if ($lista_campos[$i]['unico'] && Schema::hasColumn($registro->getTable(), $lista_campos[$i]['name']))
                 {
                     $this->validate($request, [$lista_campos[$i]['name'] => 'unique:' . $registro->getTable() . ',' . $lista_campos[$i]['name'] . ',' . $id]);
                 }

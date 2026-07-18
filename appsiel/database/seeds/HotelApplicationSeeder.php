@@ -251,6 +251,7 @@ class HotelApplicationSeeder extends Seeder
         $this->attachModelField($modelId, $this->getOrCreateHotelEavField('Nacionalidad', 'select', 'hotel_guest_nacionalidad', 'model_App\\Core\\Nacionalidad', '', $comboAttrs, 0), $baseOrder + 1);
         $this->attachModelField($modelId, $this->getOrCreateHotelEavField('Procedencia', 'select', 'hotel_guest_procedencia', 'model_App\\Core\\Procedencia', '', $comboAttrs, 0), $baseOrder + 2);
         $this->attachModelField($modelId, $this->getOrCreateHotelEavField('Destino', 'select', 'hotel_guest_destino', 'model_App\\Core\\Destino', '', $comboAttrs, 0), $baseOrder + 3);
+        $this->attachModelField($modelId, $this->getOrCreateHotelEavField('Ocupación', 'bsText', 'hotel_guest_ocupacion', '', '', $textAttrs, 0), $baseOrder + 4);
     }
 
     private function copyModelFields($sourceModelKey, $targetModelKey)

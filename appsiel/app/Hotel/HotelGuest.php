@@ -17,10 +17,11 @@ class HotelGuest extends Cliente
     const FIELD_NACIONALIDAD = 'hotel_guest_nacionalidad';
     const FIELD_PROCEDENCIA = 'hotel_guest_procedencia';
     const FIELD_DESTINO = 'hotel_guest_destino';
+    const FIELD_OCUPACION = 'hotel_guest_ocupacion';
 
     protected $table = 'vtas_clientes';
 
-    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificacion', 'Huesped', 'Fecha nacimiento', 'Nacionalidad', 'Procedencia', 'Destino', 'Estado');
+    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificacion', 'Huesped', 'Fecha nacimiento', 'Nacionalidad', 'Procedencia', 'Destino', 'Ocupación', 'Estado');
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
 
@@ -133,7 +134,9 @@ class HotelGuest extends Cliente
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
         $lista_campos = parent::get_campos_adicionales_edit($lista_campos, $registro);
-        return $this->setTerceroValues($lista_campos, $registro);
+        $lista_campos = $this->setTerceroValues($lista_campos, $registro);
+
+        return $this->setHotelEavEditValues($lista_campos, $registro);
     }
 
     public function show_adicional($lista_campos, $registro)
@@ -168,6 +171,31 @@ class HotelGuest extends Cliente
             }
 
             $value = $tercero->{$campo['name']};
+            $lista_campos[$key]['value'] = $value;
+            $lista_campos[$key]['show_value'] = $value;
+        }
+
+        return $lista_campos;
+    }
+
+    private function setHotelEavEditValues($lista_campos, $registro)
+    {
+        foreach ($lista_campos as $key => $campo) {
+            if (!isset($campo['name']) || strpos($campo['name'], 'core_campo_id-') === false) {
+                continue;
+            }
+
+            $fieldId = isset($campo['id']) ? (int)$campo['id'] : 0;
+            if ($fieldId == 0) {
+                $fieldId = (int)str_replace('core_campo_id-', '', $campo['name']);
+            }
+
+            if ($fieldId == 0) {
+                continue;
+            }
+
+            $value = self::getEavValue($registro->id, $fieldId);
+            $lista_campos[$key]['name'] = 'core_campo_id-' . $fieldId;
             $lista_campos[$key]['value'] = $value;
             $lista_campos[$key]['show_value'] = $value;
         }
@@ -266,7 +294,7 @@ class HotelGuest extends Cliente
                 return $this->getCountryGentilicio($value);
             case self::FIELD_PROCEDENCIA:
             case self::FIELD_DESTINO:
-                return $this->getTableDescription('core_paises', $value);
+                return $this->getLocationDescription($value);
             default:
                 return $this->cleanShowValue($value);
         }
@@ -284,6 +312,16 @@ class HotelGuest extends Cliente
         }
 
         return isset($pais->descripcion) ? $pais->descripcion : '';
+    }
+
+    private function getLocationDescription($value)
+    {
+        $city = $this->getCityDescription($value);
+        if ($city != '') {
+            return $city;
+        }
+
+        return $this->getTableDescription('core_paises', $value);
     }
 
     private function getCityDescription($cityId)
@@ -397,6 +435,7 @@ class HotelGuest extends Cliente
             self::FIELD_NACIONALIDAD => array('label' => 'Nacionalidad', 'type' => 'select'),
             self::FIELD_PROCEDENCIA => array('label' => 'Procedencia', 'type' => 'select'),
             self::FIELD_DESTINO => array('label' => 'Destino', 'type' => 'select'),
+            self::FIELD_OCUPACION => array('label' => 'Ocupación', 'type' => 'bsText'),
         );
     }
 
@@ -454,10 +493,11 @@ class HotelGuest extends Cliente
                 'core_terceros.descripcion AS campo2',
                 'fecha_nacimiento.valor AS campo3',
                 'pais_nacionalidad.gentilicio AS campo4',
-                'pais_procedencia.descripcion AS campo5',
-                'pais_destino.descripcion AS campo6',
-                'vtas_clientes.estado AS campo7',
-                'vtas_clientes.id AS campo8'
+                \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), pais_procedencia.descripcion, '') AS campo5"),
+                \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_destino.descripcion,''), IF(depto_destino.descripcion IS NULL OR depto_destino.descripcion = '', '', CONCAT(', ', depto_destino.descripcion))), ''), pais_destino.descripcion, '') AS campo6"),
+                'ocupacion.valor AS campo7',
+                'vtas_clientes.estado AS campo8',
+                'vtas_clientes.id AS campo9'
             );
 
         self::applySearch($query, $search);
@@ -476,8 +516,9 @@ class HotelGuest extends Cliente
                 'core_terceros.descripcion AS HUESPED',
                 'fecha_nacimiento.valor AS FECHA_NACIMIENTO',
                 'pais_nacionalidad.gentilicio AS NACIONALIDAD',
-                'pais_procedencia.descripcion AS PROCEDENCIA',
-                'pais_destino.descripcion AS DESTINO',
+                \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), pais_procedencia.descripcion, '') AS PROCEDENCIA"),
+                \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_destino.descripcion,''), IF(depto_destino.descripcion IS NULL OR depto_destino.descripcion = '', '', CONCAT(', ', depto_destino.descripcion))), ''), pais_destino.descripcion, '') AS DESTINO"),
+                'ocupacion.valor AS OCUPACION',
                 'vtas_clientes.estado AS ESTADO'
             );
 
@@ -514,8 +555,18 @@ class HotelGuest extends Cliente
                     ->where('destino.modelo_entidad_id', '=', 0)
                     ->where('destino.core_campo_id', '=', isset($ids[self::FIELD_DESTINO]) ? $ids[self::FIELD_DESTINO] : 0);
             })
+            ->leftJoin('core_eav_valores as ocupacion', function ($join) use ($ids, $modelId) {
+                $join->on('ocupacion.registro_modelo_padre_id', '=', 'vtas_clientes.id')
+                    ->where('ocupacion.modelo_padre_id', '=', $modelId)
+                    ->where('ocupacion.modelo_entidad_id', '=', 0)
+                    ->where('ocupacion.core_campo_id', '=', isset($ids[self::FIELD_OCUPACION]) ? $ids[self::FIELD_OCUPACION] : 0);
+            })
             ->leftJoin('core_paises as pais_nacionalidad', 'pais_nacionalidad.id', '=', 'nacionalidad.valor')
+            ->leftJoin('core_ciudades as ciudad_procedencia', 'ciudad_procedencia.id', '=', 'procedencia.valor')
+            ->leftJoin('core_departamentos as depto_procedencia', 'depto_procedencia.id', '=', 'ciudad_procedencia.core_departamento_id')
             ->leftJoin('core_paises as pais_procedencia', 'pais_procedencia.id', '=', 'procedencia.valor')
+            ->leftJoin('core_ciudades as ciudad_destino', 'ciudad_destino.id', '=', 'destino.valor')
+            ->leftJoin('core_departamentos as depto_destino', 'depto_destino.id', '=', 'ciudad_destino.core_departamento_id')
             ->leftJoin('core_paises as pais_destino', 'pais_destino.id', '=', 'destino.valor');
     }
 
@@ -532,9 +583,14 @@ class HotelGuest extends Cliente
                 ->orWhere('nacionalidad.valor', 'LIKE', "%$search%")
                 ->orWhere('pais_nacionalidad.gentilicio', 'LIKE', "%$search%")
                 ->orWhere('procedencia.valor', 'LIKE', "%$search%")
+                ->orWhere('ciudad_procedencia.descripcion', 'LIKE', "%$search%")
+                ->orWhere('depto_procedencia.descripcion', 'LIKE', "%$search%")
                 ->orWhere('pais_procedencia.descripcion', 'LIKE', "%$search%")
                 ->orWhere('destino.valor', 'LIKE', "%$search%")
+                ->orWhere('ciudad_destino.descripcion', 'LIKE', "%$search%")
+                ->orWhere('depto_destino.descripcion', 'LIKE', "%$search%")
                 ->orWhere('pais_destino.descripcion', 'LIKE', "%$search%")
+                ->orWhere('ocupacion.valor', 'LIKE', "%$search%")
                 ->orWhere('vtas_clientes.estado', 'LIKE', "%$search%");
         });
     }

@@ -77,7 +77,7 @@
                                 </td>
                                 <td>
                                     @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
-                                        @can('elimiar_producto_habitacion')
+                                        @can('hotel_pedido_retirar_producto_habitacion')
                                             <button type="button" class="btn btn-danger btn-xs hotel-remove-line" data-line-id="{{ $line->id }}"><i class="fa fa-trash"></i></button>
                                         @else
                                             @if(!$line->product_is_a_room())
@@ -230,14 +230,13 @@
                         </label>
                     </div>
 
-                    <div id="hotel_invoice_customer_picker" style="display:none; background-color: #717171; color: #fff; padding: 10px; border: 1px solid #ddd; margin-top: 10px; border-radius: 4px;">
+                    <div id="hotel_invoice_customer_picker" style="display:none;">
                         <div class="hotel-cliente-autocomplete-wrap" style="position: relative;">
                             <input type="text"
                                 class="form-control hotel-cliente-autocomplete-input"
                                 data-target="hotel_invoice_cliente_id"
                                 placeholder="Buscar cliente"
-                                autocomplete="off"
-                                style="color: #fff;">
+                                autocomplete="off">
                             <input type="hidden" name="invoice_cliente_id" id="hotel_invoice_cliente_id">
                             <div class="hotel-cliente-autocomplete-results list-group" style="display:none; position:absolute; z-index:1050; left:0; right:0;"></div>
                         </div>

@@ -44,6 +44,11 @@
                 var target = $input.attr('data-target');
                 $('#' + target).val(clienteId);
                 $input.val(nombreCliente);
+                $input.css({
+                    'background-color': '#fff9c4',
+                    'border-bottom': '2px solid #26a69a',
+                    'font-weight': '600'
+                });
                 $input.closest('.hotel-cliente-autocomplete-wrap').find('.hotel-cliente-autocomplete-results').hide().empty();
             }
 
@@ -52,6 +57,11 @@
                 var $results = $input.closest('.hotel-cliente-autocomplete-wrap').find('.hotel-cliente-autocomplete-results');
 
                 $('#' + $input.attr('data-target')).val('');
+                $input.css({
+                    'background-color': '',
+                    'border-bottom': '',
+                    'font-weight': ''
+                });
 
                 if (term.length < 2) {
                     $results.hide().empty();

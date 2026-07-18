@@ -7,23 +7,34 @@
 @section('sidebar')
 	{{ Form::open(['url'=> $reporte->url_form_action . '?id=' . Input::get('id') ,'id'=>'form_consulta', 'data-url_form_action' => $reporte->url_form_action]) }}
 
-		@foreach( $lista_campos as $campo)
-			<?php 
-				$requerido = '';
-				if ( $campo['requerido'] )
-				{
-					$requerido = '*';
-				}
-			?>
-			<div class="form-group">
-				{{ Form::label( $campo['name'], $requerido.$campo['descripcion'] ) }}
-				@if( is_array($campo['opciones']) )
-					{{ Form::{$campo['tipo']}( $campo['name'], $campo['opciones'], null, $campo['atributos'] ) }}
+			@foreach( $lista_campos as $campo)
+				<?php
+					$requerido = '';
+					if ( $campo['requerido'] )
+					{
+						$requerido = '*';
+					}
+
+					$label = $requerido.$campo['descripcion'];
+					$componentes_con_opciones = array('bsSelect', 'bsSelectCreate', 'bsSelectName', 'bsSelectTerceros', 'multiselect_autocomplete', 'bsCheckBox', 'bsRadioBtn', 'bsFecha', 'bsFechaHora', 'bsHora');
+					$componentes_sin_opciones = array('bsLabel', 'bsText', 'bsEmail', 'bsNumber', 'bsTextArea', 'bsPassword', 'bsInputListaSugerencias', 'bsClienteAutocomplete');
+				?>
+
+				@if( in_array($campo['tipo'], $componentes_con_opciones) )
+					{{ Form::{$campo['tipo']}( $campo['name'], null, $label, is_array($campo['opciones']) ? $campo['opciones'] : array(), $campo['atributos'] ) }}
+				@elseif( in_array($campo['tipo'], $componentes_sin_opciones) )
+					{{ Form::{$campo['tipo']}( $campo['name'], null, $label, $campo['atributos'] ) }}
 				@else
-					{{ Form::{$campo['tipo']}( $campo['name'], null, $campo['atributos'] ) }}
+					<div class="form-group">
+						{{ Form::label( $campo['name'], $label ) }}
+						@if( is_array($campo['opciones']) )
+							{{ Form::{$campo['tipo']}( $campo['name'], $campo['opciones'], null, $campo['atributos'] ) }}
+						@else
+							{{ Form::{$campo['tipo']}( $campo['name'], null, $campo['atributos'] ) }}
+						@endif
+					</div>
 				@endif
-			</div>
-		@endforeach
+			@endforeach
 
 		<?php
 			$reports_list = [

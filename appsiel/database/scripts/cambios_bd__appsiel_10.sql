@@ -756,4 +756,65 @@ INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `valu
 
 
 -- Nuevo campo Bodega
-ALTER TABLE `vtas_pos_doc_registros` ADD `inv_bodega_id` INT(10) UNSIGNED NULL AFTER `inv_producto_id`, ADD INDEX (`inv_bodega_id`);
+SET @vtas_pos_doc_registros_inv_bodega_exists := (
+    SELECT COUNT(*)
+    FROM `information_schema`.`COLUMNS`
+    WHERE `TABLE_SCHEMA` = DATABASE()
+        AND `TABLE_NAME` = 'vtas_pos_doc_registros'
+        AND `COLUMN_NAME` = 'inv_bodega_id'
+);
+
+SET @sql_vtas_pos_doc_registros_inv_bodega := IF(
+    @vtas_pos_doc_registros_inv_bodega_exists = 0,
+    'ALTER TABLE `vtas_pos_doc_registros` ADD `inv_bodega_id` INT(10) UNSIGNED NULL AFTER `inv_producto_id`, ADD INDEX (`inv_bodega_id`)',
+    'SELECT "La columna vtas_pos_doc_registros.inv_bodega_id ya existe"'
+);
+
+PREPARE stmt_vtas_pos_doc_registros_inv_bodega FROM @sql_vtas_pos_doc_registros_inv_bodega;
+EXECUTE stmt_vtas_pos_doc_registros_inv_bodega;
+DEALLOCATE PREPARE stmt_vtas_pos_doc_registros_inv_bodega;
+
+-- nuevo permiso
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
+SELECT NULL, '22', '0', 'hotel_pedido_retirar_producto_habitacion', 'Hotel pedido Retirar producto Habitacion', 'web', '0', '15', '0', '', '2026-07-01 10:18:25', NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM `permissions` WHERE `name` = 'hotel_pedido_retirar_producto_habitacion' LIMIT 1
+);
+
+-- Nuevo campo EAV Ocupación para Huespedes hoteleros.
+SET @hotel_guest_model_id := (
+    SELECT `id` FROM `sys_modelos`
+    WHERE `name_space` = 'App\\\\Hotel\\\\HotelGuest'
+    LIMIT 1
+);
+
+SET @hotel_guest_ocupacion_field_id := (
+    SELECT `id` FROM `sys_campos`
+    WHERE `descripcion` = 'Ocupación'
+        AND `tipo` = 'bsText'
+        AND `name` = 'core_campo_id-ID'
+    LIMIT 1
+);
+
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`)
+SELECT NULL, 'Ocupación', 'bsText', 'core_campo_id-ID', '', '', '{"class":"form-control"}', '', '0', '1', '0', '2026-07-10 06:01:56', NULL
+WHERE @hotel_guest_ocupacion_field_id IS NULL;
+
+SET @hotel_guest_ocupacion_field_id := (
+    SELECT `id` FROM `sys_campos`
+    WHERE `descripcion` = 'Ocupación'
+        AND `tipo` = 'bsText'
+        AND `name` = 'core_campo_id-ID'
+    LIMIT 1
+);
+
+INSERT INTO `sys_modelo_tiene_campos` (`orden`, `core_modelo_id`, `core_campo_id`)
+SELECT 104, @hotel_guest_model_id, @hotel_guest_ocupacion_field_id
+WHERE @hotel_guest_model_id IS NOT NULL
+    AND @hotel_guest_ocupacion_field_id IS NOT NULL
+    AND NOT EXISTS (
+        SELECT 1 FROM `sys_modelo_tiene_campos`
+        WHERE `core_modelo_id` = @hotel_guest_model_id
+            AND `core_campo_id` = @hotel_guest_ocupacion_field_id
+        LIMIT 1
+    );
