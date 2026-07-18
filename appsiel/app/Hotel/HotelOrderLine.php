@@ -96,6 +96,15 @@ class HotelOrderLine extends Model
         return $this->belongsTo('App\Hotel\HotelRoom', 'room_id');
     }
 
+    public function product_is_a_room()
+    {
+        if(HotelRoom::where('inv_producto_id', $this->producto_id)->exists()) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function bodega()
     {
         return $this->belongsTo('App\Inventarios\InvBodega', 'inv_bodega_id');

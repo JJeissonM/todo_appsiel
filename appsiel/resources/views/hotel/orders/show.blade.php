@@ -77,7 +77,13 @@
                                 </td>
                                 <td>
                                     @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
-                                        <button type="button" class="btn btn-danger btn-xs hotel-remove-line" data-line-id="{{ $line->id }}"><i class="fa fa-trash"></i></button>
+                                        @can('elimiar_producto_habitacion')
+                                            <button type="button" class="btn btn-danger btn-xs hotel-remove-line" data-line-id="{{ $line->id }}"><i class="fa fa-trash"></i></button>
+                                        @else
+                                            @if(!$line->product_is_a_room())
+                                                <button type="button" class="btn btn-danger btn-xs hotel-remove-line" data-line-id="{{ $line->id }}"><i class="fa fa-trash"></i></button>
+                                            @endif
+                                        @endcan
                                     @endif
                                 </td>
                             </tr>
