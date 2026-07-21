@@ -781,6 +781,31 @@ WHERE NOT EXISTS (
     SELECT 1 FROM `permissions` WHERE `name` = 'hotel_pedido_retirar_producto_habitacion' LIMIT 1
 );
 
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
+SELECT NULL, '22', '0', 'hotel_pedido_anular', 'Anular pedido hotelero', 'hotel/orders/id_fila/cancel', '0', '18', '0', 'ban', '2026-07-21 00:00:00', NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM `permissions` WHERE `name` = 'hotel_pedido_anular' LIMIT 1
+);
+
+SET @hotel_pedido_anular_permission_id := (
+    SELECT `id` FROM `permissions`
+    WHERE `name` = 'hotel_pedido_anular'
+    LIMIT 1
+);
+
+INSERT INTO `role_has_permissions` (`orden`, `permission_id`, `role_id`)
+SELECT 0, @hotel_pedido_anular_permission_id, `roles`.`id`
+FROM `roles`
+WHERE `roles`.`name` IN ('SuperAdmin', 'Administrador')
+    AND @hotel_pedido_anular_permission_id IS NOT NULL
+    AND NOT EXISTS (
+        SELECT 1
+        FROM `role_has_permissions`
+        WHERE `role_has_permissions`.`permission_id` = @hotel_pedido_anular_permission_id
+            AND `role_has_permissions`.`role_id` = `roles`.`id`
+        LIMIT 1
+    );
+
 -- Nuevo campo EAV Ocupación para Huespedes hoteleros.
 SET @hotel_guest_model_id := (
     SELECT `id` FROM `sys_modelos`

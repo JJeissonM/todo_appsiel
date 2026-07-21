@@ -15,6 +15,14 @@
                     <h3>Pedido hotelero {{ $order->document_number }}</h3>
                 </div>
                 <div class="col-md-4 text-right">
+                    @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO && isset($canCancelHotelOrder) && $canCancelHotelOrder)
+                        <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/cancel', array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelOrderHeader')))) }}" style="display:inline-block;">
+                            {{ csrf_field() }}
+                            <button type="submit" class="btn btn-danger btn-sm hotel-confirm-submit" data-message="Anular pedido hotelero?">
+                                <i class="fa fa-ban"></i> Anular pedido
+                            </button>
+                        </form>
+                    @endif
                     <a href="{{ url($hotelUrl::url('hotel/stays/'.$order->stay_id, array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelStay')))) }}" class="btn btn-default btn-sm">Volver a estadia</a>
                 </div>
             </div>
@@ -324,6 +332,19 @@
                     onConfirm();
                 }
             }
+
+            $('.hotel-confirm-submit').on('click', function(event) {
+                event.preventDefault();
+
+                var $button = $(this);
+                var $form = $button.closest('form');
+                var message = $button.data('message') || 'Confirmar accion?';
+
+                hotelSwalConfirm(message, function() {
+                    hotelSetBackendButtonLoading($button, 'Procesando...');
+                    $form.submit();
+                });
+            });
 
             function hotelSetBackendButtonLoading($button, label) {
                 if ($button.length === 0) {

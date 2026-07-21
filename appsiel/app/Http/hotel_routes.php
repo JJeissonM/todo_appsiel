@@ -29,6 +29,7 @@ Route::group(array('middleware' => array('auth'), 'prefix' => 'hotel'), function
     Route::post('orders/{id}/lines', 'Hotel\HotelOrderController@addLine');
     Route::post('orders/{id}/lines/{lineId}/update', 'Hotel\HotelOrderController@updateLine');
     Route::post('orders/{id}/lines/{lineId}/delete', 'Hotel\HotelOrderController@deleteLine');
+    Route::post('orders/{id}/cancel', 'Hotel\HotelOrderController@cancel');
     Route::post('orders/{id}/generate-standard-invoice', 'Hotel\HotelOrderController@generateStandardInvoice');
     Route::post('orders/{id}/generate-pos-invoice', 'Hotel\HotelOrderController@generatePosInvoice');
 

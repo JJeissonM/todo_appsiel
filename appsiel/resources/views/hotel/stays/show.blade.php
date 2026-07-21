@@ -142,6 +142,12 @@
                                 </td>
                                 <td>
                                     <a href="{{ url($hotelUrl::url('hotel/orders/'.$order->id, array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelOrderHeader')))) }}" class="btn btn-primary btn-xs">Ver pedido</a>
+                                    @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO && isset($canCancelHotelOrder) && $canCancelHotelOrder)
+                                        <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/cancel', array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelOrderHeader')))) }}" style="display:inline-block;">
+                                            {{ csrf_field() }}
+                                            <button type="submit" class="btn btn-danger btn-xs hotel-confirm-submit" data-message="Anular pedido hotelero?">Anular</button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -209,9 +215,17 @@
                         cancelButtonText: 'Cancelar'
                     }).then(function(result) {
                         if (result && (result.isConfirmed || result.value)) {
+                            $button.prop('disabled', true);
+                            $button.data('hotel-original-html', $button.html());
+                            $button.html('<i class="fa fa-spinner fa-spin"></i> Procesando...');
                             $form.submit();
                         }
                     });
+                } else if (window.confirm(message)) {
+                    $button.prop('disabled', true);
+                    $button.data('hotel-original-html', $button.html());
+                    $button.html('<i class="fa fa-spinner fa-spin"></i> Procesando...');
+                    $form.submit();
                 }
             });
         });

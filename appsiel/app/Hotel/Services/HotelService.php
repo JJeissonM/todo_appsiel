@@ -291,6 +291,35 @@ class HotelService
         });
     }
 
+    public function cancelOrder(HotelOrderHeader $order)
+    {
+        $service = $this;
+
+        return DB::transaction(function () use ($order, $service) {
+            $order = HotelOrderHeader::where('empresa_id', $service->empresaId())
+                ->where('id', $order->id)
+                ->lockForUpdate()
+                ->first();
+
+            if (is_null($order)) {
+                throw new \Exception('El pedido hotelero no existe.');
+            }
+
+            if ($order->status != HotelOrderHeader::STATUS_ABIERTO) {
+                throw new \Exception('Solo se pueden anular pedidos hoteleros abiertos.');
+            }
+
+            if (!empty($order->invoice_type) || !empty($order->sales_doc_id) || !empty($order->pos_doc_id)) {
+                throw new \Exception('No se puede anular el pedido hotelero porque ya tiene una factura asociada.');
+            }
+
+            $order->status = HotelOrderHeader::STATUS_ANULADO;
+            $order->save();
+
+            return $order;
+        });
+    }
+
     public function getCancelInvoiceBlockMessage(HotelStay $stay)
     {
         $orders = HotelOrderHeader::where('empresa_id', $stay->empresa_id)

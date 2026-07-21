@@ -30,7 +30,9 @@ services:
       - ./appsiel/database/init:/docker-entrypoint-initdb.d
       - ./mysql/init:/docker-entrypoint-initdb.d/custom
     networks:
-      - appsiel_10_net
+      appsiel_10_net:
+        aliases:
+          - db
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

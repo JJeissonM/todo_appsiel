@@ -438,6 +438,7 @@ class HotelApplicationSeeder extends Seeder
             array('hotel.stays', 'Estadias operativas', 'hotel/stays', 'stays', $transactionsParentId, 15, 0, 'calendar'),
             array('hotel.invoices.standard', 'Generar factura estandar hotelera', 'hotel/orders/id_fila/generate-standard-invoice', 'orders', $transactionsParentId, 16, 0, 'file-text'),
             array('hotel.invoices.pos', 'Generar factura POS hotelera', 'hotel/orders/id_fila/generate-pos-invoice', 'orders', $transactionsParentId, 17, 0, 'print'),
+            array('hotel_pedido_anular', 'Anular pedido hotelero', 'hotel/orders/id_fila/cancel', 'orders', $transactionsParentId, 18, 0, 'ban'),
         );
 
         $permissionIds = array($parentId, $transactionsParentId, $catalogParentId);

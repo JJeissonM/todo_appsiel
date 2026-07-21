@@ -46,8 +46,9 @@ class HotelStayController extends Controller
         $hotelService = new HotelService();
         $cancelBlockMessage = $hotelService->getCancelInvoiceBlockMessage($stay);
         $checkOutBlockMessage = $hotelService->getCheckOutOpenOrdersBlockMessage($stay);
+        $canCancelHotelOrder = $this->canCancelHotelOrder();
         $miga_pan = $this->breadcrumb('Estadia #' . $stay->id);
-        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'cancelBlockMessage', 'checkOutBlockMessage', 'miga_pan'));
+        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'cancelBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'miga_pan'));
     }
 
     public function createCheckIn()
@@ -164,6 +165,33 @@ class HotelStayController extends Controller
         }
 
         return $anticipos;
+    }
+
+    private function canCancelHotelOrder()
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        if (method_exists($user, 'can')) {
+            try {
+                if ($user->can('hotel_pedido_anular')) {
+                    return true;
+                }
+            } catch (\Exception $e) {
+                // Algunas instalaciones antiguas pueden no tener este permiso sembrado.
+            }
+        }
+
+        if (method_exists($user, 'hasRole')) {
+            if ($user->hasRole('SuperAdmin') || $user->hasRole('Administrador') || $user->hasRole('Admin Colegio')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function breadcrumb($label)
