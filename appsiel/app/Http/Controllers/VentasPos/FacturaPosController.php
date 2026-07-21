@@ -600,9 +600,34 @@ class FacturaPosController extends TransaccionController
             }
         }
 
+        if ($this->documentoPosPerteneceAPedidoHotelero($documento, $user)) {
+            return;
+        }
+
         if ($documento->creado_por != $user->email) {
             abort(403, 'No tiene permiso para consultar esta factura POS.');
         }
+    }
+
+    protected function documentoPosPerteneceAPedidoHotelero($documento, $user)
+    {
+        if (is_null($documento) || is_null($user)) {
+            return false;
+        }
+
+        $hotelModuleEnabled = filter_var(env('HOTEL_MODULE_ENABLED', env('HOTEL_MODULE_SEEDERS_ENABLED', false)), FILTER_VALIDATE_BOOLEAN);
+        if (!$hotelModuleEnabled || !Schema::hasTable('hotel_order_headers')) {
+            return false;
+        }
+
+        $query = DB::table('hotel_order_headers')
+            ->where('pos_doc_id', $documento->id);
+
+        if (isset($user->empresa_id) && (int)$user->empresa_id > 0) {
+            $query->where('empresa_id', $user->empresa_id);
+        }
+
+        return $query->count() > 0;
     }
 
     /**

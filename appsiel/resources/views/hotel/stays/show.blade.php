@@ -110,6 +110,38 @@
 
             <hr>
 
+            <?php
+                $saldoPendientePedidosAbiertos = 0;
+                foreach ($stay->orders as $order) {
+                    if ($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO) {
+                        foreach ($order->lines as $line) {
+                            $saldoPendientePedidosAbiertos += (float)$line->line_total;
+                        }
+                    }
+                }
+
+                $saldoAnticiposDisponibles = 0;
+                if (isset($anticipos) && is_array($anticipos)) {
+                    foreach ($anticipos as $anticipo) {
+                        $saldoAnticipo = isset($anticipo['saldo_pendiente']) ? (float)$anticipo['saldo_pendiente'] : 0;
+                        if ($saldoAnticipo < 0) {
+                            $saldoAnticiposDisponibles += abs($saldoAnticipo);
+                        }
+                    }
+                }
+
+                $saldoPendienteNeto = max(0, $saldoPendientePedidosAbiertos - $saldoAnticiposDisponibles);
+            ?>
+            <div class="alert alert-info" style="font-size:18px; font-weight:bold;">
+                Saldo pendiente por registrar:
+                <span class="pull-right">$ {{ number_format($saldoPendienteNeto, 2, ',', '.') }}</span>
+                <div class="clearfix"></div>
+                <small style="font-weight:normal;">
+                    Pedidos abiertos: $ {{ number_format($saldoPendientePedidosAbiertos, 2, ',', '.') }}
+                    | Anticipos disponibles: $ {{ number_format($saldoAnticiposDisponibles, 2, ',', '.') }}
+                </small>
+            </div>
+
             <h4>Pedidos hoteleros</h4>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
@@ -159,9 +191,24 @@
 
                         @if(count($stay->orders) == 0)
                             <tr>
-                                <td colspan="6">No hay pedidos hoteleros registrados.</td>
+                                <td colspan="7">No hay pedidos hoteleros registrados.</td>
                             </tr>
                         @endif
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Pedidos abiertos</strong></td>
+                            <td class="text-right"><strong>{{ number_format($saldoPendientePedidosAbiertos, 2, ',', '.') }}</strong></td>
+                            <td colspan="2"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Anticipos disponibles</strong></td>
+                            <td class="text-right"><strong>- {{ number_format($saldoAnticiposDisponibles, 2, ',', '.') }}</strong></td>
+                            <td colspan="2"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Saldo pendiente por registrar</strong></td>
+                            <td class="text-right"><strong>{{ number_format($saldoPendienteNeto, 2, ',', '.') }}</strong></td>
+                            <td colspan="2"></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
