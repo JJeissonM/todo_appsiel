@@ -20,8 +20,10 @@
                 <div class="col-md-8">
                     <h4>
                         Informacion estadia
-                        @if($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA && isset($cancelBlockMessage) && $cancelBlockMessage == '')
+                        @if($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA && (!isset($editBlockMessage) || $editBlockMessage == ''))
                             <a href="{{ url($hotelUrl::url('web/'.$stay->id.'/edit?id=22&id_modelo=364&id_transaccion=')) }}"><i class="fa fa-edit"></i></a>
+                        @elseif($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA && isset($editBlockMessage) && $editBlockMessage != '')
+                            <i class="fa fa-edit text-muted" title="{{ $editBlockMessage }}"></i>
                         @endif
                     </h4>
                     <table class="table table-bordered">
@@ -29,6 +31,7 @@
                         <tr><th>Check-in</th><td>{{ $stay->check_in_at }}</td><th>Check-out</th><td>{{ $stay->check_out_at }}</td></tr>
                         <tr><th>Salida esperada</th><td>{{ $stay->expected_check_out_at }}</td><th>Dias estadia</th><td>{{ $stay->stayDays() }}</td></tr>
                         <tr><th>Notas</th><td>{{ $stay->notes }}</td><th>Estado</th><td>{{ $stay->status }}</td></tr>
+                        <tr><th>Creador por</th><td>{{ $stay->creador_por ? $stay->creador_por->name : '--' }}</td><th>Modificado por</th><td>{{ $stay->modificador_por ? $stay->modificador_por->name : '--' }}</td></tr>
                     </table>
 
 
@@ -113,6 +116,7 @@
                     <thead>
                         <tr>
                             <th>Documento</th>
+                            <th>Creador por</th>
                             <th>Fecha</th>
                             <th>Estado</th>
                             <th>Total</th>
@@ -130,6 +134,7 @@
                             ?>
                             <tr>
                                 <td>{{ $order->document_number ? $order->document_number : 'PED-' . $order->id }}</td>
+                                <td>{{ $order->creador_por ? $order->creador_por->name : '--' }}</td>
                                 <td>{{ $order->order_date }}</td>
                                 <td>{{ $order->status }}</td>
                                 <td class="text-right">{{ number_format($orderTotal, 2, ',', '.') }}</td>

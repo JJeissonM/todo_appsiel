@@ -16,7 +16,7 @@ class HotelStay extends Model
 
     protected $table = 'hotel_stays';
 
-    protected $fillable = array('empresa_id', 'main_cliente_id', 'room_id', 'check_in_at', 'expected_check_out_at', 'check_out_at', 'adults_count', 'children_count', 'total_guests', 'status', 'notes', 'created_by', 'closed_by');
+    protected $fillable = array('empresa_id', 'main_cliente_id', 'room_id', 'check_in_at', 'expected_check_out_at', 'check_out_at', 'adults_count', 'children_count', 'total_guests', 'status', 'notes', 'created_by', 'closed_by', 'update_by');
 
     public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Habitacion', 'Cliente principal', 'Check-in', 'Salida esperada', 'Dias', 'Huespedes', 'Estado');
 
@@ -52,6 +52,10 @@ class HotelStay extends Model
         });
 
         static::updating(function ($stay) {
+            if (Auth::check()) {
+                $stay->update_by = Auth::user()->id;
+            }
+
             $stay->total_guests = max(1, (int)$stay->adults_count + (int)$stay->children_count);
 
             $message = self::getStayDatesError($stay);
@@ -59,6 +63,7 @@ class HotelStay extends Model
                 throw new \Exception($message);
             }
 
+            self::validateInvoicedRoomLineBeforeDateEdit($stay);
             self::syncPrimaryOrderRoomQuantityOnDateChange($stay);
         });
     }
@@ -66,6 +71,16 @@ class HotelStay extends Model
     public static function statuses()
     {
         return array(self::STATUS_ACTIVA, self::STATUS_CERRADA, self::STATUS_ANULADA);
+    }
+
+    public function creador_por()
+    {
+        return $this->belongsTo('App\User', 'created_by');
+    }
+
+    public function modificador_por()
+    {
+        return $this->belongsTo('App\User', 'update_by');
     }
 
     public function validar_datos_creacion($request, $controller)
@@ -311,6 +326,27 @@ class HotelStay extends Model
         }
 
         return max(1, (int)ceil(($expectedCheckOut - $checkIn) / 86400));
+    }
+
+    private static function validateInvoicedRoomLineBeforeDateEdit($stay)
+    {
+        if (!$stay->isDirty('check_in_at') && !$stay->isDirty('expected_check_out_at') && !$stay->isDirty('room_id')) {
+            return;
+        }
+
+        if (empty($stay->id)) {
+            return;
+        }
+
+        $originalStay = self::where('id', $stay->id)->with('room')->first();
+        if (is_null($originalStay)) {
+            return;
+        }
+
+        $message = (new HotelService())->getEditDatesBlockMessage($originalStay);
+        if ($message != '') {
+            throw new \Exception($message);
+        }
     }
 
     private static function syncPrimaryOrderRoomQuantityOnDateChange($stay)

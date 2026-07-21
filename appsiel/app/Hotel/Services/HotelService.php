@@ -340,6 +340,22 @@ class HotelService
         return '';
     }
 
+    public function getEditDatesBlockMessage(HotelStay $stay)
+    {
+        $orders = HotelOrderHeader::where('empresa_id', $stay->empresa_id)
+            ->where('stay_id', $stay->id)
+            ->with('posInvoice.tipo_documento_app', 'salesInvoice.tipo_documento_app', 'lines')
+            ->get();
+
+        foreach ($orders as $order) {
+            if ($this->orderHasActiveInvoice($order) && $this->orderHasRoomLine($order, $stay)) {
+                return 'No se puede editar la estadia porque el producto asociado a la habitacion ya fue facturado (' . $order->invoiceLabel() . ').';
+            }
+        }
+
+        return '';
+    }
+
     private function orderHasActiveInvoice(HotelOrderHeader $order)
     {
         if (!empty($order->pos_doc_id)) {
@@ -358,6 +374,28 @@ class HotelService
             }
 
             return !is_null($invoice) && $invoice->estado != 'Anulado';
+        }
+
+        return false;
+    }
+
+    private function orderHasRoomLine(HotelOrderHeader $order, HotelStay $stay)
+    {
+        $room = $stay->room;
+        if (is_null($room) && (int)$stay->room_id > 0) {
+            $room = HotelRoom::find((int)$stay->room_id);
+        }
+
+        $roomProductId = !is_null($room) ? (int)$room->inv_producto_id : 0;
+
+        foreach ($order->lines as $line) {
+            if ($line->source_type == HotelOrderLine::SOURCE_ROOM) {
+                return true;
+            }
+
+            if ($roomProductId > 0 && (int)$line->producto_id == $roomProductId) {
+                return true;
+            }
         }
 
         return false;

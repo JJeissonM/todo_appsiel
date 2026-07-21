@@ -843,3 +843,22 @@ WHERE @hotel_guest_model_id IS NOT NULL
             AND `core_campo_id` = @hotel_guest_ocupacion_field_id
         LIMIT 1
     );
+
+-- Campo usuario que actualiza estadías hoteleras.
+SET @hotel_stays_update_by_exists := (
+    SELECT COUNT(*)
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = 'hotel_stays'
+        AND COLUMN_NAME = 'update_by'
+);
+
+SET @sql_hotel_stays_update_by := IF(
+    @hotel_stays_update_by_exists = 0,
+    'ALTER TABLE `hotel_stays` ADD `update_by` INT(10) UNSIGNED NULL AFTER `closed_by`',
+    'SELECT "La columna hotel_stays.update_by ya existe"'
+);
+
+PREPARE stmt_hotel_stays_update_by FROM @sql_hotel_stays_update_by;
+EXECUTE stmt_hotel_stays_update_by;
+DEALLOCATE PREPARE stmt_hotel_stays_update_by;
