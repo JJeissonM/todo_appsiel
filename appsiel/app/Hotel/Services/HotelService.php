@@ -534,7 +534,7 @@ class HotelService
             }
             $service->validateStockForOpenOrder($order);
 
-            $pdv = !empty($order->pdv_id) ? Pdv::find((int)$order->pdv_id) : $service->currentCashierPdvOrFail();
+            $pdv = $service->pdvForHotelOrderInvoice($order);
             if (is_null($pdv)) {
                 throw new \Exception('No existe un punto de venta POS asociado al pedido hotelero.');
             }
@@ -620,6 +620,21 @@ class HotelService
         }
 
         return $doc;
+    }
+
+    private function pdvForHotelOrderInvoice(HotelOrderHeader $order)
+    {
+        $currentPdv = $this->currentCashierPdv();
+
+        if (!is_null($currentPdv) && $currentPdv->estado == 'Abierto') {
+            return $currentPdv;
+        }
+
+        if (!empty($order->pdv_id)) {
+            return Pdv::find((int)$order->pdv_id);
+        }
+
+        return $this->currentCashierPdvOrFail();
     }
 
     private function validateElectronicInvoiceResolution()

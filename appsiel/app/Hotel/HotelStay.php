@@ -325,7 +325,48 @@ class HotelStay extends Model
             return 1;
         }
 
-        return max(1, (int)ceil(($expectedCheckOut - $checkIn) / 86400));
+        $checkInDate = date('Y-m-d', $checkIn);
+        $expectedCheckOutDate = date('Y-m-d', $expectedCheckOut);
+        $checkInDay = strtotime($checkInDate . ' 00:00:00');
+        $expectedCheckOutDay = strtotime($expectedCheckOutDate . ' 00:00:00');
+
+        if ($checkInDay === false || $expectedCheckOutDay === false || $expectedCheckOutDay <= $checkInDay) {
+            return 1;
+        }
+
+        return max(1, (int)(($expectedCheckOutDay - $checkInDay) / 86400));
+    }
+
+    public static function formatDateTimeForDisplay($value)
+    {
+        if (is_null($value) || $value === '' || $value == '0000-00-00 00:00:00') {
+            return '';
+        }
+
+        $timestamp = strtotime($value);
+
+        if ($timestamp === false) {
+            return $value;
+        }
+
+        $suffix = date('A', $timestamp) == 'AM' ? 'a. m.' : 'p. m.';
+
+        return date('Y-m-d h:i', $timestamp) . ' ' . $suffix;
+    }
+
+    public function checkInAtDisplay()
+    {
+        return self::formatDateTimeForDisplay($this->check_in_at);
+    }
+
+    public function expectedCheckOutAtDisplay()
+    {
+        return self::formatDateTimeForDisplay($this->expected_check_out_at);
+    }
+
+    public function checkOutAtDisplay()
+    {
+        return self::formatDateTimeForDisplay($this->check_out_at);
     }
 
     private static function validateInvoicedRoomLineBeforeDateEdit($stay)
@@ -464,7 +505,7 @@ class HotelStay extends Model
                 'core_terceros.descripcion AS campo2',
                 'hotel_stays.check_in_at AS campo3',
                 'hotel_stays.expected_check_out_at AS campo4',
-                DB::raw('IF(hotel_stays.expected_check_out_at IS NULL, 1, GREATEST(1, CEIL(TIMESTAMPDIFF(SECOND, hotel_stays.check_in_at, hotel_stays.expected_check_out_at) / 86400))) AS campo5'),
+                DB::raw('IF(hotel_stays.expected_check_out_at IS NULL, 1, GREATEST(1, DATEDIFF(DATE(hotel_stays.expected_check_out_at), DATE(hotel_stays.check_in_at)))) AS campo5'),
                 'hotel_stays.total_guests AS campo6',
                 'hotel_stays.status AS campo7',
                 'hotel_stays.id AS campo8'
@@ -481,7 +522,7 @@ class HotelStay extends Model
                 'core_terceros.descripcion AS CLIENTE',
                 'hotel_stays.check_in_at AS CHECK_IN',
                 'hotel_stays.expected_check_out_at AS SALIDA_ESPERADA',
-                DB::raw('IF(hotel_stays.expected_check_out_at IS NULL, 1, GREATEST(1, CEIL(TIMESTAMPDIFF(SECOND, hotel_stays.check_in_at, hotel_stays.expected_check_out_at) / 86400))) AS DIAS'),
+                DB::raw('IF(hotel_stays.expected_check_out_at IS NULL, 1, GREATEST(1, DATEDIFF(DATE(hotel_stays.expected_check_out_at), DATE(hotel_stays.check_in_at)))) AS DIAS'),
                 'hotel_stays.total_guests AS HUESPEDES',
                 'hotel_stays.status AS ESTADO'
             )
