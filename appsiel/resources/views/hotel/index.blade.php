@@ -23,6 +23,7 @@
             min-width: 118px;
             margin: 0 8px 8px 0;
             padding: 8px 12px;
+            border-radius: 4px;
             color: #fff;
             font-weight: bold;
             text-align: center;
@@ -48,6 +49,7 @@
             position: relative;
             box-shadow: 0 2px 4px rgba(0, 0, 0, .18);
             overflow: hidden;
+            border-radius: 4px;
         }
 
         .hotel-room-main {
@@ -110,7 +112,7 @@
 
         .hotel-room-ocupada,
         .hotel-summary-ocupada {
-            background: #dd5b3f;
+            background: #c7553c;
         }
 
         .hotel-room-reservada,
@@ -139,6 +141,7 @@
             margin-bottom: 16px;
             padding: 18px 24px;
             min-height: 140px;
+            border-radius: 4px;
         }
 
         .hotel-pdv-name {
