@@ -711,6 +711,22 @@ function reset_campos_formulario()
 	$('#clase_cliente_id').val( '' );
 }
 
+function reset_campos_cliente_en_busqueda()
+{
+	$('#cliente_id').val( '' );
+	$('#cliente_input').css( 'background-color','#FF8C8C' );
+	$('#fecha_vencimiento').val( '' );
+	$('#lista_precios_id').val( '' );
+	$('#lista_descuentos_id').val( '' );
+	$('#liquida_impuestos').val( '' );
+
+	$('#equipo_ventas_id').val( '' );
+	$('#core_tercero_id').val( '' );
+	$('#lineas_registros').val( 0 );
+	$('#zona_id').val( '' );
+	$('#clase_cliente_id').val( '' );
+}
+
 function reset_tabla_ingreso()
 {
 	$('.linea_registro').each(function( ){
@@ -854,8 +870,6 @@ $(document).ready(function(){
 	// Al ingresar código, descripción o código de barras del producto
     $('#cliente_input').on('keyup',function(event){
 
-    	reset_campos_formulario();
-
     	var codigo_tecla_presionada = event.which || event.keyCode;
 
     	switch( codigo_tecla_presionada )
@@ -907,7 +921,7 @@ $(document).ready(function(){
 				if( item.attr('data-cliente_id') === undefined )
 				{
 					alert('El cliente ingresado no existe.');
-					reset_campos_formulario();
+					reset_campos_cliente_en_busqueda();
 				}else{
 					seleccionar_cliente( item );
 				}
@@ -921,7 +935,14 @@ $(document).ready(function(){
 		    	}
 
 		    	// Si la longitud es menor a tres, todavía no busca
-			    if ( $(this).val().length < 2 ) { return false; }
+			    if ( $(this).val().length < 2 ) {
+			        reset_campos_cliente_en_busqueda();
+					$('#clientes_suggestions').html('');
+					$('#clientes_suggestions').css('display', 'none');
+			        return false;
+			    }
+
+			    reset_campos_cliente_en_busqueda();
 
 		    	var url = '../vtas_consultar_clientes';
 
@@ -985,11 +1006,6 @@ $(document).ready(function(){
 
     	$("[data-toggle='tooltip']").tooltip('hide');
 
-    	if ( validar_requeridos() == false )
-		{
-			return false;
-		}
-
 		var codigo_tecla_presionada = event.which || event.keyCode;
 
 		switch( codigo_tecla_presionada )
@@ -1037,6 +1053,11 @@ $(document).ready(function(){
     			break;
 
     		case 13: // Al presionar Enter
+
+				if ( validar_requeridos() == false )
+				{
+					return false;
+				}
 
     			if ( $(this).val() == '' )
 				{
