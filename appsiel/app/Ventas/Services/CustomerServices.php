@@ -5,6 +5,7 @@ namespace App\Ventas\Services;
 use App\Contabilidad\ContabMovimiento;
 use App\Core\Tercero;
 use App\Ventas\Cliente;
+use App\Ventas\Vendedor;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerServices
@@ -121,9 +122,9 @@ class CustomerServices
             $datos['zona_id'] = '1';
         } 
 
-        if( !isset($datos['vendedor_id']) )
+        if( !isset($datos['vendedor_id']) || (int)$datos['vendedor_id'] <= 0 )
         {
-            $datos['vendedor_id'] = (int)config('ventas.vendedor_id');
+            $datos['vendedor_id'] = $this->getDefaultVendedorId();
         } 
 
         if( !isset($datos['inv_bodega_id']) || !Cliente::validInvBodegaId($datos['inv_bodega_id']) )
@@ -174,9 +175,19 @@ class CustomerServices
             $descripcion .=  ' ('. $linea->razon_social . ')';
         }
 
+        $vendedor_id = (int)$linea->vendedor_id;
+        if ( $vendedor_id <= 0 ) {
+            $vendedor_id = $this->getDefaultVendedorId();
+            $linea->vendedor_id = $vendedor_id;
+        }
+
         $vendedor = $linea->vendedor;
-            $vendedor_descripcion = 'Sin vendedor';
-        if ( !is_null( $vendedor ) && !is_null($vendedor->tercero) ) {
+        if ( is_null($vendedor) && $vendedor_id > 0 ) {
+            $vendedor = Vendedor::find($vendedor_id);
+        }
+
+        $vendedor_descripcion = isset($linea->vendedor_descripcion) ? $linea->vendedor_descripcion : 'Sin vendedor';
+        if ( ( $vendedor_descripcion == '' || is_null($vendedor_descripcion) || $vendedor_descripcion == 'Sin vendedor' ) && !is_null( $vendedor ) && !is_null($vendedor->tercero) ) {
             $vendedor_descripcion = $vendedor->tercero->descripcion;
         }
 
@@ -213,5 +224,20 @@ class CustomerServices
                 . '> ' . e($descripcion) . ' (' . e($numero_identificacion_texto) . ') </a>';
                             
         return $html;
+    }
+
+    private function getDefaultVendedorId()
+    {
+        $vendedor_id = (int)config('ventas.vendedor_id');
+        if ( $vendedor_id > 0 ) {
+            return $vendedor_id;
+        }
+
+        $vendedor = Vendedor::where('estado', 'Activo')->orderBy('id')->first();
+        if ( is_null($vendedor) ) {
+            return 0;
+        }
+
+        return (int)$vendedor->id;
     }
 }

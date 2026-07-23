@@ -599,13 +599,106 @@ function validacion_saldo_movimientos_posteriores( )
 		});
 }
 
+function asignar_valor_select_formulario($select, valor, texto)
+{
+	if ( !$select.length ) {
+		return;
+	}
+
+	if ( typeof valor === 'undefined' || valor === null ) {
+		valor = '';
+	}
+
+	valor = valor.toString();
+
+	var $opcion = $select.find('option').filter(function(){
+		return $(this).val().toString() == valor;
+	});
+
+	if ( valor !== '' && $opcion.length == 0 && typeof texto !== 'undefined' && texto !== null && texto !== '' ) {
+		$select.append($('<option>', {
+			value: valor,
+			text: texto
+		}));
+	} else if ( valor !== '' && $opcion.length > 0 && typeof texto !== 'undefined' && texto !== null && texto !== '' ) {
+		$opcion.text(texto);
+	}
+
+	$select.val(valor);
+
+	if ( $select.val() != valor ) {
+		$select.find('option').each(function(){
+			if ( $(this).val().toString() == valor ) {
+				$(this).prop('selected', true);
+				return false;
+			}
+		});
+	}
+
+	$select.trigger('change');
+	$select.trigger('chosen:updated');
+
+	if ( $.fn.selectpicker ) {
+		$select.selectpicker('refresh');
+	}
+
+	if ( $.fn.select2 && $select.data('select2') ) {
+		$select.trigger('change.select2');
+	}
+}
+
+function asignar_valor_campo_relacionado(nombre_campo, valor, texto)
+{
+	asignar_valor_select_formulario( $('#' + nombre_campo), valor, texto );
+
+	if ( typeof texto !== 'undefined' && texto !== null && texto !== '' ) {
+		$('#' + nombre_campo + '_aux').val(texto);
+		$('#' + nombre_campo + '_input').val(texto);
+	}
+}
+
+function mostrar_cargando_ventas()
+{
+	if ( $('#div_cargando').length ) {
+		$('#div_cargando').css('display', 'block');
+	}
+}
+
+function ocultar_cargando_ventas()
+{
+	if ( $('#div_cargando').length ) {
+		$('#div_cargando').css('display', 'none');
+	}
+}
+
+function obtener_fecha_formulario(valor)
+{
+	if ( typeof valor === 'undefined' || valor === null || valor === '' ) {
+		return new Date();
+	}
+
+	if ( valor.indexOf('/') > -1 ) {
+		var partes = valor.split('/');
+		if ( partes.length >= 3 ) {
+			return new Date(partes[2], parseInt(partes[1], 10) - 1, partes[0]);
+		}
+	}
+
+	var fecha = new Date(valor);
+	if ( isNaN(fecha.getTime()) ) {
+		return new Date();
+	}
+
+	return fecha;
+}
+
 function reset_campos_formulario()
 {
 	$('#cliente_id').val( '' );
 	$('#cliente_input').css( 'background-color','#FF8C8C' );
-	$('#vendedor_id').val( '' );
-	$('#inv_bodega_id').val( '' );
-	$('#forma_pago').val( 'contado' );
+	asignar_valor_campo_relacionado( 'vendedor_id', '', '' );
+	asignar_valor_campo_relacionado( 'inv_bodega_id', '', '' );
+	asignar_valor_campo_relacionado( 'forma_pago', 'contado', '' );
 	$('#fecha_vencimiento').val( '' );
 	$('#lista_precios_id').val( '' );
 	$('#lista_descuentos_id').val( '' );
@@ -646,7 +739,7 @@ function reset_tabla_ingreso()
 // Asignar valores de existecia_actual y costo_unitario
 function consultar_existencia(bodega_id, producto_id)
 {
-	$('#div_cargando').show();
+	mostrar_cargando_ventas();
 	var url = '../vtas_consultar_existencia_producto';
 	if ( $('#action').val() == 'edit') {
 		var url = '../../vtas_consultar_existencia_producto';
@@ -655,7 +748,7 @@ function consultar_existencia(bodega_id, producto_id)
 	$.get( url, { transaccion_id: $('#core_tipo_transaccion_id').val(), bodega_id: bodega_id, producto_id: producto_id, fecha: $('#fecha').val(), lista_precios_id: $('#lista_precios_id').val(), lista_descuentos_id: $('#lista_descuentos_id').val(), cliente_id: $('#cliente_id').val() } )
 		.done(function( respuesta ) {
 
-			$('#div_cargando').hide();
+			ocultar_cargando_ventas();
 		
 			// Se valida la existencia actual
 			$('#existencia_actual').val(respuesta.existencia_actual);
@@ -767,9 +860,9 @@ $(document).ready(function(){
 
     	switch( codigo_tecla_presionada )
     	{
-    		case 27:// 27 = ESC
+			case 27:// 27 = ESC
 				$('#clientes_suggestions').html('');
-            	$('#clientes_suggestions').hide();
+				$('#clientes_suggestions').css('display', 'none');
     			break;
 
     		case 40:// Flecha hacia abajo
@@ -842,7 +935,7 @@ $(document).ready(function(){
 				)
 					.done(function( data ) {
 						// Se llena el DIV con las sugerencias que arooja la consulta
-		                $('#clientes_suggestions').show().html(data);
+		                $('#clientes_suggestions').html(data).css('display', 'block');
 		                $('a.list-group-item.active').focus();
 					});
     			break;
@@ -1172,48 +1265,6 @@ $(document).ready(function(){
 
 	});
 
-    function asignar_valor_select_formulario($select, valor, texto)
-    {
-        if ( !$select.length ) {
-            return;
-        }
-
-        if ( typeof valor === 'undefined' || valor === null ) {
-            valor = '';
-        }
-
-        valor = valor.toString();
-
-        if ( valor !== '' && !$select.find('option[value="' + valor + '"]').length && typeof texto !== 'undefined' && texto !== null && texto !== '' ) {
-            $select.append($('<option>', {
-                value: valor,
-                text: texto
-            }));
-        }
-
-        $select.val(valor);
-
-        if ( $select.val() != valor ) {
-            $select.find('option').each(function(){
-                if ( $(this).val().toString() == valor ) {
-                    $(this).prop('selected', true);
-                    return false;
-                }
-            });
-        }
-
-        $select.trigger('change');
-        $select.trigger('chosen:updated');
-
-        if ( $.fn.selectpicker ) {
-            $select.selectpicker('refresh');
-        }
-
-        if ( $.fn.select2 && $select.data('select2') ) {
-            $select.trigger('change.select2');
-        }
-    }
-
     function seleccionar_cliente(item_sugerencia)
     {
 		// Asignar descripción al TextInput
@@ -1233,12 +1284,12 @@ $(document).ready(function(){
         $('#lista_descuentos_id').val( item_sugerencia.attr('data-lista_descuentos_id') );
 
         // Asignar resto de campos
-        asignar_valor_select_formulario( $('#vendedor_id'), item_sugerencia.attr('data-vendedor_id'), item_sugerencia.attr('data-vendedor_descripcion') );
+        asignar_valor_campo_relacionado( 'vendedor_id', item_sugerencia.attr('data-vendedor_id'), item_sugerencia.attr('data-vendedor_descripcion') );
 		var inv_bodega_id = 1;
 		if ( item_sugerencia.attr('data-inv_bodega_id') != '') {
 			inv_bodega_id = item_sugerencia.attr('data-inv_bodega_id');
 		}
-        asignar_valor_select_formulario( $('#inv_bodega_id'), inv_bodega_id );
+        asignar_valor_campo_relacionado( 'inv_bodega_id', inv_bodega_id, item_sugerencia.attr('data-inv_bodega_descripcion') );
 
         var forma_pago = 'contado';
 		var dias_plazo = 0;
@@ -1247,10 +1298,10 @@ $(document).ready(function(){
 		}
 
         if ( dias_plazo > 0 ) { forma_pago = 'credito'; }
-        asignar_valor_select_formulario( $('#forma_pago'), forma_pago );
+        asignar_valor_campo_relacionado( 'forma_pago', forma_pago, '' );
 
         // Para llenar la fecha de vencimiento
-        var fecha = new Date( $('#fecha').val() );
+        var fecha = obtener_fecha_formulario( $('#fecha').val() );
 		fecha.setDate( fecha.getDate() + (dias_plazo + 1) );
 		
 		var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
@@ -1270,32 +1321,38 @@ $(document).ready(function(){
 
         //Hacemos desaparecer el resto de sugerencias
         $('#clientes_suggestions').html('');
-        $('#clientes_suggestions').hide();
+        $('#clientes_suggestions').css('display', 'none');
 
         $('#descripcion').focus();
 
         reset_tabla_ingreso();
 
-        consultar_remisiones_pendientes();
+	        consultar_remisiones_pendientes();
 
-        // Cargar contactos asociados al cliente
-		$('#contacto_cliente_id').html('<option value=""></option>');
-    	$('#div_cargando').show();
+	        // Cargar contactos asociados al cliente
+			if ( $('#contacto_cliente_id').length ) {
+				$('#contacto_cliente_id').html('<option value=""></option>');
+			}
+			mostrar_cargando_ventas();
 
-        var url = url_raiz + "/get_opciones_select_contactos/" + $('#cliente_id').val();
+			var url = url_raiz + "/get_opciones_select_contactos/" + $('#cliente_id').val();
 
-		$.ajax({
-        	url: url,
-        	type: 'get',
-        	success: function(datos){
-        		$('#div_cargando').hide();	    				
-				$('#contacto_cliente_id').html( datos );
-				$('#contacto_cliente_id').focus();
+			$.ajax({
+				url: url,
+				type: 'get',
+				success: function(datos){
+					ocultar_cargando_ventas();
+					if ( $('#contacto_cliente_id').length ) {
+						$('#contacto_cliente_id').html( datos );
+						$('#contacto_cliente_id').focus();
+					}
 
 				// Bajar el Scroll hasta el final de la página
 				//$("html, body").animate( { scrollTop: $(document).height()+"px"} );
-	        }
-	    });
+				}
+			}).fail(function(){
+				ocultar_cargando_ventas();
+			});
         
 		// Bajar el Scroll hasta la mitad de la página 
 		$("html, body").animate( { scrollTop: ( $(document).height() / 2 ) + "px"} );
