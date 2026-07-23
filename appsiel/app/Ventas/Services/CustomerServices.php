@@ -186,6 +186,8 @@ class CustomerServices
             $numero_identificacion_texto = number_format($numero_identificacion, 0, ',', '.');
         }
 
+        $equipo_ventas_id = isset($linea->equipo_ventas_id) ? $linea->equipo_ventas_id : 0;
+
         // Esto debe ser igual en todas las busquedas.
         $html = '<a class="list-group-item list-group-item-cliente ' . e($clase) . '"'
                 . ' data-cliente_id="' . e($linea->cliente_id) . '"'
@@ -202,7 +204,7 @@ class CustomerServices
                 . ' data-numero_identificacion="' . e($numero_identificacion) . '"'
                 . ' data-vendedor_id="' . e($linea->vendedor_id) . '"'
                 . ' data-vendedor_descripcion="' . e($vendedor_descripcion) . '"'
-                . ' data-equipo_ventas_id="0"'
+                . ' data-equipo_ventas_id="' . e($equipo_ventas_id) . '"'
                 . ' data-inv_bodega_id="' . e($linea->inv_bodega_id) . '"'
                 . ' data-email="' . e($linea->email) . '"'
                 . ' data-dias_plazo="' . e($linea->dias_plazo) . '"'

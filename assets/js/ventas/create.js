@@ -1172,6 +1172,48 @@ $(document).ready(function(){
 
 	});
 
+    function asignar_valor_select_formulario($select, valor, texto)
+    {
+        if ( !$select.length ) {
+            return;
+        }
+
+        if ( typeof valor === 'undefined' || valor === null ) {
+            valor = '';
+        }
+
+        valor = valor.toString();
+
+        if ( valor !== '' && !$select.find('option[value="' + valor + '"]').length && typeof texto !== 'undefined' && texto !== null && texto !== '' ) {
+            $select.append($('<option>', {
+                value: valor,
+                text: texto
+            }));
+        }
+
+        $select.val(valor);
+
+        if ( $select.val() != valor ) {
+            $select.find('option').each(function(){
+                if ( $(this).val().toString() == valor ) {
+                    $(this).prop('selected', true);
+                    return false;
+                }
+            });
+        }
+
+        $select.trigger('change');
+        $select.trigger('chosen:updated');
+
+        if ( $.fn.selectpicker ) {
+            $select.selectpicker('refresh');
+        }
+
+        if ( $.fn.select2 && $select.data('select2') ) {
+            $select.trigger('change.select2');
+        }
+    }
+
     function seleccionar_cliente(item_sugerencia)
     {
 		// Asignar descripción al TextInput
@@ -1191,16 +1233,12 @@ $(document).ready(function(){
         $('#lista_descuentos_id').val( item_sugerencia.attr('data-lista_descuentos_id') );
 
         // Asignar resto de campos
-        var vendedor_id = item_sugerencia.attr('data-vendedor_id');
-        if ( typeof vendedor_id === 'undefined' || vendedor_id === null ) {
-            vendedor_id = '';
-        }
-        $('#vendedor_id').val( vendedor_id ).trigger('change');
+        asignar_valor_select_formulario( $('#vendedor_id'), item_sugerencia.attr('data-vendedor_id'), item_sugerencia.attr('data-vendedor_descripcion') );
 		var inv_bodega_id = 1;
 		if ( item_sugerencia.attr('data-inv_bodega_id') != '') {
 			inv_bodega_id = item_sugerencia.attr('data-inv_bodega_id');
 		}
-        $('#inv_bodega_id').val( inv_bodega_id );
+        asignar_valor_select_formulario( $('#inv_bodega_id'), inv_bodega_id );
 
         var forma_pago = 'contado';
 		var dias_plazo = 0;
@@ -1209,7 +1247,7 @@ $(document).ready(function(){
 		}
 
         if ( dias_plazo > 0 ) { forma_pago = 'credito'; }
-        $('#forma_pago').val( forma_pago );
+        asignar_valor_select_formulario( $('#forma_pago'), forma_pago );
 
         // Para llenar la fecha de vencimiento
         var fecha = new Date( $('#fecha').val() );
