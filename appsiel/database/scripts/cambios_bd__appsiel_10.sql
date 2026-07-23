@@ -756,23 +756,8 @@ INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `valu
 
 
 -- Nuevo campo Bodega
-SET @vtas_pos_doc_registros_inv_bodega_exists := (
-    SELECT COUNT(*)
-    FROM `information_schema`.`COLUMNS`
-    WHERE `TABLE_SCHEMA` = DATABASE()
-        AND `TABLE_NAME` = 'vtas_pos_doc_registros'
-        AND `COLUMN_NAME` = 'inv_bodega_id'
-);
-
-SET @sql_vtas_pos_doc_registros_inv_bodega := IF(
-    @vtas_pos_doc_registros_inv_bodega_exists = 0,
-    'ALTER TABLE `vtas_pos_doc_registros` ADD `inv_bodega_id` INT(10) UNSIGNED NULL AFTER `inv_producto_id`, ADD INDEX (`inv_bodega_id`)',
-    'SELECT "La columna vtas_pos_doc_registros.inv_bodega_id ya existe"'
-);
-
-PREPARE stmt_vtas_pos_doc_registros_inv_bodega FROM @sql_vtas_pos_doc_registros_inv_bodega;
-EXECUTE stmt_vtas_pos_doc_registros_inv_bodega;
-DEALLOCATE PREPARE stmt_vtas_pos_doc_registros_inv_bodega;
+ALTER TABLE `vtas_pos_doc_registros` ADD `inv_bodega_id` INT(10) UNSIGNED NULL AFTER `inv_producto_id`;
+ALTER TABLE `vtas_pos_doc_registros` ADD INDEX `inv_bodega_id` (`inv_bodega_id`);
 
 -- nuevo permiso
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
@@ -845,20 +830,4 @@ WHERE @hotel_guest_model_id IS NOT NULL
     );
 
 -- Campo usuario que actualiza estadías hoteleras.
-SET @hotel_stays_update_by_exists := (
-    SELECT COUNT(*)
-    FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_SCHEMA = DATABASE()
-        AND TABLE_NAME = 'hotel_stays'
-        AND COLUMN_NAME = 'update_by'
-);
-
-SET @sql_hotel_stays_update_by := IF(
-    @hotel_stays_update_by_exists = 0,
-    'ALTER TABLE `hotel_stays` ADD `update_by` INT(10) UNSIGNED NULL AFTER `closed_by`',
-    'SELECT "La columna hotel_stays.update_by ya existe"'
-);
-
-PREPARE stmt_hotel_stays_update_by FROM @sql_hotel_stays_update_by;
-EXECUTE stmt_hotel_stays_update_by;
-DEALLOCATE PREPARE stmt_hotel_stays_update_by;
+ALTER TABLE `hotel_stays` ADD `update_by` INT(10) UNSIGNED NULL AFTER `closed_by`;
