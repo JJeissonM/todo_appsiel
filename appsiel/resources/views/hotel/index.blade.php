@@ -282,8 +282,10 @@
                         $stay = $room->activeStay->first();
                         $todayReservation = $room->activeTodayReservation->first();
                         $dashboardStatus = $room->status;
+                        $SaldoPendienteNeto = 0;
                         if ($stay) {
                             $dashboardStatus = App\Hotel\HotelRoom::STATUS_OCUPADA;
+                            $SaldoPendienteNeto = $stay->getSaldoPendienteNeto();
                         } elseif ($todayReservation && $dashboardStatus == App\Hotel\HotelRoom::STATUS_DISPONIBLE) {
                             $dashboardStatus = App\Hotel\HotelRoom::STATUS_RESERVADA;
                         }
@@ -297,13 +299,14 @@
                         } elseif ($todayReservation && $todayReservation->cliente && $todayReservation->cliente->tercero) {
                             $guestName = 'Reserva: ' . $todayReservation->cliente->tercero->descripcion;
                         }
+
                     ?>
                     <div class="hotel-room-wrap">
                         <div class="hotel-room {{ $statusClass }}">
                             <div class="hotel-room-main">
                                 <div class="hotel-room-number">
                                     HAB. {{ $room->room_number }}
-                                    <small style="font-size: 12px; display: block;"> (${{ number_format($stay->getSaldoPendienteNeto(), 0, '.', ',') }})</small>
+                                    <small style="font-size: 12px; display: block;"> (${{ number_format($SaldoPendienteNeto, 0, '.', ',') }})</small>
                                 </div>
                                 <div class="hotel-room-type">
                                     {{ $room->description != '' ? $room->description : ucfirst(strtolower($room->room_type)) }}

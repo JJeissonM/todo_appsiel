@@ -734,6 +734,7 @@ class VentaController extends TransaccionController
         }
 
         $clientes = Cliente::leftJoin('core_terceros','core_terceros.id','=','vtas_clientes.core_tercero_id')
+                                ->leftJoin('vtas_vendedores','vtas_vendedores.id','=','vtas_clientes.vendedor_id')
                                 ->leftJoin('vtas_condiciones_pago','vtas_condiciones_pago.id','=','vtas_clientes.condicion_pago_id')
                                 ->leftJoin('vtas_listas_precios_encabezados','vtas_listas_precios_encabezados.id','=','vtas_clientes.lista_precios_id')
                                 ->leftJoin('vtas_listas_dctos_encabezados','vtas_listas_dctos_encabezados.id','=','vtas_clientes.lista_descuentos_id')
@@ -747,7 +748,6 @@ class VentaController extends TransaccionController
                                             'vtas_clientes.zona_id',
                                             'vtas_clientes.estado',
                                             'vtas_clientes.clase_cliente_id',
-                                            'vtas_clientes.vendedor_id',
                                             'core_terceros.id AS core_tercero_id',
                                             'core_terceros.descripcion',
                                             'core_terceros.razon_social',
@@ -755,6 +755,8 @@ class VentaController extends TransaccionController
                                             'core_terceros.direccion1',
                                             'core_terceros.telefono1',
                                             'core_terceros.email',
+                                            'vtas_vendedores.id AS vendedor_id',
+                                            'vtas_vendedores.equipo_ventas_id',
                                             'inv_bodegas.id AS inv_bodega_id',
                                             'vtas_condiciones_pago.dias_plazo',
                                             'vtas_listas_precios_encabezados.id AS lista_precios_id',

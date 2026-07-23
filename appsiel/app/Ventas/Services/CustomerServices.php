@@ -186,28 +186,29 @@ class CustomerServices
             $numero_identificacion_texto = number_format($numero_identificacion, 0, ',', '.');
         }
 
-        $html = '<a class="list-group-item list-group-item-cliente '.$clase.'" data-cliente_id="'.$linea->cliente_id.
-                                '" data-primer_item="'.$primer_item.
-                                '" data-accion="na" '.
-                                '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
-
-        $html .=            '" data-nombre_cliente="'.$descripcion.
-                            '" data-zona_id="'.$linea->zona_id.
-                            '" data-clase_cliente_id="'.$linea->clase_cliente_id.
-                            '" data-liquida_impuestos="'.$linea->liquida_impuestos.
-                            '" data-core_tercero_id="'.$linea->core_tercero_id.
-                            '" data-direccion1="'.$linea->direccion1.
-                            '" data-telefono1="'.$linea->telefono1.
-                            '" data-numero_identificacion="'.$numero_identificacion.
-                            '" data-vendedor_id="'.$linea->vendedor_id.
-                            '" data-vendedor_descripcion="' . $vendedor_descripcion.
-                            '" data-equipo_ventas_id="0'.
-                            '" data-inv_bodega_id="'.$linea->inv_bodega_id.
-                            '" data-email="'.$linea->email.
-                            '" data-dias_plazo="'.$linea->dias_plazo.
-                            '" data-lista_precios_id="'.$linea->lista_precios_id.
-                            '" data-lista_descuentos_id="'.$linea->lista_descuentos_id.
-                            '" > '.$descripcion.' ('.$numero_identificacion_texto.') </a>';
+        // Esto debe ser igual en todas las busquedas.
+        $html = '<a class="list-group-item list-group-item-cliente ' . e($clase) . '"'
+                . ' data-cliente_id="' . e($linea->cliente_id) . '"'
+                . ' data-primer_item="' . e($primer_item) . '"'
+                . ' data-accion="na"'
+                . ' data-ultimo_item="' . e($ultimo_item) . '"'
+                . ' data-nombre_cliente="' . e($descripcion) . '"'
+                . ' data-zona_id="' . e($linea->zona_id) . '"'
+                . ' data-clase_cliente_id="' . e($linea->clase_cliente_id) . '"'
+                . ' data-liquida_impuestos="' . e($linea->liquida_impuestos) . '"'
+                . ' data-core_tercero_id="' . e($linea->core_tercero_id) . '"'
+                . ' data-direccion1="' . e($linea->direccion1) . '"'
+                . ' data-telefono1="' . e($linea->telefono1) . '"'
+                . ' data-numero_identificacion="' . e($numero_identificacion) . '"'
+                . ' data-vendedor_id="' . e($linea->vendedor_id) . '"'
+                . ' data-vendedor_descripcion="' . e($vendedor_descripcion) . '"'
+                . ' data-equipo_ventas_id="0"'
+                . ' data-inv_bodega_id="' . e($linea->inv_bodega_id) . '"'
+                . ' data-email="' . e($linea->email) . '"'
+                . ' data-dias_plazo="' . e($linea->dias_plazo) . '"'
+                . ' data-lista_precios_id="' . e($linea->lista_precios_id) . '"'
+                . ' data-lista_descuentos_id="' . e($linea->lista_descuentos_id) . '"'
+                . '> ' . e($descripcion) . ' (' . e($numero_identificacion_texto) . ') </a>';
                             
         return $html;
     }
