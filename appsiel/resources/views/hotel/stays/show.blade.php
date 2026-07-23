@@ -133,12 +133,12 @@
                 $saldoPendienteNeto = max(0, $saldoPendientePedidosAbiertos - $saldoAnticiposDisponibles);
             ?>
             <div class="alert alert-info" style="font-size:18px; font-weight:bold;">
-                Saldo pendiente por registrar:
+                Saldo x Cobrar:
                 <span class="pull-right">$ {{ number_format($saldoPendienteNeto, 2, ',', '.') }}</span>
                 <div class="clearfix"></div>
                 <small style="font-weight:normal;">
-                    Pedidos abiertos: $ {{ number_format($saldoPendientePedidosAbiertos, 2, ',', '.') }}
-                    | Anticipos disponibles: $ {{ number_format($saldoAnticiposDisponibles, 2, ',', '.') }}
+                    Pedidos: $ {{ number_format($saldoPendientePedidosAbiertos, 2, ',', '.') }}
+                    | Anticipos/Abonos: $ {{ number_format($saldoAnticiposDisponibles, 2, ',', '.') }}
                 </small>
             </div>
 
@@ -195,17 +195,17 @@
                             </tr>
                         @endif
                         <tr>
-                            <td colspan="4" class="text-right"><strong>Pedidos abiertos</strong></td>
+                            <td colspan="4" class="text-right"><strong>Pedidos</strong></td>
                             <td class="text-right"><strong>{{ number_format($saldoPendientePedidosAbiertos, 2, ',', '.') }}</strong></td>
                             <td colspan="2"></td>
                         </tr>
                         <tr>
-                            <td colspan="4" class="text-right"><strong>Anticipos disponibles</strong></td>
+                            <td colspan="4" class="text-right"><strong>Anticipos/Abonos</strong></td>
                             <td class="text-right"><strong>- {{ number_format($saldoAnticiposDisponibles, 2, ',', '.') }}</strong></td>
                             <td colspan="2"></td>
                         </tr>
                         <tr>
-                            <td colspan="4" class="text-right"><strong>Saldo pendiente por registrar</strong></td>
+                            <td colspan="4" class="text-right"><strong>Saldo x Cobrar</strong></td>
                             <td class="text-right"><strong>{{ number_format($saldoPendienteNeto, 2, ',', '.') }}</strong></td>
                             <td colspan="2"></td>
                         </tr>

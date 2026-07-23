@@ -48,6 +48,12 @@ class HotelStay extends Model
             if (!is_null($message)) {
                 throw new \Exception($message);
             }
+
+            $message = self::getPastCheckInError($stay->check_in_at);
+            if (!is_null($message)) {
+                throw new \Exception($message);
+            }
+
             self::validateCheckInAvailability($stay);
         });
 
@@ -112,6 +118,10 @@ class HotelStay extends Model
             $message = self::getStayDatesError($stay);
             if (is_null($message)) {
                 $message = self::getCheckInAvailabilityError($stay);
+            }
+
+            if (is_null($message)) {
+                $message = self::getPastCheckInError($stay->check_in_at);
             }
 
             if (!is_null($message)) {
@@ -309,6 +319,43 @@ class HotelStay extends Model
         }
 
         return null;
+    }
+
+    public static function getPastCheckInError($checkInAt)
+    {
+        if (self::currentUserCanBackdateCheckIn()) {
+            return null;
+        }
+
+        $checkIn = strtotime($checkInAt);
+        if ($checkIn === false) {
+            return null;
+        }
+
+        if (date('Y-m-d', $checkIn) < date('Y-m-d')) {
+            return 'No se puede registrar check-in con fecha anterior a la fecha actual.';
+        }
+
+        return null;
+    }
+
+    public static function currentUserCanBackdateCheckIn()
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        if (!method_exists($user, 'hasRole')) {
+            return false;
+        }
+
+        try {
+            return $user->hasRole('SuperAdmin') || $user->hasRole('Administrador') || $user->hasRole('Admin Colegio');
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     public function stayDays()

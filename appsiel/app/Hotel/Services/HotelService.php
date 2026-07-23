@@ -109,6 +109,11 @@ class HotelService
                 throw new \Exception($dateMessage);
             }
 
+            $pastCheckInMessage = HotelStay::getPastCheckInError($checkInAt);
+            if (!is_null($pastCheckInMessage)) {
+                throw new \Exception($pastCheckInMessage);
+            }
+
             $adults = isset($data['adults_count']) ? (int)$data['adults_count'] : 1;
             $children = isset($data['children_count']) ? (int)$data['children_count'] : 0;
 
@@ -280,13 +285,6 @@ class HotelService
                 $stay->room->save();
             }
 
-            foreach ($stay->orders as $order) {
-                if ($order->status == HotelOrderHeader::STATUS_ABIERTO) {
-                    $order->status = HotelOrderHeader::STATUS_ANULADO;
-                    $order->save();
-                }
-            }
-
             return $stay;
         });
     }
@@ -328,6 +326,10 @@ class HotelService
             ->get();
 
         foreach ($orders as $order) {
+            if ($order->status == HotelOrderHeader::STATUS_ABIERTO) {
+                return 'No se puede anular la estadia porque tiene pedidos hoteleros abiertos. Primero debes facturar o anular los pedidos abiertos asociados a la estadia.';
+            }
+
             if ($this->orderHasActiveInvoice($order)) {
                 return 'No se puede anular la estadia porque ya tiene una factura de venta asociada (' . $order->invoiceLabel() . '). Primero debes anular la factura de venta asociada y, una vez realizada esa accion, podras anular la estadia.';
             }
