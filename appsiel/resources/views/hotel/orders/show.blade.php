@@ -75,7 +75,14 @@
                                     ${{ number_format($line->unit_price, 2, ',', '.')   }}
                                     <input type="hidden" name="lines[{{ $line->id }}][unit_price]" value="{{ $line->unit_price }}">
                                 </td>
-                                <td><input type="text" name="lines[{{ $line->id }}][quantity]" class="form-control input-sm text-right" value="{{ $line->quantity }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;"></td>
+                                <td>
+                                    @if($line->product_is_a_room())
+                                        {{ $line->quantity }}
+                                        <input type="hidden" name="lines[{{ $line->id }}][quantity]" value="{{ $line->quantity }}">
+                                    @else
+                                        <input type="text" name="lines[{{ $line->id }}][quantity]" class="form-control input-sm text-right" value="{{ $line->quantity }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;">
+                                    @endif
+                                </td>
                                 <td><input type="text" name="lines[{{ $line->id }}][discount]" class="form-control input-sm text-right" value="{{ $line->discount }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;"></td>
                                 <td class="text-right">
                                     ${{ number_format($line->tax_value, 2, ',', '.') }}

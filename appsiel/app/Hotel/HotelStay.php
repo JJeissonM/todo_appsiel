@@ -463,10 +463,6 @@ class HotelStay extends Model
             return;
         }
 
-        if ($order->lines()->count() != 1) {
-            return;
-        }
-
         $line = $order->lines()
             ->where('source_type', HotelOrderLine::SOURCE_ROOM)
             ->where('source_id', $stay->room_id)
