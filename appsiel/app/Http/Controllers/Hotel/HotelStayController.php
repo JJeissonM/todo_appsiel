@@ -42,7 +42,7 @@ class HotelStayController extends Controller
         $stay->ensureCheckInRecords();
         $stay = $this->findStay($id);
         $clients = $this->clientsList();
-        $anticipos = $this->anticiposCliente($stay);
+        $anticipos = $stay->anticiposCliente();
         $hotelService = new HotelService();
         $cancelBlockMessage = $hotelService->getCancelInvoiceBlockMessage($stay);
         $editBlockMessage = $hotelService->getEditDatesBlockMessage($stay);
@@ -149,23 +149,6 @@ class HotelStayController extends Controller
             $options[$row->id] = $row->numero_identificacion . ' - ' . $row->descripcion;
         }
         return $options;
-    }
-
-    private function anticiposCliente(HotelStay $stay)
-    {
-        if (is_null($stay->mainGuest) || empty($stay->mainGuest->core_tercero_id)) {
-            return array();
-        }
-
-        $rows = CxcMovimiento::get_documentos_tercero($stay->mainGuest->core_tercero_id, date('Y-m-d'));
-        $anticipos = array();
-        foreach ($rows as $row) {
-            if ((float)$row['saldo_pendiente'] < -0.1) {
-                $anticipos[] = $row;
-            }
-        }
-
-        return $anticipos;
     }
 
     private function canCancelHotelOrder()

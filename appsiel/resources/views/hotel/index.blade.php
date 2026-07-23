@@ -117,7 +117,7 @@
 
         .hotel-room-reservada,
         .hotel-summary-reservada {
-            background: #2f86b7;
+            background: #ce80f0;
         }
 
         .hotel-room-limpieza,
@@ -301,7 +301,10 @@
                     <div class="hotel-room-wrap">
                         <div class="hotel-room {{ $statusClass }}">
                             <div class="hotel-room-main">
-                                <div class="hotel-room-number">HAB. {{ $room->room_number }}</div>
+                                <div class="hotel-room-number">
+                                    HAB. {{ $room->room_number }}
+                                    <small style="font-size: 12px; display: block;"> (${{ number_format($stay->getSaldoPendienteNeto(), 0, '.', ',') }})</small>
+                                </div>
                                 <div class="hotel-room-type">
                                     {{ $room->description != '' ? $room->description : ucfirst(strtolower($room->room_type)) }}
                                 </div>
@@ -359,7 +362,7 @@
                                         }
                                     ?>
                                     @if($dashboardOrder)
-                                        <a href="{{ url($hotelUrl::url('hotel/orders/'.$dashboardOrder->id, array('id_modelo' => $orderModelId))) }}" class="btn btn-primary btn-xs"><i class="fa fa-shopping-cart"></i> Pedido</a>
+                                        <a href="{{ url($hotelUrl::url('hotel/orders/'.$dashboardOrder->id, array('id_modelo' => $orderModelId))) }}" class="btn btn-primary btn-xs"><i class="fa fa-file-invoice"></i> Facturar</a>
                                     @endif
                                     @if($dashboardOpenOrdersCount > 0)
                                         <button type="button"

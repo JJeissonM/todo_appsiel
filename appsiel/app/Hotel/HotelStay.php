@@ -2,6 +2,7 @@
 
 namespace App\Hotel;
 
+use App\CxC\CxcMovimiento;
 use App\Hotel\Services\HotelService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -635,5 +636,49 @@ class HotelStay extends Model
         }
 
         return $value;
+    }
+
+    public function anticiposCliente()
+    {
+        if (is_null($this->mainGuest) || empty($this->mainGuest->core_tercero_id)) {
+            return array();
+        }
+
+        $rows = CxcMovimiento::get_documentos_tercero($this->mainGuest->core_tercero_id, date('Y-m-d'));
+        $anticipos = array();
+        foreach ($rows as $row) {
+            if ((float)$row['saldo_pendiente'] < -0.1) {
+                $anticipos[] = $row;
+            }
+        }
+
+        return $anticipos;
+    }
+
+    public function getSaldoPendienteNeto()
+    {
+        $saldoPendientePedidosAbiertos = 0;
+        foreach ($this->orders as $order) {
+            if ($order->status == HotelOrderHeader::STATUS_ABIERTO) {
+                foreach ($order->lines as $line) {
+                    $saldoPendientePedidosAbiertos += (float)$line->line_total;
+                }
+            }
+        }
+
+        $anticipos = $this->anticiposCliente();
+        $saldoAnticiposDisponibles = 0;
+        if (isset($anticipos) && is_array($anticipos)) {
+            foreach ($anticipos as $anticipo) {
+                $saldoAnticipo = isset($anticipo['saldo_pendiente']) ? (float)$anticipo['saldo_pendiente'] : 0;
+                if ($saldoAnticipo < 0) {
+                    $saldoAnticiposDisponibles += abs($saldoAnticipo);
+                }
+            }
+        }
+
+        $saldoPendienteNeto = max(0, $saldoPendientePedidosAbiertos - $saldoAnticiposDisponibles);
+
+        return $saldoPendienteNeto;
     }
 }
