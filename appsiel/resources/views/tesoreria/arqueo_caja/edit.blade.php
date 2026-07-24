@@ -8,6 +8,9 @@
     
     <div class="container-fluid">
         <input type="hidden" id="creado_por_arqueo" value="{{ $registro->creado_por }}">
+        <input type="hidden" id="pdv_id" name="pdv_id" value="{{ isset($registro->pdv_id) ? $registro->pdv_id : '' }}">
+        <input type="hidden" id="fecha_hora_apertura" name="fecha_hora_apertura" value="{{ isset($registro->fecha_hora_apertura) ? $registro->fecha_hora_apertura : '' }}">
+        <input type="hidden" id="fecha_hora_cierre" name="fecha_hora_cierre" value="{{ isset($registro->fecha_hora_cierre) ? $registro->fecha_hora_cierre : '' }}">
         
         <h4><i class="fa fa-money"></i> Saldo inicial:</h4>
         <input type="number" id="base" min="0" autocomplete="off" class="form-control" name="base" placeholder="$" value="{{$valor_base}}" required="required" style="width: 200px; text-align: right;">
@@ -259,7 +262,10 @@
                     fecha_desde: $('#fecha').val(),
                     fecha_hasta: $('#fecha').val(),
                     teso_caja_id: $('#teso_caja_id').val(),
-                    creado_por: $('#creado_por_arqueo').val()
+                    creado_por: $('#creado_por_arqueo').val(),
+                    pdv_id: $('#pdv_id').val(),
+                    fecha_hora_apertura: $('#fecha_hora_apertura').val(),
+                    fecha_hora_cierre: $('#fecha_hora_cierre').val()
                 })
                     .done(function (respuesta) {
                         $('#div_cargando').hide();
@@ -306,7 +312,10 @@
                     fecha_desde: $('#fecha').val(),
                     fecha_hasta: $('#fecha').val(),
                     teso_caja_id: $('#teso_caja_id').val(),
-                    creado_por: $('#creado_por_arqueo').val()
+                    creado_por: $('#creado_por_arqueo').val(),
+                    pdv_id: $('#pdv_id').val(),
+                    fecha_hora_apertura: $('#fecha_hora_apertura').val(),
+                    fecha_hora_cierre: $('#fecha_hora_cierre').val()
                 })
                     .done(function (respuesta) {
                         $('#div_cargando').hide();

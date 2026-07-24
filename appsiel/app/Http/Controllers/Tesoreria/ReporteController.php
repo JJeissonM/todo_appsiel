@@ -994,7 +994,10 @@ class ReporteController extends TesoreriaController
             Input::get('fecha_desde'),
             Input::get('fecha_hasta'),
             Input::get('teso_caja_id'),
-            $creado_por
+            $creado_por,
+            Input::get('pdv_id'),
+            Input::get('fecha_hora_apertura'),
+            Input::get('fecha_hora_cierre')
         )->toArray();
 
         $total_valor_movimiento = 0;

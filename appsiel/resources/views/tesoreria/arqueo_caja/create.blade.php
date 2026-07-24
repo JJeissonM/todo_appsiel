@@ -3,9 +3,31 @@
 @section('campos_adicionales')
     <?php
         $valor_base = 0;
+        $pdvId = Input::get('pdv_id');
+        $fechaHoraApertura = '';
+        $fechaHoraCierre = '';
+        $pdvDescripcion = '';
+        $turnoPdvAbierto = 0;
+
         if (Input::get('pdv_id') != null) {
-            $pdv = \App\VentasPos\Pdv::find(Input::get('pdv_id'));
-            $valor_base = $pdv->get_valor_base_ultima_apertura();
+            $pdv = \App\VentasPos\Pdv::find($pdvId);
+            if ($pdv != null) {
+                $pdvDescripcion = $pdv->descripcion;
+                $valor_base = $pdv->get_valor_base_ultima_apertura();
+
+                $ultimaApertura = \App\VentasPos\AperturaEncabezado::where('pdv_id', $pdv->id)->orderBy('created_at', 'desc')->first();
+                $ultimoCierre = \App\VentasPos\CierreEncabezado::where('pdv_id', $pdv->id)->orderBy('created_at', 'desc')->first();
+
+                if ($ultimaApertura != null) {
+                    $fechaHoraApertura = $ultimaApertura->created_at;
+                    $turnoPdvAbierto = 1;
+
+                    if ($ultimoCierre != null && strtotime($ultimoCierre->created_at) >= strtotime($ultimaApertura->created_at)) {
+                        $fechaHoraCierre = $ultimoCierre->created_at;
+                        $turnoPdvAbierto = 0;
+                    }
+                }
+            }
         }
 
         $user = auth()->user();
@@ -20,6 +42,24 @@
         
         <h4><i class="fa fa-money"></i> Saldo inicial:</h4>
         <input type="number" id="base" min="0" autocomplete="off" class="form-control" name="base" placeholder="$" value="{{$valor_base}}" required="required" {{ $read_only }} style="width: 200px; text-align: right;">
+        <input type="hidden" id="pdv_id" name="pdv_id" value="{{ $pdvId }}">
+        <input type="hidden" id="fecha_hora_apertura" name="fecha_hora_apertura" value="{{ $fechaHoraApertura }}">
+        <input type="hidden" id="fecha_hora_cierre" name="fecha_hora_cierre" value="{{ $fechaHoraCierre }}">
+        <input type="hidden" id="turno_pdv_abierto" value="{{ $turnoPdvAbierto }}">
+
+        @if($pdvDescripcion != '' && $fechaHoraApertura != '')
+            <div class="alert alert-info" style="margin-top: 15px;">
+                <b>Turno PDV:</b> {{ $pdvDescripcion }} |
+                <b>Apertura:</b> {{ $fechaHoraApertura }} |
+                <b>Cierre:</b> {{ $fechaHoraCierre != '' ? $fechaHoraCierre : 'Pendiente' }}
+            </div>
+        @endif
+
+        @if($pdvDescripcion != '' && $fechaHoraApertura != '' && $fechaHoraCierre == '')
+            <div class="alert alert-warning">
+                Para realizar el arqueo del turno debe registrar primero el cierre del punto de venta POS.
+            </div>
+        @endif
 
         <br><br>
 
@@ -190,6 +230,21 @@
             }
             var sum;
 
+            $('form').on('submit', function () {
+                if (!validarCierrePdvArqueo()) {
+                    return false;
+                }
+            });
+
+            function validarCierrePdvArqueo() {
+                if ($('#pdv_id').val() !== '' && $('#fecha_hora_apertura').val() !== '' && $('#fecha_hora_cierre').val() === '') {
+                    alert('Debe realizar el cierre del punto de venta POS antes de guardar el arqueo.');
+                    return false;
+                }
+
+                return true;
+            }
+
             // PARA BILLETES
             $('.cantidad_b').on('change keyup', function () {
                 var fila = $(this).closest('tr');
@@ -278,13 +333,19 @@
                 if (!validar_requeridos()) {
                     return false;
                 }
+                if (!validarCierrePdvArqueo()) {
+                    return false;
+                }
                 $('#div_cargando').show();
                 var url = '../tesoreria/get_tabla_movimiento';
                 $.get(url, {
                     movimiento: 'entrada',
                     fecha_desde: $('#fecha').val(),
                     fecha_hasta: $('#fecha').val(),
-                    teso_caja_id: $('#teso_caja_id').val()
+                    teso_caja_id: $('#teso_caja_id').val(),
+                    pdv_id: $('#pdv_id').val(),
+                    fecha_hora_apertura: $('#fecha_hora_apertura').val(),
+                    fecha_hora_cierre: $('#fecha_hora_cierre').val()
                 })
                     .done(function (respuesta) {
                         $('#div_cargando').hide();
@@ -323,6 +384,9 @@
                 if (!validar_requeridos()) {
                     return false;
                 }
+                if (!validarCierrePdvArqueo()) {
+                    return false;
+                }
                 $('#div_cargando').show();
                 var url = '../tesoreria/get_tabla_movimiento';
 
@@ -330,7 +394,10 @@
                     movimiento: 'salida',
                     fecha_desde: $('#fecha').val(),
                     fecha_hasta: $('#fecha').val(),
-                    teso_caja_id: $('#teso_caja_id').val()
+                    teso_caja_id: $('#teso_caja_id').val(),
+                    pdv_id: $('#pdv_id').val(),
+                    fecha_hora_apertura: $('#fecha_hora_apertura').val(),
+                    fecha_hora_cierre: $('#fecha_hora_cierre').val()
                 })
                     .done(function (respuesta) {
                         $('#div_cargando').hide();

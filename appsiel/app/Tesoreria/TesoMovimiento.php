@@ -284,7 +284,7 @@ class TesoMovimiento extends Model
         return $registros;
     }
 
-    public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null, $creado_por = null)
+    public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null)
     {
         $operador = '>';
         if( $tipo_movimiento == 'salida' )
@@ -303,20 +303,39 @@ class TesoMovimiento extends Model
                                 ->whereBetween('teso_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
                                 ->where( $array_wheres );
 
-        if ( !is_null($creado_por) )
-        {
-            $empresa_id = Auth::check() ? Auth::user()->empresa_id : null;
-            $userFiltro = self::obtenerUsuarioFiltroPorEmail($creado_por, $empresa_id);
+        if ( (int)$pdv_id != 0 ) {
+            $query = self::aplicarFiltroPdv($query, (int)$pdv_id, (int)$teso_caja_id, 0);
+        }
 
-            if ( is_null($userFiltro) || !self::usuarioTieneRolPrivilegiado($userFiltro, self::rolesSinFiltro()) )
+        if ( !is_null($fecha_hora_apertura) && $fecha_hora_apertura != '' ) {
+            $query->where('teso_movimientos.created_at', '>=', $fecha_hora_apertura);
+        }
+
+        if ( !is_null($fecha_hora_cierre) && $fecha_hora_cierre != '' ) {
+            $query->where('teso_movimientos.created_at', '<=', $fecha_hora_cierre);
+        }
+
+        $filtrarPorUsuario = true;
+        if ( (int)$pdv_id != 0 && !is_null($fecha_hora_apertura) && $fecha_hora_apertura != '' && !is_null($fecha_hora_cierre) && $fecha_hora_cierre != '' ) {
+            $filtrarPorUsuario = false;
+        }
+
+        if ( $filtrarPorUsuario ) {
+            if ( !is_null($creado_por) )
             {
-                $emails = self::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
-                if ( !empty($emails) ) {
-                    $query->whereIn('teso_movimientos.creado_por', $emails);
+                $empresa_id = Auth::check() ? Auth::user()->empresa_id : null;
+                $userFiltro = self::obtenerUsuarioFiltroPorEmail($creado_por, $empresa_id);
+
+                if ( is_null($userFiltro) || !self::usuarioTieneRolPrivilegiado($userFiltro, self::rolesSinFiltro()) )
+                {
+                    $emails = self::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
+                    if ( !empty($emails) ) {
+                        $query->whereIn('teso_movimientos.creado_por', $emails);
+                    }
                 }
+            }else{
+                $query = self::aplicarFiltroCreadoPor($query, 'teso_movimientos.creado_por');
             }
-        }else{
-            $query = self::aplicarFiltroCreadoPor($query, 'teso_movimientos.creado_por');
         }
 
         return $query->groupBy('teso_movimientos.teso_motivo_id')

@@ -212,6 +212,9 @@ class ArqueoCajaController extends ModeloController
             'total_monedas' => (float)$registro->total_monedas,
             'otros_saldos' => (float)$registro->otros_saldos,
             'creado_por' => $registro->creado_por,
+            'pdv_id' => isset($registro->pdv_id) ? $registro->pdv_id : 0,
+            'fecha_hora_apertura' => isset($registro->fecha_hora_apertura) ? $registro->fecha_hora_apertura : null,
+            'fecha_hora_cierre' => isset($registro->fecha_hora_cierre) ? $registro->fecha_hora_cierre : null,
             'sumar_efectivo_base_en_saldo_esperado' => (int)config('ventas_pos.sumar_efectivo_base_en_saldo_esperado')
         ]);
 

@@ -17,7 +17,7 @@ class ArqueoCaja extends Model
     protected $table = 'teso_arqueos_caja';
 
     protected $fillable = [
-        'fecha', 'core_empresa_id', 'teso_caja_id', 'total_billetes', 'billetes_contados',
+        'fecha', 'core_empresa_id', 'teso_caja_id', 'pdv_id', 'fecha_hora_apertura', 'fecha_hora_cierre', 'total_billetes', 'billetes_contados',
         'base', 'total_monedas', 'monedas_contadas', 'otros_saldos', 'detalle_otros_saldos', 'lbl_total_efectivo',
         'lbl_total_sistema', 'total_saldo', 'detalles_mov_entradas', 'total_mov_entradas', 'detalles_mov_salidas', 'total_mov_salidas', 'observaciones', 'estado', 'creado_por', 'modificado_por'
     ];
@@ -142,10 +142,15 @@ class ArqueoCaja extends Model
 
     public function get_datos_adicionales( $datos )
     {
+        $creado_por = isset($datos['creado_por']) ? $datos['creado_por'] : null;
+        $pdv_id = isset($datos['pdv_id']) ? (int)$datos['pdv_id'] : 0;
+        $fecha_hora_apertura = isset($datos['fecha_hora_apertura']) ? $datos['fecha_hora_apertura'] : null;
+        $fecha_hora_cierre = isset($datos['fecha_hora_cierre']) ? $datos['fecha_hora_cierre'] : null;
+
         /**
          * Entradas
          */
-        $movimientos_caja = $this->get_movimientos_caja( 'entrada', $datos['fecha'], $datos['fecha'], $datos['teso_caja_id'], $datos['creado_por'] ?? null );
+        $movimientos_caja = $this->get_movimientos_caja( 'entrada', $datos['fecha'], $datos['fecha'], $datos['teso_caja_id'], $creado_por, $pdv_id, $fecha_hora_apertura, $fecha_hora_cierre );
 
         $datos['movimientos_entradas'] = $this->get_string_movimientos( $movimientos_caja->toArray() );
         $datos['total_mov_entradas'] = $movimientos_caja->sum('valor_movimiento');
@@ -153,7 +158,7 @@ class ArqueoCaja extends Model
         /**
          * Salidas
          */
-        $movimientos_caja = $this->get_movimientos_caja( 'salida', $datos['fecha'], $datos['fecha'], $datos['teso_caja_id'], $datos['creado_por'] ?? null );
+        $movimientos_caja = $this->get_movimientos_caja( 'salida', $datos['fecha'], $datos['fecha'], $datos['teso_caja_id'], $creado_por, $pdv_id, $fecha_hora_apertura, $fecha_hora_cierre );
 
         $datos['movimientos_salidas'] = $this->get_string_movimientos( $movimientos_caja->toArray() );
         $datos['total_mov_salidas'] = $movimientos_caja->sum('valor_movimiento') * -1;
@@ -196,9 +201,17 @@ class ArqueoCaja extends Model
         return $string_movimientos;
     }
 
-    public function get_movimientos_caja( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id, $creado_por = null )
+    public function get_movimientos_caja( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null )
     {
-        return TesoMovimiento::movimiento_por_tipo_motivo( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id, $creado_por );
+        if ( !is_null($fecha_hora_apertura) && $fecha_hora_apertura != '' ) {
+            $fecha_desde = substr($fecha_hora_apertura, 0, 10);
+        }
+
+        if ( !is_null($fecha_hora_cierre) && $fecha_hora_cierre != '' ) {
+            $fecha_hasta = substr($fecha_hora_cierre, 0, 10);
+        }
+
+        return TesoMovimiento::movimiento_por_tipo_motivo( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id, $creado_por, $pdv_id, $fecha_hora_apertura, $fecha_hora_cierre );
     }
 
     public function update_adicional($datos, $doc_encabezado_id)
