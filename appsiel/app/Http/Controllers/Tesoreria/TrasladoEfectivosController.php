@@ -107,6 +107,12 @@ class TrasladoEfectivosController extends TransaccionController
 
         $cajas = TesoCaja::opciones_campo_select();
         $cajas = $this->agregar_caja_default_para_traslado_efectivo($cajas);
+
+        if(env('HOTEL_MODULE_ENABLED'))
+        {
+            $cajas = TesoCaja::get_cajas_activas();
+        }
+
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
         $motivos = TesoMotivo::where('teso_tipo_motivo', 'traslado-efectivo')->get()->pluck('descripcion', 'movimiento');
 
