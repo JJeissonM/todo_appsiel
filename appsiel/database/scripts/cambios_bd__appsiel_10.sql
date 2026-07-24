@@ -831,3 +831,44 @@ WHERE @hotel_guest_model_id IS NOT NULL
 
 -- Campo usuario que actualiza estadías hoteleras.
 ALTER TABLE `hotel_stays` ADD `update_by` INT(10) UNSIGNED NULL AFTER `closed_by`;
+
+-- Permiso para anular recaudos generales.
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
+SELECT NULL,
+    COALESCE(
+        (SELECT `id` FROM `sys_aplicaciones` WHERE `descripcion` = 'Tesorería' LIMIT 1),
+        (SELECT `id` FROM `sys_aplicaciones` WHERE `descripcion` = 'Tesoreria' LIMIT 1),
+        0
+    ),
+    '46',
+    'teso_anular_recaudo_general',
+    'Anular recaudo general',
+    'tesoreria/recaudos_anular/id_fila',
+    '0',
+    '0',
+    '0',
+    'fa fa-close',
+    NOW(),
+    NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM `permissions` WHERE `name` = 'teso_anular_recaudo_general' LIMIT 1
+);
+
+SET @teso_anular_recaudo_general_permission_id := (
+    SELECT `id` FROM `permissions`
+    WHERE `name` = 'teso_anular_recaudo_general'
+    LIMIT 1
+);
+
+INSERT INTO `role_has_permissions` (`orden`, `permission_id`, `role_id`)
+SELECT 0, @teso_anular_recaudo_general_permission_id, `roles`.`id`
+FROM `roles`
+WHERE `roles`.`name` IN ('SuperAdmin', 'Administrador')
+    AND @teso_anular_recaudo_general_permission_id IS NOT NULL
+    AND NOT EXISTS (
+        SELECT 1
+        FROM `role_has_permissions`
+        WHERE `role_has_permissions`.`permission_id` = @teso_anular_recaudo_general_permission_id
+            AND `role_has_permissions`.`role_id` = `roles`.`id`
+        LIMIT 1
+    );

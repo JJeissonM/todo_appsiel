@@ -10,8 +10,14 @@
     @else
         {{ Form::bsBtnCreate( 'tesoreria/recaudos/create'.$variables_url ) }}
     @endif
-    @if($doc_encabezado->estado != 'Anulado')
-        <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
+	@if($doc_encabezado->estado != 'Anulado')
+        @if(isset($nombre))
+            <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
+        @else
+            @can('teso_anular_recaudo_general')
+                <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
+            @endcan
+        @endif
         @if( $doc_encabezado->core_tipo_transaccion_id == 43)
             <a class="btn-gmail" href="{{ url( 'teso_traslado_efectivo_recontabilizar/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
         @endif
@@ -71,9 +77,13 @@
         <br>
         Al anular el documento se eliminan los registros del movimiento contable relacionado. La anulación no puede revertirse. Si quieres confirmar, hacer click en: 
         @if(isset($nombre))
-                <a class="btn btn-danger btn-sm" href="{{ url( 'tesoreria/traslado_efectivo/anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
+            <a class="btn btn-danger btn-sm" href="{{ url( 'tesoreria/traslado_efectivo/anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
         @else
-            <a class="btn btn-danger btn-sm" href="{{ url( 'tesoreria/recaudos_anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
+            @can('teso_anular_recaudo_general')
+                <a class="btn btn-danger btn-sm" href="{{ url( 'tesoreria/recaudos_anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
+            @else
+                <span class="text-danger">No tiene permiso para anular recaudos generales.</span>
+            @endcan
         @endif
     </div>
 @endsection
