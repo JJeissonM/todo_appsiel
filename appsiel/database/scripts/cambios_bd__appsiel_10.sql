@@ -749,7 +749,7 @@ UPDATE `nom_elect_cat_cptos_dian` SET `descripcion` = 'HORA_EXTRA_DIURNA' WHERE 
 --  Permisos reportes Gestion Hotelera
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (NULL, '20', '0', 'hotel/reports/stays', 'Reporte Listado de estadias hoteleras', 'web', '0', '99', '0', '', '2026-07-09 20:34:37', NULL);
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (NULL, '20', '0', 'hotel/reports/rooms', 'Reporte Listado de habitaciones hoteleras', 'web', '0', '99', '0', '', '2026-07-09 20:34:37', NULL);
-INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (NULL, '20', '0', 'hotel/reports/migration', 'Reporte Listado SIRE', 'web', '0', '99', '0', '', '2026-07-09 20:34:37', NULL);
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (NULL, '20', '0', 'hotel/reports/migration', 'Libro de Huéspedes', 'web', '0', '99', '0', '', '2026-07-09 20:34:37', NULL);
 
 -- NUevos campos respuesta envío nomina electrónica
 INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES (NULL, 'Respuesta Envío', 'bsTextArea', 'response_xml', '', 'null', '', '', '0', '1', '0', '2026-07-15 09:58:24', NULL);

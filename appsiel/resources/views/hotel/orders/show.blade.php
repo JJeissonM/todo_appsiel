@@ -534,6 +534,42 @@
                 }).format(total));
             }
 
+            function hotelParseLineNumber(value) {
+                value = (value || '').toString();
+                value = value.replace('$', '');
+                value = value.replace(/\s/g, '');
+
+                if (value.indexOf(',') >= 0) {
+                    value = value.replace(/\./g, '').replace(',', '.');
+                }
+
+                var number = parseFloat(value);
+                return isNaN(number) ? 0 : number;
+            }
+
+            function hotelValidateNonNegativeLineTotals() {
+                var valid = true;
+
+                $('#hotel_order_lines_body tr.hotel-order-line-row:visible').each(function() {
+                    var $row = $(this);
+                    var quantity = hotelParseLineNumber($row.find('input[name$="[quantity]"]').val());
+                    var unitPrice = hotelParseLineNumber($row.find('input[name$="[unit_price]"]').val());
+                    var discount = hotelParseLineNumber($row.find('input[name$="[discount]"]').val());
+                    var lineTotal = (quantity * unitPrice) - discount;
+
+                    if (lineTotal < 0) {
+                        valid = false;
+                        return false;
+                    }
+                });
+
+                if (!valid) {
+                    hotelSwalAlert('El total de la linea no puede ser negativo.');
+                }
+
+                return valid;
+            }
+
             $(document).on('click', '.hotel-remove-line', function() {
                 var $button = $(this);
                 var $row = $button.closest('tr');
@@ -561,6 +597,11 @@
                         event.preventDefault();
                         return false;
                     }
+                }
+
+                if (!hotelValidateNonNegativeLineTotals()) {
+                    event.preventDefault();
+                    return false;
                 }
 
                 hotelSetFormLoading($(this), 'Guardando...');

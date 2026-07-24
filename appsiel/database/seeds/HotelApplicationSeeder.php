@@ -527,7 +527,7 @@ class HotelApplicationSeeder extends Seeder
 
         $roomsReportId = $this->upsertReport('Listado de habitaciones hoteleras', 'hotel/reports/rooms');
         $staysReportId = $this->upsertReport('Listado de estadias hoteleras', 'hotel/reports/stays');
-        $migrationReportId = $this->upsertReport('Listado para SIRE', 'hotel/reports/migration');
+        $migrationReportId = $this->upsertReport('Libro de Huéspedes', 'hotel/reports/migration');
 
         if ($staysReportId && Schema::hasTable('sys_campos') && Schema::hasTable('sys_reporte_tiene_campos')) {
             $fechaDesdeId = $this->getOrCreateField('Fecha desde', 'date', 'fecha_desde', '', 'null', '{"class":"form-control"}', 0);

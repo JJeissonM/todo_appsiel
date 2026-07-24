@@ -337,6 +337,14 @@ class HotelOrderController extends Controller
             throw new \Exception('El descuento debe ser mayor o igual a cero.');
         }
 
+        if (isset($data['unit_price']) && $data['unit_price'] !== '') {
+            $discount = isset($data['discount']) && $data['discount'] !== '' ? (float)$data['discount'] : 0;
+            $lineTotal = ($quantity * (float)$data['unit_price']) - $discount;
+            if ($lineTotal < 0) {
+                throw new \Exception('El total de la linea no puede ser negativo.');
+            }
+        }
+
         if (isset($data['producto_id']) && (int)$data['producto_id'] > 0 && is_null(InvProducto::find((int)$data['producto_id']))) {
             throw new \Exception('El producto no existe.');
         }

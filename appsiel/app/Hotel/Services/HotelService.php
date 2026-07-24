@@ -420,6 +420,7 @@ class HotelService
         $discount = isset($data['discount']) ? (float)$data['discount'] : 0;
         $taxData = $this->calculateTaxData($producto->id, $order->cliente_id, $quantity, $unitPrice, $discount);
         $taxValue = $taxData['valor_impuesto_total'];
+        $lineTotal = $this->validateNonNegativeLineTotal($quantity, $unitPrice, $discount, $taxValue);
         $roomId = isset($data['room_id']) && $data['room_id'] != '' ? (int)$data['room_id'] : $this->orderRoomId($order);
         $bodegaId = $this->roomBodegaIdForOrder($order, $roomId);
 
@@ -434,7 +435,7 @@ class HotelService
             'unit_price' => $unitPrice,
             'discount' => $discount,
             'tax_value' => $taxValue,
-            'line_total' => HotelOrderLine::calculateTotal($quantity, $unitPrice, $discount, $taxValue),
+            'line_total' => $lineTotal,
             'source_type' => isset($data['source_type']) ? $data['source_type'] : HotelOrderLine::SOURCE_MANUAL,
             'source_id' => isset($data['source_id']) && $data['source_id'] != '' ? (int)$data['source_id'] : null,
         ));
@@ -451,16 +452,28 @@ class HotelService
         $discount = isset($data['discount']) ? (float)$data['discount'] : $line->discount;
         $taxData = $this->calculateTaxData($line->producto_id, $order->cliente_id, $quantity, $unitPrice, $discount);
         $taxValue = $taxData['valor_impuesto_total'];
+        $lineTotal = $this->validateNonNegativeLineTotal($quantity, $unitPrice, $discount, $taxValue);
 
         $line->description = isset($data['description']) ? $data['description'] : $line->description;
         $line->quantity = $quantity;
         $line->unit_price = $unitPrice;
         $line->discount = $discount;
         $line->tax_value = $taxValue;
-        $line->line_total = HotelOrderLine::calculateTotal($quantity, $unitPrice, $discount, $taxValue);
+        $line->line_total = $lineTotal;
         $line->save();
 
         return $line;
+    }
+
+    private function validateNonNegativeLineTotal($quantity, $unitPrice, $discount, $taxValue)
+    {
+        $lineTotal = HotelOrderLine::calculateTotal($quantity, $unitPrice, $discount, $taxValue);
+
+        if ($lineTotal < 0) {
+            throw new \Exception('El total de la linea no puede ser negativo.');
+        }
+
+        return $lineTotal;
     }
 
     public function deleteLine(HotelOrderHeader $order, HotelOrderLine $line)
