@@ -4,6 +4,8 @@
         if ( $datos_factura->total_factura_mas_datafono != '$0,00') {
             $total_factura_mas_recargos = $datos_factura->total_factura_mas_datafono;
         }
+        $condicion_pago_impresion = strtolower((string)$datos_factura->lbl_condicion_pago);
+        $mostrar_recibido_cambio = (int)config('ventas_pos.mostrar_efectivo_recibio_y_cambio') && $condicion_pago_impresion == 'contado';
     ?>
     <tbody>
         <tr style="font-weight: bold;">
@@ -46,7 +48,7 @@
                 </div>
             </td>
         </tr>
-        @if( (int)config('ventas_pos.mostrar_efectivo_recibio_y_cambio') )
+        @if( $mostrar_recibido_cambio )
             @if($datos_factura->lbl_total_recibido !== '')
                 <tr style="font-weight: bold;" id="tr_total_recibido">
                     <td style="text-align: right;"> Recibido: </td>
@@ -64,4 +66,3 @@
         @endif
     </tbody>
 </table>
-    

@@ -216,6 +216,7 @@
     @endif
 
     @include('ventas_pos.formatos_impresion.tabla_medios_pago')
+    @include('ventas_pos.formatos_impresion.tabla_medios_recaudo_credito')
     
     @if(isset($medios_pago))
         <div style="font-style: normal; font-weight: 100;">
