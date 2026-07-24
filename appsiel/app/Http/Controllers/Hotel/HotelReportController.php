@@ -83,7 +83,21 @@ class HotelReportController extends Controller
                     ->where('hotel_guest_destino.modelo_entidad_id', '=', 0)
                     ->where('hotel_guest_destino.core_campo_id', '=', isset($hotelGuestFieldIds[HotelGuest::FIELD_DESTINO]) ? $hotelGuestFieldIds[HotelGuest::FIELD_DESTINO] : 0);
             })
+            ->leftJoin('core_eav_valores as hotel_guest_ocupacion', function ($join) use ($hotelGuestModelId, $hotelGuestFieldIds) {
+                $join->on('hotel_guest_ocupacion.registro_modelo_padre_id', '=', 'vtas_clientes.id')
+                    ->where('hotel_guest_ocupacion.modelo_padre_id', '=', $hotelGuestModelId)
+                    ->where('hotel_guest_ocupacion.modelo_entidad_id', '=', 0)
+                    ->where('hotel_guest_ocupacion.core_campo_id', '=', isset($hotelGuestFieldIds[HotelGuest::FIELD_OCUPACION]) ? $hotelGuestFieldIds[HotelGuest::FIELD_OCUPACION] : 0);
+            })
+            ->leftJoin('core_paises as pais_nacionalidad', 'pais_nacionalidad.id', '=', 'hotel_guest_nacionalidad.valor')
+            ->leftJoin('core_ciudades as ciudad_procedencia', 'ciudad_procedencia.id', '=', 'hotel_guest_procedencia.valor')
+            ->leftJoin('core_departamentos as depto_procedencia', 'depto_procedencia.id', '=', 'ciudad_procedencia.core_departamento_id')
+            ->leftJoin('core_paises as pais_procedencia', 'pais_procedencia.id', '=', 'hotel_guest_procedencia.valor')
+            ->leftJoin('core_ciudades as ciudad_destino', 'ciudad_destino.id', '=', 'hotel_guest_destino.valor')
+            ->leftJoin('core_departamentos as depto_destino', 'depto_destino.id', '=', 'ciudad_destino.core_departamento_id')
+            ->leftJoin('core_paises as pais_destino', 'pais_destino.id', '=', 'hotel_guest_destino.valor')
             ->where('hotel_stay_guests.empresa_id', Auth::user()->empresa_id)
+            ->where('core_terceros.tipo', 'Persona natural')
             ->select(
                 'hotel_stays.id AS stay_id',
                 'hotel_rooms.room_number',
@@ -91,17 +105,18 @@ class HotelReportController extends Controller
                 'hotel_stays.check_out_at',
                 'hotel_stays.expected_check_out_at',
                 'core_terceros.codigo_ciudad',
-                'core_tipos_docs_id.abreviatura AS tipo_documento',
+                'core_tipos_docs_id.descripcion AS tipo_documento',
                 'core_terceros.numero_identificacion',
                 'core_terceros.nombre1',
                 'core_terceros.otros_nombres',
                 'core_terceros.apellido1',
                 'core_terceros.apellido2',
                 'core_terceros.descripcion',
-                'hotel_guest_nacionalidad.valor AS codigo_nacionalidad',
+                DB::raw('COALESCE(NULLIF(pais_nacionalidad.gentilicio, ""), pais_nacionalidad.descripcion, hotel_guest_nacionalidad.valor, "") AS nacionalidad'),
                 'hotel_guest_fecha_nacimiento.valor AS fecha_nacimiento',
-                'hotel_guest_procedencia.valor AS hotel_procedencia',
-                'hotel_guest_destino.valor AS hotel_destino'
+                'hotel_guest_ocupacion.valor AS ocupacion',
+                DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), pais_procedencia.descripcion, hotel_guest_procedencia.valor, '') AS hotel_procedencia"),
+                DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_destino.descripcion,''), IF(depto_destino.descripcion IS NULL OR depto_destino.descripcion = '', '', CONCAT(', ', depto_destino.descripcion))), ''), pais_destino.descripcion, hotel_guest_destino.valor, '') AS hotel_destino")
             )
             ->orderBy('hotel_stays.check_in_at', 'DESC');
 

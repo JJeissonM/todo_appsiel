@@ -1,57 +1,48 @@
-<h3>Reporte migracion hotelera</h3>
+<h3>Libro de Huéspedes</h3>
 
 <table class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>Cod. Hotel</th>
-            <th>Cod. Ciudad</th>
-            <th>Tipo de documento</th>
-            <th>Núm. identificación</th>
-            <th>Cod. nacionalidad</th>
-            <th>Primer apellido</th>
-            <th>Segundo apellido</th>
-            <th>Nombre del extranjero</th>
-            <th>Tipo de movimiento</th>
-            <th>Fecha del movimiento</th>
-            <th>Lugar de procedencia</th>
-            <th>Lugar de destino</th>
+            <th>Check-in</th>
+            <th>Nombres y Apellidos</th>
+            <th>Número identificación</th>
             <th>Fecha de nacimiento</th>
-            <th>Habitación</th>
-            <th>Estadía</th>
+            <th>Nacionalidad</th>
+            <th>Tipo documento</th>
+            <th>Ocupación</th>
+            <th>Procedencia</th>
+            <th>Destino</th>
+            <th>Check-out</th>
         </tr>
     </thead>
     <tbody>
         @foreach($rows as $row)
             <?php
-                $nombre = trim($row->nombre1 . ' ' . $row->otros_nombres);
+                $nombre = trim($row->nombre1 . ' ' . $row->otros_nombres . ' ' . $row->apellido1 . ' ' . $row->apellido2);
                 if ($nombre == '') {
                     $nombre = $row->descripcion;
                 }
                 $procedencia = $lugarProcedencia != '' ? $lugarProcedencia : $row->hotel_procedencia;
                 $destino = $lugarDestino != '' ? $lugarDestino : $row->hotel_destino;
+                $checkOut = $row->check_out_at != '' ? $row->check_out_at : $row->expected_check_out_at;
             ?>
             <tr>
-                <td>{{ $codigoHotel }}</td>
-                <td>{{ $row->codigo_ciudad }}</td>
-                <td>{{ $row->tipo_documento }}</td>
-                <td>{{ $row->numero_identificacion }}</td>
-                <td>{{ $row->codigo_nacionalidad }}</td>
-                <td>{{ $row->apellido1 }}</td>
-                <td>{{ $row->apellido2 }}</td>
+                <td>{{ $row->check_in_at }}</td>
                 <td>{{ $nombre }}</td>
-                <td>{{ $tipoMovimiento }}</td>
-                <td>{{ substr($row->check_in_at, 0, 10) }}</td>
+                <td>{{ $row->numero_identificacion }}</td>
+                <td>{{ $row->fecha_nacimiento }}</td>
+                <td>{{ $row->nacionalidad }}</td>
+                <td>{{ $row->tipo_documento }}</td>
+                <td>{{ $row->ocupacion }}</td>
                 <td>{{ $procedencia }}</td>
                 <td>{{ $destino }}</td>
-                <td>{{ $row->fecha_nacimiento }}</td>
-                <td>{{ $row->room_number }}</td>
-                <td>#{{ $row->stay_id }}</td>
+                <td>{{ $checkOut }}</td>
             </tr>
         @endforeach
 
         @if(count($rows) == 0)
             <tr>
-                <td colspan="15">No hay registros para los filtros seleccionados.</td>
+                <td colspan="10">No hay registros para los filtros seleccionados.</td>
             </tr>
         @endif
     </tbody>
