@@ -4,15 +4,93 @@
     $hotel_module_enabled = in_array($hotel_module_enabled_value, array('1', 'true', 'yes', 'on'));
 
     if (isset($doc_encabezado) && !is_null($doc_encabezado) && $hotel_module_enabled && \Illuminate\Support\Facades\Schema::hasTable('hotel_order_headers') && \Illuminate\Support\Facades\Schema::hasTable('hotel_stays') && \Illuminate\Support\Facades\Schema::hasTable('hotel_rooms')) {
-        $hotel_order_query = \App\Hotel\HotelOrderHeader::where('sales_doc_id', $doc_encabezado->id);
+        $hotel_doc_for_pos_lookup = $doc_encabezado;
+        $hotel_sales_doc_id = (int)$doc_encabezado->id;
+        $hotel_route_transaccion_id = (int)\Illuminate\Support\Facades\Input::get('id_transaccion');
 
-        if (isset($doc_encabezado->ventas_doc_relacionado_id) && (int)$doc_encabezado->ventas_doc_relacionado_id > 0) {
-            $hotel_order_query->orWhere('pos_doc_id', (int)$doc_encabezado->ventas_doc_relacionado_id);
+        if ($hotel_route_transaccion_id > 0 && $hotel_route_transaccion_id != 47 && isset($id) && (int)$id > 0 && \Illuminate\Support\Facades\Schema::hasTable('vtas_doc_encabezados')) {
+            $hotel_sales_doc = \App\Ventas\VtasDocEncabezado::find((int)$id);
+
+            if (!is_null($hotel_sales_doc)) {
+                $hotel_sales_doc_id = (int)$hotel_sales_doc->id;
+                $hotel_doc_for_pos_lookup = $hotel_sales_doc;
+            }
         }
 
-        $hotel_orders = $hotel_order_query->with(array('stay.room', 'stay.mainGuest.tercero'))
+        $hotel_orders = \App\Hotel\HotelOrderHeader::where('sales_doc_id', $doc_encabezado->id)
+            ->with(array('stay.room', 'stay.mainGuest.tercero'))
             ->orderBy('id')
             ->get();
+
+        if (count($hotel_orders) == 0 && $hotel_sales_doc_id > 0 && $hotel_sales_doc_id != (int)$doc_encabezado->id) {
+            $hotel_orders = \App\Hotel\HotelOrderHeader::where('sales_doc_id', $hotel_sales_doc_id)
+                ->with(array('stay.room', 'stay.mainGuest.tercero'))
+                ->orderBy('id')
+                ->get();
+        }
+
+        if (count($hotel_orders) == 0 && isset($doc_encabezado->ventas_doc_relacionado_id) && (int)$doc_encabezado->ventas_doc_relacionado_id > 0) {
+            $hotel_orders = \App\Hotel\HotelOrderHeader::where('pos_doc_id', (int)$doc_encabezado->ventas_doc_relacionado_id)
+                ->with(array('stay.room', 'stay.mainGuest.tercero'))
+                ->orderBy('id')
+                ->get();
+        }
+
+        if (count($hotel_orders) == 0 && isset($hotel_doc_for_pos_lookup->ventas_doc_relacionado_id) && (int)$hotel_doc_for_pos_lookup->ventas_doc_relacionado_id > 0) {
+            $hotel_orders = \App\Hotel\HotelOrderHeader::where('pos_doc_id', (int)$hotel_doc_for_pos_lookup->ventas_doc_relacionado_id)
+                ->with(array('stay.room', 'stay.mainGuest.tercero'))
+                ->orderBy('id')
+                ->get();
+        }
+
+        if (count($hotel_orders) == 0 && \Illuminate\Support\Facades\Schema::hasTable('vtas_pos_doc_encabezados')) {
+            $hotel_pos_doc = \App\VentasPos\FacturaPos::where('core_empresa_id', $hotel_doc_for_pos_lookup->core_empresa_id)
+                ->where('core_tipo_transaccion_id', $hotel_doc_for_pos_lookup->core_tipo_transaccion_id)
+                ->where('core_tipo_doc_app_id', $hotel_doc_for_pos_lookup->core_tipo_doc_app_id)
+                ->where('consecutivo', $hotel_doc_for_pos_lookup->consecutivo)
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            if (!is_null($hotel_pos_doc)) {
+                $hotel_orders = \App\Hotel\HotelOrderHeader::where('pos_doc_id', $hotel_pos_doc->id)
+                    ->with(array('stay.room', 'stay.mainGuest.tercero'))
+                    ->orderBy('id')
+                    ->get();
+            }
+        }
+
+        if (count($hotel_orders) == 0 && \Illuminate\Support\Facades\Schema::hasTable('vtas_pos_doc_encabezados')) {
+            $hotel_pos_doc = \App\VentasPos\FacturaPos::where('core_empresa_id', $hotel_doc_for_pos_lookup->core_empresa_id)
+                ->where('core_tipo_doc_app_id', $hotel_doc_for_pos_lookup->core_tipo_doc_app_id)
+                ->where('consecutivo', $hotel_doc_for_pos_lookup->consecutivo)
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            if (!is_null($hotel_pos_doc)) {
+                $hotel_orders = \App\Hotel\HotelOrderHeader::where('pos_doc_id', $hotel_pos_doc->id)
+                    ->with(array('stay.room', 'stay.mainGuest.tercero'))
+                    ->orderBy('id')
+                    ->get();
+            }
+        }
+
+        if (count($hotel_orders) == 0 && \Illuminate\Support\Facades\Schema::hasTable('vtas_pos_doc_encabezados')) {
+            $hotel_pos_doc_query = \App\VentasPos\FacturaPos::where('core_empresa_id', $hotel_doc_for_pos_lookup->core_empresa_id)
+                ->where('consecutivo', $hotel_doc_for_pos_lookup->consecutivo);
+
+            if (isset($hotel_doc_for_pos_lookup->valor_total)) {
+                $hotel_pos_doc_query->where('valor_total', $hotel_doc_for_pos_lookup->valor_total);
+            }
+
+            $hotel_pos_doc = $hotel_pos_doc_query->orderBy('id', 'DESC')->first();
+
+            if (!is_null($hotel_pos_doc)) {
+                $hotel_orders = \App\Hotel\HotelOrderHeader::where('pos_doc_id', $hotel_pos_doc->id)
+                    ->with(array('stay.room', 'stay.mainGuest.tercero'))
+                    ->orderBy('id')
+                    ->get();
+            }
+        }
 
         foreach ($hotel_orders as $hotel_order) {
             if (is_null($hotel_order->stay)) {
@@ -53,11 +131,12 @@
             @if($hotel_detail['guest_label'] != '')
                 | <b>Huésped:</b> {{ $hotel_detail['guest_label'] }}
             @endif
-            <b>Check-in:</b> {{ $hotel_detail['check_in_at'] }}
+            | <b>Check-in:</b> {{ $hotel_detail['check_in_at'] }}
+            | <b>Salida esperada:</b> {{ $hotel_detail['expected_check_out_at'] }}
             @if($hotel_detail['check_out_at'] != '')
                 | <b>Check-out:</b> {{ $hotel_detail['check_out_at'] }}
             @endif
-            <b>Días:</b> {{ $hotel_detail['stay_days'] }}
+            | <b>Días:</b> {{ $hotel_detail['stay_days'] }}
             <?php $hotel_detail_index++; ?>
             @if($hotel_detail_index < count($hotel_orders_invoice_details))
                 <br><br>
