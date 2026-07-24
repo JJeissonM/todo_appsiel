@@ -174,7 +174,7 @@
                                         <th>Documento</th>
                                         <th>Fecha</th>
                                         <th>Detalle</th>
-                                        <th>Saldo a favor</th>
+                                        <th>Anticipos/Abonos</th>
                                     </tr>
                                 </thead>
                                 <tbody>

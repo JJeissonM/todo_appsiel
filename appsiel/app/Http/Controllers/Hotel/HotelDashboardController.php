@@ -197,22 +197,24 @@ class HotelDashboardController extends Controller
 
     private function activeReservations($empresaId)
     {
-        return HotelReservation::where('empresa_id', $empresaId)
-            ->whereNotIn('status', array(HotelReservation::STATUS_ANULADA, HotelReservation::STATUS_CUMPLIDA))
-            ->whereNull('fulfilled_stay_id')
-            ->whereNull('fulfilled_at')
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('hotel_stays')
-                    ->whereRaw('hotel_stays.empresa_id = hotel_reservations.empresa_id')
-                    ->whereRaw('hotel_stays.room_id = hotel_reservations.room_id')
-                    ->whereRaw('hotel_stays.main_cliente_id = hotel_reservations.cliente_id')
+        return HotelReservation::where('hotel_reservations.empresa_id', $empresaId)
+            ->whereNotIn('hotel_reservations.status', array(HotelReservation::STATUS_ANULADA, HotelReservation::STATUS_CUMPLIDA))
+            ->whereNull('hotel_reservations.fulfilled_stay_id')
+            ->whereNull('hotel_reservations.fulfilled_at')
+            ->whereNotIn('hotel_reservations.id', function ($query) {
+                $query->select('matched_reservations.id')
+                    ->from('hotel_reservations AS matched_reservations')
+                    ->join('hotel_stays', function ($join) {
+                        $join->on('hotel_stays.empresa_id', '=', 'matched_reservations.empresa_id')
+                            ->on('hotel_stays.room_id', '=', 'matched_reservations.room_id')
+                            ->on('hotel_stays.main_cliente_id', '=', 'matched_reservations.cliente_id');
+                    })
                     ->where('hotel_stays.status', '<>', HotelStay::STATUS_ANULADA)
-                    ->whereRaw('DATE(hotel_stays.check_in_at) >= hotel_reservations.reserved_from')
-                    ->whereRaw('DATE(hotel_stays.check_in_at) <= hotel_reservations.reserved_until');
+                    ->whereRaw('DATE(hotel_stays.check_in_at) >= matched_reservations.reserved_from')
+                    ->whereRaw('DATE(hotel_stays.check_in_at) <= matched_reservations.reserved_until');
             })
             ->with('room', 'cliente.tercero')
-            ->orderBy('reserved_from')
+            ->orderBy('hotel_reservations.reserved_from')
             ->get();
     }
 
@@ -220,17 +222,16 @@ class HotelDashboardController extends Controller
     {
         return CxcMovimiento::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
             ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('cxc_abonos AS abonos_cruce', function ($join) {
+                $join->on('abonos_cruce.core_empresa_id', '=', 'cxc_movimientos.core_empresa_id')
+                    ->on('abonos_cruce.core_tercero_id', '=', 'cxc_movimientos.core_tercero_id')
+                    ->on('abonos_cruce.core_tipo_transaccion_id', '=', 'cxc_movimientos.core_tipo_transaccion_id')
+                    ->on('abonos_cruce.core_tipo_doc_app_id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
+                    ->on('abonos_cruce.consecutivo', '=', 'cxc_movimientos.consecutivo');
+            })
             ->where('cxc_movimientos.core_empresa_id', $empresaId)
             ->where('cxc_movimientos.saldo_pendiente', '<', -0.1)
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('cxc_abonos')
-                    ->whereRaw('cxc_abonos.core_empresa_id = cxc_movimientos.core_empresa_id')
-                    ->whereRaw('cxc_abonos.core_tercero_id = cxc_movimientos.core_tercero_id')
-                    ->whereRaw('cxc_abonos.core_tipo_transaccion_id = cxc_movimientos.core_tipo_transaccion_id')
-                    ->whereRaw('cxc_abonos.core_tipo_doc_app_id = cxc_movimientos.core_tipo_doc_app_id')
-                    ->whereRaw('cxc_abonos.consecutivo = cxc_movimientos.consecutivo');
-            })
+            ->whereNull('abonos_cruce.id')
             ->select(
                 'cxc_movimientos.id',
                 'core_terceros.descripcion AS tercero',

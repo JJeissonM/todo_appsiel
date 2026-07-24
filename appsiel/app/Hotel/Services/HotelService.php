@@ -29,6 +29,7 @@ use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMotivo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class HotelService
 {
@@ -619,6 +620,10 @@ class HotelService
 
         if ($convertToElectronic) {
             $doc->hotel_factura_electronica_url = $service->convertPosInvoiceToElectronic($doc);
+            $salesDoc = $service->electronicSalesInvoiceForPos($doc);
+            if (!is_null($salesDoc)) {
+                HotelOrderHeader::where('id', $order->id)->update(array('sales_doc_id' => $salesDoc->id));
+            }
         }
 
         return $doc;
@@ -664,6 +669,33 @@ class HotelService
         }
 
         return $url;
+    }
+
+    private function electronicSalesInvoiceForPos(FacturaPos $doc)
+    {
+        $doc = FacturaPos::find((int)$doc->id);
+        if (is_null($doc)) {
+            return null;
+        }
+
+        if (Schema::hasColumn('vtas_doc_encabezados', 'ventas_doc_relacionado_id')) {
+            $salesDoc = VtasDocEncabezado::where('core_empresa_id', $doc->core_empresa_id)
+                ->where('core_tipo_transaccion_id', 52)
+                ->where('ventas_doc_relacionado_id', $doc->id)
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            if (!is_null($salesDoc)) {
+                return $salesDoc;
+            }
+        }
+
+        return VtasDocEncabezado::where('core_empresa_id', $doc->core_empresa_id)
+            ->where('core_tipo_transaccion_id', $doc->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $doc->core_tipo_doc_app_id)
+            ->where('consecutivo', $doc->consecutivo)
+            ->orderBy('id', 'DESC')
+            ->first();
     }
 
     public function validateStockForOpenOrder(HotelOrderHeader $order, $date = null)

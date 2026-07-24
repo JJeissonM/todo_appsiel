@@ -306,7 +306,7 @@
                             <div class="hotel-room-main">
                                 <div class="hotel-room-number">
                                     HAB. {{ $room->room_number }}
-                                    <small style="font-size: 12px; display: block;"> (${{ number_format($SaldoPendienteNeto, 0, '.', ',') }})</small>
+                                    <small style="font-size: 18px; display: block;"> ${{ number_format($SaldoPendienteNeto, 0, '.', ',') }}</small>
                                 </div>
                                 <div class="hotel-room-type">
                                     {{ $room->description != '' ? $room->description : ucfirst(strtolower($room->room_type)) }}

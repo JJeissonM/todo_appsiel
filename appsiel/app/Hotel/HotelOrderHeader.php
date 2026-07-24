@@ -203,6 +203,18 @@ class HotelOrderHeader extends Model
     public function invoiceUrl()
     {
         if ($this->invoice_type == self::INVOICE_POS && !empty($this->pos_doc_id)) {
+            $doc = $this->posInvoice;
+            if (is_null($doc)) {
+                $doc = FacturaPos::find($this->pos_doc_id);
+            }
+
+            if (!is_null($doc) && (int)$doc->core_tipo_transaccion_id == 52) {
+                $salesDoc = $this->electronicSalesInvoiceForPos($doc);
+                if (!is_null($salesDoc)) {
+                    return url('fe_factura/' . $salesDoc->id . '?id=21&id_modelo=244&id_transaccion=52');
+                }
+            }
+
             return url('pos_factura/' . $this->pos_doc_id . '?id=20&id_modelo=230&id_transaccion=47');
         }
 
@@ -211,6 +223,39 @@ class HotelOrderHeader extends Model
         }
 
         return '';
+    }
+
+    protected function electronicSalesInvoiceForPos($posDoc)
+    {
+        if (!empty($this->sales_doc_id)) {
+            $salesDoc = VtasDocEncabezado::find($this->sales_doc_id);
+            if (!is_null($salesDoc)) {
+                return $salesDoc;
+            }
+        }
+
+        if (is_null($posDoc)) {
+            return null;
+        }
+
+        if (Schema::hasColumn('vtas_doc_encabezados', 'ventas_doc_relacionado_id')) {
+            $salesDoc = VtasDocEncabezado::where('core_empresa_id', $posDoc->core_empresa_id)
+                ->where('core_tipo_transaccion_id', 52)
+                ->where('ventas_doc_relacionado_id', $posDoc->id)
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            if (!is_null($salesDoc)) {
+                return $salesDoc;
+            }
+        }
+
+        $query = VtasDocEncabezado::where('core_empresa_id', $posDoc->core_empresa_id)
+            ->where('core_tipo_transaccion_id', $posDoc->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $posDoc->core_tipo_doc_app_id)
+            ->where('consecutivo', $posDoc->consecutivo);
+
+        return $query->orderBy('id', 'DESC')->first();
     }
 
     public static function reopenOrdersForCancelledSalesInvoice($salesDocId, $relatedPosDocId = null)

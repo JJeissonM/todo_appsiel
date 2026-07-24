@@ -384,19 +384,18 @@ class HotelReservation extends Model
         }
 
         $advance = CxcMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('cxc_abonos AS abonos_cruce', function ($join) {
+                $join->on('abonos_cruce.core_empresa_id', '=', 'cxc_movimientos.core_empresa_id')
+                    ->on('abonos_cruce.core_tercero_id', '=', 'cxc_movimientos.core_tercero_id')
+                    ->on('abonos_cruce.core_tipo_transaccion_id', '=', 'cxc_movimientos.core_tipo_transaccion_id')
+                    ->on('abonos_cruce.core_tipo_doc_app_id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
+                    ->on('abonos_cruce.consecutivo', '=', 'cxc_movimientos.consecutivo');
+            })
             ->where('cxc_movimientos.core_empresa_id', $this->empresa_id)
             ->where('cxc_movimientos.core_tercero_id', $cliente->core_tercero_id)
             ->where('cxc_movimientos.saldo_pendiente', '<', -0.1)
             ->where('cxc_movimientos.estado', '<>', 'Anulado')
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('cxc_abonos')
-                    ->whereRaw('cxc_abonos.core_empresa_id = cxc_movimientos.core_empresa_id')
-                    ->whereRaw('cxc_abonos.core_tercero_id = cxc_movimientos.core_tercero_id')
-                    ->whereRaw('cxc_abonos.core_tipo_transaccion_id = cxc_movimientos.core_tipo_transaccion_id')
-                    ->whereRaw('cxc_abonos.core_tipo_doc_app_id = cxc_movimientos.core_tipo_doc_app_id')
-                    ->whereRaw('cxc_abonos.consecutivo = cxc_movimientos.consecutivo');
-            })
+            ->whereNull('abonos_cruce.id')
             ->select('cxc_movimientos.id', DB::raw('CONCAT(IFNULL(core_tipos_docs_apps.prefijo, ""), " ", cxc_movimientos.consecutivo) AS documento'))
             ->first();
 
@@ -409,7 +408,7 @@ class HotelReservation extends Model
             $documento = 'CxC #' . $advance->id;
         }
 
-        return 'No se puede anular la reserva porque el huesped tiene un anticipo pendiente (' . $documento . '). Primero debes anular el anticipo para luego anular la reserva.';
+        return 'No se puede anular la reserva porque el huesped tiene un anticipo (' . $documento . '). Primero debes anular el anticipo para luego anular la reserva.';
     }
 
     public function fulfill($stayId)
