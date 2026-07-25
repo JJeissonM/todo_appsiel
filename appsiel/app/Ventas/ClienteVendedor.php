@@ -73,7 +73,7 @@ class ClienteVendedor extends Cliente
         return ClaseCliente::where( 'id', $clase_cliente_id )->value( 'cta_x_cobrar_id' );
     }
 
-    public static function get_campos_adicionales_create( $lista_campos )
+    public function get_campos_adicionales_create( $lista_campos )
     {
         $user = Auth::user();
 
@@ -199,7 +199,7 @@ class ClienteVendedor extends Cliente
         return $datos;
     }
 
-    public static function get_campos_adicionales_edit($lista_campos, $registro)
+    public function get_campos_adicionales_edit($lista_campos, $registro)
     {
         $contacto_default = $registro->contactos->first();
 
