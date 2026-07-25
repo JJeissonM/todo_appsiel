@@ -47,7 +47,7 @@
                         <td> {{ $movimiento[$i]['numero_identificacion'] }} </td>
                         <td> 
                             {{ $movimiento[$i]['documento'] }} 
-                            @if($movimiento[$i]['detalle'] != '')
+                            @if(isset($movimiento[$i]['detalle']) && $movimiento[$i]['detalle'] != '')
                                 <br/>
                                 <small> {{ $movimiento[$i]['detalle'] }} </small>
                             @endif
