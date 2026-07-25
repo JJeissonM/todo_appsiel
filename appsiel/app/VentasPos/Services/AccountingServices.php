@@ -30,7 +30,18 @@ class AccountingServices
     // Recontabilizar un documento dada su ID
     public function recontabilizar_factura( $documento_id )
     {
+        return DB::transaction(function () use ($documento_id) {
+            return $this->recontabilizar_factura_sin_transaccion($documento_id);
+        });
+    }
+
+    protected function recontabilizar_factura_sin_transaccion( $documento_id )
+    {
         $documento = FacturaPos::with('pdv')->find($documento_id);
+
+        if (is_null($documento)) {
+            throw new \InvalidArgumentException('No se encontró la factura POS que se quiere contabilizar.');
+        }
 
         // Eliminar registros contables actuales
         ContabMovimiento::where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
@@ -62,6 +73,37 @@ class AccountingServices
         $documento->save();
 
         $obj_sales_serv->contabilizar_movimiento_debito_para_recontabilizacion( $documento );
+
+        $this->validar_asiento_cuadrado($documento);
+
+        return true;
+    }
+
+    public function validar_asiento_cuadrado($documento, $tolerancia = 0.01)
+    {
+        if (is_null($documento)) {
+            throw new \InvalidArgumentException('No se puede validar la contabilidad de un documento inexistente.');
+        }
+
+        $where = [
+            'core_empresa_id' => $documento->core_empresa_id,
+            'core_tipo_transaccion_id' => $documento->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $documento->core_tipo_doc_app_id,
+            'consecutivo' => $documento->consecutivo
+        ];
+
+        $debitos = round((float)ContabMovimiento::where($where)->sum('valor_debito'), 2);
+        $creditos = round(abs((float)ContabMovimiento::where($where)->sum('valor_credito')), 2);
+        $diferencia = round($debitos - $creditos, 2);
+
+        if (abs($diferencia) >= (float)$tolerancia) {
+            throw new \UnexpectedValueException(
+                'La factura POS no fue contabilizada porque el asiento está descuadrado. ' .
+                'Débitos: $' . number_format($debitos, 2, ',', '.') .
+                '; créditos: $' . number_format($creditos, 2, ',', '.') .
+                '; diferencia: $' . number_format(abs($diferencia), 2, ',', '.') . '.'
+            );
+        }
 
         return true;
     }

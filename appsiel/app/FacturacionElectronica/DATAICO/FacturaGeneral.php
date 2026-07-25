@@ -5,6 +5,7 @@ namespace App\FacturacionElectronica\DATAICO;
 use GuzzleHttp\Client;
 
 use App\FacturacionElectronica\DATAICO\ResultadoEnvio;
+use App\FacturacionElectronica\Services\InvoiceTotalsService;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\Ventas\Cliente;
 
@@ -261,7 +262,8 @@ class FacturaGeneral
          /**
           * Se envia el precio unitario sin haber quitado el decuento. DATAICO hace el calculo de descuento en su plataforma con base en discount_rate.
           */
-         $price = $linea->precio_unitario / (1 + $linea->tasa_impuesto / 100);
+         $provider_values = (new InvoiceTotalsService())->getProviderLineValues($linea, $this->cantidadDecimales);
+         $price = $provider_values->price;
          $original_price = 0;
          if ($price == 0) { // Obsequio o Precio cero
             $price = $linea->item->get_costo_promedio() * (1 + 10 / 100);
@@ -271,7 +273,7 @@ class FacturaGeneral
             $linea->tasa_descuento = 100;
          }
 
-         $string_items .= '{"sku": "' . $linea->item->id . '","description": "' . str_replace('"', '\"', $linea->item->descripcion) . '","quantity": ' . abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') ) . ',"price": ' . abs( number_format( $price, $this->cantidadDecimales, '.', '') );
+         $string_items .= '{"sku": "' . $linea->item->id . '","description": "' . str_replace('"', '\"', $linea->item->descripcion) . '","quantity": ' . number_format( $provider_values->quantity, $provider_values->decimals, '.', '') . ',"price": ' . abs( number_format( $price, $provider_values->decimals, '.', '') );
          
          $string_items .= ',"measuring-unit": "' . $linea->item->unidad_medida1 . '"';
 

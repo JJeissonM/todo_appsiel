@@ -20,6 +20,7 @@ use App\Ventas\VtasDocEncabezado;
 use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
+use App\FacturacionElectronica\Services\InvoiceTotalsService;
 use App\VentasPos\Services\CxCService;
 use App\VentasPos\Services\InvoicingService;
 use App\VentasPos\Services\TreasuryService;
@@ -268,6 +269,20 @@ class FacturaElectronicaController extends TransaccionController
 
     protected function enviar_con_validacion_previa(Factura $vtas_document_header)
     {
+        try {
+            (new InvoiceTotalsService())->validateBeforeSend($vtas_document_header);
+        } catch (\UnexpectedValueException $e) {
+            Log::warning('POS_FE_TOTALS_MISMATCH', [
+                'factura_id' => (int)$vtas_document_header->id,
+                'contenido' => $e->getMessage()
+            ]);
+
+            return (object)[
+                'tipo' => 'mensaje_error',
+                'contenido' => $e->getMessage()
+            ];
+        }
+
         // 1) El proveedor valida si ya existe el documento.
         $mensaje_validacion = $this->normalizar_mensaje($vtas_document_header->enviar_al_proveedor_tecnologico());
 

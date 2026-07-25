@@ -271,12 +271,12 @@ function pos_recalcular_linea_registro($fila)
   });
 
   var cantidad = pos_parse_numero_linea($fila.find(".cantidad").text());
-  if ($fila.find(".elemento_modificar").eq(0).length > 0) {
+  if (cantidad <= 0 && $fila.find(".elemento_modificar").eq(0).length > 0) {
     cantidad = pos_parse_numero_linea($fila.find(".elemento_modificar").eq(0).text());
   }
 
   var precio_unitario = pos_parse_numero_linea($fila.find(".precio_unitario").text());
-  if ($fila.find(".elemento_modificar").eq(1).length > 0) {
+  if (precio_unitario < 0 && $fila.find(".elemento_modificar").eq(1).length > 0) {
     precio_unitario = pos_parse_numero_linea($fila.find(".elemento_modificar").eq(1).text());
   }
 

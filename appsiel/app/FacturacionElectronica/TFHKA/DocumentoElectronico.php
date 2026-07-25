@@ -2,6 +2,7 @@
 
 namespace App\FacturacionElectronica\TFHKA;
 
+use App\FacturacionElectronica\Services\InvoiceTotalsService;
 use App\FacturacionElectronica\TFHKA\adjunto;
 use App\FacturacionElectronica\TFHKA\CargarAdjuntos;
 use App\FacturacionElectronica\TFHKA\Cliente;
@@ -199,12 +200,13 @@ class DocumentoElectronico
 	public function preparar_linea_detalle_factura( $linea, $secuencia_anterior )
 	{
 	    $factDetalle = new FacturaDetalle();
+		$provider_values = (new InvoiceTotalsService())->getProviderLineValues($linea, $this->cantidadDecimales);
 
 		$factDetalle->cantidadPorEmpaque = "1";
-    	$factDetalle->cantidadReal = abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') );
+		$factDetalle->cantidadReal = number_format( $provider_values->quantity, $provider_values->decimals, '.', '' );
     	$factDetalle->cantidadRealUnidadMedida = "WSD"; // Código estándar
 		$factDetalle->unidadMedida = "WSD";
-    	$factDetalle->cantidadUnidades = abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') );
+		$factDetalle->cantidadUnidades = number_format( $provider_values->quantity, $provider_values->decimals, '.', '' );
 
     	$factDetalle->cargosDescuentos[0] = $this->preparar_cargos_descuentos( $linea, $secuencia_anterior + 1 );
 
@@ -228,10 +230,9 @@ class DocumentoElectronico
 		$factDetalle->marca = "";
 		$factDetalle->muestraGratis = "0";
 
-		$precioTotal = $linea->cantidad * $linea->base_impuesto + $linea->valor_impuesto_total();
-		$factDetalle->precioTotal = abs( number_format($precioTotal, $this->cantidadDecimales, '.', '') );
-		$factDetalle->precioTotalSinImpuestos = abs( number_format($precioTotal - $linea->valor_impuesto_total(), $this->cantidadDecimales, '.', '') );
-		$factDetalle->precioVentaUnitario = number_format($linea->base_impuesto, $this->cantidadDecimales, '.', '');
+		$factDetalle->precioTotal = abs( number_format($linea->precio_total, $provider_values->decimals, '.', '') );
+		$factDetalle->precioTotalSinImpuestos = abs( number_format($linea->base_impuesto_total, $provider_values->decimals, '.', '') );
+		$factDetalle->precioVentaUnitario = number_format($provider_values->price, $provider_values->decimals, '.', '');
 		$factDetalle->secuencia = $secuencia_anterior + 1;
 
 	    return $factDetalle;

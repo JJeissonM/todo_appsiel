@@ -19,6 +19,7 @@ use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\Ventas\VtasMovimiento;
 use App\VentasPos\FacturaPos;
+use App\VentasPos\Services\AccountingServices;
 use App\VentasPos\Movimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,17 +34,21 @@ class DocumentHeaderService
         $fe_document_type_id_default = (int)config('facturacion_electronica.document_type_id_default');
         $fe_transaction_type_id_default = (int)config('facturacion_electronica.transaction_type_id_default');
 
-        return DB::transaction(function () use ($document_header_id, $modificado_por, $fe_document_type_id_default, $fe_transaction_type_id_default) {
-            $original_document_header = FacturaPos::where('id', $document_header_id)->lockForUpdate()->first();
+        try {
+            return DB::transaction(function () use ($document_header_id, $modificado_por, $fe_document_type_id_default, $fe_transaction_type_id_default) {
+                $original_document_header = FacturaPos::where('id', $document_header_id)->lockForUpdate()->first();
 
-            if (is_null($original_document_header)) {
-                return (object)[
-                    'status' => 'mensaje_error',
-                    'message' => 'Documento POS no encontrado para convertir a Factura ElectrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³nica.'
-                ];
-            }
+                if (is_null($original_document_header)) {
+                    return (object)[
+                        'status' => 'mensaje_error',
+                        'message' => 'Documento POS no encontrado para convertir a Factura ElectrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³nica.'
+                    ];
+                }
 
-            $original_document_label = $original_document_header->get_label_documento();
+                (new InvoiceTotalsService())->validatePosBeforeConversion($original_document_header);
+                (new AccountingServices())->validar_asiento_cuadrado($original_document_header);
+
+                $original_document_label = $original_document_header->get_label_documento();
 
             if ((int)$original_document_header->core_tipo_transaccion_id === $fe_transaction_type_id_default &&
                 (int)$original_document_header->core_tipo_doc_app_id === $fe_document_type_id_default) {
@@ -159,6 +164,7 @@ class DocumentHeaderService
             $data['core_tipo_doc_app_id'] = $fe_document_type_id_default;
             $data['consecutivo'] = $new_consecutivo;
             $data['estado'] = 'Contabilizado - Sin enviar';
+            $data['ventas_doc_relacionado_id'] = $original_document_header->id;
             $vtas_document_header = VtasDocEncabezado::create($data);
 
             $lineas_registros = $original_document_header->lineas_registros;
@@ -187,13 +193,21 @@ class DocumentHeaderService
                 $original_document_header->id
             );
 
+            (new InvoiceTotalsService())->validateConversion($original_document_header, $vtas_document_header);
+
+                return (object)[
+                    'status' => 'flash_message',
+                    'message' => 'El documento ' . $original_document_label . ' fue convertido en Factura electronica exitosamente.',
+                    'new_document_header_id' => $vtas_document_header->id,
+                    'was_already_converted' => 0
+                ];
+            });
+        } catch (\UnexpectedValueException $e) {
             return (object)[
-                'status' => 'flash_message',
-                'message' => 'El documento ' . $original_document_label . ' fue convertido en Factura electronica exitosamente.',
-                'new_document_header_id' => $vtas_document_header->id,
-                'was_already_converted' => 0
+                'status' => 'mensaje_error',
+                'message' => $e->getMessage()
             ];
-        });
+        }
     }
 
     public function store_invoice( Request $request, $remision_doc_encabezado_id )

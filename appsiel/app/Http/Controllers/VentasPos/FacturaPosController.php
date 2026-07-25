@@ -364,12 +364,30 @@ class FacturaPosController extends TransaccionController
                 }
             }
 
+            if ($acumular_factura)
+            {
+                $obj_acumm_serv = new AccumulationService( $doc_encabezado->pdv_id );
+
+                // Todas estas operaciones quedan dentro de la misma transacción.
+                // Si la contabilidad no cuadra, también se revierte la factura.
+                $obj_acumm_serv->hacer_preparaciones_recetas(
+                    'Creado por factura POS ' . $doc_encabezado->get_label_documento(),
+                    $doc_encabezado->fecha,
+                    $doc_encabezado->id
+                );
+                $obj_acumm_serv->hacer_desarme_automatico(
+                    'Creado por factura POS ' . $doc_encabezado->get_label_documento(),
+                    $doc_encabezado->fecha
+                );
+                $obj_acumm_serv->accumulate_one_invoice( $doc_encabezado->id );
+            }
+
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('POS_SAVE_EXCEPTION', $log_context + [ 'error' => $e->getMessage() ]);
 
-            if ($e instanceof \InvalidArgumentException) {
+            if ($e instanceof \InvalidArgumentException || $e instanceof \UnexpectedValueException) {
                 return response()->json([
                     'status' => 'error',
                     'message' => $e->getMessage(),
@@ -378,19 +396,6 @@ class FacturaPosController extends TransaccionController
             }
 
             throw $e;
-        }
-
-        if($acumular_factura)
-        {
-            $obj_acumm_serv = new AccumulationService( $doc_encabezado->pdv_id );
-
-            // Realizar preparaciones de recetas
-            $obj_acumm_serv->hacer_preparaciones_recetas( 'Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha, $doc_encabezado->id);
-
-            // Realizar desarme automático
-            $obj_acumm_serv->hacer_desarme_automatico( 'Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha);
-
-            $obj_acumm_serv->accumulate_one_invoice( $doc_encabezado->id );
         }
 
         if( $crear_cruce_con_anticipos )
@@ -802,6 +807,8 @@ class FacturaPosController extends TransaccionController
         $doc_encabezado = FacturaPos::with('lineas_registros')->find($id);
         $this->aplicar_fechas_factura_pos_por_defecto($request, $doc_encabezado->pdv_id);
 
+        DB::beginTransaction();
+        try {
         $datos_antes = [
             'fecha' => $doc_encabezado->fecha,
             'descripcion' => $doc_encabezado->descripcion,
@@ -864,10 +871,9 @@ class FacturaPosController extends TransaccionController
             $result = (new AccountingServices())->reconstruir_movimientos_y_recontabilizar_factura($doc_encabezado->id);
 
             if ($result->status != 'success') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Factura actualizada, pero no se pudieron sincronizar movimientos: ' . $result->message
-                ], 422);
+                throw new \UnexpectedValueException(
+                    'No se pudieron sincronizar los movimientos de la factura: ' . $result->message
+                );
             }
         }
 
@@ -927,7 +933,20 @@ class FacturaPosController extends TransaccionController
 
         $response = $this->build_json_doc_encabezado($doc_encabezado);
         $response['request_id'] = $this->get_request_id_from_request($request);
+        DB::commit();
         return response()->json( $response, 200);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('POS_UPDATE_EXCEPTION', [
+                'documento_id' => (int)$id,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'La factura no fue actualizada. ' . $e->getMessage()
+            ], 422);
+        }
     }
 
     protected function aplicar_fechas_factura_pos_por_defecto(Request $request, $pdv_id_default = null)
