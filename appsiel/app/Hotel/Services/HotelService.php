@@ -12,6 +12,7 @@ use App\Hotel\HotelReservation;
 use App\Hotel\HotelRoom;
 use App\Hotel\HotelStay;
 use App\Hotel\HotelStayGuest;
+use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
 use App\Ventas\Cliente;
@@ -56,9 +57,15 @@ class HotelService
                     ->orWhere('estado', '');
             });
 
-        if (!$this->userCanViewDashboardWithoutPdv()) {
-            $query->where('cajero_default_id', Auth::user()->id);
+        if ($this->userCanViewDashboardWithoutPdv()) {
+            return $query
+                ->orderByRaw("CASE WHEN estado = 'Abierto' THEN 0 WHEN estado = 'Cerrado' THEN 1 ELSE 2 END")
+                ->orderBy('updated_at', 'DESC')
+                ->orderBy('id')
+                ->first();
         }
+
+        $query->where('cajero_default_id', Auth::user()->id);
 
         return $query
             ->orderBy('id')
@@ -419,6 +426,7 @@ class HotelService
         $unitPrice = isset($data['unit_price']) && $data['unit_price'] !== '' ? (float)$data['unit_price'] : $this->getProductPrice($producto->id, $order->cliente_id);
         $discount = isset($data['discount']) ? (float)$data['discount'] : 0;
         $taxData = $this->calculateTaxData($producto->id, $order->cliente_id, $quantity, $unitPrice, $discount);
+        $this->validateSalePriceAboveCost($producto, $order, $unitPrice, $taxData);
         $taxValue = $taxData['valor_impuesto_total'];
         $lineTotal = $this->validateNonNegativeLineTotal($quantity, $unitPrice, $discount, $taxValue);
         $roomId = isset($data['room_id']) && $data['room_id'] != '' ? (int)$data['room_id'] : $this->orderRoomId($order);
@@ -450,7 +458,13 @@ class HotelService
         $quantity = isset($data['quantity']) ? (float)$data['quantity'] : $line->quantity;
         $unitPrice = isset($data['unit_price']) ? (float)$data['unit_price'] : $line->unit_price;
         $discount = isset($data['discount']) ? (float)$data['discount'] : $line->discount;
-        $taxData = $this->calculateTaxData($line->producto_id, $order->cliente_id, $quantity, $unitPrice, $discount);
+        $producto = InvProducto::find((int)$line->producto_id);
+        if (is_null($producto)) {
+            throw new \Exception('El producto no existe.');
+        }
+
+        $taxData = $this->calculateTaxData($producto->id, $order->cliente_id, $quantity, $unitPrice, $discount);
+        $this->validateSalePriceAboveCost($producto, $order, $unitPrice, $taxData);
         $taxValue = $taxData['valor_impuesto_total'];
         $lineTotal = $this->validateNonNegativeLineTotal($quantity, $unitPrice, $discount, $taxValue);
 
@@ -474,6 +488,58 @@ class HotelService
         }
 
         return $lineTotal;
+    }
+
+    private function validateSalePriceAboveCost(InvProducto $producto, HotelOrderHeader $order, $unitPrice, $taxData)
+    {
+        if ((int)config('ventas.permitir_venta_menor_costo') == 1) {
+            return true;
+        }
+
+        $cost = $this->productCostForOrder($producto, $order);
+        if ($cost <= 0) {
+            return true;
+        }
+
+        $taxRate = isset($taxData['tasa_impuesto']) ? (float)$taxData['tasa_impuesto'] : 0;
+        $baseUnit = (float)$unitPrice;
+        if ($taxRate > 0 && $baseUnit > 0) {
+            $baseUnit = round($baseUnit / (1 + ($taxRate / 100)), 6);
+        }
+
+        if ($baseUnit < $cost) {
+            throw new \Exception('El precio esta por debajo del costo de venta del producto. $' . number_format($cost, 0, ',', '.') . ' + IVA');
+        }
+
+        return true;
+    }
+
+    private function productCostForOrder(InvProducto $producto, HotelOrderHeader $order)
+    {
+        $roomId = $this->orderRoomId($order);
+        $bodegaId = 0;
+
+        if ($roomId > 0) {
+            $room = null;
+            if (!is_null($order->stay) && !is_null($order->stay->room) && (int)$order->stay->room->id == $roomId) {
+                $room = $order->stay->room;
+            }
+
+            if (is_null($room)) {
+                $room = HotelRoom::where('empresa_id', $order->empresa_id)->where('id', $roomId)->first();
+            }
+
+            if (!is_null($room) && !empty($room->inv_bodega_id)) {
+                $bodegaId = (int)$room->inv_bodega_id;
+            }
+        }
+
+        $cost = (float)InvCostoPromProducto::get_costo_promedio($bodegaId, $producto->id);
+        if ($cost > 0) {
+            return $cost;
+        }
+
+        return isset($producto->precio_compra) ? (float)$producto->precio_compra : 0;
     }
 
     public function deleteLine(HotelOrderHeader $order, HotelOrderLine $line)

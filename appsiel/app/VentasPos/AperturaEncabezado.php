@@ -189,6 +189,35 @@ class AperturaEncabezado extends Model
         return $lista_campos;
     }
 
+    public function validar_datos_creacion($request, $controller)
+    {
+        if (!self::hotelModuleEnabled()) {
+            return;
+        }
+
+        $pdvId = (int)$request->pdv_id;
+        $empresaId = $request->core_empresa_id;
+        if (empty($empresaId)) {
+            $pdv = Pdv::find($pdvId);
+            $empresaId = is_null($pdv) ? null : $pdv->core_empresa_id;
+        }
+
+        $openPdv = Pdv::where('estado', 'Abierto')
+            ->where('id', '<>', $pdvId);
+
+        if (!empty($empresaId)) {
+            $openPdv->where('core_empresa_id', $empresaId);
+        }
+
+        $openPdv = $openPdv->orderBy('updated_at', 'DESC')->first();
+
+        if (!is_null($openPdv)) {
+            $controller->validate($request, array('pdv_id' => 'in:0'), array(
+                'pdv_id.in' => 'No se puede abrir este punto de venta porque el modulo hotelero tiene abierto el PDV ' . $openPdv->descripcion . '. Primero debe cerrar ese punto de venta.',
+            ));
+        }
+    }
+
     public function store_adicional($datos, $registro)
     {
         $pdv = Pdv::find($datos['pdv_id']);
@@ -197,5 +226,10 @@ class AperturaEncabezado extends Model
 
         $registro->estado = 'Activo';
         $registro->save();
+    }
+
+    private static function hotelModuleEnabled()
+    {
+        return filter_var(env('HOTEL_MODULE_ENABLED', env('HOTEL_MODULE_SEEDERS_ENABLED', false)), FILTER_VALIDATE_BOOLEAN);
     }
 }

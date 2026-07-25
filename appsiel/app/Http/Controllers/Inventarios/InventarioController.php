@@ -1188,6 +1188,8 @@ class InventarioController extends TransaccionController
             $existencia_actual = InvMovimiento::get_existencia_actual($producto->id, $bodega_id, $fecha);
         }
 
+        $costo_promedio = InvCostoPromProducto::get_costo_promedio($bodega_id, $producto->id);
+
         return response()->json(array(
             'id' => $producto->id,
             'descripcion' => $producto->descripcion,
@@ -1195,6 +1197,8 @@ class InventarioController extends TransaccionController
             'precio_venta' => $precio,
             'unit_price' => $precio,
             'precio_unitario' => $precio,
+            'costo_promedio' => $costo_promedio,
+            'precio_compra' => $costo_promedio,
             'tasa_impuesto' => (float)InvProducto::get_tasa_impuesto($producto->id),
             'stock' => $existencia_actual,
             'existencia_actual' => $existencia_actual

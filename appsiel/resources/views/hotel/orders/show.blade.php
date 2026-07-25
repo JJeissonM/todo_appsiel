@@ -307,7 +307,9 @@
             var hotelOrderTotal = {{ (float)$order->lines->sum('line_total') }};
             var hotelAdvanceObjects = [];
             var hotelCanEditUnitPrice = {{ $canEditHotelOrderPrice ? 'true' : 'false' }};
+            var hotelAllowSaleBelowCost = {{ (int)config('ventas.permitir_venta_menor_costo') }};
             var hotelSelectedTaxRate = 0;
+            var hotelSelectedCost = 0;
 
             function hotelSwalAlert(message, icon) {
                 icon = icon || 'warning';
@@ -397,6 +399,7 @@
                     $stock.val('');
                     $stock.attr('placeholder', 'Stock');
                     hotelSelectedTaxRate = 0;
+                    hotelSelectedCost = 0;
                     return;
                 }
 
@@ -438,6 +441,17 @@
                         hotelSelectedTaxRate = 0;
                     }
 
+                    hotelSelectedCost = 0;
+                    if (respuesta.costo_promedio !== undefined && respuesta.costo_promedio !== null && respuesta.costo_promedio !== '') {
+                        hotelSelectedCost = parseFloat(respuesta.costo_promedio);
+                    } else if (respuesta.precio_compra !== undefined && respuesta.precio_compra !== null && respuesta.precio_compra !== '') {
+                        hotelSelectedCost = parseFloat(respuesta.precio_compra);
+                    }
+
+                    if (isNaN(hotelSelectedCost)) {
+                        hotelSelectedCost = 0;
+                    }
+
                     $precio.attr('placeholder', 'Automatico');
                     $stock.attr('placeholder', 'Stock');
                 }).fail(function() {
@@ -445,6 +459,7 @@
                     $stock.val('');
                     $stock.attr('placeholder', 'Stock');
                     hotelSelectedTaxRate = 0;
+                    hotelSelectedCost = 0;
                 });
             }
 
@@ -458,6 +473,29 @@
             function hotelProductLabel() {
                 var text = $producto.find('option:selected').text() || '';
                 return $.trim(text);
+            }
+
+            function hotelValidatePriceAboveCost(unitPrice) {
+                if (hotelAllowSaleBelowCost == 1) {
+                    return true;
+                }
+
+                unitPrice = parseFloat(unitPrice);
+                if (isNaN(unitPrice) || unitPrice <= 0 || hotelSelectedCost <= 0) {
+                    return true;
+                }
+
+                var baseUnitPrice = unitPrice;
+                if (hotelSelectedTaxRate > 0) {
+                    baseUnitPrice = unitPrice / (1 + (hotelSelectedTaxRate / 100));
+                }
+
+                if (baseUnitPrice < hotelSelectedCost) {
+                    hotelSwalAlert('El precio esta por debajo del costo de venta del producto. $' + new Intl.NumberFormat('de-DE').format(Math.round(hotelSelectedCost)) + ' + IVA', 'error');
+                    return false;
+                }
+
+                return true;
             }
 
             function hotelAppendPendingLine() {
@@ -482,6 +520,10 @@
 
                 if (unitPrice !== '' && (parseFloat(unitPrice) < 0 || isNaN(parseFloat(unitPrice)))) {
                     hotelSwalAlert('El precio debe ser mayor o igual a cero.');
+                    return false;
+                }
+
+                if (unitPrice !== '' && !hotelValidatePriceAboveCost(unitPrice)) {
                     return false;
                 }
 
