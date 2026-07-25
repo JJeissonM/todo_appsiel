@@ -176,6 +176,10 @@ class RegistrosDocumentosController extends TransaccionController
         $concepto = NomConcepto::find($request->nom_concepto_id);
         $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
 
+        if ( !$documento->esta_activo_para_transacciones() ) {
+            return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'mensaje_error','El documento de nómina no puede modificarse porque no está en estado Activo.' );
+        }
+
         $datos['nom_doc_encabezado_id'] = $request->nom_doc_encabezado_id;
         $datos['fecha'] = $documento->fecha;
         $datos['core_empresa_id'] = $documento->core_empresa_id;
@@ -279,6 +283,10 @@ class RegistrosDocumentosController extends TransaccionController
 
             $concepto = NomConcepto::find($request->nom_concepto_id);
             $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
+
+            if ( !$documento->esta_activo_para_transacciones() ) {
+                return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'mensaje_error','El documento de nómina no puede modificarse porque no está en estado Activo.' );
+            }
 
             $datos['nom_doc_encabezado_id'] = $request->nom_doc_encabezado_id;
             $datos['fecha'] = $documento->fecha;

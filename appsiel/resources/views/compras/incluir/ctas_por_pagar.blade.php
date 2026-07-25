@@ -45,7 +45,13 @@
                         <td style="display: none;"> {{ $movimiento[$i]['id'] }} </td>
                         <td> {{ $movimiento[$i]['tercero'] }} </td>
                         <td> {{ $movimiento[$i]['numero_identificacion'] }} </td>
-                        <td> {{ $movimiento[$i]['documento'] }} </td>
+                        <td> 
+                            {{ $movimiento[$i]['documento'] }} 
+                            @if($movimiento[$i]['detalle'] != '')
+                                <br/>
+                                <small> {{ $movimiento[$i]['detalle'] }} </small>
+                            @endif
+                        </td>
                         <td> {{ $movimiento[$i]['doc_proveedor_prefijo'] }} - {{ $movimiento[$i]['doc_proveedor_consecutivo'] }} </td>
                         <td> {{ $movimiento[$i]['fecha'] }} </td>
                         <td> {{ $movimiento[$i]['fecha_vencimiento'] }} </td>

@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Input;
 
 class NomDocEncabezado extends Model
 {
+    const ESTADO_ACTIVO = 'Activo';
+    const ESTADO_CONTABILIZADO = 'Contabilizado';
+
     //protected $table = 'nom_doc_encabezados';
 
     // tiempo_a_liquidar: cantidad de horas a liquidar en el documento !!! WARNING, puede haber conflicto cuando una empleado tiene una cantidad de horas_laborales al mes diferente a los demás, puede que todas sus horas se liquiden antes de cumplirse el mes. Ejemplo, si tiene en el contrato 120 horas (medio tiempo) y se hacen dos documentos con un tiempo_a_liquidar de 120 horas cada uno, al empleado se le liquidarán 240 horas !!!!
@@ -242,9 +245,28 @@ class NomDocEncabezado extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = NomDocEncabezado::where('estado', 'Activo')
-                                    ->orderBy('fecha','DESC')
-                                    ->get();
+        return self::opciones_campo_select_por_estados([self::ESTADO_ACTIVO]);
+    }
+
+    public static function opciones_campo_select_contabilizacion()
+    {
+        return self::opciones_campo_select_por_estados([self::ESTADO_ACTIVO, self::ESTADO_CONTABILIZADO]);
+    }
+
+    public static function opciones_campo_select_reportes()
+    {
+        return self::opciones_campo_select_por_estados([]);
+    }
+
+    protected static function opciones_campo_select_por_estados(array $estados)
+    {
+        $query = NomDocEncabezado::orderBy('fecha','DESC');
+
+        if (!empty($estados)) {
+            $query->whereIn('estado', $estados);
+        }
+
+        $opciones = $query->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {
@@ -252,6 +274,23 @@ class NomDocEncabezado extends Model
         }
 
         return $vec;
+    }
+
+    public function esta_activo_para_transacciones()
+    {
+        return $this->estado == self::ESTADO_ACTIVO;
+    }
+
+    public function marcar_contabilizado()
+    {
+        $this->estado = self::ESTADO_CONTABILIZADO;
+        return $this->save();
+    }
+
+    public function marcar_activo()
+    {
+        $this->estado = self::ESTADO_ACTIVO;
+        return $this->save();
     }
 
     public static function get_un_registro($id)

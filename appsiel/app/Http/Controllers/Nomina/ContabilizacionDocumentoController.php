@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Core\TransaccionController;
 
 use App\Nomina\Services\ContabilizacionDocumentoNomina;
+use App\Nomina\NomDocEncabezado;
 use Illuminate\Support\Facades\View;
 
 class ContabilizacionDocumentoController extends TransaccionController
@@ -25,6 +26,10 @@ class ContabilizacionDocumentoController extends TransaccionController
 
         if ( $request->almacenar_registros )
         {
+            if ( $servicio_contabilizacion->encabezado_doc->estado != NomDocEncabezado::ESTADO_ACTIVO ) {
+                return '<div class="alert alert-warning">El documento de nómina no puede contabilizarse porque no está en estado Activo.</div>';
+            }
+
             if ($this->hay_errores_equivalencias_contables($lineas_html_movimiento_contable)) {
                 return View::make( 'nomina.procesos.incluir.errores_equivalencia_contable')->render();
             }

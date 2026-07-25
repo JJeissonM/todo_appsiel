@@ -131,6 +131,7 @@ class ContabilizacionDocumentoNomina
 					'valor_debito' => $valor_debito,
 					'valor_credito' => $valor_credito ,
 					'tipo_transaccion' => 'crear_cxp',
+					'detalle_movimiento' => 'Origen: Contrapartida del neto a pagar. Configure la cuenta en Cuenta causación pasivo.',
 					'detalle_operador_pila' => '',
 					'estado' => 'Activo',
 					'creado_por' => Auth::user()->email,
@@ -164,6 +165,7 @@ class ContabilizacionDocumentoNomina
 															'valor_debito' => $valor_debito,
 															'valor_credito' => $valor_credito,
 															'tipo_transaccion' => 'crear_cxp',
+															'detalle_movimiento' => 'Origen: Contrapartida del neto a pagar. Configure la cuenta en Cuenta causación pasivo.',
 															'detalle_operador_pila' => '',
 															'estado' => 'Activo',
 															'creado_por' => Auth::user()->email,
@@ -353,11 +355,21 @@ class ContabilizacionDocumentoNomina
 										'concepto' => $concepto,
 										'valor_debito' => $movimiento->valor_debito,
 										'valor_credito' => $movimiento->valor_credito,
-										'observacion' => $observacion->descripcion . $movimiento->detalle_operador_pila,
+										'observacion' => $this->get_detalle_movimiento( $movimiento ) . $observacion->descripcion . $movimiento->detalle_operador_pila,
 									];
 		}
 
 		return $lineas_tabla;
+	}
+
+	protected function get_detalle_movimiento( $movimiento )
+	{
+		if ( !isset( $movimiento->detalle_movimiento ) || $movimiento->detalle_movimiento == '' )
+		{
+			return '';
+		}
+
+		return $movimiento->detalle_movimiento . '<br>';
 	}
 
 	public function get_tipo_causacion( $linea_movimiento_contab )
@@ -417,7 +429,12 @@ class ContabilizacionDocumentoNomina
 		if ( is_null( $linea_movimiento_contab->cuenta_contable ) )
 		{
 			$error = 1;
-			$descripcion .= '<br>Concepto no registra una cuenta contable relacionada.'; 
+			if ( $linea_movimiento_contab->es_contrapartida )
+			{
+				$descripcion .= '<br>La contrapartida del neto a pagar no registra una cuenta contable relacionada.';
+			}else{
+				$descripcion .= '<br>Concepto no registra una cuenta contable relacionada.';
+			}
 		}
 
 		if ( is_null($linea_movimiento_contab->tercero) )
@@ -540,6 +557,8 @@ class ContabilizacionDocumentoNomina
 	            CxcMovimiento::create( $datos );
             }
 		}
+
+		$this->encabezado_doc->marcar_contabilizado();
 	}
 
 	public function get_estado()
@@ -549,7 +568,7 @@ class ContabilizacionDocumentoNomina
 											->where( 'consecutivo', $this->encabezado_doc->consecutivo)
 											->count();
 
-		if ( $cantidad_registros_contab > 0 )
+		if ( $this->encabezado_doc->estado == NomDocEncabezado::ESTADO_CONTABILIZADO || $cantidad_registros_contab > 0 )
 		{
 			return 'contabilizado';
 		}else{
@@ -598,8 +617,7 @@ class ContabilizacionDocumentoNomina
         // RETIRO DEL MOVIMIENTO CONTABLE
 		ContabMovimiento::where( $array_wheres2 )->delete();
 
-        //$encabezado_doc->estado = 'Activo';
-        //$encabezado_doc->save();
+        $this->encabezado_doc->marcar_activo();
 
 		return 'ok';
 	}

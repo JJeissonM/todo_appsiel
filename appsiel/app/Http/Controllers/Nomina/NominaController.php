@@ -93,6 +93,10 @@ class NominaController extends TransaccionController
 
         $documento = NomDocEncabezado::find($id);
 
+        if ( !$documento->esta_activo_para_transacciones() ) {
+            return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'mensaje_error', 'El documento de nómina no puede modificarse porque no está en estado Activo.' );
+        }
+
         (new ParametroLegalService())->aplicarParametrosEnConfig($documento->fecha);
 
         // Se obtienen los Empleados del documento
@@ -374,6 +378,10 @@ class NominaController extends TransaccionController
     {
         $documento_nomina = NomDocEncabezado::find( $id );
 
+        if ( !$documento_nomina->esta_activo_para_transacciones() ) {
+            return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'mensaje_error', 'El documento de nómina no puede modificarse porque no está en estado Activo.' );
+        }
+
         (new ParametroLegalService())->aplicarParametrosEnConfig($documento_nomina->fecha);
 
         $registros_documento = $documento_nomina->registros_liquidacion;
@@ -546,6 +554,19 @@ class NominaController extends TransaccionController
 
         $datos = app($modelo->name_space)->get_datos_asignacion();
 
+        $documento_nomina = NomDocEncabezado::find( (int)$request->registro_modelo_padre_id );
+        if ( !$documento_nomina->esta_activo_para_transacciones() ) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'mensaje_error' => 'El documento de nómina no puede modificarse porque no está en estado Activo.'
+                ], 422);
+            }
+
+            return redirect( 'nomina/' . $request->registro_modelo_padre_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion )
+                ->with('mensaje_error', 'El documento de nómina no puede modificarse porque no está en estado Activo.');
+        }
+
         $this->validate($request, ['registro_modelo_hijo_id' => 'required']);
 
         $ya_asignado = DB::table($datos['nombre_tabla'])
@@ -579,7 +600,6 @@ class NominaController extends TransaccionController
                 $datos['registro_modelo_hijo_id'] => $request->registro_modelo_hijo_id
             ]);
 
-        $documento_nomina = NomDocEncabezado::find( (int)$request->registro_modelo_padre_id );
         if ( $documento_nomina->tipo_liquidacion == 'terminacion_contrato' )
         {
             $empleado = NomContrato::find( (int)$request->registro_modelo_hijo_id );
@@ -605,6 +625,17 @@ class NominaController extends TransaccionController
     public function eliminar_asignacion($nom_contrato_id, $nom_doc_encabezado_id, $id_app, $id_modelo_padre)
     {
         $documento_nomina = NomDocEncabezado::find( (int)$nom_doc_encabezado_id );
+
+        if ( !$documento_nomina->esta_activo_para_transacciones() ) {
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'mensaje_error' => 'El documento de nómina no puede modificarse porque no está en estado Activo.'
+                ], 422);
+            }
+
+            return redirect( 'nomina/' . $nom_doc_encabezado_id . '?id=' . $id_app . '&id_modelo=' . $id_modelo_padre)->with('mensaje_error', 'El documento de nómina no puede modificarse porque no está en estado Activo.');
+        }
 
         if( !empty( $documento_nomina->registros_liquidacion->where('nom_contrato_id',(int)$nom_contrato_id)->all() ) )
         {

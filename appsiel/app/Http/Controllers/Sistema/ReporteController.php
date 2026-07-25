@@ -8,6 +8,7 @@ use App\Sistema\Reporte;
 use App\Sistema\Aplicacion;
 use App\Sistema\Services\ModeloService;
 use App\VentasPos\Services\ReportsServices;
+use App\Nomina\NomDocEncabezado;
 use Illuminate\Support\Facades\Input;
 
 class ReporteController extends Controller
@@ -31,6 +32,7 @@ class ReporteController extends Controller
         $modelo_service = new ModeloService();
 
         $lista_campos = $modelo_service->ajustar_valores_lista_campos( $lista_campos );
+        $lista_campos = $this->mostrar_todos_los_documentos_nomina_en_reportes( $lista_campos );
         $lista_campos = $this->quitar_empleados_repetidos_listado_acumulados( $reporte, $lista_campos );
         
         $registro = 'NA';
@@ -44,6 +46,19 @@ class ReporteController extends Controller
         			];
 
         return view( 'core.reportes.vista_reportes', compact( 'reporte','lista_campos','miga_pan') );
+    }
+
+    protected function mostrar_todos_los_documentos_nomina_en_reportes( $lista_campos )
+    {
+        foreach ( $lista_campos as $key => $campo ) {
+            if ( !isset( $campo['name'] ) || $campo['name'] != 'nom_doc_encabezado_id' ) {
+                continue;
+            }
+
+            $lista_campos[$key]['opciones'] = NomDocEncabezado::opciones_campo_select_reportes();
+        }
+
+        return $lista_campos;
     }
 
     protected function quitar_empleados_repetidos_listado_acumulados( Reporte $reporte, $lista_campos )
