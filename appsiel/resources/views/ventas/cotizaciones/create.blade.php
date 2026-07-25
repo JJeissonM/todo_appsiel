@@ -191,8 +191,13 @@
 			    if ( $(this).val().length < 2 ) { return false; }
 
 		    	var url = '../vtas_consultar_clientes';
+				var url_id = $('#url_id').val();
 
-				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+				$.get( url, {
+					texto_busqueda: $(this).val(),
+					campo_busqueda: campo_busqueda,
+					url_id: url_id
+				} )
 					.done(function( data ) {
 						// Se llena el DIV con las sugerencias que arroja la consulta
 		                $('#clientes_suggestions').show().html(data);
