@@ -7,6 +7,8 @@ use App\Sistema\Html\Boton;
 use App\Sistema\TipoTransaccion;
 use App\Tesoreria\ArqueoCaja;
 use App\User;
+use App\VentasPos\Pdv;
+use App\VentasPos\Services\CashRegisterShiftService;
 
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Input;
@@ -31,6 +33,37 @@ class ArqueoCajaController extends ModeloController
     public function create()
     {
         return redirect('web/create?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&vista=tesoreria.arqueo_caja.create');
+    }
+
+    public function get_turnos_pdv_fecha()
+    {
+        $pdv = Pdv::where('id', (int)Input::get('pdv_id'))
+            ->where('core_empresa_id', Auth::user()->empresa_id)
+            ->first();
+
+        if (is_null($pdv)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'El punto de venta no existe o no pertenece a la empresa.',
+                'shifts' => []
+            ], 404);
+        }
+
+        $range = (new CashRegisterShiftService())->getDayRange($pdv, Input::get('fecha'));
+
+        $message = '';
+        if (is_null($range) || !$range['has_opening']) {
+            $message = 'No hay apertura registrada para esta fecha. Puede ingresar manualmente el rango o dejar ambos campos vacíos para consultar el día completo.';
+        } elseif (!$range['has_closing']) {
+            $message = 'No hay cierre registrado para esta fecha. Ingrese manualmente la fecha y hora de cierre.';
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'pdv_description' => $pdv->descripcion,
+            'range' => $range,
+            'message' => $message
+        ]);
     }
 
     // Generar vista para SHOW o IMPRIMIR

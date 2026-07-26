@@ -315,10 +315,9 @@ class TesoMovimiento extends Model
             $query->where('teso_movimientos.created_at', '<=', $fecha_hora_cierre);
         }
 
-        $filtrarPorUsuario = true;
-        if ( (int)$pdv_id != 0 && !is_null($fecha_hora_apertura) && $fecha_hora_apertura != '' && !is_null($fecha_hora_cierre) && $fecha_hora_cierre != '' ) {
-            $filtrarPorUsuario = false;
-        }
+        // Un arqueo de PDV debe incluir todos los movimientos de ese punto de venta,
+        // incluso cuando no existe una apertura/cierre registrada para el día.
+        $filtrarPorUsuario = (int)$pdv_id == 0;
 
         if ( $filtrarPorUsuario ) {
             if ( !is_null($creado_por) )

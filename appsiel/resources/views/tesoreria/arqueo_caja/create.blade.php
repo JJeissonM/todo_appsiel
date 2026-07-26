@@ -7,25 +7,19 @@
         $fechaHoraApertura = '';
         $fechaHoraCierre = '';
         $pdvDescripcion = '';
-        $turnoPdvAbierto = 0;
+        $fechaInicialArqueo = date('Y-m-d');
 
         if (Input::get('pdv_id') != null) {
             $pdv = \App\VentasPos\Pdv::find($pdvId);
             if ($pdv != null) {
                 $pdvDescripcion = $pdv->descripcion;
-                $valor_base = $pdv->get_valor_base_ultima_apertura();
+                $shiftService = new \App\VentasPos\Services\CashRegisterShiftService();
+                $rangoDiaPdv = $shiftService->getDayRange($pdv, $fechaInicialArqueo);
 
-                $ultimaApertura = \App\VentasPos\AperturaEncabezado::where('pdv_id', $pdv->id)->orderBy('created_at', 'desc')->first();
-                $ultimoCierre = \App\VentasPos\CierreEncabezado::where('pdv_id', $pdv->id)->orderBy('created_at', 'desc')->first();
-
-                if ($ultimaApertura != null) {
-                    $fechaHoraApertura = $ultimaApertura->created_at;
-                    $turnoPdvAbierto = 1;
-
-                    if ($ultimoCierre != null && strtotime($ultimoCierre->created_at) >= strtotime($ultimaApertura->created_at)) {
-                        $fechaHoraCierre = $ultimoCierre->created_at;
-                        $turnoPdvAbierto = 0;
-                    }
+                if (!is_null($rangoDiaPdv)) {
+                    $valor_base = $rangoDiaPdv['cash_base'];
+                    $fechaHoraApertura = $rangoDiaPdv['opening_at'];
+                    $fechaHoraCierre = $rangoDiaPdv['closing_at'];
                 }
             }
         }
@@ -37,29 +31,36 @@
             $read_only = 'readonly = "readonly"';
         }
     ?>
-    <br>
     <div class="container-fluid">
+        <input type="hidden" id="pdv_id" name="pdv_id" value="{{ $pdvId }}">
+
+        <div class="form-group" style="margin-top: 20px;">
+            <label>PDV:</label>
+            <div id="pdv_descripcion" class="form-control" style="background-color: #f5f5f5;">{{ $pdvDescripcion }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label for="fecha_hora_apertura">Fecha y hora de apertura:</label>
+                <input type="datetime-local" id="fecha_hora_apertura" name="fecha_hora_apertura" class="form-control" step="1"
+                       value="{{ $fechaHoraApertura == '' ? '' : str_replace(' ', 'T', substr($fechaHoraApertura, 0, 19)) }}">
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="fecha_hora_cierre">Fecha y hora de cierre:</label>
+                <input type="datetime-local" id="fecha_hora_cierre" name="fecha_hora_cierre" class="form-control" step="1"
+                       value="{{ $fechaHoraCierre == '' ? '' : str_replace(' ', 'T', substr($fechaHoraCierre, 0, 19)) }}">
+            </div>
+        </div>
+
+        <div id="rango_pdv_mensaje" class="alert alert-warning" style="{{ $fechaHoraApertura != '' && $fechaHoraCierre != '' ? 'display: none;' : '' }}">
+            Complete el rango de apertura y cierre, o déjelo vacío para consultar el día completo.
+        </div>
+        
+
+        <br><br>
         
         <h4><i class="fa fa-money"></i> Saldo inicial:</h4>
         <input type="number" id="base" min="0" autocomplete="off" class="form-control" name="base" placeholder="$" value="{{$valor_base}}" required="required" {{ $read_only }} style="width: 200px; text-align: right;">
-        <input type="hidden" id="pdv_id" name="pdv_id" value="{{ $pdvId }}">
-        <input type="hidden" id="fecha_hora_apertura" name="fecha_hora_apertura" value="{{ $fechaHoraApertura }}">
-        <input type="hidden" id="fecha_hora_cierre" name="fecha_hora_cierre" value="{{ $fechaHoraCierre }}">
-        <input type="hidden" id="turno_pdv_abierto" value="{{ $turnoPdvAbierto }}">
-
-        @if($pdvDescripcion != '' && $fechaHoraApertura != '')
-            <div class="alert alert-info" style="margin-top: 15px;">
-                <b>Turno PDV:</b> {{ $pdvDescripcion }} |
-                <b>Apertura:</b> {{ $fechaHoraApertura }} |
-                <b>Cierre:</b> {{ $fechaHoraCierre != '' ? $fechaHoraCierre : 'Pendiente' }}
-            </div>
-        @endif
-
-        @if($pdvDescripcion != '' && $fechaHoraApertura != '' && $fechaHoraCierre == '')
-            <div class="alert alert-warning">
-                Para realizar el arqueo del turno debe registrar primero el cierre del punto de venta POS.
-            </div>
-        @endif
 
         <br><br>
 
@@ -230,6 +231,74 @@
             }
             var sum;
 
+            $('#fecha').on('change', function () {
+                cargarRangoPdvPorFecha($(this).val());
+            });
+
+            $('#fecha_hora_apertura, #fecha_hora_cierre').on('change', function () {
+                actualizarMensajeRango();
+                limpiarMovimientosPorCambioTurno();
+            });
+
+            cargarRangoPdvPorFecha($('#fecha').val());
+
+            function cargarRangoPdvPorFecha(fecha) {
+                if ($('#pdv_id').val() === '' || fecha === '') {
+                    return;
+                }
+
+                $('#btn_get_mov_entrada, #btn_get_mov_salida').addClass('disabled');
+                $.get('../tesoreria/get_turnos_pdv_fecha', {
+                    pdv_id: $('#pdv_id').val(),
+                    fecha: fecha
+                }).done(function (response) {
+                    aplicarRangoPdv(response.range, response.message, response.pdv_description);
+                }).fail(function () {
+                    aplicarRangoPdv(null, 'No fue posible consultar las aperturas y cierres para la fecha seleccionada.', '');
+                }).always(function () {
+                    $('#btn_get_mov_entrada, #btn_get_mov_salida').removeClass('disabled');
+                });
+            }
+
+            function aplicarRangoPdv(range, message, pdvDescription) {
+                $('#pdv_descripcion').text(pdvDescription || {!! json_encode($pdvDescripcion) !!});
+
+                if (range === null) {
+                    $('#base').val(0);
+                    $('#fecha_hora_apertura, #fecha_hora_cierre').val('');
+                    $('#rango_pdv_mensaje').text(message).show();
+                } else {
+                    $('#base').val(range.cash_base || 0);
+                    $('#fecha_hora_apertura').val(formatearFechaHoraInput(range.opening_at));
+                    $('#fecha_hora_cierre').val(formatearFechaHoraInput(range.closing_at));
+                    $('#rango_pdv_mensaje').text(message || 'Puede ajustar manualmente el rango de fecha y hora.');
+                    actualizarMensajeRango();
+                }
+
+                limpiarMovimientosPorCambioTurno();
+            }
+
+            function formatearFechaHoraInput(value) {
+                if (!value) {
+                    return '';
+                }
+                return value.substring(0, 19).replace(' ', 'T');
+            }
+
+            function actualizarMensajeRango() {
+                var apertura = $('#fecha_hora_apertura').val();
+                var cierre = $('#fecha_hora_cierre').val();
+                $('#rango_pdv_mensaje').toggle(apertura === '' || cierre === '');
+            }
+
+            function limpiarMovimientosPorCambioTurno() {
+                $('#div_mov_entrada, #div_mov_salida').html('');
+                $('#total_mov_entradas, #total_mov_salidas').val(0);
+                $('#movimientos_entradas, #movimientos_salidas').val('');
+                calcular_total_sistema();
+                calcular_total_saldo();
+            }
+
             $('form').on('submit', function () {
                 if (!validarCierrePdvArqueo()) {
                     return false;
@@ -237,8 +306,21 @@
             });
 
             function validarCierrePdvArqueo() {
-                if ($('#pdv_id').val() !== '' && $('#fecha_hora_apertura').val() !== '' && $('#fecha_hora_cierre').val() === '') {
-                    alert('Debe realizar el cierre del punto de venta POS antes de guardar el arqueo.');
+                var apertura = $('#fecha_hora_apertura').val();
+                var cierre = $('#fecha_hora_cierre').val();
+
+                if ((apertura === '') !== (cierre === '')) {
+                    alert('Debe ingresar tanto la fecha y hora de apertura como la de cierre.');
+                    return false;
+                }
+
+                if (apertura !== '' && apertura.substring(0, 10) !== $('#fecha').val()) {
+                    alert('La apertura debe pertenecer a la fecha seleccionada para el arqueo.');
+                    return false;
+                }
+
+                if (apertura !== '' && cierre < apertura) {
+                    alert('La fecha y hora de cierre no puede ser anterior a la apertura.');
                     return false;
                 }
 
@@ -355,6 +437,9 @@
                         calcular_total_sistema();
 
                         calcular_total_saldo();
+                    }).fail(function (xhr) {
+                        $('#div_cargando').hide();
+                        alert(obtenerMensajeErrorAjax(xhr, 'No fue posible obtener los movimientos de entrada.'));
                     });
 
             });
@@ -408,6 +493,9 @@
                         calcular_total_sistema();
 
                         calcular_total_saldo();
+                    }).fail(function (xhr) {
+                        $('#div_cargando').hide();
+                        alert(obtenerMensajeErrorAjax(xhr, 'No fue posible obtener los movimientos de salida.'));
                     });
 
             });
@@ -427,6 +515,14 @@
                 calcular_total_saldo();
 
             });
+
+            function obtenerMensajeErrorAjax(xhr, fallback) {
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    return xhr.responseJSON.message;
+                }
+
+                return fallback;
+            }
 
 
             function calcular_total_sistema() {

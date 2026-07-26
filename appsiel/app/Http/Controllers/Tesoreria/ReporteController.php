@@ -26,6 +26,7 @@ use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMovimiento;
 use App\Inventarios\InvProducto;
 use App\VentasPos\Pdv;
+use App\VentasPos\Services\CashRegisterShiftService;
 use App\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -984,20 +985,56 @@ class ReporteController extends TesoreriaController
     public function get_tabla_movimiento()
     {
         $creado_por = Input::get('creado_por');
+        $fecha_desde = Input::get('fecha_desde');
+        $fecha_hasta = Input::get('fecha_hasta');
+        $pdv_id = (int)Input::get('pdv_id');
+        $fecha_hora_apertura = Input::get('fecha_hora_apertura');
+        $fecha_hora_cierre = Input::get('fecha_hora_cierre');
 
         if ( empty($creado_por) ) {
             $creado_por = Auth::user()->email;
         }
 
+        // Nunca aplicar a una fecha histórica el turno que quedó cargado al abrir la pantalla.
+        if ($pdv_id > 0 && $fecha_desde == $fecha_hasta) {
+            $pdv = Pdv::where('id', $pdv_id)
+                ->where('core_empresa_id', Auth::user()->empresa_id)
+                ->first();
+
+            try {
+                $range = is_null($pdv)
+                    ? null
+                    : (new CashRegisterShiftService())->normalizeEditableRange(
+                        $fecha_desde,
+                        $fecha_hora_apertura,
+                        $fecha_hora_cierre
+                    );
+            } catch (\UnexpectedValueException $e) {
+                return response()->json(['message' => $e->getMessage()], 422);
+            }
+
+            if (is_null($range)) {
+                $fecha_hora_apertura = null;
+                $fecha_hora_cierre = null;
+            } else {
+                $fecha_hora_apertura = $range['opening_at'];
+                $fecha_hora_cierre = $range['closing_at'];
+                $fecha_desde = substr($fecha_hora_apertura, 0, 10);
+                if ($fecha_hora_cierre != '') {
+                    $fecha_hasta = substr($fecha_hora_cierre, 0, 10);
+                }
+            }
+        }
+
         $movimiento = TesoMovimiento::movimiento_por_tipo_motivo(
             Input::get('movimiento'),
-            Input::get('fecha_desde'),
-            Input::get('fecha_hasta'),
+            $fecha_desde,
+            $fecha_hasta,
             Input::get('teso_caja_id'),
             $creado_por,
-            Input::get('pdv_id'),
-            Input::get('fecha_hora_apertura'),
-            Input::get('fecha_hora_cierre')
+            $pdv_id,
+            $fecha_hora_apertura,
+            $fecha_hora_cierre
         )->toArray();
 
         $total_valor_movimiento = 0;

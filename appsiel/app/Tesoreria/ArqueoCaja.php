@@ -6,6 +6,8 @@ use App\Http\Controllers\Tesoreria\ArqueoCajaController;
 use App\Sistema\Html\Boton;
 use App\Sistema\TipoTransaccion;
 use App\Traits\FiltraRegistrosPorUsuario;
+use App\VentasPos\Pdv;
+use App\VentasPos\Services\CashRegisterShiftService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -119,6 +121,8 @@ class ArqueoCaja extends Model
 
     public function store_adicional($datos, $arqueocaja)
     {
+        $datos = $this->applyStoredShiftData($datos, $arqueocaja);
+
         if ( Auth::user()->hasPermission('vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja') ) {
             $datos = $this->get_datos_adicionales( $datos );
             $arqueocaja->total_mov_entradas = $datos['total_mov_entradas'];
@@ -138,6 +142,55 @@ class ArqueoCaja extends Model
         } else {
             return redirect('tesoreria/arqueo_caja/' . $arqueocaja->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('flash_message', 'Registro NO FUE CREADO correctamente.');
         }
+    }
+
+    public function validar_datos_creacion($request, $controller)
+    {
+        $this->validateAndNormalizeShift($request, $controller);
+    }
+
+    public function validar_datos_actualizacion($request, $controller, $id)
+    {
+        $this->validateAndNormalizeShift($request, $controller);
+    }
+
+    protected function validateAndNormalizeShift($request, $controller)
+    {
+        $pdv = Pdv::where('id', (int)$request->pdv_id)
+            ->where('core_empresa_id', Auth::user()->empresa_id)
+            ->first();
+
+        if (is_null($pdv)) {
+            return;
+        }
+
+        try {
+            $range = (new CashRegisterShiftService())->normalizeEditableRange(
+                $request->fecha,
+                $request->fecha_hora_apertura,
+                $request->fecha_hora_cierre
+            );
+        } catch (\UnexpectedValueException $e) {
+            $controller->validate($request, [
+                'fecha_hora_apertura' => 'in:__invalid_range__'
+            ], [
+                'fecha_hora_apertura.in' => $e->getMessage()
+            ]);
+            return;
+        }
+
+        if (is_null($range)) {
+            $request->merge([
+                'fecha_hora_apertura' => null,
+                'fecha_hora_cierre' => null
+            ]);
+            return;
+        }
+
+        $request->merge([
+            'fecha_hora_apertura' => $range['opening_at'],
+            'fecha_hora_cierre' => $range['closing_at']
+        ]);
     }
 
     public function get_datos_adicionales( $datos )
@@ -203,6 +256,11 @@ class ArqueoCaja extends Model
 
     public function get_movimientos_caja( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null )
     {
+        if (!is_null($fecha_hora_apertura) && $fecha_hora_apertura != '' && substr($fecha_hora_apertura, 0, 10) != $fecha_desde) {
+            $fecha_hora_apertura = null;
+            $fecha_hora_cierre = null;
+        }
+
         if ( !is_null($fecha_hora_apertura) && $fecha_hora_apertura != '' ) {
             $fecha_desde = substr($fecha_hora_apertura, 0, 10);
         }
@@ -217,6 +275,7 @@ class ArqueoCaja extends Model
     public function update_adicional($datos, $doc_encabezado_id)
     {
         $arqueocaja = ArqueoCaja::find($doc_encabezado_id);
+        $datos = $this->applyStoredShiftData($datos, $arqueocaja);
 
         if ( Auth::user()->hasPermission('vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja') ) {
             $datos = $this->get_datos_adicionales( $datos );
@@ -234,5 +293,14 @@ class ArqueoCaja extends Model
         $arqueocaja->save();
 
         return 'tesoreria/arqueo_caja/' . $arqueocaja->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'];
+    }
+
+    protected function applyStoredShiftData(array $data, ArqueoCaja $cashCount)
+    {
+        foreach (['fecha', 'pdv_id', 'teso_caja_id', 'base', 'fecha_hora_apertura', 'fecha_hora_cierre'] as $field) {
+            $data[$field] = $cashCount->{$field};
+        }
+
+        return $data;
     }
 }
