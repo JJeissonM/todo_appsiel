@@ -286,6 +286,9 @@ class TesoMovimiento extends Model
 
     public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null)
     {
+        $fecha_hora_apertura = self::normalizarFechaHoraFiltro($fecha_hora_apertura);
+        $fecha_hora_cierre = self::normalizarFechaHoraFiltro($fecha_hora_cierre);
+
         $operador = '>';
         if( $tipo_movimiento == 'salida' )
         {
@@ -345,6 +348,21 @@ class TesoMovimiento extends Model
                                 DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento')
                             )
                     ->get();
+    }
+
+    protected static function normalizarFechaHoraFiltro($fecha_hora)
+    {
+        if (is_null($fecha_hora)) {
+            return null;
+        }
+
+        $fecha_hora = trim(str_replace('T', ' ', $fecha_hora));
+
+        if ($fecha_hora == '' || substr($fecha_hora, 0, 10) == '0000-00-00') {
+            return null;
+        }
+
+        return $fecha_hora;
     }
 
     public static function get_suma_movimientos_menor_a_la_fecha($fecha)

@@ -988,10 +988,14 @@ class ReporteController extends TesoreriaController
         $fecha_desde = Input::get('fecha_desde');
         $fecha_hasta = Input::get('fecha_hasta');
         $pdv_id = (int)Input::get('pdv_id');
-        $fecha_hora_apertura = Input::get('fecha_hora_apertura');
-        $fecha_hora_cierre = Input::get('fecha_hora_cierre');
+        $fecha_hora_apertura = $this->normalizarFechaHoraArqueo(Input::get('fecha_hora_apertura'));
+        $fecha_hora_cierre = $this->normalizarFechaHoraArqueo(Input::get('fecha_hora_cierre'));
 
-        if ( empty($creado_por) ) {
+        if ( !TesoMovimiento::usuario_tiene_restriccion_movimientos() && $pdv_id == 0 ) {
+            $creado_por = null;
+        }
+
+        if ( empty($creado_por) && TesoMovimiento::usuario_tiene_restriccion_movimientos() ) {
             $creado_por = Auth::user()->email;
         }
 
@@ -1043,6 +1047,21 @@ class ReporteController extends TesoreriaController
             $total_valor_movimiento += $linea['valor_movimiento'];
         }
         return [View::make('tesoreria.incluir.tabla_movimiento_por_motivo', compact('movimiento'))->render(), $total_valor_movimiento,$movimiento];
+    }
+
+    private function normalizarFechaHoraArqueo($fecha_hora)
+    {
+        if (is_null($fecha_hora)) {
+            return null;
+        }
+
+        $fecha_hora = trim(str_replace('T', ' ', $fecha_hora));
+
+        if ($fecha_hora == '' || substr($fecha_hora, 0, 10) == '0000-00-00') {
+            return null;
+        }
+
+        return $fecha_hora;
     }
 
     /*

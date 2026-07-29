@@ -178,7 +178,8 @@ class HotelOrderHeader extends Model
             }
 
             if (!is_null($doc) && !is_null($doc->tipo_documento_app)) {
-                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo;
+
+                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo . ' (Creado por ' . $this->factura_creada_por($doc)->name . ')';
             }
 
             return $this->pos_doc_id;
@@ -191,13 +192,23 @@ class HotelOrderHeader extends Model
             }
 
             if (!is_null($doc) && !is_null($doc->tipo_documento_app)) {
-                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo;
+                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo . ' (Creado por ' . $this->factura_creada_por($doc)->name . ')';
             }
 
             return $this->sales_doc_id;
         }
 
         return '';
+    }
+
+    public function factura_creada_por( $doc )
+    {
+        $creado_por = $doc->creado_por();
+        if (is_null($creado_por)) {
+            $creado_por = new \stdClass();
+            $creado_por->name = 'Desconocido';
+        }
+        return $creado_por;
     }
 
     public function invoiceUrl()
