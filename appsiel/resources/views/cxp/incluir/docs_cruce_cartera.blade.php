@@ -31,7 +31,7 @@
                 <tr id="{{ $id }}" class="{{$class_advertencia}}">
                     <td class="text-center">
                         {{ $movimiento[$i]['documento'] }}
-                        @if($movimiento[$i]['detalle'] != '')
+                        @if(isset($movimiento[$i]['detalle']) && $movimiento[$i]['detalle'] != '')
                             <br/>
                             <small> {{ $movimiento[$i]['detalle'] }} </small>
                         @endif
