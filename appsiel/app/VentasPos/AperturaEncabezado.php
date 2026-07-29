@@ -17,11 +17,11 @@ class AperturaEncabezado extends Model
     use FiltraRegistrosPorUsuario;
 
     protected $table = 'vtas_pos_apertura_encabezados';
-    protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'cajero_id', 'pdv_id', 'efectivo_base', 'detalle', 'creado_por', 'modificado_por', 'estado'];
+    protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'cajero_id', 'pdv_id', 'efectivo_base', 'responsable', 'detalle', 'creado_por', 'modificado_por', 'estado'];
 
     public $vistas = '{"show":"ventas_pos.index"}';
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cajero', 'PDV', 'Efectivo Base ', 'Detalle', 'Fecha creación', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cajero', 'PDV', 'Efectivo Base ', 'Responsable', 'Detalle', 'Fecha creación', 'Estado'];
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -34,10 +34,11 @@ class AperturaEncabezado extends Model
                 'users.name AS campo3',
                 'vtas_pos_puntos_de_ventas.descripcion AS campo4',
                 'vtas_pos_apertura_encabezados.efectivo_base AS campo5',
-                'vtas_pos_apertura_encabezados.detalle AS campo6',
-                'vtas_pos_apertura_encabezados.updated_at AS campo7',
-                'vtas_pos_apertura_encabezados.estado AS campo8',
-                'vtas_pos_apertura_encabezados.id AS campo9'
+                'vtas_pos_apertura_encabezados.responsable AS campo6',
+                'vtas_pos_apertura_encabezados.detalle AS campo7',
+                'vtas_pos_apertura_encabezados.updated_at AS campo8',
+                'vtas_pos_apertura_encabezados.estado AS campo9',
+                'vtas_pos_apertura_encabezados.id AS campo10'
             );
 
         $query = self::aplicarFiltroCreadoPor($query, 'vtas_pos_apertura_encabezados.creado_por');
@@ -48,6 +49,7 @@ class AperturaEncabezado extends Model
                 ->orWhere("users.name", "LIKE", "%$search%")
                 ->orWhere("vtas_pos_puntos_de_ventas.descripcion", "LIKE", "%$search%")
                 ->orWhere("vtas_pos_apertura_encabezados.efectivo_base", "LIKE", "%$search%")
+                ->orWhere("vtas_pos_apertura_encabezados.responsable", "LIKE", "%$search%")
                 ->orWhere("vtas_pos_apertura_encabezados.detalle", "LIKE", "%$search%")
                 ->orWhere("vtas_pos_apertura_encabezados.estado", "LIKE", "%$search%");
         });
@@ -68,6 +70,7 @@ class AperturaEncabezado extends Model
                 'users.name AS CAJERO',
                 'vtas_pos_puntos_de_ventas.descripcion AS PDV',
                 'vtas_pos_apertura_encabezados.efectivo_base AS EFECTIVO_BASE',
+                'vtas_pos_apertura_encabezados.responsable AS RESPONSABLE',
                 'vtas_pos_apertura_encabezados.detalle AS DETALLE',
                 'vtas_pos_apertura_encabezados.estado AS ESTADO'
             );
@@ -80,6 +83,7 @@ class AperturaEncabezado extends Model
                 ->orWhere("users.name", "LIKE", "%$search%")
                 ->orWhere("vtas_pos_puntos_de_ventas.descripcion", "LIKE", "%$search%")
                 ->orWhere("vtas_pos_apertura_encabezados.efectivo_base", "LIKE", "%$search%")
+                ->orWhere("vtas_pos_apertura_encabezados.responsable", "LIKE", "%$search%")
                 ->orWhere("vtas_pos_apertura_encabezados.detalle", "LIKE", "%$search%")
                 ->orWhere("vtas_pos_apertura_encabezados.estado", "LIKE", "%$search%");
         });

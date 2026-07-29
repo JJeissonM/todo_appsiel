@@ -4,6 +4,7 @@ namespace App\Hotel;
 
 use App\CxC\CxcMovimiento;
 use App\Hotel\Services\HotelService;
+use App\Hotel\Support\HotelCreatorLabel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -88,6 +89,36 @@ class HotelStay extends Model
     public function modificador_por()
     {
         return $this->belongsTo('App\User', 'update_by');
+    }
+
+    public function creatorLabel()
+    {
+        return HotelCreatorLabel::userLabel($this->creador_por, !empty($this->created_at) ? $this->created_at : $this->check_in_at, $this->pdvIdForResponsibleLabel());
+    }
+
+    public function modifierLabel()
+    {
+        return HotelCreatorLabel::userLabel($this->modificador_por, !empty($this->updated_at) ? $this->updated_at : $this->check_in_at, $this->pdvIdForResponsibleLabel());
+    }
+
+    protected function pdvIdForResponsibleLabel()
+    {
+        if (empty($this->id)) {
+            return null;
+        }
+
+        $query = HotelOrderHeader::where('stay_id', $this->id)
+            ->whereNotNull('pdv_id');
+
+        if (!empty($this->empresa_id)) {
+            $query->where('empresa_id', $this->empresa_id);
+        }
+
+        $order = $query->orderBy('created_at', 'ASC')
+            ->orderBy('id', 'ASC')
+            ->first();
+
+        return is_null($order) ? null : $order->pdv_id;
     }
 
     public function validar_datos_creacion($request, $controller)

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Hotel\Support\HotelCreatorLabel;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\VentasPos\FacturaPos;
@@ -106,6 +107,16 @@ class HotelOrderHeader extends Model
         return $this->belongsTo('App\User', 'created_by');
     }
 
+    public function creatorLabel()
+    {
+        $user = $this->creador_por;
+        if (is_null($user)) {
+            $user = $this->creador_por()->first();
+        }
+
+        return HotelCreatorLabel::userLabel($user, !empty($this->order_date) ? $this->order_date : $this->created_at, $this->pdv_id);
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return self::queryForIndex($search)
@@ -179,7 +190,7 @@ class HotelOrderHeader extends Model
 
             if (!is_null($doc) && !is_null($doc->tipo_documento_app)) {
 
-                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo . ' (Creado por ' . $this->factura_creada_por($doc)->name . ')';
+                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo . ' (Creado por ' . $this->invoiceCreatorLabel($doc) . ')';
             }
 
             return $this->pos_doc_id;
@@ -192,7 +203,7 @@ class HotelOrderHeader extends Model
             }
 
             if (!is_null($doc) && !is_null($doc->tipo_documento_app)) {
-                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo . ' (Creado por ' . $this->factura_creada_por($doc)->name . ')';
+                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo . ' (Creado por ' . $this->invoiceCreatorLabel($doc) . ')';
             }
 
             return $this->sales_doc_id;
@@ -203,12 +214,61 @@ class HotelOrderHeader extends Model
 
     public function factura_creada_por( $doc )
     {
+        if (!is_object($doc)) {
+            $creado_por = new \stdClass();
+            $creado_por->name = 'Desconocido';
+            return $creado_por;
+        }
+
+        if (!method_exists($doc, 'creado_por')) {
+            if (isset($doc->creado_por) && trim((string)$doc->creado_por) != '') {
+                return $doc->creado_por;
+            }
+
+            $creado_por = new \stdClass();
+            $creado_por->name = 'Desconocido';
+            return $creado_por;
+        }
+
         $creado_por = $doc->creado_por();
         if (is_null($creado_por)) {
             $creado_por = new \stdClass();
             $creado_por->name = 'Desconocido';
         }
         return $creado_por;
+    }
+
+    protected function invoiceCreatorLabel($doc)
+    {
+        return HotelCreatorLabel::userLabel(
+            $this->factura_creada_por($doc),
+            $this->invoiceResponsibleDate($doc),
+            $this->invoiceResponsiblePdvId($doc)
+        );
+    }
+
+    protected function invoiceResponsibleDate($doc)
+    {
+        if (is_object($doc)) {
+            if (isset($doc->created_at) && !empty($doc->created_at)) {
+                return $doc->created_at;
+            }
+
+            if (isset($doc->fecha) && !empty($doc->fecha)) {
+                return $doc->fecha;
+            }
+        }
+
+        return !empty($this->order_date) ? $this->order_date : $this->created_at;
+    }
+
+    protected function invoiceResponsiblePdvId($doc)
+    {
+        if (is_object($doc) && isset($doc->pdv_id) && !empty($doc->pdv_id)) {
+            return $doc->pdv_id;
+        }
+
+        return $this->pdv_id;
     }
 
     public function invoiceUrl()

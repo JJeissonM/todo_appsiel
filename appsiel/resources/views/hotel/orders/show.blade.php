@@ -40,7 +40,7 @@
                 <tr><th>Fecha</th><td>{{ $order->order_date }}</td>
                     <th>Creado por:</th>
                     <td>
-                        {{ $order->creador_por() ? $order->creador_por()->first()->name : '' }}
+                        {{ $order->creatorLabel() }}
                     </td></tr>
                 <tr><th>Bodega minibar</th><td colspan="3">{{ $roomBodegaLabel }}</td></tr>
             </table>

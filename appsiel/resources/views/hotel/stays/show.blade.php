@@ -31,7 +31,7 @@
                         <tr><th>Check-in</th><td>{{ $stay->checkInAtDisplay() }}</td><th>Check-out</th><td>{{ $stay->checkOutAtDisplay() }}</td></tr>
                         <tr><th>Salida esperada</th><td>{{ $stay->expectedCheckOutAtDisplay() }}</td><th>Dias estadia</th><td>{{ $stay->stayDays() }}</td></tr>
                         <tr><th>Notas</th><td>{{ $stay->notes }}</td><th>Estado</th><td>{{ $stay->status }}</td></tr>
-                        <tr><th>Creador por</th><td>{{ $stay->creador_por ? $stay->creador_por->name : '--' }}</td><th>Modificado por</th><td>{{ $stay->modificador_por ? $stay->modificador_por->name : '--' }}</td></tr>
+                        <tr><th>Creador por</th><td>{{ $stay->creatorLabel() }}</td><th>Modificado por</th><td>{{ $stay->modifierLabel() }}</td></tr>
                     </table>
 
 
@@ -166,7 +166,7 @@
                             ?>
                             <tr>
                                 <td>{{ $order->document_number ? $order->document_number : 'PED-' . $order->id }}</td>
-                                <td>{{ $order->creador_por ? $order->creador_por->name : '--' }}</td>
+                                <td>{{ $order->creatorLabel() }}</td>
                                 <td>{{ $order->order_date }}</td>
                                 <td>{{ $order->status }}</td>
                                 <td class="text-right">{{ number_format($orderTotal, 2, ',', '.') }}</td>
