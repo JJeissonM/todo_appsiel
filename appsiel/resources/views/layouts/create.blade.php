@@ -59,6 +59,7 @@
 
 	@if(filter_var(env('HOTEL_MODULE_ENABLED', env('HOTEL_MODULE_SEEDERS_ENABLED', false)), FILTER_VALIDATE_BOOLEAN))
 		@include('hotel.partials.cliente_autocomplete_scripts', compact('form_create'))
+		@include('hotel.partials.guest_person_type_scripts')
 	@endif
 
 	@yield('script_adicional')

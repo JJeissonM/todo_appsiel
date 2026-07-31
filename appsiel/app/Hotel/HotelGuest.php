@@ -2,6 +2,7 @@
 
 namespace App\Hotel;
 
+use App\Core\Ciudad;
 use App\Core\ModeloEavValor;
 use App\Core\Tercero;
 use App\Sistema\Campo;
@@ -50,6 +51,8 @@ class HotelGuest extends Cliente
 
     private function validateGuestData($request, $controller, $id = null)
     {
+        self::mergeProcedenciaAsCodigoCiudad($request);
+
         $controller->validate($request, array(
             'id_tipo_documento_id' => 'required',
             'numero_identificacion' => 'required',
@@ -59,7 +62,7 @@ class HotelGuest extends Cliente
             'id_tipo_documento_id.required' => 'Debe seleccionar el tipo de documento.',
             'numero_identificacion.required' => 'Debe ingresar el numero de identificacion.',
             'descripcion.required' => 'Debe ingresar el nombre completo o establecimiento.',
-            'codigo_ciudad.required' => 'Debe seleccionar la ciudad.',
+            'codigo_ciudad.required' => 'Debe seleccionar la ciudad o una procedencia valida.',
         ));
 
         $validator = \Validator::make($request->all(), array());
@@ -90,7 +93,7 @@ class HotelGuest extends Cliente
 
     private static function prepareGuestForGenericCrud($guest)
     {
-        $datos = (new CustomerServices())->preparar_datos(Input::all());
+        $datos = (new CustomerServices())->preparar_datos(self::getInputWithProcedenciaCity(Input::all()));
 
         $tercero = new Tercero;
         $tercero->fill($datos);
@@ -117,6 +120,8 @@ class HotelGuest extends Cliente
 
     public function update_adicional($datos, $id)
     {
+        $datos = self::getInputWithProcedenciaCity($datos);
+
         $guest = self::find($id);
         if (!is_null($guest)) {
             $this->updateTercero($guest, $datos);
@@ -201,6 +206,57 @@ class HotelGuest extends Cliente
         }
 
         return $lista_campos;
+    }
+
+    private static function mergeProcedenciaAsCodigoCiudad($request)
+    {
+        $datos = self::getInputWithProcedenciaCity($request->all());
+
+        if (isset($datos['codigo_ciudad']) && !empty($datos['codigo_ciudad'])) {
+            $request->merge(array('codigo_ciudad' => $datos['codigo_ciudad']));
+        }
+    }
+
+    private static function getInputWithProcedenciaCity($datos)
+    {
+        if (!is_array($datos)) {
+            return $datos;
+        }
+
+        if (isset($datos['codigo_ciudad']) && trim($datos['codigo_ciudad']) != '') {
+            return $datos;
+        }
+
+        $procedencia = self::getProcedenciaValueFromInput($datos);
+        if ($procedencia != '' && self::isValidCityId($procedencia)) {
+            $datos['codigo_ciudad'] = $procedencia;
+        }
+
+        return $datos;
+    }
+
+    private static function getProcedenciaValueFromInput($datos)
+    {
+        $fieldIds = self::hotelFieldIds();
+        $fieldId = isset($fieldIds[self::FIELD_PROCEDENCIA]) ? (int)$fieldIds[self::FIELD_PROCEDENCIA] : 0;
+
+        if ($fieldId > 0) {
+            $key = 'core_campo_id-' . $fieldId;
+            if (isset($datos[$key]) && !is_array($datos[$key]) && trim($datos[$key]) != '') {
+                return trim($datos[$key]);
+            }
+        }
+
+        if (isset($datos[self::FIELD_PROCEDENCIA]) && !is_array($datos[self::FIELD_PROCEDENCIA]) && trim($datos[self::FIELD_PROCEDENCIA]) != '') {
+            return trim($datos[self::FIELD_PROCEDENCIA]);
+        }
+
+        return '';
+    }
+
+    private static function isValidCityId($cityId)
+    {
+        return Ciudad::where('id', $cityId)->count() > 0;
     }
 
     private function prepareShowFields($lista_campos, $registro)

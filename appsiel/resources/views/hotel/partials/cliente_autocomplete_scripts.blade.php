@@ -171,4 +171,6 @@
             });
         })(jQuery);
     </script>
+
+    @include('hotel.partials.guest_person_type_scripts')
 @endif

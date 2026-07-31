@@ -43,14 +43,21 @@
 			$reports_list_print = [
 						75 // POS: Resúmen Diario de Ventas
 					];
+			$tam_hoja_default = null;
+			$orientacion_default = null;
+			if ( $reporte->url_form_action == 'hotel/reports/migration' )
+			{
+				$tam_hoja_default = 'folio';
+				$orientacion_default = 'Landscape';
+			}
 		?>
 		@if( !in_array(Input::get('reporte_id'), $reports_list) )
 			{{ Form::label( 'tam_hoja', 'Tamaño hoja' ) }}
-			{{ Form::select('tam_hoja',['letter'=>'Carta','folio'=>'Oficio','pos_80mm'=>'POS 80mm'],null,['id'=>'tam_hoja']) }}
+			{{ Form::select('tam_hoja',['letter'=>'Carta','folio'=>'Oficio','pos_80mm'=>'POS 80mm'],$tam_hoja_default,['id'=>'tam_hoja']) }}
 
 			<br>
 			{{ Form::label( 'orientacion', 'Orientación' ) }}
-			{{ Form::select('orientacion',['Portrait'=>'Vertical','Landscape'=>'Horizontal'],null,['id'=>'orientacion']) }}
+			{{ Form::select('orientacion',['Portrait'=>'Vertical','Landscape'=>'Horizontal'],$orientacion_default,['id'=>'orientacion']) }}
 		@endif
 
 		{{ Form::hidden( 'debug_trace', 0 ) }}
