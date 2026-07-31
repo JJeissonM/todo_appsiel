@@ -21,12 +21,9 @@ class MovementService
                         ->get();
     }
 
-    public function movements_by_purpose($init_date,$end_date,$transaction_type_id,$purpose_id)
+    public function movements_by_purpose($init_date, $end_date, $transaction_type_id, $purpose_id, $hora_inicio = null, $hora_finalizacion = null)
     {
-        $array_wheres = [
-            ['inv_movimientos.fecha','>=',$init_date],
-            ['inv_movimientos.fecha','<=',$end_date]
-        ];
+        $array_wheres = [];
 
         if ( $purpose_id != '' )
         {
@@ -37,7 +34,9 @@ class MovementService
             ['core_tipo_transaccion_id','=',$transaction_type_id]
         ])->get()->pluck('id')->toArray();
 
-        return InvMovimiento::where($array_wheres)
+        return InvMovimiento::whereRaw('1 = 1')
+                        ->where($array_wheres)
+                        ->entreFechasHoras($init_date, $end_date, $hora_inicio, $hora_finalizacion)
                         ->whereIn('inv_movimientos.inv_motivo_id',$arr_purposes_id)
                         ->select('inv_movimientos.*')
                         ->orderBy('fecha')
@@ -46,7 +45,9 @@ class MovementService
 
     public function build_array_of_stocks_old( $filters )
     {
-        $movin_filtrado = (new FiltroMovimientos())->aplicar_filtros( null, $filters->fecha_corte, $filters->mov_bodega_id, $filters->grupo_inventario_id, $filters->item_id, (int)$filters->tipo_prenda_id );
+        $hora_inicio = isset($filters->hora_inicio) ? $filters->hora_inicio : null;
+        $hora_finalizacion = isset($filters->hora_finalizacion) ? $filters->hora_finalizacion : null;
+        $movin_filtrado = (new FiltroMovimientos())->aplicar_filtros(null, $filters->fecha_corte, $filters->mov_bodega_id, $filters->grupo_inventario_id, $filters->item_id, (int)$filters->tipo_prenda_id, $hora_inicio, $hora_finalizacion);
         
         $lista_items = array_keys($movin_filtrado->groupBy('inv_producto_id')->toArray() );
         $lista_bodegas = array_keys($movin_filtrado->groupBy('inv_bodega_id')->toArray() );
@@ -176,7 +177,11 @@ class MovementService
 
         $items_ids = $lista_items->pluck('id')->toArray();
 
-        $movimientos = InvMovimiento::where('fecha', '<=', $filters->fecha_corte)
+        $hora_inicio = isset($filters->hora_inicio) ? $filters->hora_inicio : null;
+        $hora_finalizacion = isset($filters->hora_finalizacion) ? $filters->hora_finalizacion : null;
+
+        $movimientos = InvMovimiento::whereRaw('1 = 1')
+                                    ->hastaFechaHora($filters->fecha_corte, $hora_inicio, $hora_finalizacion)
                                     ->whereIn('inv_producto_id', $items_ids);
 
         if ( $filters->mov_bodega_id != '' )

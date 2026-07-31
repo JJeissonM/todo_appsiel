@@ -20,6 +20,7 @@ use App\Sistema\Modelo;
 use App\Inventarios\InvProducto;
 use App\Inventarios\InvGrupo;
 use App\Inventarios\InvMovimiento;
+use App\Inventarios\Traits\ValidaHorasMovimientoInventario;
 use App\Inventarios\InvMotivo;
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
@@ -41,6 +42,7 @@ use Illuminate\Support\Facades\View;
 
 class InvFisicoController extends TransaccionController
 {
+    use ValidaHorasMovimientoInventario;
     const PERMISO_DESCONTAR_VENTAS = 'inventarios.inventario_fisico.descontar_ventas';
     const MODELO_DOCUMENTOS_INVENTARIO_ID = 25;
 
@@ -130,6 +132,8 @@ class InvFisicoController extends TransaccionController
      */
     public function store(Request $request)
     {
+        $this->validarYNormalizarHorasMovimiento($request);
+
         $lineas_registros = $this->preparar_array_lineas_registros( $request->movimiento );
         
         $doc_encabezado_id = InvFisicoController::crear_documento( $request, $lineas_registros, $request->url_id_modelo );
@@ -226,7 +230,7 @@ class InvFisicoController extends TransaccionController
         
         $doc_registros = InvDocRegistro::get_registros_impresion( $doc_encabezado->id );
 
-        $this->preparar_lineas_para_vista( $doc_registros, $doc_encabezado->fecha );
+        $this->preparar_lineas_para_vista($doc_registros, $doc_encabezado->fecha, $doc_encabezado->hora_inicio, $doc_encabezado->hora_finalizacion);
 
         $empresa = $this->empresa;
         $id_transaccion = $this->transaccion->id;
@@ -256,7 +260,7 @@ class InvFisicoController extends TransaccionController
         
         $doc_registros = InvDocRegistro::get_registros_impresion( $doc_encabezado->id );
 
-        $this->preparar_lineas_para_vista( $doc_registros, $doc_encabezado->fecha );
+        $this->preparar_lineas_para_vista($doc_registros, $doc_encabezado->fecha, $doc_encabezado->hora_inicio, $doc_encabezado->hora_finalizacion);
 
         $empresa = $this->empresa;
 
@@ -294,6 +298,8 @@ class InvFisicoController extends TransaccionController
         $fecha = \Carbon\Carbon::parse( $doc_encabezado->fecha )->format('Y-m-d');
         $inv_bodega_id = (int)$doc_encabezado->inv_bodega_id;
         $core_empresa_id = (int)$doc_encabezado->core_empresa_id;
+        $hora_inicio = $doc_encabezado->hora_inicio;
+        $hora_finalizacion = $doc_encabezado->hora_finalizacion;
 
         $lineas = InvDocRegistro::where('inv_doc_encabezado_id', $id)
                     ->orderBy('id')
@@ -355,10 +361,9 @@ class InvFisicoController extends TransaccionController
         $movimientos_entradas = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
                             ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                             ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
-                            ->where('inv_doc_encabezados.fecha', '>=', $fecha)
-                            ->where('inv_doc_encabezados.fecha', '<=', $fecha)
                             ->where('inv_movimientos.inv_bodega_id', $inv_bodega_id)
                             ->where('inv_movimientos.core_empresa_id', $core_empresa_id)
+                            ->entreFechasHoras($fecha, $fecha, $hora_inicio, $hora_finalizacion)
                             ->where('inv_motivos.movimiento', 'entrada')
                             ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
                             ->select(
@@ -374,10 +379,9 @@ class InvFisicoController extends TransaccionController
         $movimientos_salidas = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
                             ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                             ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
-                            ->where('inv_doc_encabezados.fecha', '>=', $fecha)
-                            ->where('inv_doc_encabezados.fecha', '<=', $fecha)
                             ->where('inv_movimientos.inv_bodega_id', $inv_bodega_id)
                             ->where('inv_movimientos.core_empresa_id', $core_empresa_id)
+                            ->entreFechasHoras($fecha, $fecha, $hora_inicio, $hora_finalizacion)
                             ->where('inv_motivos.movimiento', 'salida')
                             ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
                             ->select(
@@ -551,7 +555,7 @@ class InvFisicoController extends TransaccionController
 
         foreach ($doc_registros as $fila)
         {
-            $fila->cantidad_sistema = InvMovimiento::get_existencia_producto($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha )->Cantidad;
+            $fila->cantidad_sistema = InvMovimiento::get_existencia_producto($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha, $doc_encabezado->hora_inicio, $doc_encabezado->hora_finalizacion)->Cantidad;
             $fila->costo_prom_sistema = InvCostoPromProducto::get_costo_promedio( $fila->inv_bodega_id, $fila->producto_id  );
         }
 
@@ -772,6 +776,8 @@ class InvFisicoController extends TransaccionController
      */
     public function update(Request $request, $id)
     {
+        $this->validarYNormalizarHorasMovimiento($request);
+
         if ( $this->tiene_ajuste_asociado($id) )
         {
             return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
@@ -785,6 +791,12 @@ class InvFisicoController extends TransaccionController
         $doc_encabezado->fecha = $request->fecha;
         $doc_encabezado->descripcion = $request->descripcion;
         $doc_encabezado->core_tercero_id = $request->core_tercero_id;
+        if ($request->has('hora_inicio')) {
+            $doc_encabezado->hora_inicio = $request->hora_inicio;
+        }
+        if ($request->has('hora_finalizacion')) {
+            $doc_encabezado->hora_finalizacion = $request->hora_finalizacion;
+        }
         $doc_encabezado->modificado_por = Auth::user()->email;
         $doc_encabezado->save();
 
@@ -896,7 +908,7 @@ class InvFisicoController extends TransaccionController
     /**
      * Preparar datos de lineas para vistas show y imprimir sin N+1 queries.
      */
-    private function preparar_lineas_para_vista( $doc_registros, $fecha_corte )
+    private function preparar_lineas_para_vista($doc_registros, $fecha_corte, $hora_inicio = null, $hora_finalizacion = null)
     {
         if ( $doc_registros->count() == 0 )
         {
@@ -968,7 +980,7 @@ class InvFisicoController extends TransaccionController
         {
             $fecha_corte = \Carbon\Carbon::parse( $fecha_corte )->format('Y-m-d');
             $existencias = InvMovimiento::where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                                ->where('inv_movimientos.fecha', '<=', $fecha_corte)
+                                ->hastaFechaHora($fecha_corte, $hora_inicio, $hora_finalizacion)
                                 ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
                                 ->whereIn('inv_movimientos.inv_bodega_id', $bodega_ids)
                                 ->select(
@@ -1298,6 +1310,7 @@ class InvFisicoController extends TransaccionController
         $grupo_descripcion = $grupo_inventario != null ? $grupo_inventario->descripcion : '';
         $bodega_descripcion = DB::table('inv_bodegas')->where('id', $bodega_if_id)->value('descripcion');
         $parametros_consulta = ' Fecha: ' . $doc_inv_fisico->fecha .
+            '. Rango horario: ' . ($doc_inv_fisico->hora_inicio ?: 'sin hora inicial') . ' - ' . ($doc_inv_fisico->hora_finalizacion ?: 'sin hora final') .
             '. Bodega IF: ' . $bodega_if_id . ' - ' . $bodega_descripcion .
             '. Cocina: ' . $cocina->label .
             '. Grupo inventario: ' . (int)$cocina->grupo_inventarios_id . ' - ' . $grupo_descripcion . '.';
@@ -1315,11 +1328,22 @@ class InvFisicoController extends TransaccionController
 
         $ingredientes_ids = $lineas_if->pluck('inv_producto_id')->unique()->values()->all();
 
-        $ventas_platillos = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
+        $ventas_platillos_query = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
                             ->where('vtas_movimientos.core_empresa_id', Auth::user()->empresa_id)
                             ->where('vtas_movimientos.fecha', $doc_inv_fisico->fecha)
                             ->where('inv_productos.inv_grupo_id', (int)$cocina->grupo_inventarios_id)
-                            ->where('vtas_movimientos.estado', '<>', 'Anulado')
+                            ->where('vtas_movimientos.estado', '<>', 'Anulado');
+
+        // vtas_movimientos no posee columnas de hora; created_at es la marca temporal real.
+        // Si el IF historico no tiene horas, se conserva la consulta completa por fecha.
+        if ($doc_inv_fisico->hora_inicio && $doc_inv_fisico->hora_finalizacion) {
+            $ventas_platillos_query->whereBetween('vtas_movimientos.created_at', [
+                $doc_inv_fisico->fecha . ' ' . $doc_inv_fisico->hora_inicio,
+                $doc_inv_fisico->fecha . ' ' . $doc_inv_fisico->hora_finalizacion
+            ]);
+        }
+
+        $ventas_platillos = $ventas_platillos_query
                             ->select(
                                 'vtas_movimientos.inv_producto_id',
                                 DB::raw('SUM(vtas_movimientos.cantidad) AS cantidad')
@@ -1426,8 +1450,8 @@ class InvFisicoController extends TransaccionController
             'estado' => 'Activo',
             'creado_por' => Auth::user()->email,
             'modificado_por' => Auth::user()->email,
-            'hora_inicio' => '00:00:00',
-            'hora_finalizacion' => '00:00:00',
+            'hora_inicio' => $doc_inv_fisico->hora_inicio,
+            'hora_finalizacion' => $doc_inv_fisico->hora_finalizacion,
             'vtas_doc_encabezado_origen_id' => 0,
             'bodega_destino_id' => 0
         ]);

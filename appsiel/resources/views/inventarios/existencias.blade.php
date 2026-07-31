@@ -5,7 +5,13 @@
 	{{ Form::open(['url'=>'ajax_existencias','id'=>'form_consulta']) }}
 		{{ Form::label('fecha_corte','Fecha corte') }}
 		{{ Form::date('fecha_corte',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_corte']) }}
-<br>
+	<br>
+		{{ Form::label('hora_inicio','Hora inicio (opcional)') }}
+		{{ Form::input('time', 'hora_inicio', null, ['class'=>'form-control','id'=>'hora_inicio','step'=>'1']) }}
+	<br>
+		{{ Form::label('hora_finalizacion','Hora finalizacion (opcional)') }}
+		{{ Form::input('time', 'hora_finalizacion', null, ['class'=>'form-control','id'=>'hora_finalizacion','step'=>'1']) }}
+	<br>
 		{{ Form::label('mov_bodega_id','Bodega') }}
 		{{ Form::select('mov_bodega_id',$bodegas,null,['class'=>'form-control','id'=>'mov_bodega_id']) }}
 <br>

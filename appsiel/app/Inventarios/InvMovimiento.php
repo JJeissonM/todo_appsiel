@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class InvMovimiento extends Model
 {
-    protected $fillable = [ 'core_empresa_id', 'inv_doc_encabezado_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'costo_unitario', 'cantidad', 'costo_total', 'creado_por', 'modificado_por', 'codigo_referencia_tercero', 'core_tercero_id'];
+    protected $fillable = [ 'core_empresa_id', 'inv_doc_encabezado_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'hora_inicio', 'hora_finalizacion', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'costo_unitario', 'cantidad', 'costo_total', 'creado_por', 'modificado_por', 'codigo_referencia_tercero', 'core_tercero_id'];
 
     public $encabezado_tabla = [ '<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Tercero', 'Producto', 'Bodega', 'Motivo', 'Movimiento', 'Costo unit.', 'Cantidad', 'Costo total', '&nbsp;'];
 
@@ -49,6 +49,98 @@ class InvMovimiento extends Model
     public function get_label_documento()
     {
         return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    }
+
+    /**
+     * Aplica un corte acumulado. Las fechas anteriores siempre se incluyen y
+     * las horas, cuando se suministran, solo limitan los movimientos del dia
+     * de corte. Los registros historicos sin horas permanecen incluidos.
+     */
+    public function scopeHastaFechaHora($query, $fechaCorte, $horaInicio = null, $horaFinalizacion = null)
+    {
+        $fechaCorte = \Carbon\Carbon::parse($fechaCorte)->format('Y-m-d');
+        $horaInicio = self::normalizarHoraFiltro($horaInicio);
+        $horaFinalizacion = self::normalizarHoraFiltro($horaFinalizacion);
+
+        if (is_null($horaInicio) && is_null($horaFinalizacion)) {
+            return $query->where('inv_movimientos.fecha', '<=', $fechaCorte);
+        }
+
+        return $query->where(function ($query) use ($fechaCorte, $horaInicio, $horaFinalizacion) {
+            $query->where('inv_movimientos.fecha', '<', $fechaCorte)
+                ->orWhere(function ($query) use ($fechaCorte, $horaInicio, $horaFinalizacion) {
+                    $query->where('inv_movimientos.fecha', '=', $fechaCorte);
+                    self::aplicarHorasAlQuery($query, $horaInicio, $horaFinalizacion);
+                });
+        });
+    }
+
+    /**
+     * Filtra un periodo. En rangos de varios dias las horas se aplican a los
+     * dias inicial/final; los dias intermedios se incluyen completos.
+     */
+    public function scopeEntreFechasHoras($query, $fechaInicio, $fechaFinal, $horaInicio = null, $horaFinalizacion = null)
+    {
+        $fechaInicio = \Carbon\Carbon::parse($fechaInicio)->format('Y-m-d');
+        $fechaFinal = \Carbon\Carbon::parse($fechaFinal)->format('Y-m-d');
+        $horaInicio = self::normalizarHoraFiltro($horaInicio);
+        $horaFinalizacion = self::normalizarHoraFiltro($horaFinalizacion);
+
+        if (is_null($horaInicio) && is_null($horaFinalizacion)) {
+            return $query->whereBetween('inv_movimientos.fecha', [$fechaInicio, $fechaFinal]);
+        }
+
+        return $query->where(function ($query) use ($fechaInicio, $fechaFinal, $horaInicio, $horaFinalizacion) {
+            if ($fechaInicio === $fechaFinal) {
+                $query->where('inv_movimientos.fecha', '=', $fechaInicio);
+                self::aplicarHorasAlQuery($query, $horaInicio, $horaFinalizacion);
+                return;
+            }
+
+            $query->where(function ($query) use ($fechaInicio, $horaInicio) {
+                $query->where('inv_movimientos.fecha', '=', $fechaInicio);
+                self::aplicarHorasAlQuery($query, $horaInicio, null);
+            })->orWhere(function ($query) use ($fechaInicio, $fechaFinal) {
+                $query->where('inv_movimientos.fecha', '>', $fechaInicio)
+                    ->where('inv_movimientos.fecha', '<', $fechaFinal);
+            })->orWhere(function ($query) use ($fechaFinal, $horaFinalizacion) {
+                $query->where('inv_movimientos.fecha', '=', $fechaFinal);
+                self::aplicarHorasAlQuery($query, null, $horaFinalizacion);
+            });
+        });
+    }
+
+    private static function aplicarHorasAlQuery($query, $horaInicio, $horaFinalizacion)
+    {
+        if (is_null($horaInicio) && is_null($horaFinalizacion)) {
+            return;
+        }
+
+        $query->where(function ($query) use ($horaInicio, $horaFinalizacion) {
+            // Prevencion de compatibilidad: no se excluyen movimientos historicos sin horas.
+            $query->where(function ($query) {
+                $query->whereNull('inv_movimientos.hora_inicio')
+                    ->whereNull('inv_movimientos.hora_finalizacion');
+            })->orWhere(function ($query) use ($horaInicio, $horaFinalizacion) {
+                if (!is_null($horaInicio)) {
+                    $query->whereRaw('COALESCE(inv_movimientos.hora_inicio, inv_movimientos.hora_finalizacion) >= ?', [$horaInicio]);
+                }
+
+                if (!is_null($horaFinalizacion)) {
+                    $query->whereRaw('COALESCE(inv_movimientos.hora_finalizacion, inv_movimientos.hora_inicio) <= ?', [$horaFinalizacion]);
+                }
+            });
+        });
+    }
+
+    public static function normalizarHoraFiltro($hora)
+    {
+        if (is_null($hora) || trim((string)$hora) === '') {
+            return null;
+        }
+
+        $hora = trim((string)$hora);
+        return strlen($hora) === 5 ? $hora . ':00' : $hora;
     }
 
     public function enlace_show_documento()
@@ -195,7 +287,7 @@ class InvMovimiento extends Model
         return $registros;
     }
 
-    public static function get_movimiento_corte( $fecha_corte, $operador1, $mov_bodega_id, $operador2, $grupo_inventario_id)
+    public static function get_movimiento_corte($fecha_corte, $operador1, $mov_bodega_id, $operador2, $grupo_inventario_id, $hora_inicio = null, $hora_finalizacion = null)
     {        
         if ( $mov_bodega_id != '' ) {
             $orden = 'inv_movimientos.inv_producto_id';
@@ -207,10 +299,10 @@ class InvMovimiento extends Model
                                 ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                                 ->leftJoin('inv_grupos','inv_grupos.id','=','inv_productos.inv_grupo_id')
                                 ->leftJoin('inv_bodegas','inv_bodegas.id','=','inv_doc_encabezados.inv_bodega_id')
-                                ->where('inv_doc_encabezados.fecha','<=',$fecha_corte)
                                 ->where('inv_movimientos.inv_bodega_id',$operador1,$mov_bodega_id)
                                 ->where('inv_grupos.id',$operador2,$grupo_inventario_id)
                                 ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                                ->hastaFechaHora($fecha_corte, $hora_inicio, $hora_finalizacion)
                                 ->where('inv_productos.estado', 'Activo')
                                 ->select(
                                             'inv_movimientos.inv_producto_id',
@@ -226,14 +318,20 @@ class InvMovimiento extends Model
                                 ->get();
     }
 
-    public static function get_existencia_corte( $array_wheres )
+    public static function get_existencia_corte($array_wheres, $fecha_corte = null, $hora_inicio = null, $hora_finalizacion = null)
     {
-        return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+        $query = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
                                 ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                                 ->leftJoin('inv_grupos','inv_grupos.id','=','inv_productos.inv_grupo_id')
                                 ->leftJoin('inv_bodegas','inv_bodegas.id','=','inv_doc_encabezados.inv_bodega_id')
                                 ->where( $array_wheres )
-                                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id);
+
+        if (!is_null($fecha_corte)) {
+            $query->hastaFechaHora($fecha_corte, $hora_inicio, $hora_finalizacion);
+        }
+
+        return $query
                                 ->select(
                                             'inv_productos.estado',
                                             'inv_movimientos.*',
@@ -293,12 +391,9 @@ class InvMovimiento extends Model
                             ->get();
     }
 
-    public static function get_suma_movimientos( $grupo_inventario_id, $inv_bodega_id, $fecha_inicial, $fecha_final, $tipo_movimiento )
+    public static function get_suma_movimientos($grupo_inventario_id, $inv_bodega_id, $fecha_inicial, $fecha_final, $tipo_movimiento, $hora_inicio = null, $hora_finalizacion = null)
     {
-        $array_wheres = [ 
-                            [ 'inv_doc_encabezados.fecha' ,'>=', $fecha_inicial ],
-                            [ 'inv_doc_encabezados.fecha' ,'<=', $fecha_final ]
-                        ];
+        $array_wheres = [];
 
         if ( $grupo_inventario_id != '')
         {
@@ -320,6 +415,7 @@ class InvMovimiento extends Model
                             ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
                             ->where( $array_wheres )
                             ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->entreFechasHoras($fecha_inicial, $fecha_final, $hora_inicio, $hora_finalizacion)
                             ->select(
                                         'inv_productos.id AS item_id',
                                         DB::raw('sum(inv_movimientos.cantidad) as cantidad_total_movimiento'),
@@ -329,12 +425,9 @@ class InvMovimiento extends Model
                             ->get();
     }
 
-    public static function get_suma_movimientos_por_motivo( $grupo_inventario_id, $inv_bodega_id, $fecha_inicial, $fecha_final, $tipo_movimiento )
+    public static function get_suma_movimientos_por_motivo($grupo_inventario_id, $inv_bodega_id, $fecha_inicial, $fecha_final, $tipo_movimiento, $hora_inicio = null, $hora_finalizacion = null)
     {
-        $array_wheres = [ 
-                            [ 'inv_doc_encabezados.fecha' ,'>=', $fecha_inicial ],
-                            [ 'inv_doc_encabezados.fecha' ,'<=', $fecha_final ]
-                        ];
+        $array_wheres = [];
 
         if ( $grupo_inventario_id != '')
         {
@@ -356,6 +449,7 @@ class InvMovimiento extends Model
                             ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
                             ->where( $array_wheres )
                             ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->entreFechasHoras($fecha_inicial, $fecha_final, $hora_inicio, $hora_finalizacion)
                             ->select(
                                         'inv_productos.id AS item_id',
                                         'inv_motivos.id AS motivo_id',
@@ -392,7 +486,7 @@ class InvMovimiento extends Model
                                 ->get();
     }
 
-    public static function get_movimiento2($id_producto, $id_bodega, $fecha_inicial, $fecha_final, $tercero_id )
+    public static function get_movimiento2($id_producto, $id_bodega, $fecha_inicial, $fecha_final, $tercero_id, $hora_inicio = null, $hora_finalizacion = null)
     {
         $array_wheres = [
             [ 'inv_movimientos.core_empresa_id', '=', Auth::user()->empresa_id],
@@ -411,7 +505,7 @@ class InvMovimiento extends Model
                                 ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'inv_movimientos.core_tipo_transaccion_id')
                                 ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
                                 ->where( $array_wheres )
-                                ->whereBetween('inv_movimientos.fecha', [$fecha_inicial, $fecha_final])
+                                ->entreFechasHoras($fecha_inicial, $fecha_final, $hora_inicio, $hora_finalizacion)
                                 ->select('inv_movimientos.core_tipo_doc_app_id',
                                         'inv_movimientos.fecha',
                                         'inv_motivos.movimiento',
@@ -447,12 +541,11 @@ class InvMovimiento extends Model
                             ->get();
     }
 
-    public static function get_existencia_producto( $producto_id, $bodega_id, $fecha_corte )
+    public static function get_existencia_producto($producto_id, $bodega_id, $fecha_corte, $hora_inicio = null, $hora_finalizacion = null)
     {
         $fecha_corte = \Carbon\Carbon::parse( $fecha_corte )->format('Y-m-d');
 
         $array_wheres = [
-            ['inv_movimientos.fecha', '<=', $fecha_corte],
             ['inv_movimientos.core_empresa_id', '=', Auth::user()->empresa_id],
             ['inv_movimientos.inv_producto_id', '=', $producto_id]
         ]; // Todos
@@ -465,6 +558,7 @@ class InvMovimiento extends Model
         }
 
         return InvMovimiento::where( $array_wheres )
+                    ->hastaFechaHora($fecha_corte, $hora_inicio, $hora_finalizacion)
                     ->select( 
                             DB::raw('sum(inv_movimientos.cantidad) as Cantidad'),
                             DB::raw('sum(inv_movimientos.costo_total) as Costo')

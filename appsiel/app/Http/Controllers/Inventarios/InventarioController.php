@@ -32,6 +32,7 @@ use App\Inventarios\InvBodega;
 use App\Inventarios\InvProducto;
 use App\Inventarios\InvGrupo;
 use App\Inventarios\InvMovimiento;
+use App\Inventarios\Traits\ValidaHorasMovimientoInventario;
 use App\Inventarios\InvMotivo;
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
@@ -58,6 +59,7 @@ use App\VentasPos\FacturaPos;
 
 class InventarioController extends TransaccionController
 {
+    use ValidaHorasMovimientoInventario;
 
     /**
      * Display a listing of the resource.
@@ -160,6 +162,8 @@ class InventarioController extends TransaccionController
 
     public function store( Request $request )
     {
+        $this->validarYNormalizarHorasMovimiento($request);
+
         $lineas_registros = self::preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
 
         if ( (int)config('inventarios.generare_ensamble_automatico_en_salidas_mercancias')  ) {
@@ -347,6 +351,11 @@ class InventarioController extends TransaccionController
             $datos['costo_total'],
             $datos['linea_registro_doc_origen_id']
         );
+
+        // El encabezado es la fuente autoritativa; asi tambien se cubren
+        // llamadas internas que no construyen el movimiento desde un formulario.
+        $datos['hora_inicio'] = $doc_encabezado->hora_inicio;
+        $datos['hora_finalizacion'] = $doc_encabezado->hora_finalizacion;
         
         $average_cost_serv = new AverageCost();
 
@@ -935,12 +944,20 @@ class InventarioController extends TransaccionController
 
     public function update(Request $request, $id)
     {
+        $this->validarYNormalizarHorasMovimiento($request);
+
         // Actualizar datos del encabezado
         $doc_encabezado = InvDocEncabezado::find($id);
 
         $doc_encabezado->fecha = $request->fecha;
         $doc_encabezado->descripcion = $request->descripcion;
         $doc_encabezado->documento_soporte = $request->documento_soporte;
+        if ($request->has('hora_inicio')) {
+            $doc_encabezado->hora_inicio = $request->hora_inicio;
+        }
+        if ($request->has('hora_finalizacion')) {
+            $doc_encabezado->hora_finalizacion = $request->hora_finalizacion;
+        }
         //$doc_encabezado->core_tercero_id = $request->core_tercero_id;
         $doc_encabezado->modificado_por = Auth::user()->email;
         $doc_encabezado->save();

@@ -49,7 +49,7 @@ class FiltroMovimientos
 		}
 	}
 
-	public function aplicar_filtros( $fecha_ini, $fecha_fin, $inv_bodega_id, $inv_grupo_id, $item_id, $tipo_prenda_id )
+	public function aplicar_filtros($fecha_ini, $fecha_fin, $inv_bodega_id, $inv_grupo_id, $item_id, $tipo_prenda_id, $hora_inicio = null, $hora_finalizacion = null)
 	{
         $array_wheres = [ 
 			['inv_movimientos.fecha', '<=', $fecha_fin],
@@ -72,7 +72,8 @@ class FiltroMovimientos
         }	
 
 		$movin_filtrado = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
-					->where($array_wheres)
+						->where($array_wheres)
+						->hastaFechaHora($fecha_fin, $hora_inicio, $hora_finalizacion)
 					->select('inv_movimientos.*','inv_productos.estado')
 					->get();
 

@@ -47,8 +47,10 @@ class ReporteController extends Controller
     public function inv_consultar_existencias($id)
     {
         $fecha_corte = Input::get('fecha_corte');
+        $hora_inicio = Input::get('hora_inicio');
+        $hora_finalizacion = Input::get('hora_finalizacion');
 
-        $movimientos = InvMovimiento::get_movimiento_corte( $fecha_corte, '=', $id, 'LIKE', '%%');
+        $movimientos = InvMovimiento::get_movimiento_corte($fecha_corte, '=', $id, 'LIKE', '%%', $hora_inicio, $hora_finalizacion);
       
         $bodega = InvBodega::find($id);
 
@@ -170,6 +172,14 @@ class ReporteController extends Controller
             }
         }
 
+        if ($request->hora_inicio != '') {
+            $filtros['Hora inicio'] = $request->hora_inicio;
+        }
+
+        if ($request->hora_finalizacion != '') {
+            $filtros['Hora finalizacion'] = $request->hora_finalizacion;
+        }
+
         return $filtros;
     }
 
@@ -217,11 +227,13 @@ class ReporteController extends Controller
         $bodega_id = $request->mov_bodega_id;
         $fecha_inicial = $request->fecha_inicial;
         $fecha_final = $request->fecha_final;
+        $hora_inicio = $request->hora_inicio;
+        $hora_finalizacion = $request->hora_finalizacion;
         $tercero_id = (int)$request->mov_tercero_id;
 
         $saldo_inicial = InvMovimiento::get_saldo_inicial($id_producto, $bodega_id, $fecha_inicial, $tercero_id );
 
-        $sql_productos = InvMovimiento::get_movimiento2($id_producto, $bodega_id, $fecha_inicial, $fecha_final, $tercero_id );
+        $sql_productos = InvMovimiento::get_movimiento2($id_producto, $bodega_id, $fecha_inicial, $fecha_final, $tercero_id, $hora_inicio, $hora_finalizacion);
         
         $cantidad_saldo = 0;
         $costo_total_saldo = 0;  
@@ -344,6 +356,8 @@ class ReporteController extends Controller
     public function get_tabla_stock_minimo()
     {
         $fecha_corte = date('Y-m-d');
+        $hora_inicio = Input::get('hora_inicio');
+        $hora_finalizacion = Input::get('hora_finalizacion');
 
         $bodega_id = Input::get('bodega_id');
         $proveedor_id = Input::get('proveedor_id');
@@ -370,15 +384,15 @@ class ReporteController extends Controller
         }
 
         if ($detalla_proveedor) {
-            $productos = $this->get_productos_proveedor_detallado($array_wheres, $bodega_id, $fecha_corte);
+            $productos = $this->get_productos_proveedor_detallado($array_wheres, $bodega_id, $fecha_corte, $hora_inicio, $hora_finalizacion);
         }else{
-            $productos = $this->get_productos_agrupados($array_wheres, $fecha_corte);
+            $productos = $this->get_productos_agrupados($array_wheres, $fecha_corte, $hora_inicio, $hora_finalizacion);
         }
 
         return View::make('inventarios.reportes.stock_minimo.content', compact( 'productos', 'bodega', 'fecha_corte') );
     }
 
-    public function get_productos_agrupados($array_wheres, $fecha_corte)
+    public function get_productos_agrupados($array_wheres, $fecha_corte, $hora_inicio = null, $hora_finalizacion = null)
     {
         $registros_min_stock = MinStock::leftJoin('inv_productos','inv_productos.id','=','inv_min_stocks.inv_producto_id')
                             ->where($array_wheres)
@@ -406,7 +420,7 @@ class ReporteController extends Controller
 
                 $stock_minimo += $linea->stock_minimo;
 
-                $cantidad += InvMovimiento::get_existencia_producto($linea->inv_producto_id, '', $fecha_corte )->Cantidad;
+                $cantidad += InvMovimiento::get_existencia_producto($linea->inv_producto_id, '', $fecha_corte, $hora_inicio, $hora_finalizacion)->Cantidad;
 
                 $arr_inv_producto_id_contados[] = $linea->inv_producto_id;
             }
@@ -420,7 +434,7 @@ class ReporteController extends Controller
         return $productos;
     }
 
-    public function get_productos_proveedor_detallado($array_wheres, $bodega_id, $fecha_corte)
+    public function get_productos_proveedor_detallado($array_wheres, $bodega_id, $fecha_corte, $hora_inicio = null, $hora_finalizacion = null)
     {
         $registros_min_stock = MinStock::leftJoin('inv_productos','inv_productos.id','=','inv_min_stocks.inv_producto_id')
                             ->where($array_wheres)
@@ -445,7 +459,7 @@ class ReporteController extends Controller
                 'item_descripcion' => $registro->item->get_value_to_show( true ),
                 'bodega_descripcion' => $bodega_descripcion,
                 'stock_minimo' => $registro->stock_minimo,
-                'cantidad' => InvMovimiento::get_existencia_producto($registro->inv_producto_id, $bodega_id, $fecha_corte )->Cantidad
+                'cantidad' => InvMovimiento::get_existencia_producto($registro->inv_producto_id, $bodega_id, $fecha_corte, $hora_inicio, $hora_finalizacion)->Cantidad
             ];
         }
 
@@ -479,10 +493,12 @@ class ReporteController extends Controller
 
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta = $request->fecha_hasta;
+        $hora_inicio = $request->hora_inicio;
+        $hora_finalizacion = $request->hora_finalizacion;
         
         $tipo_prenda_id = (int)$request->tipo_prenda_id;        
                 
-        $items = $this->get_etiquetas_items( $grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id, $fecha_desde, $fecha_hasta, $tipo_prenda_id );
+        $items = $this->get_etiquetas_items($grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id, $fecha_desde, $fecha_hasta, $tipo_prenda_id, $hora_inicio, $hora_finalizacion);
 
         $items_without_barcode = collect( $items )->filter( function( $item ) {
             $barcode = trim( (string)( $item->codigo_barras ?? '' ) );
@@ -502,7 +518,7 @@ class ReporteController extends Controller
 
     }
 
-    public function get_etiquetas_items($grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id, $fecha_desde, $fecha_hasta, $tipo_prenda_id)
+    public function get_etiquetas_items($grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id, $fecha_desde, $fecha_hasta, $tipo_prenda_id, $hora_inicio = null, $hora_finalizacion = null)
     {
         $items = InvProducto::get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar,null,'inv_productos.id', $inv_producto_id, $tipo_prenda_id);        
 
@@ -520,7 +536,7 @@ class ReporteController extends Controller
 
         $listado = collect([]);
         if ($cantidad_etiquetas_x_item) {
-            $movimientos_entradas = InvMovimiento::get_suma_movimientos( $grupo_inventario_id, '', $fecha_desde, $fecha_hasta, 'entrada' );
+            $movimientos_entradas = InvMovimiento::get_suma_movimientos($grupo_inventario_id, '', $fecha_desde, $fecha_hasta, 'entrada', $hora_inicio, $hora_finalizacion);
 
             $movimientos_entradas_aux = collect( $movimientos_entradas->toArray() );
         }
@@ -538,7 +554,7 @@ class ReporteController extends Controller
                     $movim = InvMovimiento::get_existencia_corte( [ 
                         ['inv_movimientos.fecha' ,'<=', date('Y-m-d')],
                         ['inv_movimientos.inv_producto_id', '=', $item->id]
-                    ] );
+                    ], date('Y-m-d'), $hora_inicio, $hora_finalizacion);
                     
                     $cantidad_etiquetas = 1;
 
@@ -652,6 +668,8 @@ class ReporteController extends Controller
         $inv_bodega_id = $request->inv_bodega_id;
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta = $request->fecha_hasta;
+        $hora_inicio = $request->hora_inicio;
+        $hora_finalizacion = $request->hora_finalizacion;
         $mostrar_items_sin_movimiento = $request->mostrar_items_sin_movimiento;
         $separar_salidas_por_motivo = $this->request_indica_salidas_por_motivo( $request );
                 
@@ -659,14 +677,14 @@ class ReporteController extends Controller
 
         $saldos_items = InvMovimiento::get_saldos_iniciales_items( $grupo_inventario_id, $inv_bodega_id, $fecha_desde );
 
-        $movimientos_entradas = InvMovimiento::get_suma_movimientos( $grupo_inventario_id, $inv_bodega_id, $fecha_desde, $fecha_hasta, 'entrada' );
+        $movimientos_entradas = InvMovimiento::get_suma_movimientos($grupo_inventario_id, $inv_bodega_id, $fecha_desde, $fecha_hasta, 'entrada', $hora_inicio, $hora_finalizacion);
 
-        $movimientos_salidas = InvMovimiento::get_suma_movimientos( $grupo_inventario_id, $inv_bodega_id, $fecha_desde, $fecha_hasta, 'salida' );
+        $movimientos_salidas = InvMovimiento::get_suma_movimientos($grupo_inventario_id, $inv_bodega_id, $fecha_desde, $fecha_hasta, 'salida', $hora_inicio, $hora_finalizacion);
 
         $movimientos_salidas_por_motivo = collect([]);
         if ( $separar_salidas_por_motivo )
         {
-            $movimientos_salidas_por_motivo = InvMovimiento::get_suma_movimientos_por_motivo( $grupo_inventario_id, $inv_bodega_id, $fecha_desde, $fecha_hasta, 'salida' );
+            $movimientos_salidas_por_motivo = InvMovimiento::get_suma_movimientos_por_motivo($grupo_inventario_id, $inv_bodega_id, $fecha_desde, $fecha_hasta, 'salida', $hora_inicio, $hora_finalizacion);
         }
 
         $vista = View::make( 'inventarios.reportes.balance_inventarios', compact('items', 'mostrar_items_sin_movimiento', 'saldos_items', 'movimientos_entradas', 'movimientos_salidas', 'movimientos_salidas_por_motivo', 'separar_salidas_por_motivo', 'fecha_desde', 'fecha_hasta', 'inv_bodega_id' ) )->render();
@@ -708,6 +726,8 @@ class ReporteController extends Controller
         $grupo_inventario_id = $request->grupo_inventario_id;
         $talla = $request->unidad_medida2;
         $inv_bodega_id = $request->inv_bodega_id;
+        $hora_inicio = $request->hora_inicio;
+        $hora_finalizacion = $request->hora_finalizacion;
 
         if ( $inv_bodega_id == '' )
         {
@@ -734,7 +754,7 @@ class ReporteController extends Controller
         
         $array_wheres = array_merge( $array_wheres, [['inv_movimientos.inv_bodega_id','=', $inv_bodega_id]] );
 
-        $movimientos = InvMovimiento::get_existencia_corte( $array_wheres );
+        $movimientos = InvMovimiento::get_existencia_corte($array_wheres, $fecha_corte, $hora_inicio, $hora_finalizacion);
       
         $vista = View::make( 'inventarios.incluir.existencias_tabla_con_talla', compact('movimientos') )->render();
         
@@ -749,8 +769,10 @@ class ReporteController extends Controller
         $end_date = $request->fecha_hasta;
         $transaction_type_id = $request->transaction_type_id;
         $purpose_id = $request->purpose_id;
+        $hora_inicio = $request->hora_inicio;
+        $hora_finalizacion = $request->hora_finalizacion;
 
-        $movements = (new MovementService())->movements_by_purpose($init_date,$end_date,$transaction_type_id,$purpose_id);
+        $movements = (new MovementService())->movements_by_purpose($init_date, $end_date, $transaction_type_id, $purpose_id, $hora_inicio, $hora_finalizacion);
         
         $vista = View::make( 'inventarios.incluir.movements_by_purposes', compact('movements') )->render();
         
