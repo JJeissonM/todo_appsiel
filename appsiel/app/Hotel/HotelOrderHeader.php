@@ -190,7 +190,7 @@ class HotelOrderHeader extends Model
 
             if (!is_null($doc) && !is_null($doc->tipo_documento_app)) {
 
-                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo . ' (Creado por ' . $this->invoiceCreatorLabel($doc) . ')';
+                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo . ', ' . $this->invoiceCreatorLabel($doc);
             }
 
             return $this->pos_doc_id;

@@ -98,6 +98,9 @@ class HotelStay extends Model
 
     public function modifierLabel()
     {
+        if(empty($this->update_by) && empty($this->modificador_por)) {
+            return '';
+        }
         return HotelCreatorLabel::userLabel($this->modificador_por, !empty($this->updated_at) ? $this->updated_at : $this->check_in_at, $this->pdvIdForResponsibleLabel());
     }
 

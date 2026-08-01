@@ -87,7 +87,7 @@
     <thead>
         <tr>
             <th class="hotel-date" style="width:8%; border:1px solid #777; padding:4px; background:#51b99b; color:#000; text-align:center;">Check-in</th>
-            <th class="hotel-room" style="width:6%; border:1px solid #777; padding:4px; background:#51b99b; color:#000; text-align:center;">Habitación</th>
+            <th class="hotel-room" style="width:6%; border:1px solid #777; padding:4px; background:#51b99b; color:#000; text-align:center;">Hab.</th>
             <th class="hotel-name" style="width:15%; border:1px solid #777; padding:4px; background:#51b99b; color:#000; text-align:center;">Nombres y Apellidos</th>
             <th class="hotel-id" style="width:10%; border:1px solid #777; padding:4px; background:#51b99b; color:#000; text-align:center;">Número identificación</th>
             <th class="hotel-birth" style="width:8%; border:1px solid #777; padding:4px; background:#51b99b; color:#000; text-align:center;">Fecha nacimiento</th>
@@ -108,7 +108,7 @@
                 }
                 $procedencia = $lugarProcedencia != '' ? $lugarProcedencia : $row->hotel_procedencia;
                 $destino = $lugarDestino != '' ? $lugarDestino : $row->hotel_destino;
-                $checkOut = $row->check_out_at != '' ? $row->check_out_at : $row->expected_check_out_at;
+                $checkOut = $row->check_out_at != '' ? $row->check_out_at : '';
             ?>
             <tr>
                 <td style="width:8%; border:1px solid #777; padding:4px; vertical-align:top;">{{ $row->check_in_at }}</td>

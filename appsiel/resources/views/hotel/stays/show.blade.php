@@ -148,11 +148,11 @@
                     <thead>
                         <tr>
                             <th>Documento</th>
-                            <th>Creador por</th>
+                            <th>Creado por</th>
                             <th>Fecha</th>
                             <th>Estado</th>
                             <th>Total</th>
-                            <th>Factura</th>
+                            <th>Factura, Creado por</th>
                             <th>Accion</th>
                         </tr>
                     </thead>
