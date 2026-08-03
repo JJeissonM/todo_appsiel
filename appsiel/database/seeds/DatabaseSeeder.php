@@ -29,6 +29,10 @@ class DatabaseSeeder extends Seeder
                 'tables' => ['permissions', 'roles', 'role_has_permissions'],
             ],
             [
+                'class' => TesoreriaRecaudosPermissionsSeeder::class,
+                'tables' => ['permissions', 'roles', 'role_has_permissions'],
+            ],
+            [
                 'class' => CorePaisesGentilicioSeeder::class,
                 'tables' => ['core_paises'],
             ],

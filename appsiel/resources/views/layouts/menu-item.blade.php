@@ -1,6 +1,28 @@
 <?php
+    $menu_user = Auth::check() ? Auth::user() : null;
+    $menu_usuario_administrador_reportes = isset($menu_usuario_administrador_reportes) ? $menu_usuario_administrador_reportes : false;
+
+    if ($menu_user != null && !$menu_usuario_administrador_reportes) {
+        $roles_administradores_reportes = array_unique(array_merge(
+            ['SuperAdmin', 'Administrador'],
+            array_map('trim', (array)config('filtrado_registros.roles_sin_filtro', []))
+        ));
+
+        foreach ($roles_administradores_reportes as $role) {
+            if ($role != '' && $menu_user->hasRole($role)) {
+                $menu_usuario_administrador_reportes = true;
+                break;
+            }
+        }
+    }
+
+    $menu_ancestor_is_reports_menu = isset($menu_ancestor_is_reports_menu) ? $menu_ancestor_is_reports_menu : false;
+    $item_url = isset($item['url']) ? trim((string)$item['url']) : '';
+    $item_description = isset($item['descripcion']) ? trim((string)$item['descripcion']) : '';
+    $item_is_reports_menu = $menu_ancestor_is_reports_menu || stripos($item_description, 'reporte') !== false || stripos($item_url, 'vista_reporte') !== false;
+
     $item_permission_name = isset($item['name']) ? trim((string)$item['name']) : '';
-    $item_can_show = $item_permission_name != '' && isset($menu_permission_names) && in_array($item_permission_name, $menu_permission_names) && Auth::check() && Auth::user()->hasPermissionTo($item_permission_name);
+    $item_can_show = ($item_permission_name != '' && isset($menu_permission_names) && in_array($item_permission_name, $menu_permission_names) && $menu_user != null && $menu_user->hasPermissionTo($item_permission_name)) || ($menu_usuario_administrador_reportes && $item_is_reports_menu);
 ?>
 
 @if ($item['submenu'] == [])
@@ -18,8 +40,11 @@
             @foreach ($item['submenu'] as $submenu)
                 @if ($submenu['submenu'] == [])
                     <?php
+                        $submenu_url = isset($submenu['url']) ? trim((string)$submenu['url']) : '';
+                        $submenu_description = isset($submenu['descripcion']) ? trim((string)$submenu['descripcion']) : '';
+                        $submenu_is_reports_menu = $item_is_reports_menu || stripos($submenu_description, 'reporte') !== false || stripos($submenu_url, 'vista_reporte') !== false;
                         $submenu_permission_name = isset($submenu['name']) ? trim((string)$submenu['name']) : '';
-                        $submenu_can_show = $submenu_permission_name != '' && isset($menu_permission_names) && in_array($submenu_permission_name, $menu_permission_names) && Auth::check() && Auth::user()->hasPermissionTo($submenu_permission_name);
+                        $submenu_can_show = ($submenu_permission_name != '' && isset($menu_permission_names) && in_array($submenu_permission_name, $menu_permission_names) && $menu_user != null && $menu_user->hasPermissionTo($submenu_permission_name)) || ($menu_usuario_administrador_reportes && $submenu_is_reports_menu);
                     ?>
                     @if($submenu_can_show)
                         <li>
@@ -27,7 +52,7 @@
                         </li>
                     @endif
                 @else
-                    @include('layouts.menu-item', [ 'item' => $submenu ])
+                    @include('layouts.menu-item', [ 'item' => $submenu, 'menu_ancestor_is_reports_menu' => $item_is_reports_menu, 'menu_usuario_administrador_reportes' => $menu_usuario_administrador_reportes ])
                 @endif
             @endforeach
         </ul>

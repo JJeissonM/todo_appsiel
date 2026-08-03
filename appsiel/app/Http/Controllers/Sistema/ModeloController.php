@@ -22,6 +22,7 @@ use App\Sistema\Services\ImagenService;
 use App\Sistema\Services\ModeloService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Schema;
 
 class ModeloController extends Controller
 {
@@ -329,7 +330,7 @@ class ModeloController extends Controller
                     $this->validate($request, [$lista_campos[$i]['name'] => 'required']);
                 }
 
-                if ($lista_campos[$i]['unico'])
+                if ($lista_campos[$i]['unico'] && Schema::hasColumn($nombre_tabla, $lista_campos[$i]['name']))
                 {
                     $this->validate($request, [$lista_campos[$i]['name'] => 'unique:' . $nombre_tabla]);
                 }
@@ -436,14 +437,16 @@ class ModeloController extends Controller
         {
             if ($lista_campos[$i]['editable'] == 1) 
             {
+                $nombre_campo = $this->nombre_campo_request($lista_campos[$i]);
+
                 if ($lista_campos[$i]['requerido']) 
                 {
-                    $this->validate($request, [$lista_campos[$i]['name'] => 'required']);
+                    $this->validate($request, [$nombre_campo => 'required']);
                 }
                 
-                if ($lista_campos[$i]['unico']) 
+                if ($lista_campos[$i]['unico'] && Schema::hasColumn($registro->getTable(), $nombre_campo))
                 {
-                    $this->validate($request, [$lista_campos[$i]['name'] => 'unique:' . $registro->getTable() . ',' . $lista_campos[$i]['name'] . ',' . $id]);
+                    $this->validate($request, [$nombre_campo => 'unique:' . $registro->getTable() . ',' . $nombre_campo . ',' . $id]);
                 }
             }
             // Cuando se edita una transacción
@@ -484,6 +487,19 @@ class ModeloController extends Controller
         $url_ver = str_replace('id_fila', $registro->id, $acciones->show);
 
         return redirect($url_ver . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Registro MODIFICADO correctamente.');
+    }
+
+    private function nombre_campo_request($campo)
+    {
+        if (!isset($campo['name'])) {
+            return '';
+        }
+
+        if ($campo['name'] == 'core_campo_id-ID' && isset($campo['id'])) {
+            return 'core_campo_id-' . $campo['id'];
+        }
+
+        return $campo['name'];
     }
 
     /*

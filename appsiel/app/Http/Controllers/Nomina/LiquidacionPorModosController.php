@@ -64,6 +64,11 @@ class LiquidacionPorModosController extends TransaccionController
 
     public function liquidar_prima_antiguedad( $nom_doc_encabezado_id )
     {
+        $documento = NomDocEncabezado::find($nom_doc_encabezado_id);
+        if ( !$documento->esta_activo_para_transacciones() ) {
+            return redirect( 'nomina/' . $nom_doc_encabezado_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') )->with( 'mensaje_error', 'El documento de nómina no puede modificarse porque no está en estado Activo.' );
+        }
+
         $this->array_ids_modos_liquidacion_automaticos = [ 19 ];
 
         $this->liquidacion( $nom_doc_encabezado_id );
@@ -73,6 +78,11 @@ class LiquidacionPorModosController extends TransaccionController
 
     public function retirar_prima_antiguedad( $nom_doc_encabezado_id )
     {
+        $documento = NomDocEncabezado::find($nom_doc_encabezado_id);
+        if ( !$documento->esta_activo_para_transacciones() ) {
+            return redirect( 'nomina/'. $nom_doc_encabezado_id .'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'mensaje_error','El documento de nómina no puede modificarse porque no está en estado Activo.' );
+        }
+
         $this->array_ids_modos_liquidacion_automaticos = [ 19 ];
 
         $this->retirar_liquidacion( $nom_doc_encabezado_id );
@@ -92,6 +102,10 @@ class LiquidacionPorModosController extends TransaccionController
         $core_empresa_id = $usuario->empresa_id;
 
         $documento = NomDocEncabezado::find($id);
+
+        if ( !$documento->esta_activo_para_transacciones() ) {
+            return;
+        }
 
         (new ParametroLegalService())->aplicarParametrosEnConfig($documento->fecha);
 
@@ -182,6 +196,11 @@ class LiquidacionPorModosController extends TransaccionController
     public function retirar_liquidacion($id)
     {
         $documento_nomina = NomDocEncabezado::find( $id );
+
+        if ( !$documento_nomina->esta_activo_para_transacciones() ) {
+            return;
+        }
+
         $registros_documento = $documento_nomina->registros_liquidacion;
 
         foreach ( $registros_documento as $registro )

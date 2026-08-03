@@ -20,15 +20,18 @@
                 <div class="col-md-8">
                     <h4>
                         Informacion estadia
-                        @if($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA && isset($cancelBlockMessage) && $cancelBlockMessage == '')
+                        @if($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA && (!isset($editBlockMessage) || $editBlockMessage == ''))
                             <a href="{{ url($hotelUrl::url('web/'.$stay->id.'/edit?id=22&id_modelo=364&id_transaccion=')) }}"><i class="fa fa-edit"></i></a>
+                        @elseif($stay->status == App\Hotel\HotelStay::STATUS_ACTIVA && isset($editBlockMessage) && $editBlockMessage != '')
+                            <i class="fa fa-edit text-muted" title="{{ $editBlockMessage }}"></i>
                         @endif
                     </h4>
                     <table class="table table-bordered">
                         <tr><th>Huesped principal</th><td>{{ $stay->mainGuest && $stay->mainGuest->tercero ? $stay->mainGuest->tercero->descripcion : $stay->main_cliente_id }}</td><th>Huespedes</th><td>{{ $stay->total_guests }} ({{ $stay->adults_count }} adultos, {{ $stay->children_count }} niños)</td></tr>
-                        <tr><th>Check-in</th><td>{{ $stay->check_in_at }}</td><th>Check-out</th><td>{{ $stay->check_out_at }}</td></tr>
-                        <tr><th>Salida esperada</th><td>{{ $stay->expected_check_out_at }}</td><th>Dias estadia</th><td>{{ $stay->stayDays() }}</td></tr>
+                        <tr><th>Check-in</th><td>{{ $stay->checkInAtDisplay() }}</td><th>Check-out</th><td>{{ $stay->checkOutAtDisplay() }}</td></tr>
+                        <tr><th>Salida esperada</th><td>{{ $stay->expectedCheckOutAtDisplay() }}</td><th>Dias estadia</th><td>{{ $stay->stayDays() }}</td></tr>
                         <tr><th>Notas</th><td>{{ $stay->notes }}</td><th>Estado</th><td>{{ $stay->status }}</td></tr>
+                        <tr><th>Creador por</th><td>{{ $stay->creatorLabel() }}</td><th>Modificado por</th><td>{{ $stay->modifierLabel() }}</td></tr>
                     </table>
 
 
@@ -107,16 +110,49 @@
 
             <hr>
 
+            <?php
+                $saldoPendientePedidosAbiertos = 0;
+                foreach ($stay->orders as $order) {
+                    if ($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO) {
+                        foreach ($order->lines as $line) {
+                            $saldoPendientePedidosAbiertos += (float)$line->line_total;
+                        }
+                    }
+                }
+
+                $saldoAnticiposDisponibles = 0;
+                if (isset($anticipos) && is_array($anticipos)) {
+                    foreach ($anticipos as $anticipo) {
+                        $saldoAnticipo = isset($anticipo['saldo_pendiente']) ? (float)$anticipo['saldo_pendiente'] : 0;
+                        if ($saldoAnticipo < 0) {
+                            $saldoAnticiposDisponibles += abs($saldoAnticipo);
+                        }
+                    }
+                }
+
+                $saldoPendienteNeto = max(0, $saldoPendientePedidosAbiertos - $saldoAnticiposDisponibles);
+            ?>
+            <div class="alert alert-info" style="font-size:18px; font-weight:bold;">
+                Saldo x Cobrar:
+                <span class="pull-right">$ {{ number_format($saldoPendienteNeto, 2, ',', '.') }}</span>
+                <div class="clearfix"></div>
+                <small style="font-weight:normal;">
+                    Pedidos: $ {{ number_format($saldoPendientePedidosAbiertos, 2, ',', '.') }}
+                    | Anticipos/Abonos: $ {{ number_format($saldoAnticiposDisponibles, 2, ',', '.') }}
+                </small>
+            </div>
+
             <h4>Pedidos hoteleros</h4>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>Documento</th>
+                            <th>Creado por</th>
                             <th>Fecha</th>
                             <th>Estado</th>
                             <th>Total</th>
-                            <th>Factura</th>
+                            <th>Factura, Creado por</th>
                             <th>Accion</th>
                         </tr>
                     </thead>
@@ -130,6 +166,7 @@
                             ?>
                             <tr>
                                 <td>{{ $order->document_number ? $order->document_number : 'PED-' . $order->id }}</td>
+                                <td>{{ $order->creatorLabel() }}</td>
                                 <td>{{ $order->order_date }}</td>
                                 <td>{{ $order->status }}</td>
                                 <td class="text-right">{{ number_format($orderTotal, 2, ',', '.') }}</td>
@@ -142,15 +179,36 @@
                                 </td>
                                 <td>
                                     <a href="{{ url($hotelUrl::url('hotel/orders/'.$order->id, array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelOrderHeader')))) }}" class="btn btn-primary btn-xs">Ver pedido</a>
+                                    @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO && isset($canCancelHotelOrder) && $canCancelHotelOrder)
+                                        <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/cancel', array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelOrderHeader')))) }}" style="display:inline-block;">
+                                            {{ csrf_field() }}
+                                            <button type="submit" class="btn btn-danger btn-xs hotel-confirm-submit" data-message="Anular pedido hotelero?">Anular</button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
 
                         @if(count($stay->orders) == 0)
                             <tr>
-                                <td colspan="6">No hay pedidos hoteleros registrados.</td>
+                                <td colspan="7">No hay pedidos hoteleros registrados.</td>
                             </tr>
                         @endif
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Pedidos</strong></td>
+                            <td class="text-right"><strong>{{ number_format($saldoPendientePedidosAbiertos, 2, ',', '.') }}</strong></td>
+                            <td colspan="2"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Anticipos/Abonos</strong></td>
+                            <td class="text-right"><strong>- {{ number_format($saldoAnticiposDisponibles, 2, ',', '.') }}</strong></td>
+                            <td colspan="2"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Saldo x Cobrar</strong></td>
+                            <td class="text-right"><strong>{{ number_format($saldoPendienteNeto, 2, ',', '.') }}</strong></td>
+                            <td colspan="2"></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -209,9 +267,17 @@
                         cancelButtonText: 'Cancelar'
                     }).then(function(result) {
                         if (result && (result.isConfirmed || result.value)) {
+                            $button.prop('disabled', true);
+                            $button.data('hotel-original-html', $button.html());
+                            $button.html('<i class="fa fa-spinner fa-spin"></i> Procesando...');
                             $form.submit();
                         }
                     });
+                } else if (window.confirm(message)) {
+                    $button.prop('disabled', true);
+                    $button.data('hotel-original-html', $button.html());
+                    $button.html('<i class="fa fa-spinner fa-spin"></i> Procesando...');
+                    $form.submit();
                 }
             });
         });

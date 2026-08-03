@@ -82,6 +82,16 @@ class FacturaController extends TransaccionController
 
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
 
+        if (is_null($doc_encabezado)) {
+            $doc_resuelto = $this->resolveElectronicInvoiceFromPosId($id);
+            if (!is_null($doc_resuelto)) {
+                return redirect($this->buildElectronicInvoiceShowUrl($doc_resuelto->id));
+            }
+
+            return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))
+                ->with('mensaje_error', 'No se encontro la factura electronica solicitada.');
+        }
+
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
 
         $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $doc_encabezado );
@@ -111,6 +121,44 @@ class FacturaController extends TransaccionController
 
         return view( 'facturacion_electronica.facturas.show', compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'documento_vista', 'doc_encabezado', 'registros_contabilidad','abonos','empresa','docs_relacionados','doc_registros','url_crear','id_transaccion','notas_credito','medios_pago') );
 
+    }
+
+    protected function resolveElectronicInvoiceFromPosId($pos_doc_id)
+    {
+        $pos_doc = FacturaPos::find((int)$pos_doc_id);
+        if (is_null($pos_doc)) {
+            return null;
+        }
+
+        $doc_relacionado = VtasDocEncabezado::where('core_empresa_id', $pos_doc->core_empresa_id)
+            ->where('core_tipo_transaccion_id', (int)Input::get('id_transaccion', 52))
+            ->where('ventas_doc_relacionado_id', $pos_doc->id)
+            ->orderBy('id', 'DESC')
+            ->first();
+
+        if (!is_null($doc_relacionado)) {
+            return $doc_relacionado;
+        }
+
+        $query = VtasDocEncabezado::where('core_empresa_id', $pos_doc->core_empresa_id)
+            ->where('core_tipo_transaccion_id', $pos_doc->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $pos_doc->core_tipo_doc_app_id)
+            ->where('consecutivo', $pos_doc->consecutivo);
+
+        if ((int)$pos_doc->core_tipo_transaccion_id != (int)Input::get('id_transaccion', 52)) {
+            return null;
+        }
+
+        return $query->orderBy('id', 'DESC')->first();
+    }
+
+    protected function buildElectronicInvoiceShowUrl($id)
+    {
+        $app_id = Input::get('id') ? Input::get('id') : 21;
+        $modelo_id = Input::get('id_modelo') ? Input::get('id_modelo') : 244;
+        $transaccion_id = Input::get('id_transaccion') ? Input::get('id_transaccion') : 52;
+
+        return url('fe_factura/' . $id . '?id=' . $app_id . '&id_modelo=' . $modelo_id . '&id_transaccion=' . $transaccion_id);
     }
 
     public function store( Request $request )

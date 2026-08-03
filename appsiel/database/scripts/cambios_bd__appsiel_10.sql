@@ -749,11 +749,126 @@ UPDATE `nom_elect_cat_cptos_dian` SET `descripcion` = 'HORA_EXTRA_DIURNA' WHERE 
 --  Permisos reportes Gestion Hotelera
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (NULL, '20', '0', 'hotel/reports/stays', 'Reporte Listado de estadias hoteleras', 'web', '0', '99', '0', '', '2026-07-09 20:34:37', NULL);
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (NULL, '20', '0', 'hotel/reports/rooms', 'Reporte Listado de habitaciones hoteleras', 'web', '0', '99', '0', '', '2026-07-09 20:34:37', NULL);
-INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (NULL, '20', '0', 'hotel/reports/migration', 'Reporte Listado SIRE', 'web', '0', '99', '0', '', '2026-07-09 20:34:37', NULL);
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (NULL, '20', '0', 'hotel/reports/migration', 'Libro de Huéspedes', 'web', '0', '99', '0', '', '2026-07-09 20:34:37', NULL);
 
 -- NUevos campos respuesta envío nomina electrónica
 INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES (NULL, 'Respuesta Envío', 'bsTextArea', 'response_xml', '', 'null', '', '', '0', '1', '0', '2026-07-15 09:58:24', NULL);
 
 
 -- Nuevo campo Bodega
-ALTER TABLE `vtas_pos_doc_registros` ADD `inv_bodega_id` INT(10) UNSIGNED NULL AFTER `inv_producto_id`, ADD INDEX (`inv_bodega_id`);
+ALTER TABLE `vtas_pos_doc_registros` ADD `inv_bodega_id` INT(10) UNSIGNED NULL AFTER `inv_producto_id`;
+ALTER TABLE `vtas_pos_doc_registros` ADD INDEX `inv_bodega_id` (`inv_bodega_id`);
+
+-- nuevo permiso
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
+SELECT NULL, '22', '0', 'hotel_pedido_retirar_producto_habitacion', 'Hotel pedido Retirar producto Habitacion', 'web', '0', '15', '0', '', '2026-07-01 10:18:25', NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM `permissions` WHERE `name` = 'hotel_pedido_retirar_producto_habitacion' LIMIT 1
+);
+
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
+SELECT NULL, '22', '0', 'hotel_pedido_anular', 'Anular pedido hotelero', 'hotel/orders/id_fila/cancel', '0', '18', '0', 'ban', '2026-07-21 00:00:00', NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM `permissions` WHERE `name` = 'hotel_pedido_anular' LIMIT 1
+);
+
+SET @hotel_pedido_anular_permission_id := (
+    SELECT `id` FROM `permissions`
+    WHERE `name` = 'hotel_pedido_anular'
+    LIMIT 1
+);
+
+INSERT INTO `role_has_permissions` (`orden`, `permission_id`, `role_id`)
+SELECT 0, @hotel_pedido_anular_permission_id, `roles`.`id`
+FROM `roles`
+WHERE `roles`.`name` IN ('SuperAdmin', 'Administrador')
+    AND @hotel_pedido_anular_permission_id IS NOT NULL
+    AND NOT EXISTS (
+        SELECT 1
+        FROM `role_has_permissions`
+        WHERE `role_has_permissions`.`permission_id` = @hotel_pedido_anular_permission_id
+            AND `role_has_permissions`.`role_id` = `roles`.`id`
+        LIMIT 1
+    );
+
+-- Nuevo campo EAV Ocupación para Huespedes hoteleros.
+SET @hotel_guest_model_id := (
+    SELECT `id` FROM `sys_modelos`
+    WHERE `name_space` = 'App\\\\Hotel\\\\HotelGuest'
+    LIMIT 1
+);
+
+SET @hotel_guest_ocupacion_field_id := (
+    SELECT `id` FROM `sys_campos`
+    WHERE `descripcion` = 'Ocupación'
+        AND `tipo` = 'bsText'
+        AND `name` = 'core_campo_id-ID'
+    LIMIT 1
+);
+
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`)
+SELECT NULL, 'Ocupación', 'bsText', 'core_campo_id-ID', '', '', '{"class":"form-control"}', '', '0', '1', '0', '2026-07-10 06:01:56', NULL
+WHERE @hotel_guest_ocupacion_field_id IS NULL;
+
+SET @hotel_guest_ocupacion_field_id := (
+    SELECT `id` FROM `sys_campos`
+    WHERE `descripcion` = 'Ocupación'
+        AND `tipo` = 'bsText'
+        AND `name` = 'core_campo_id-ID'
+    LIMIT 1
+);
+
+INSERT INTO `sys_modelo_tiene_campos` (`orden`, `core_modelo_id`, `core_campo_id`)
+SELECT 104, @hotel_guest_model_id, @hotel_guest_ocupacion_field_id
+WHERE @hotel_guest_model_id IS NOT NULL
+    AND @hotel_guest_ocupacion_field_id IS NOT NULL
+    AND NOT EXISTS (
+        SELECT 1 FROM `sys_modelo_tiene_campos`
+        WHERE `core_modelo_id` = @hotel_guest_model_id
+            AND `core_campo_id` = @hotel_guest_ocupacion_field_id
+        LIMIT 1
+    );
+
+-- Campo usuario que actualiza estadías hoteleras.
+ALTER TABLE `hotel_stays` ADD `update_by` INT(10) UNSIGNED NULL AFTER `closed_by`;
+
+-- Permiso para anular recaudos generales.
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
+SELECT NULL,
+    COALESCE(
+        (SELECT `id` FROM `sys_aplicaciones` WHERE `descripcion` = 'Tesorería' LIMIT 1),
+        (SELECT `id` FROM `sys_aplicaciones` WHERE `descripcion` = 'Tesoreria' LIMIT 1),
+        0
+    ),
+    '46',
+    'teso_anular_recaudo_general',
+    'Anular recaudo general',
+    'tesoreria/recaudos_anular/id_fila',
+    '0',
+    '0',
+    '0',
+    'fa fa-close',
+    NOW(),
+    NULL
+WHERE NOT EXISTS (
+    SELECT 1 FROM `permissions` WHERE `name` = 'teso_anular_recaudo_general' LIMIT 1
+);
+
+SET @teso_anular_recaudo_general_permission_id := (
+    SELECT `id` FROM `permissions`
+    WHERE `name` = 'teso_anular_recaudo_general'
+    LIMIT 1
+);
+
+INSERT INTO `role_has_permissions` (`orden`, `permission_id`, `role_id`)
+SELECT 0, @teso_anular_recaudo_general_permission_id, `roles`.`id`
+FROM `roles`
+WHERE `roles`.`name` IN ('SuperAdmin', 'Administrador')
+    AND @teso_anular_recaudo_general_permission_id IS NOT NULL
+    AND NOT EXISTS (
+        SELECT 1
+        FROM `role_has_permissions`
+        WHERE `role_has_permissions`.`permission_id` = @teso_anular_recaudo_general_permission_id
+            AND `role_has_permissions`.`role_id` = `roles`.`id`
+        LIMIT 1
+    );

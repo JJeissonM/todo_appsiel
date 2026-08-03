@@ -107,6 +107,12 @@ class TrasladoEfectivosController extends TransaccionController
 
         $cajas = TesoCaja::opciones_campo_select();
         $cajas = $this->agregar_caja_default_para_traslado_efectivo($cajas);
+
+        if (filter_var(env('HOTEL_MODULE_ENABLED', false), FILTER_VALIDATE_BOOLEAN))
+        {
+            $cajas = $this->formatear_opciones_cajas(TesoCaja::get_cajas_activas());
+        }
+
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
         $motivos = TesoMotivo::where('teso_tipo_motivo', 'traslado-efectivo')->get()->pluck('descripcion', 'movimiento');
 
@@ -161,6 +167,30 @@ class TrasladoEfectivosController extends TransaccionController
         $cajas[$caja_default->id] = $caja_default->descripcion;
 
         return $cajas;
+    }
+
+    protected function formatear_opciones_cajas($cajas)
+    {
+        $opciones = array('' => '');
+
+        foreach ($cajas as $key => $caja)
+        {
+            if (is_object($caja))
+            {
+                $opciones[$caja->id] = $caja->descripcion;
+                continue;
+            }
+
+            if (is_array($caja) && isset($caja['id']))
+            {
+                $opciones[$caja['id']] = $caja['descripcion'];
+                continue;
+            }
+
+            $opciones[$key] = $caja;
+        }
+
+        return $opciones;
     }
 
     public function anular_traslado($id)

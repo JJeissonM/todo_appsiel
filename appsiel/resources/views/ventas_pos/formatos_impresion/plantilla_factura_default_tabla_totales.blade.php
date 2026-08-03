@@ -1,4 +1,8 @@
 <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_totales">
+    <?php
+        $condicion_pago_impresion = strtolower((string)$datos_factura->lbl_condicion_pago);
+        $mostrar_recibido_cambio = (int)config('ventas_pos.mostrar_efectivo_recibio_y_cambio') && $condicion_pago_impresion == 'contado';
+    ?>
     <tbody>
         <tr style="font-weight: bold;">
             <td style="text-align: right;">
@@ -15,7 +19,7 @@
                 <div class="lbl_total_factura" style="margin-right: 15px;">{{$datos_factura->lbl_total_factura}} </div>
             </td>
         </tr>
-        @if( (int)config('ventas_pos.mostrar_efectivo_recibio_y_cambio') )
+        @if( $mostrar_recibido_cambio )
             @if($datos_factura->lbl_total_recibido !== '')
                 <tr style="font-weight: bold;" id="tr_total_recibido">
                     <td style="text-align: right;"> Recibido: </td>
@@ -33,4 +37,3 @@
         @endif
     </tbody>
 </table>
-    

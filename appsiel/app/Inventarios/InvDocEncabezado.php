@@ -205,6 +205,9 @@ class InvDocEncabezado extends Model
     */
     public function crear_lineas_registros( $datos, $doc_encabezado, array $lineas_registros)
     {
+        $datos['hora_inicio'] = $doc_encabezado->hora_inicio;
+        $datos['hora_finalizacion'] = $doc_encabezado->hora_finalizacion;
+
         $cantidad_registros = count($lineas_registros);
 
         for ($i = 0; $i < $cantidad_registros; $i++)

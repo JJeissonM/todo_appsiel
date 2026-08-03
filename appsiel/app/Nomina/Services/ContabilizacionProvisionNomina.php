@@ -86,6 +86,7 @@ class ContabilizacionProvisionNomina
 									'valor_credito' => 0,
 									'tipo_transaccion' => 'causacion',
 									'estado' => 'Activo',
+									'detalle' => $linea_registro->tipo_prestacion,
 									'creado_por' => Auth::user()->email,
 									'fecha_vencimiento' => $this->fecha_final_promedios,
 									'registro_consolidado_prestacion' => $linea_registro
@@ -112,6 +113,7 @@ class ContabilizacionProvisionNomina
 									'valor_credito' => $valor_credito,
 									'tipo_transaccion' => 'crear_cxp',
 									'estado' => 'Activo',
+									'detalle' => $linea_registro->tipo_prestacion,
 									'creado_por' => Auth::user()->email,
 									'fecha_vencimiento' => $this->fecha_final_promedios,
 									'registro_consolidado_prestacion' => $linea_registro
@@ -224,7 +226,7 @@ class ContabilizacionProvisionNomina
 	public function almacenar_movimiento_contable( $consecutivo )
 	{
 		$movimiento_contabilizar = $this->movimiento_contabilizar;
-		
+		$datos = [];
 		foreach ($movimiento_contabilizar as $movimiento )
 		{
 			if ( $movimiento->error )
@@ -255,7 +257,7 @@ class ContabilizacionProvisionNomina
 
 			$movimiento->registro_consolidado_prestacion->estado = 'Contabilizado';
 			$movimiento->registro_consolidado_prestacion->save();
-
+			
 			// Generar CxP
             if ( $movimiento->tipo_transaccion == 'crear_cxp' )
             {
@@ -263,6 +265,7 @@ class ContabilizacionProvisionNomina
                 $datos['valor_pagado'] = 0;
                 $datos['saldo_pendiente'] = $movimiento->valor_credito;
                 $datos['estado'] = 'Pendiente';
+                $datos['detalle'] = isset($movimiento->detalle) ? $movimiento->detalle : $movimiento->concepto;
                 CxpMovimiento::create( $datos );
             }
 		}

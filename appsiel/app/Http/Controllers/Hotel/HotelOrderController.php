@@ -35,8 +35,9 @@ class HotelOrderController extends Controller
         $anticipos = $this->anticiposCliente($order);
         $electronicResolutionValidation = $this->electronicResolutionValidation();
         $canEditHotelOrderPrice = $this->canEditHotelOrderPrice();
+        $canCancelHotelOrder = $this->canCancelHotelOrder();
 
-        return view('hotel.orders.show', compact('order', 'products', 'anticipos', 'miga_pan', 'electronicResolutionValidation', 'canEditHotelOrderPrice') + $paymentData);
+        return view('hotel.orders.show', compact('order', 'products', 'anticipos', 'miga_pan', 'electronicResolutionValidation', 'canEditHotelOrderPrice', 'canCancelHotelOrder') + $paymentData);
     }
 
     public function addLine(Request $request, $id)
@@ -123,6 +124,7 @@ class HotelOrderController extends Controller
         $lines = is_array($request->lines) ? $request->lines : array();
         $newLine = is_array($request->new_line) ? $request->new_line : array();
         $newLines = is_array($request->new_lines) ? $request->new_lines : array();
+        $deletedLines = is_array($request->deleted_lines) ? $request->deleted_lines : array();
         $canEditPrice = $this->canEditHotelOrderPrice();
 
         if (!$order->canEditLines()) {
@@ -130,7 +132,21 @@ class HotelOrderController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($order, $service, $lines, $newLine, $newLines, $canEditPrice) {
+            DB::transaction(function () use ($order, $service, $lines, $newLine, $newLines, $deletedLines, $canEditPrice) {
+                foreach ($deletedLines as $lineId) {
+                    $lineId = (int)$lineId;
+                    if ($lineId <= 0) {
+                        continue;
+                    }
+
+                    $line = $this->findLine($order, $lineId);
+                    $service->deleteLine($order, $line);
+
+                    if (isset($lines[$lineId])) {
+                        unset($lines[$lineId]);
+                    }
+                }
+
                 foreach ($lines as $lineId => $lineData) {
                     $line = $this->findLine($order, $lineId);
                     if (!$canEditPrice && isset($lineData['unit_price'])) {
@@ -167,6 +183,23 @@ class HotelOrderController extends Controller
         return redirect(HotelBreadcrumb::url('hotel/orders/' . $order->id))->with('flash_message', 'Pedido hotelero actualizado correctamente.');
     }
 
+    public function cancel($id)
+    {
+        $order = $this->findOrder($id);
+
+        if (!$this->canCancelHotelOrder()) {
+            return redirect()->back()->with('mensaje_error', 'No tiene permiso para anular pedidos hoteleros.');
+        }
+
+        try {
+            (new HotelService())->cancelOrder($order);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('mensaje_error', $e->getMessage());
+        }
+
+        return redirect(HotelBreadcrumb::url('hotel/orders/' . $order->id, array('id_modelo' => HotelBreadcrumb::modelId('App\\Hotel\\HotelOrderHeader'))))->with('flash_message', 'Pedido hotelero anulado correctamente.');
+    }
+
     private function canEditHotelOrderPrice()
     {
         if (!Auth::check()) {
@@ -178,6 +211,33 @@ class HotelOrderController extends Controller
         if (method_exists($user, 'can')) {
             try {
                 if ($user->can('editar_precio_total_en_linea_registro_factura_pos')) {
+                    return true;
+                }
+            } catch (\Exception $e) {
+                // Algunas instalaciones antiguas pueden no tener este permiso sembrado.
+            }
+        }
+
+        if (method_exists($user, 'hasRole')) {
+            if ($user->hasRole('SuperAdmin') || $user->hasRole('Administrador') || $user->hasRole('Admin Colegio')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function canCancelHotelOrder()
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        if (method_exists($user, 'can')) {
+            try {
+                if ($user->can('hotel_pedido_anular')) {
                     return true;
                 }
             } catch (\Exception $e) {
@@ -275,6 +335,14 @@ class HotelOrderController extends Controller
 
         if (isset($data['discount']) && $data['discount'] !== '' && (!is_numeric($data['discount']) || (float)$data['discount'] < 0)) {
             throw new \Exception('El descuento debe ser mayor o igual a cero.');
+        }
+
+        if (isset($data['unit_price']) && $data['unit_price'] !== '') {
+            $discount = isset($data['discount']) && $data['discount'] !== '' ? (float)$data['discount'] : 0;
+            $lineTotal = ($quantity * (float)$data['unit_price']) - $discount;
+            if ($lineTotal < 0) {
+                throw new \Exception('El total de la linea no puede ser negativo.');
+            }
         }
 
         if (isset($data['producto_id']) && (int)$data['producto_id'] > 0 && is_null(InvProducto::find((int)$data['producto_id']))) {

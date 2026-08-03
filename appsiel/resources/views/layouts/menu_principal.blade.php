@@ -7,13 +7,26 @@
     
     $user = \Auth::user();
     $menu_permission_names = Permission::lists('name')->toArray();
+    $usuario_administrador_reportes = false;
     
     if( $user != null)
     {
+        $roles_administradores_reportes = array_unique(array_merge(
+            ['SuperAdmin', 'Administrador'],
+            array_map('trim', (array)config('filtrado_registros.roles_sin_filtro', []))
+        ));
+
+        foreach ($roles_administradores_reportes as $role) {
+            if ($role != '' && $user->hasRole($role)) {
+                $usuario_administrador_reportes = true;
+                break;
+            }
+        }
+
         $permiso_bloquear_reportes = 'core_bloquear_menu_reportes';
         $existe_permiso = Permission::where('name', $permiso_bloquear_reportes)->exists();
 
-        if ( !$existe_permiso || !$user->hasPermissionTo($permiso_bloquear_reportes) )
+        if ( $usuario_administrador_reportes || !$existe_permiso || !$user->hasPermissionTo($permiso_bloquear_reportes) )
         {
             $reportes = App\Sistema\Reporte::where( ['core_app_id' => Input::get('id'), 'estado' => 'Activo'] )->get();
             
@@ -25,7 +38,7 @@
                                             foreach($reportes as $un_reporte)
                                             {
 
-                                                if( trim((string)$un_reporte->url_form_action) == '' || !in_array($un_reporte->url_form_action, $menu_permission_names) || !$user->hasPermissionTo($un_reporte->url_form_action) ){
+                                                if( !$usuario_administrador_reportes && (trim((string)$un_reporte->url_form_action) == '' || !in_array($un_reporte->url_form_action, $menu_permission_names) || !$user->hasPermissionTo($un_reporte->url_form_action)) ){
                                                     continue;
                                                 }
 

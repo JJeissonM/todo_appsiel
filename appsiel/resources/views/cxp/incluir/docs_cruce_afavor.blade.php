@@ -29,7 +29,13 @@
         ?>
         @if( $movimiento[$i]['saldo_pendiente'] <= -0.1 )
             <tr id="{{ $id }}" class="{{$class_advertencia}}">
-                <td class="text-center"> {{ $movimiento[$i]['documento'] }} </td>
+                <td class="text-center"> 
+                    {{ $movimiento[$i]['documento'] }}
+                    @if(isset($movimiento[$i]['detalle']) && $movimiento[$i]['detalle'] != '')
+                        <br/>
+                        <small> {{ $movimiento[$i]['detalle'] }} </small>
+                    @endif
+                </td>
                 <td> {{ $movimiento[$i]['fecha'] }} </td>
                 <td class="col_saldo_pendiente text-right" >
                     <?php

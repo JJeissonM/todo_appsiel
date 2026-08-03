@@ -99,6 +99,42 @@
 
 	<script type="text/javascript">
 
+		function asignar_valor_select_cotizacion($select, valor, texto)
+		{
+			if ( !$select.length ) {
+				return;
+			}
+
+			if ( typeof valor === 'undefined' || valor === null ) {
+				valor = '';
+			}
+
+			valor = valor.toString();
+
+			var $opcion = $select.find('option').filter(function(){
+				return $(this).val().toString() == valor;
+			});
+
+			if ( valor !== '' && $opcion.length == 0 && texto ) {
+				$select.append($('<option>', {
+					value: valor,
+					text: texto
+				}));
+			} else if ( valor !== '' && $opcion.length > 0 && texto ) {
+				$opcion.text(texto);
+			}
+
+			$select.val(valor).trigger('change').trigger('chosen:updated');
+
+			if ( $.fn.selectpicker ) {
+				$select.selectpicker('refresh');
+			}
+
+			if ( $.fn.select2 && $select.data('select2') ) {
+				$select.trigger('change.select2');
+			}
+		}
+
 		var producto_id, precio_total, costo_total, base_impuesto_total, valor_impuesto_total, tasa_impuesto, tasa_descuento, valor_total_descuento, cantidad, inv_producto_id, inv_bodega_id, inv_motivo_id;
 		var costo_unitario = 0;
 		var precio_unitario = 0;
@@ -191,8 +227,13 @@
 			    if ( $(this).val().length < 2 ) { return false; }
 
 		    	var url = '../vtas_consultar_clientes';
+				var url_id = $('#url_id').val();
 
-				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+				$.get( url, {
+					texto_busqueda: $(this).val(),
+					campo_busqueda: campo_busqueda,
+					url_id: url_id
+				} )
 					.done(function( data ) {
 						// Se llena el DIV con las sugerencias que arroja la consulta
 		                $('#clientes_suggestions').show().html(data);
@@ -498,7 +539,11 @@
                 $('#lista_descuentos_id').val( item_sugerencia.attr('data-lista_descuentos_id') );
 
                 // Asignar resto de campos
-                $('#vendedor_id').val( item_sugerencia.attr('data-vendedor_id') );
+                asignar_valor_select_cotizacion(
+					$('#vendedor_id'),
+					item_sugerencia.attr('data-vendedor_id'),
+					item_sugerencia.attr('data-vendedor_descripcion')
+				);
                 $('#inv_bodega_id').val( item_sugerencia.attr('data-inv_bodega_id') );
 
 
@@ -880,7 +925,7 @@
 			{
 				$('#cliente_id').val( '' );
 				$('#cliente_input').css( 'background-color','#FF8C8C' );
-                $('#vendedor_id').val( '' );
+				asignar_valor_select_cotizacion( $('#vendedor_id'), '', '' );
                 $('#inv_bodega_id').val( '' );
                 $('#forma_pago').val( 'contado' );
 				//$('#fecha_vencimiento').val( '' );

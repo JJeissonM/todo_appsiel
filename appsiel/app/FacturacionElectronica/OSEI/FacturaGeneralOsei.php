@@ -2,6 +2,8 @@
 
 namespace App\FacturacionElectronica\OSEI;
 
+use App\FacturacionElectronica\Services\InvoiceTotalsService;
+
 use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\Ventas\Services\PrintServices;
 use Illuminate\Support\Facades\Log;
@@ -634,19 +636,21 @@ class FacturaGeneralOsei
                 $string_items .= ',';
             }
 
-            $price = $linea->precio_unitario / (1 + $linea->tasa_impuesto / 100);
+            $provider_values = (new InvoiceTotalsService())->getProviderLineValues($linea, $this->cantidadDecimales);
+            $price = $provider_values->price;
             $original_price = 0;
             if ($price == 0) {
                 $price = $linea->item->get_costo_promedio() * (1 + 10 / 100);
                 $original_price = $price;
                 $linea->tasa_descuento = 100;
+                $provider_values->total_discount = $price * $provider_values->quantity;
             }
 
             $unidad_medida = $linea->item->unidad_medida1;
 
-            $quantity = abs((float) $linea->cantidad);
+            $quantity = $provider_values->quantity;
             $priceValue = abs((float) $price);
-            $string_items .= '{"sku": ' . $this->jsonString($linea->item->id) . ',"u.m": ' . $this->jsonString($unidad_medida) . ',"description": ' . $this->jsonString($linea->item->descripcion) . ',"quantity": ' . number_format($quantity, $this->cantidadDecimales, '.', '') . ',"price": ' . number_format($priceValue, $this->cantidadDecimales, '.', '');
+            $string_items .= '{"sku": ' . $this->jsonString($linea->item->id) . ',"u.m": ' . $this->jsonString($unidad_medida) . ',"description": ' . $this->jsonString($linea->item->descripcion) . ',"quantity": ' . number_format($quantity, $provider_values->decimals, '.', '') . ',"price": ' . number_format($priceValue, $provider_values->decimals, '.', '');
 
             if ($original_price != 0) {
                 $string_items .= ',"original_price": ' . $original_price;
@@ -665,10 +669,10 @@ class FacturaGeneralOsei
             if ($impuesto->tax_category != null && $impuesto->tax_category != '') {
                 $tax_category = $impuesto->tax_category;
             }
-            $vlor_total_desc = abs((float) $linea->valor_total_descuento);
-            $taxable_amount = max(($quantity * $priceValue) - $vlor_total_desc, 0);
+            $vlor_total_desc = $provider_values->total_discount;
+            $taxable_amount = $provider_values->taxable_amount;
 
-            $string_items .= ',"taxes": [  {    "tax_rate": ' . number_format((float) $linea->tasa_impuesto, $this->cantidadDecimales, '.', '') . ',"taxable_amount": ' . number_format($taxable_amount, $this->cantidadDecimales, '.', '') . ',"total_discount": ' . number_format($vlor_total_desc, $this->cantidadDecimales, '.', '') . ',"tax_category": ' . $this->jsonString($tax_category) . '}]}';
+            $string_items .= ',"taxes": [  {    "tax_rate": ' . number_format((float) $linea->tasa_impuesto, $provider_values->decimals, '.', '') . ',"taxable_amount": ' . number_format($taxable_amount, $provider_values->decimals, '.', '') . ',"total_discount": ' . number_format($vlor_total_desc, $provider_values->decimals, '.', '') . ',"tax_category": ' . $this->jsonString($tax_category) . '}]}';
             $es_primera_linea = false;
         }
 

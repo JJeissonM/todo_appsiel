@@ -101,6 +101,7 @@ class ReportesController extends Controller
                     "sub_total" => $sum,
                     "clase_cliente_id" => '',
                     "core_tercero_id" => '',
+                    "detalle" => '',
                     "estado" => ''
                 ];
                 $collection[]=$obj;

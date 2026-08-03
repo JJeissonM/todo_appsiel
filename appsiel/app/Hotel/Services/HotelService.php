@@ -12,6 +12,7 @@ use App\Hotel\HotelReservation;
 use App\Hotel\HotelRoom;
 use App\Hotel\HotelStay;
 use App\Hotel\HotelStayGuest;
+use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
 use App\Ventas\Cliente;
@@ -29,6 +30,7 @@ use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMotivo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class HotelService
 {
@@ -55,9 +57,15 @@ class HotelService
                     ->orWhere('estado', '');
             });
 
-        if (!$this->userCanViewDashboardWithoutPdv()) {
-            $query->where('cajero_default_id', Auth::user()->id);
+        if ($this->userCanViewDashboardWithoutPdv()) {
+            return $query
+                ->orderByRaw("CASE WHEN estado = 'Abierto' THEN 0 WHEN estado = 'Cerrado' THEN 1 ELSE 2 END")
+                ->orderBy('updated_at', 'DESC')
+                ->orderBy('id')
+                ->first();
         }
+
+        $query->where('cajero_default_id', Auth::user()->id);
 
         return $query
             ->orderBy('id')
@@ -107,6 +115,11 @@ class HotelService
             ));
             if (!is_null($dateMessage)) {
                 throw new \Exception($dateMessage);
+            }
+
+            $pastCheckInMessage = HotelStay::getPastCheckInError($checkInAt);
+            if (!is_null($pastCheckInMessage)) {
+                throw new \Exception($pastCheckInMessage);
             }
 
             $adults = isset($data['adults_count']) ? (int)$data['adults_count'] : 1;
@@ -280,14 +293,36 @@ class HotelService
                 $stay->room->save();
             }
 
-            foreach ($stay->orders as $order) {
-                if ($order->status == HotelOrderHeader::STATUS_ABIERTO) {
-                    $order->status = HotelOrderHeader::STATUS_ANULADO;
-                    $order->save();
-                }
+            return $stay;
+        });
+    }
+
+    public function cancelOrder(HotelOrderHeader $order)
+    {
+        $service = $this;
+
+        return DB::transaction(function () use ($order, $service) {
+            $order = HotelOrderHeader::where('empresa_id', $service->empresaId())
+                ->where('id', $order->id)
+                ->lockForUpdate()
+                ->first();
+
+            if (is_null($order)) {
+                throw new \Exception('El pedido hotelero no existe.');
             }
 
-            return $stay;
+            if ($order->status != HotelOrderHeader::STATUS_ABIERTO) {
+                throw new \Exception('Solo se pueden anular pedidos hoteleros abiertos.');
+            }
+
+            if (!empty($order->invoice_type) || !empty($order->sales_doc_id) || !empty($order->pos_doc_id)) {
+                throw new \Exception('No se puede anular el pedido hotelero porque ya tiene una factura asociada.');
+            }
+
+            $order->status = HotelOrderHeader::STATUS_ANULADO;
+            $order->save();
+
+            return $order;
         });
     }
 
@@ -299,12 +334,32 @@ class HotelService
             ->get();
 
         foreach ($orders as $order) {
+            if ($order->status == HotelOrderHeader::STATUS_ABIERTO) {
+                return 'No se puede anular la estadia porque tiene pedidos hoteleros abiertos. Primero debes facturar o anular los pedidos abiertos asociados a la estadia.';
+            }
+
             if ($this->orderHasActiveInvoice($order)) {
                 return 'No se puede anular la estadia porque ya tiene una factura de venta asociada (' . $order->invoiceLabel() . '). Primero debes anular la factura de venta asociada y, una vez realizada esa accion, podras anular la estadia.';
             }
 
             if ($order->status == HotelOrderHeader::STATUS_FACTURADO && empty($order->pos_doc_id) && empty($order->sales_doc_id)) {
                 return 'No se puede anular la estadia porque tiene un pedido hotelero marcado como facturado. Primero debes revisar o anular la factura de venta asociada.';
+            }
+        }
+
+        return '';
+    }
+
+    public function getEditDatesBlockMessage(HotelStay $stay)
+    {
+        $orders = HotelOrderHeader::where('empresa_id', $stay->empresa_id)
+            ->where('stay_id', $stay->id)
+            ->with('posInvoice.tipo_documento_app', 'salesInvoice.tipo_documento_app', 'lines')
+            ->get();
+
+        foreach ($orders as $order) {
+            if ($this->orderHasActiveInvoice($order) && $this->orderHasRoomLine($order, $stay)) {
+                return 'No se puede editar la estadia porque el producto asociado a la habitacion ya fue facturado (' . $order->invoiceLabel() . ').';
             }
         }
 
@@ -334,6 +389,28 @@ class HotelService
         return false;
     }
 
+    private function orderHasRoomLine(HotelOrderHeader $order, HotelStay $stay)
+    {
+        $room = $stay->room;
+        if (is_null($room) && (int)$stay->room_id > 0) {
+            $room = HotelRoom::find((int)$stay->room_id);
+        }
+
+        $roomProductId = !is_null($room) ? (int)$room->inv_producto_id : 0;
+
+        foreach ($order->lines as $line) {
+            if ($line->source_type == HotelOrderLine::SOURCE_ROOM) {
+                return true;
+            }
+
+            if ($roomProductId > 0 && (int)$line->producto_id == $roomProductId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function createLine(HotelOrderHeader $order, $data)
     {
         if (!$order->canEditLines()) {
@@ -349,7 +426,9 @@ class HotelService
         $unitPrice = isset($data['unit_price']) && $data['unit_price'] !== '' ? (float)$data['unit_price'] : $this->getProductPrice($producto->id, $order->cliente_id);
         $discount = isset($data['discount']) ? (float)$data['discount'] : 0;
         $taxData = $this->calculateTaxData($producto->id, $order->cliente_id, $quantity, $unitPrice, $discount);
+        $this->validateSalePriceAboveCost($producto, $order, $unitPrice, $taxData);
         $taxValue = $taxData['valor_impuesto_total'];
+        $lineTotal = $this->validateNonNegativeLineTotal($quantity, $unitPrice, $discount, $taxValue);
         $roomId = isset($data['room_id']) && $data['room_id'] != '' ? (int)$data['room_id'] : $this->orderRoomId($order);
         $bodegaId = $this->roomBodegaIdForOrder($order, $roomId);
 
@@ -364,7 +443,7 @@ class HotelService
             'unit_price' => $unitPrice,
             'discount' => $discount,
             'tax_value' => $taxValue,
-            'line_total' => HotelOrderLine::calculateTotal($quantity, $unitPrice, $discount, $taxValue),
+            'line_total' => $lineTotal,
             'source_type' => isset($data['source_type']) ? $data['source_type'] : HotelOrderLine::SOURCE_MANUAL,
             'source_id' => isset($data['source_id']) && $data['source_id'] != '' ? (int)$data['source_id'] : null,
         ));
@@ -379,18 +458,88 @@ class HotelService
         $quantity = isset($data['quantity']) ? (float)$data['quantity'] : $line->quantity;
         $unitPrice = isset($data['unit_price']) ? (float)$data['unit_price'] : $line->unit_price;
         $discount = isset($data['discount']) ? (float)$data['discount'] : $line->discount;
-        $taxData = $this->calculateTaxData($line->producto_id, $order->cliente_id, $quantity, $unitPrice, $discount);
+        $producto = InvProducto::find((int)$line->producto_id);
+        if (is_null($producto)) {
+            throw new \Exception('El producto no existe.');
+        }
+
+        $taxData = $this->calculateTaxData($producto->id, $order->cliente_id, $quantity, $unitPrice, $discount);
+        $this->validateSalePriceAboveCost($producto, $order, $unitPrice, $taxData);
         $taxValue = $taxData['valor_impuesto_total'];
+        $lineTotal = $this->validateNonNegativeLineTotal($quantity, $unitPrice, $discount, $taxValue);
 
         $line->description = isset($data['description']) ? $data['description'] : $line->description;
         $line->quantity = $quantity;
         $line->unit_price = $unitPrice;
         $line->discount = $discount;
         $line->tax_value = $taxValue;
-        $line->line_total = HotelOrderLine::calculateTotal($quantity, $unitPrice, $discount, $taxValue);
+        $line->line_total = $lineTotal;
         $line->save();
 
         return $line;
+    }
+
+    private function validateNonNegativeLineTotal($quantity, $unitPrice, $discount, $taxValue)
+    {
+        $lineTotal = HotelOrderLine::calculateTotal($quantity, $unitPrice, $discount, $taxValue);
+
+        if ($lineTotal < 0) {
+            throw new \Exception('El total de la linea no puede ser negativo.');
+        }
+
+        return $lineTotal;
+    }
+
+    private function validateSalePriceAboveCost(InvProducto $producto, HotelOrderHeader $order, $unitPrice, $taxData)
+    {
+        if ((int)config('ventas.permitir_venta_menor_costo') == 1) {
+            return true;
+        }
+
+        $cost = $this->productCostForOrder($producto, $order);
+        if ($cost <= 0) {
+            return true;
+        }
+
+        $taxRate = isset($taxData['tasa_impuesto']) ? (float)$taxData['tasa_impuesto'] : 0;
+        $baseUnit = (float)$unitPrice;
+        if ($taxRate > 0 && $baseUnit > 0) {
+            $baseUnit = round($baseUnit / (1 + ($taxRate / 100)), 6);
+        }
+
+        if ($baseUnit < $cost) {
+            throw new \Exception('El precio esta por debajo del costo de venta del producto. $' . number_format($cost, 0, ',', '.') . ' + IVA');
+        }
+
+        return true;
+    }
+
+    private function productCostForOrder(InvProducto $producto, HotelOrderHeader $order)
+    {
+        $roomId = $this->orderRoomId($order);
+        $bodegaId = 0;
+
+        if ($roomId > 0) {
+            $room = null;
+            if (!is_null($order->stay) && !is_null($order->stay->room) && (int)$order->stay->room->id == $roomId) {
+                $room = $order->stay->room;
+            }
+
+            if (is_null($room)) {
+                $room = HotelRoom::where('empresa_id', $order->empresa_id)->where('id', $roomId)->first();
+            }
+
+            if (!is_null($room) && !empty($room->inv_bodega_id)) {
+                $bodegaId = (int)$room->inv_bodega_id;
+            }
+        }
+
+        $cost = (float)InvCostoPromProducto::get_costo_promedio($bodegaId, $producto->id);
+        if ($cost > 0) {
+            return $cost;
+        }
+
+        return isset($producto->precio_compra) ? (float)$producto->precio_compra : 0;
     }
 
     public function deleteLine(HotelOrderHeader $order, HotelOrderLine $line)
@@ -467,7 +616,7 @@ class HotelService
             }
             $service->validateStockForOpenOrder($order);
 
-            $pdv = !empty($order->pdv_id) ? Pdv::find((int)$order->pdv_id) : $service->currentCashierPdvOrFail();
+            $pdv = $service->pdvForHotelOrderInvoice($order);
             if (is_null($pdv)) {
                 throw new \Exception('No existe un punto de venta POS asociado al pedido hotelero.');
             }
@@ -550,9 +699,28 @@ class HotelService
 
         if ($convertToElectronic) {
             $doc->hotel_factura_electronica_url = $service->convertPosInvoiceToElectronic($doc);
+            $salesDoc = $service->electronicSalesInvoiceForPos($doc);
+            if (!is_null($salesDoc)) {
+                HotelOrderHeader::where('id', $order->id)->update(array('sales_doc_id' => $salesDoc->id));
+            }
         }
 
         return $doc;
+    }
+
+    private function pdvForHotelOrderInvoice(HotelOrderHeader $order)
+    {
+        $currentPdv = $this->currentCashierPdv();
+
+        if (!is_null($currentPdv) && $currentPdv->estado == 'Abierto') {
+            return $currentPdv;
+        }
+
+        if (!empty($order->pdv_id)) {
+            return Pdv::find((int)$order->pdv_id);
+        }
+
+        return $this->currentCashierPdvOrFail();
     }
 
     private function validateElectronicInvoiceResolution()
@@ -580,6 +748,33 @@ class HotelService
         }
 
         return $url;
+    }
+
+    private function electronicSalesInvoiceForPos(FacturaPos $doc)
+    {
+        $doc = FacturaPos::find((int)$doc->id);
+        if (is_null($doc)) {
+            return null;
+        }
+
+        if (Schema::hasColumn('vtas_doc_encabezados', 'ventas_doc_relacionado_id')) {
+            $salesDoc = VtasDocEncabezado::where('core_empresa_id', $doc->core_empresa_id)
+                ->where('core_tipo_transaccion_id', 52)
+                ->where('ventas_doc_relacionado_id', $doc->id)
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            if (!is_null($salesDoc)) {
+                return $salesDoc;
+            }
+        }
+
+        return VtasDocEncabezado::where('core_empresa_id', $doc->core_empresa_id)
+            ->where('core_tipo_transaccion_id', $doc->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $doc->core_tipo_doc_app_id)
+            ->where('consecutivo', $doc->consecutivo)
+            ->orderBy('id', 'DESC')
+            ->first();
     }
 
     public function validateStockForOpenOrder(HotelOrderHeader $order, $date = null)

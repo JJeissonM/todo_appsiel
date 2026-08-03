@@ -79,6 +79,10 @@ class HotelOrderLine extends Model
         }
 
         $line->line_total = self::calculateTotal((float)$line->quantity, (float)$line->unit_price, (float)$line->discount, (float)$line->tax_value);
+
+        if ($line->line_total < 0) {
+            throw new \Exception('El total de la linea no puede ser negativo.');
+        }
     }
 
     public function order()
@@ -94,6 +98,15 @@ class HotelOrderLine extends Model
     public function room()
     {
         return $this->belongsTo('App\Hotel\HotelRoom', 'room_id');
+    }
+
+    public function product_is_a_room()
+    {
+        if(HotelRoom::where('inv_producto_id', $this->producto_id)->exists()) {
+            return true;
+        }
+
+        return false;
     }
 
     public function bodega()

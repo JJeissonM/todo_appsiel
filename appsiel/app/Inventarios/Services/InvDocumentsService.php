@@ -45,6 +45,9 @@ class InvDocumentsService
 
     public function store_document_lines( $datos, $doc_encabezado, array $lineas_registros)
     {
+        $datos['hora_inicio'] = $doc_encabezado->hora_inicio;
+        $datos['hora_finalizacion'] = $doc_encabezado->hora_finalizacion;
+
         $cantidad_registros = count($lineas_registros);
         
         $average_cost_serv = new AverageCost();

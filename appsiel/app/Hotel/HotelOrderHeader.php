@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Hotel\Support\HotelCreatorLabel;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\VentasPos\FacturaPos;
@@ -24,7 +25,7 @@ class HotelOrderHeader extends Model
 
     protected $fillable = array('empresa_id', 'stay_id', 'cliente_id', 'pdv_id', 'document_number', 'order_date', 'status', 'invoice_type', 'sales_doc_id', 'pos_doc_id', 'notes', 'created_by');
 
-    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Estadía', 'Habitación', 'Cliente', 'Factura', 'Estado');
+    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Doc', 'Creado por', 'Fecha', 'Estadía', 'Hab', 'Cliente', 'Factura, Creado por', 'Estado');
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"hotel/orders/id_fila"}';
 
@@ -106,18 +107,29 @@ class HotelOrderHeader extends Model
         return $this->belongsTo('App\User', 'created_by');
     }
 
+    public function creatorLabel()
+    {
+        $user = $this->creador_por;
+        if (is_null($user)) {
+            $user = $this->creador_por()->first();
+        }
+
+        return HotelCreatorLabel::userLabel($user, !empty($this->order_date) ? $this->order_date : $this->created_at, $this->pdv_id);
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return self::queryForIndex($search)
             ->select(
-                'hotel_order_headers.order_date AS campo1',
-                DB::raw('IFNULL(hotel_order_headers.document_number, CONCAT("PED-", hotel_order_headers.id)) AS campo2'),
-                DB::raw('CONCAT("#", hotel_stays.id) AS campo3'),
-                'hotel_rooms.room_number AS campo4',
-                'core_terceros.descripcion AS campo5',
-                DB::raw('CASE WHEN hotel_order_headers.invoice_type = "POS" AND hotel_order_headers.pos_doc_id IS NOT NULL THEN CONCAT(IFNULL(pos_tipo_doc.prefijo, ""), " ", IFNULL(pos_doc.consecutivo, hotel_order_headers.pos_doc_id)) WHEN hotel_order_headers.invoice_type = "STANDARD" AND hotel_order_headers.sales_doc_id IS NOT NULL THEN CONCAT("Ventas ", IFNULL(sales_tipo_doc.prefijo, ""), " ", IFNULL(sales_doc.consecutivo, hotel_order_headers.sales_doc_id)) ELSE "" END AS campo6'),
-                'hotel_order_headers.status AS campo7',
-                'hotel_order_headers.id AS campo8'
+                DB::raw('IFNULL(hotel_order_headers.document_number, CONCAT("PED-", hotel_order_headers.id)) AS campo1'),
+                DB::raw('IFNULL(users.name, "") AS campo2'),
+                'hotel_order_headers.order_date AS campo3',
+                DB::raw('CONCAT("#", hotel_stays.id) AS campo4'),
+                'hotel_rooms.room_number AS campo5',
+                'core_terceros.descripcion AS campo6',
+                DB::raw('CASE WHEN hotel_order_headers.invoice_type = "POS" AND hotel_order_headers.pos_doc_id IS NOT NULL THEN CONCAT(IFNULL(pos_tipo_doc.prefijo, ""), " ", IFNULL(pos_doc.consecutivo, hotel_order_headers.pos_doc_id), IF(IFNULL(pos_creator.name, "") <> "", CONCAT(", ", pos_creator.name), IF(IFNULL(pos_doc.creado_por, "") <> "", CONCAT(", ", pos_doc.creado_por), ""))) WHEN hotel_order_headers.invoice_type = "STANDARD" AND hotel_order_headers.sales_doc_id IS NOT NULL THEN CONCAT("Ventas ", IFNULL(sales_tipo_doc.prefijo, ""), " ", IFNULL(sales_doc.consecutivo, hotel_order_headers.sales_doc_id), IF(IFNULL(sales_creator.name, "") <> "", CONCAT(", ", sales_creator.name), IF(IFNULL(sales_doc.creado_por, "") <> "", CONCAT(", ", sales_doc.creado_por), ""))) ELSE "" END AS campo7'),
+                'hotel_order_headers.status AS campo8',
+                'hotel_order_headers.id AS campo9'
             )
             ->orderBy('hotel_order_headers.order_date', 'DESC')
             ->paginate($nro_registros);
@@ -128,12 +140,13 @@ class HotelOrderHeader extends Model
         return self::queryForIndex($search)
             ->select(
                 'hotel_order_headers.document_number AS DOCUMENTO',
+                DB::raw('IFNULL(users.name, "") AS CREADO_POR'),
                 'hotel_stays.id AS ESTADIA',
                 'hotel_rooms.room_number AS HABITACION',
                 'core_terceros.descripcion AS CLIENTE',
                 'hotel_order_headers.order_date AS FECHA',
                 'hotel_order_headers.status AS ESTADO',
-                DB::raw('CASE WHEN hotel_order_headers.invoice_type = "POS" AND hotel_order_headers.pos_doc_id IS NOT NULL THEN CONCAT(IFNULL(pos_tipo_doc.prefijo, ""), " ", IFNULL(pos_doc.consecutivo, hotel_order_headers.pos_doc_id)) WHEN hotel_order_headers.invoice_type = "STANDARD" AND hotel_order_headers.sales_doc_id IS NOT NULL THEN CONCAT("Ventas ", IFNULL(sales_tipo_doc.prefijo, ""), " ", IFNULL(sales_doc.consecutivo, hotel_order_headers.sales_doc_id)) ELSE "" END AS FACTURA')
+                DB::raw('CASE WHEN hotel_order_headers.invoice_type = "POS" AND hotel_order_headers.pos_doc_id IS NOT NULL THEN CONCAT(IFNULL(pos_tipo_doc.prefijo, ""), " ", IFNULL(pos_doc.consecutivo, hotel_order_headers.pos_doc_id), IF(IFNULL(pos_creator.name, "") <> "", CONCAT(", ", pos_creator.name), IF(IFNULL(pos_doc.creado_por, "") <> "", CONCAT(", ", pos_doc.creado_por), ""))) WHEN hotel_order_headers.invoice_type = "STANDARD" AND hotel_order_headers.sales_doc_id IS NOT NULL THEN CONCAT("Ventas ", IFNULL(sales_tipo_doc.prefijo, ""), " ", IFNULL(sales_doc.consecutivo, hotel_order_headers.sales_doc_id), IF(IFNULL(sales_creator.name, "") <> "", CONCAT(", ", sales_creator.name), IF(IFNULL(sales_doc.creado_por, "") <> "", CONCAT(", ", sales_doc.creado_por), ""))) ELSE "" END AS FACTURA')
             )
             ->toSql();
     }
@@ -178,7 +191,8 @@ class HotelOrderHeader extends Model
             }
 
             if (!is_null($doc) && !is_null($doc->tipo_documento_app)) {
-                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo;
+
+                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo . ', ' . $this->invoiceCreatorLabel($doc);
             }
 
             return $this->pos_doc_id;
@@ -191,7 +205,7 @@ class HotelOrderHeader extends Model
             }
 
             if (!is_null($doc) && !is_null($doc->tipo_documento_app)) {
-                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo;
+                return $doc->tipo_documento_app->prefijo . ' ' . $doc->consecutivo . ' (Creado por ' . $this->invoiceCreatorLabel($doc) . ')';
             }
 
             return $this->sales_doc_id;
@@ -200,9 +214,80 @@ class HotelOrderHeader extends Model
         return '';
     }
 
+    public function factura_creada_por( $doc )
+    {
+        if (!is_object($doc)) {
+            $creado_por = new \stdClass();
+            $creado_por->name = 'Desconocido';
+            return $creado_por;
+        }
+
+        if (!method_exists($doc, 'creado_por')) {
+            if (isset($doc->creado_por) && trim((string)$doc->creado_por) != '') {
+                return $doc->creado_por;
+            }
+
+            $creado_por = new \stdClass();
+            $creado_por->name = 'Desconocido';
+            return $creado_por;
+        }
+
+        $creado_por = $doc->creado_por();
+        if (is_null($creado_por)) {
+            $creado_por = new \stdClass();
+            $creado_por->name = 'Desconocido';
+        }
+        return $creado_por;
+    }
+
+    protected function invoiceCreatorLabel($doc)
+    {
+        return HotelCreatorLabel::userLabel(
+            $this->factura_creada_por($doc),
+            $this->invoiceResponsibleDate($doc),
+            $this->invoiceResponsiblePdvId($doc)
+        );
+    }
+
+    protected function invoiceResponsibleDate($doc)
+    {
+        if (is_object($doc)) {
+            if (isset($doc->created_at) && !empty($doc->created_at)) {
+                return $doc->created_at;
+            }
+
+            if (isset($doc->fecha) && !empty($doc->fecha)) {
+                return $doc->fecha;
+            }
+        }
+
+        return !empty($this->order_date) ? $this->order_date : $this->created_at;
+    }
+
+    protected function invoiceResponsiblePdvId($doc)
+    {
+        if (is_object($doc) && isset($doc->pdv_id) && !empty($doc->pdv_id)) {
+            return $doc->pdv_id;
+        }
+
+        return $this->pdv_id;
+    }
+
     public function invoiceUrl()
     {
         if ($this->invoice_type == self::INVOICE_POS && !empty($this->pos_doc_id)) {
+            $doc = $this->posInvoice;
+            if (is_null($doc)) {
+                $doc = FacturaPos::find($this->pos_doc_id);
+            }
+
+            if (!is_null($doc) && (int)$doc->core_tipo_transaccion_id == 52) {
+                $salesDoc = $this->electronicSalesInvoiceForPos($doc);
+                if (!is_null($salesDoc)) {
+                    return url('fe_factura/' . $salesDoc->id . '?id=21&id_modelo=244&id_transaccion=52');
+                }
+            }
+
             return url('pos_factura/' . $this->pos_doc_id . '?id=20&id_modelo=230&id_transaccion=47');
         }
 
@@ -211,6 +296,39 @@ class HotelOrderHeader extends Model
         }
 
         return '';
+    }
+
+    protected function electronicSalesInvoiceForPos($posDoc)
+    {
+        if (!empty($this->sales_doc_id)) {
+            $salesDoc = VtasDocEncabezado::find($this->sales_doc_id);
+            if (!is_null($salesDoc)) {
+                return $salesDoc;
+            }
+        }
+
+        if (is_null($posDoc)) {
+            return null;
+        }
+
+        if (Schema::hasColumn('vtas_doc_encabezados', 'ventas_doc_relacionado_id')) {
+            $salesDoc = VtasDocEncabezado::where('core_empresa_id', $posDoc->core_empresa_id)
+                ->where('core_tipo_transaccion_id', 52)
+                ->where('ventas_doc_relacionado_id', $posDoc->id)
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            if (!is_null($salesDoc)) {
+                return $salesDoc;
+            }
+        }
+
+        $query = VtasDocEncabezado::where('core_empresa_id', $posDoc->core_empresa_id)
+            ->where('core_tipo_transaccion_id', $posDoc->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $posDoc->core_tipo_doc_app_id)
+            ->where('consecutivo', $posDoc->consecutivo);
+
+        return $query->orderBy('id', 'DESC')->first();
     }
 
     public static function reopenOrdersForCancelledSalesInvoice($salesDocId, $relatedPosDocId = null)
@@ -381,9 +499,12 @@ class HotelOrderHeader extends Model
             ->leftJoin('hotel_rooms', 'hotel_rooms.id', '=', 'hotel_stays.room_id')
             ->leftJoin('vtas_clientes', 'vtas_clientes.id', '=', 'hotel_order_headers.cliente_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_clientes.core_tercero_id')
+            ->leftJoin('users', 'users.id', '=', 'hotel_order_headers.created_by')
             ->leftJoin('vtas_pos_doc_encabezados AS pos_doc', 'pos_doc.id', '=', 'hotel_order_headers.pos_doc_id')
+            ->leftJoin('users AS pos_creator', 'pos_creator.email', '=', 'pos_doc.creado_por')
             ->leftJoin('core_tipos_docs_apps AS pos_tipo_doc', 'pos_tipo_doc.id', '=', 'pos_doc.core_tipo_doc_app_id')
             ->leftJoin('vtas_doc_encabezados AS sales_doc', 'sales_doc.id', '=', 'hotel_order_headers.sales_doc_id')
+            ->leftJoin('users AS sales_creator', 'sales_creator.email', '=', 'sales_doc.creado_por')
             ->leftJoin('core_tipos_docs_apps AS sales_tipo_doc', 'sales_tipo_doc.id', '=', 'sales_doc.core_tipo_doc_app_id');
 
         if (Auth::check()) {

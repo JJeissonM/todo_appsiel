@@ -17,6 +17,7 @@ use App\CxC\DocumentosPendientes;
 
 use App\Inventarios\Services\InvDocumentsService;
 use App\Tesoreria\TesoMovimiento;
+use Illuminate\Support\Facades\DB;
 
 class AccumulationService
 {
@@ -127,10 +128,21 @@ class AccumulationService
 
     /**
      * Acumular y Contabilizar una factura
-    */
+     */
     public function accumulate_one_invoice($invoice_id)
     {
+        return DB::transaction(function () use ($invoice_id) {
+            return $this->accumulate_one_invoice_without_transaction($invoice_id);
+        });
+    }
+
+    protected function accumulate_one_invoice_without_transaction($invoice_id)
+    {
         $invoice = FacturaPos::find($invoice_id);
+
+        if (is_null($invoice)) {
+            throw new \InvalidArgumentException('No se encontró la factura POS que se quiere acumular.');
+        }
 
         if ($invoice->estado == 'Contabilizado') {
             return 1;
@@ -315,7 +327,18 @@ class AccumulationService
 
     public function accounting_one_invoice($invoice_id)
     {
+        return DB::transaction(function () use ($invoice_id) {
+            return $this->accounting_one_invoice_without_transaction($invoice_id);
+        });
+    }
+
+    protected function accounting_one_invoice_without_transaction($invoice_id)
+    {
         $invoice = FacturaPos::find($invoice_id);
+
+        if (is_null($invoice)) {
+            throw new \InvalidArgumentException('No se encontró la factura POS que se quiere contabilizar.');
+        }
 
         if( $invoice->estado == 'Contabilizado' )
         {
@@ -398,6 +421,11 @@ class AccumulationService
                 $obj_accou_serv->contabilizar_registro($datos, $cta_ingresos_id, 'Cobro de bolsas en factura de ventas', 0, abs($invoice->valor_total_bolsas), null, null);
             }
         }
+
+        // El estado solo cambia a Contabilizado si el asiento completo cuadra.
+        // Cualquier diferencia lanza una excepción y la transacción elimina
+        // todos los movimientos contables creados en este intento.
+        (new AccountingServices())->validar_asiento_cuadrado($invoice);
 
         // Actualizar encabezado de factura
         $invoice->estado = 'Contabilizado';

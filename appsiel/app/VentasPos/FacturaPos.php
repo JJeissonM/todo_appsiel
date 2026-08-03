@@ -11,6 +11,7 @@ use App\Traits\FiltraRegistrosPorUsuario;
 use App\Inventarios\InvDocEncabezado;
 use App\VentasPos\Pdv;
 use App\Tesoreria\TesoMovimiento;
+use App\User;
 use App\Ventas\ResolucionFacturacion;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -39,7 +40,6 @@ class FacturaPos extends Model
         return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
     }
 
-
     public function empresa()
     {
         return $this->belongsTo('App\Core\Empresa', 'core_empresa_id');
@@ -63,6 +63,18 @@ class FacturaPos extends Model
     public function pdv()
     {
         return $this->belongsTo(Pdv::class, 'pdv_id');
+    }
+
+    public function creado_por()
+    {
+        $user = User::where('email', $this->creado_por)->get()->first();
+
+        if ( is_null( $user ) )
+        {
+            return null;
+        }
+
+        return $user;
     }
 
     public function lineas_registros()

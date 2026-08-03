@@ -2,8 +2,10 @@
 
 namespace App\Hotel;
 
+use App\CxC\CxcMovimiento;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 
 class HotelReservation extends Model
@@ -363,9 +365,50 @@ class HotelReservation extends Model
 
     public function cancel()
     {
+        $message = $this->getPendingAdvanceCancelBlockMessage();
+        if (!is_null($message)) {
+            throw new \Exception($message);
+        }
+
         $this->status = self::STATUS_ANULADA;
         $this->save();
         $this->releaseRoomIfNeeded();
+    }
+
+    public function getPendingAdvanceCancelBlockMessage()
+    {
+        $cliente = $this->cliente;
+
+        if (is_null($cliente) || empty($cliente->core_tercero_id)) {
+            return null;
+        }
+
+        $advance = CxcMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('cxc_abonos AS abonos_cruce', function ($join) {
+                $join->on('abonos_cruce.core_empresa_id', '=', 'cxc_movimientos.core_empresa_id')
+                    ->on('abonos_cruce.core_tercero_id', '=', 'cxc_movimientos.core_tercero_id')
+                    ->on('abonos_cruce.core_tipo_transaccion_id', '=', 'cxc_movimientos.core_tipo_transaccion_id')
+                    ->on('abonos_cruce.core_tipo_doc_app_id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
+                    ->on('abonos_cruce.consecutivo', '=', 'cxc_movimientos.consecutivo');
+            })
+            ->where('cxc_movimientos.core_empresa_id', $this->empresa_id)
+            ->where('cxc_movimientos.core_tercero_id', $cliente->core_tercero_id)
+            ->where('cxc_movimientos.saldo_pendiente', '<', -0.1)
+            ->where('cxc_movimientos.estado', '<>', 'Anulado')
+            ->whereNull('abonos_cruce.id')
+            ->select('cxc_movimientos.id', DB::raw('CONCAT(IFNULL(core_tipos_docs_apps.prefijo, ""), " ", cxc_movimientos.consecutivo) AS documento'))
+            ->first();
+
+        if (is_null($advance)) {
+            return null;
+        }
+
+        $documento = trim($advance->documento);
+        if ($documento == '') {
+            $documento = 'CxC #' . $advance->id;
+        }
+
+        return 'No se puede anular la reserva porque el huesped tiene un anticipo (' . $documento . '). Primero debes anular el anticipo para luego anular la reserva.';
     }
 
     public function fulfill($stayId)

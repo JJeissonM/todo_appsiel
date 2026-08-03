@@ -15,6 +15,14 @@
                     <h3>Pedido hotelero {{ $order->document_number }}</h3>
                 </div>
                 <div class="col-md-4 text-right">
+                    @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO && isset($canCancelHotelOrder) && $canCancelHotelOrder)
+                        <form method="POST" action="{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/cancel', array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelOrderHeader')))) }}" style="display:inline-block;">
+                            {{ csrf_field() }}
+                            <button type="submit" class="btn btn-danger btn-sm hotel-confirm-submit" data-message="Anular pedido hotelero?">
+                                <i class="fa fa-ban"></i> Anular pedido
+                            </button>
+                        </form>
+                    @endif
                     <a href="{{ url($hotelUrl::url('hotel/stays/'.$order->stay_id, array('id_modelo' => $hotelUrl::modelId('App\\Hotel\\HotelStay')))) }}" class="btn btn-default btn-sm">Volver a estadia</a>
                 </div>
             </div>
@@ -32,7 +40,7 @@
                 <tr><th>Fecha</th><td>{{ $order->order_date }}</td>
                     <th>Creado por:</th>
                     <td>
-                        {{ $order->creador_por() ? $order->creador_por()->first()->name : '' }}
+                        {{ $order->creatorLabel() }}
                     </td></tr>
                 <tr><th>Bodega minibar</th><td colspan="3">{{ $roomBodegaLabel }}</td></tr>
             </table>
@@ -53,20 +61,28 @@
                             <th>Vlr. Dcto. ($)</th>
                             <th>Impuesto</th>
                             <th>Total</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="hotel_order_lines_body">
                         <?php $total = 0; ?>
                         @foreach($order->lines as $line)
                             <?php $total += $line->line_total; ?>
-                            <tr>
+                            <tr class="hotel-order-line-row" data-line-id="{{ $line->id }}" data-line-total="{{ $line->line_total }}">
                                 <td style="white-space: normal;">{{ $line->product ? $line->product->descripcion : $line->producto_id }}</td>
                                 <td>{{ $line->bodega ? $line->bodega->descripcion : $line->inv_bodega_id }}</td>
                                 <td class="text-right">
                                     ${{ number_format($line->unit_price, 2, ',', '.')   }}
                                     <input type="hidden" name="lines[{{ $line->id }}][unit_price]" value="{{ $line->unit_price }}">
                                 </td>
-                                <td><input type="text" name="lines[{{ $line->id }}][quantity]" class="form-control input-sm text-right" value="{{ $line->quantity }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;"></td>
+                                <td>
+                                    @if($line->product_is_a_room())
+                                        {{ $line->quantity }}
+                                        <input type="hidden" name="lines[{{ $line->id }}][quantity]" value="{{ $line->quantity }}">
+                                    @else
+                                        <input type="text" name="lines[{{ $line->id }}][quantity]" class="form-control input-sm text-right" value="{{ $line->quantity }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;">
+                                    @endif
+                                </td>
                                 <td><input type="text" name="lines[{{ $line->id }}][discount]" class="form-control input-sm text-right" value="{{ $line->discount }}" {{ $order->status != App\Hotel\HotelOrderHeader::STATUS_ABIERTO ? 'disabled' : '' }} style="font-size: 14px;"></td>
                                 <td class="text-right">
                                     ${{ number_format($line->tax_value, 2, ',', '.') }}
@@ -74,11 +90,23 @@
                                 <td class="text-right">
                                     ${{ number_format($line->line_total, 2, ',', '.') }}
                                 </td>
+                                <td>
+                                    @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
+                                        @can('hotel_pedido_retirar_producto_habitacion')
+                                            <button type="button" class="btn btn-danger btn-xs hotel-remove-line" data-line-id="{{ $line->id }}"><i class="fa fa-trash"></i></button>
+                                        @else
+                                            @if(!$line->product_is_a_room())
+                                                <button type="button" class="btn btn-danger btn-xs hotel-remove-line" data-line-id="{{ $line->id }}"><i class="fa fa-trash"></i></button>
+                                            @endif
+                                        @endcan
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                         <tr id="hotel_order_total_row">
                             <th colspan="6" class="text-right">Total</th>
                             <th class="text-right">{{ number_format($total, 2, ',', '.') }}</th>
+                            <th></th>
                         </tr>
                     </tbody>
                 </table>
@@ -86,6 +114,7 @@
 
             @if($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO)
                 <h4>Agregar consumo</h4>
+                    <div id="hotel_deleted_lines"></div>
                     <input type="hidden" name="room_id" value="{{ $order->stay ? $order->stay->room_id : '' }}">
                     <input type="hidden" id="hotel_inv_bodega_id" value="{{ $roomBodegaId }}">
                     <div class="row">
@@ -124,7 +153,7 @@
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> Guardar cambios</button>
+                    <button class="btn btn-primary hotel-backend-submit" type="submit"><i class="fa fa-save"></i> Guardar cambios</button>
                     <br>
                 </form>
             @endif
@@ -145,7 +174,7 @@
                                         <th>Documento</th>
                                         <th>Fecha</th>
                                         <th>Detalle</th>
-                                        <th>Saldo a favor</th>
+                                        <th>Anticipos/Abonos</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -240,7 +269,7 @@
                     <input type="hidden" name="object_anticipos" id="hotel_object_anticipos" value="null">
                     <input type="hidden" id="hotel_electronic_resolution_status" value="{{ isset($electronicResolutionValidation->status) ? $electronicResolutionValidation->status : 'error' }}">
                     <input type="hidden" id="hotel_electronic_resolution_message" value="{{ isset($electronicResolutionValidation->message) ? $electronicResolutionValidation->message : 'No fue posible validar la resolucion de facturacion electronica.' }}">
-                    <button class="btn btn-primary" type="submit"> <i class="fa fa-save"></i> Guardar Factura</button>
+                    <button class="btn btn-primary hotel-backend-submit" type="submit"> <i class="fa fa-save"></i> Guardar Factura</button>
                 </form>
                 <br><br><br><br>
             </div>
@@ -278,7 +307,9 @@
             var hotelOrderTotal = {{ (float)$order->lines->sum('line_total') }};
             var hotelAdvanceObjects = [];
             var hotelCanEditUnitPrice = {{ $canEditHotelOrderPrice ? 'true' : 'false' }};
+            var hotelAllowSaleBelowCost = {{ (int)config('ventas.permitir_venta_menor_costo') }};
             var hotelSelectedTaxRate = 0;
+            var hotelSelectedCost = 0;
 
             function hotelSwalAlert(message, icon) {
                 icon = icon || 'warning';
@@ -306,7 +337,41 @@
                             onConfirm();
                         }
                     });
+                } else if (window.confirm(message)) {
+                    onConfirm();
                 }
+            }
+
+            $('.hotel-confirm-submit').on('click', function(event) {
+                event.preventDefault();
+
+                var $button = $(this);
+                var $form = $button.closest('form');
+                var message = $button.data('message') || 'Confirmar accion?';
+
+                hotelSwalConfirm(message, function() {
+                    hotelSetBackendButtonLoading($button, 'Procesando...');
+                    $form.submit();
+                });
+            });
+
+            function hotelSetBackendButtonLoading($button, label) {
+                if ($button.length === 0) {
+                    return;
+                }
+
+                if ($button.data('hotel-loading') == '1') {
+                    return;
+                }
+
+                $button.data('hotel-loading', '1');
+                $button.data('hotel-original-html', $button.html());
+                $button.prop('disabled', true);
+                $button.html('<i class="fa fa-spinner fa-spin"></i> ' + label);
+            }
+
+            function hotelSetFormLoading($form, label) {
+                hotelSetBackendButtonLoading($form.find('button[type="submit"]').first(), label);
             }
 
             if ($.fn.select2) {
@@ -334,6 +399,7 @@
                     $stock.val('');
                     $stock.attr('placeholder', 'Stock');
                     hotelSelectedTaxRate = 0;
+                    hotelSelectedCost = 0;
                     return;
                 }
 
@@ -375,6 +441,17 @@
                         hotelSelectedTaxRate = 0;
                     }
 
+                    hotelSelectedCost = 0;
+                    if (respuesta.costo_promedio !== undefined && respuesta.costo_promedio !== null && respuesta.costo_promedio !== '') {
+                        hotelSelectedCost = parseFloat(respuesta.costo_promedio);
+                    } else if (respuesta.precio_compra !== undefined && respuesta.precio_compra !== null && respuesta.precio_compra !== '') {
+                        hotelSelectedCost = parseFloat(respuesta.precio_compra);
+                    }
+
+                    if (isNaN(hotelSelectedCost)) {
+                        hotelSelectedCost = 0;
+                    }
+
                     $precio.attr('placeholder', 'Automatico');
                     $stock.attr('placeholder', 'Stock');
                 }).fail(function() {
@@ -382,6 +459,7 @@
                     $stock.val('');
                     $stock.attr('placeholder', 'Stock');
                     hotelSelectedTaxRate = 0;
+                    hotelSelectedCost = 0;
                 });
             }
 
@@ -395,6 +473,29 @@
             function hotelProductLabel() {
                 var text = $producto.find('option:selected').text() || '';
                 return $.trim(text);
+            }
+
+            function hotelValidatePriceAboveCost(unitPrice) {
+                if (hotelAllowSaleBelowCost == 1) {
+                    return true;
+                }
+
+                unitPrice = parseFloat(unitPrice);
+                if (isNaN(unitPrice) || unitPrice <= 0 || hotelSelectedCost <= 0) {
+                    return true;
+                }
+
+                var baseUnitPrice = unitPrice;
+                if (hotelSelectedTaxRate > 0) {
+                    baseUnitPrice = unitPrice / (1 + (hotelSelectedTaxRate / 100));
+                }
+
+                if (baseUnitPrice < hotelSelectedCost) {
+                    hotelSwalAlert('El precio esta por debajo del costo de venta del producto. $' + new Intl.NumberFormat('de-DE').format(Math.round(hotelSelectedCost)) + ' + IVA', 'error');
+                    return false;
+                }
+
+                return true;
             }
 
             function hotelAppendPendingLine() {
@@ -422,6 +523,10 @@
                     return false;
                 }
 
+                if (unitPrice !== '' && !hotelValidatePriceAboveCost(unitPrice)) {
+                    return false;
+                }
+
                 var rowIndex = hotelNewLineIndex++;
                 var displayPrice = unitPrice === '' ? 'Automatico' : '$' + parseFloat(unitPrice).toFixed(2);
                 var lineTotal = unitPrice === '' ? 0 : parseFloat(quantity) * parseFloat(unitPrice);
@@ -430,7 +535,7 @@
                     taxValue = lineTotal - (lineTotal / (1 + (hotelSelectedTaxRate / 100)));
                 }
                 var rowHtml =
-                    '<tr class="hotel-pending-line">' +
+                    '<tr class="hotel-pending-line hotel-order-line-row" data-line-total="' + hotelEscapeHtml(lineTotal) + '">' +
                         '<td style="white-space: normal;">' + hotelEscapeHtml(productLabel) +
                             '<input type="hidden" name="new_lines[' + rowIndex + '][producto_id]" value="' + hotelEscapeHtml(productoId) + '">' +
                             '<input type="hidden" name="new_lines[' + rowIndex + '][room_id]" value="' + hotelEscapeHtml(hotelRoomId) + '">' +
@@ -444,6 +549,7 @@
                         '<td><input type="text" name="new_lines[' + rowIndex + '][discount]" class="form-control input-sm text-right" value="0" style="font-size: 14px;"></td>' +
                         '<td class="text-right">$' + taxValue.toFixed(2) + '</td>' +
                         '<td class="text-right">$' + lineTotal.toFixed(2) + '</td>' +
+                        '<td><button type="button" class="btn btn-danger btn-xs hotel-remove-line" data-new-line="1"><i class="fa fa-trash"></i></button></td>' +
                     '</tr>';
 
                 $('#hotel_order_total_row').before(rowHtml);
@@ -453,6 +559,75 @@
                 $stock.val('');
                 return true;
             }
+
+            function hotelRefreshLinesTotal() {
+                var total = 0;
+
+                $('#hotel_order_lines_body tr.hotel-order-line-row:visible').each(function() {
+                    var rowTotal = parseFloat($(this).attr('data-line-total'));
+                    if (!isNaN(rowTotal)) {
+                        total += rowTotal;
+                    }
+                });
+
+                $('#hotel_order_total_row th').eq(1).text(new Intl.NumberFormat('de-DE', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(total));
+            }
+
+            function hotelParseLineNumber(value) {
+                value = (value || '').toString();
+                value = value.replace('$', '');
+                value = value.replace(/\s/g, '');
+
+                if (value.indexOf(',') >= 0) {
+                    value = value.replace(/\./g, '').replace(',', '.');
+                }
+
+                var number = parseFloat(value);
+                return isNaN(number) ? 0 : number;
+            }
+
+            function hotelValidateNonNegativeLineTotals() {
+                var valid = true;
+
+                $('#hotel_order_lines_body tr.hotel-order-line-row:visible').each(function() {
+                    var $row = $(this);
+                    var quantity = hotelParseLineNumber($row.find('input[name$="[quantity]"]').val());
+                    var unitPrice = hotelParseLineNumber($row.find('input[name$="[unit_price]"]').val());
+                    var discount = hotelParseLineNumber($row.find('input[name$="[discount]"]').val());
+                    var lineTotal = (quantity * unitPrice) - discount;
+
+                    if (lineTotal < 0) {
+                        valid = false;
+                        return false;
+                    }
+                });
+
+                if (!valid) {
+                    hotelSwalAlert('El total de la linea no puede ser negativo.');
+                }
+
+                return valid;
+            }
+
+            $(document).on('click', '.hotel-remove-line', function() {
+                var $button = $(this);
+                var $row = $button.closest('tr');
+                var lineId = $button.attr('data-line-id');
+
+                hotelSwalConfirm('Eliminar esta linea del pedido?', function() {
+                    if (lineId !== undefined && lineId !== '') {
+                        $('#hotel_deleted_lines').append(
+                            '<input type="hidden" name="deleted_lines[]" value="' + hotelEscapeHtml(lineId) + '">'
+                        );
+                    }
+
+                    $row.remove();
+                    hotelRefreshLinesTotal();
+                });
+            });
 
             $('#hotel_add_pending_line').on('click', function() {
                 hotelAppendPendingLine();
@@ -466,6 +641,12 @@
                     }
                 }
 
+                if (!hotelValidateNonNegativeLineTotals()) {
+                    event.preventDefault();
+                    return false;
+                }
+
+                hotelSetFormLoading($(this), 'Guardando...');
                 return true;
             });
 
@@ -762,6 +943,7 @@
                     hotelSwalConfirm('Generar factura?', function() {
                         prepareHotelInvoiceSubmit($form);
                         $form.data('hotel-confirmed', '1');
+                        hotelSetFormLoading($form, 'Generando...');
                         $form.submit();
                     });
                 }

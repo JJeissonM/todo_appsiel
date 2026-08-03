@@ -51,7 +51,10 @@ function calcular_cantidad(fila, valor_total_nuevo)
 
   fila.find(".valor_impuesto").text(precio_unitario - base_impuesto_unitario);
 
-  fila.find(".cantidad").text(cantidad.toFixed(2));
+  // Conservar la precisión completa en el dato que se envía al servidor.
+  // Redondear aquí hacía que, por ejemplo, $16.000 / $14.000 se enviara
+  // como 1.14 y el total terminara recalculado en $15.960 al guardar.
+  fila.find(".cantidad").text(cantidad);
   var elemento = fila.find(".elemento_modificar");
   elemento.eq(0).text(cantidad.toFixed(2));
 

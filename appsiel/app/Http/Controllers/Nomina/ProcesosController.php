@@ -26,6 +26,10 @@ class ProcesosController extends Controller
     	$nom_doc_encabezado_id = $request->nom_doc_encabezado_id;
     	$encabezado_documento = NomDocEncabezado::find( $nom_doc_encabezado_id );
 
+        if ( !$encabezado_documento->esta_activo_para_transacciones() ) {
+            return '<div class="alert alert-warning">El documento de nómina no puede modificarse porque no está en estado Activo.</div>';
+        }
+
     	$archivo = new ArchivoPlano( $encabezado_documento, file( $request->archivo_plano ) );
 
     	$lineas_archivo_plano = $archivo->validar_estructura_archivo();
@@ -37,6 +41,10 @@ class ProcesosController extends Controller
     {
         $nom_doc_encabezado_id = $request->documento_encabezado_id;
         $encabezado_documento = NomDocEncabezado::find( $nom_doc_encabezado_id );
+
+        if ( !$encabezado_documento->esta_activo_para_transacciones() ) {
+            return redirect( 'index_procesos/nomina.procesos.transacciones_via_interface?id=17' )->with('mensaje_error','El documento de nómina no puede modificarse porque no está en estado Activo.');
+        }
 
         $lineas_registros = json_decode( $request->lineas_registros );
         $cantidad_registros = 0;

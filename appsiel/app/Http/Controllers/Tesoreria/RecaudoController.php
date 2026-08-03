@@ -638,6 +638,10 @@ class RecaudoController extends TransaccionController
      */
     public function anular_recaudo($id)
     {
+        if (!Auth::user()->can('teso_anular_recaudo_general')) {
+            return redirect('tesoreria/recaudos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion'))->with('mensaje_error','No tiene permiso para anular recaudos generales.');
+        }
+
         $documento = TesoDocEncabezado::find($id);
         $modificado_por = Auth::user()->email;
 

@@ -42,12 +42,14 @@ class HotelStayController extends Controller
         $stay->ensureCheckInRecords();
         $stay = $this->findStay($id);
         $clients = $this->clientsList();
-        $anticipos = $this->anticiposCliente($stay);
+        $anticipos = $stay->anticiposCliente();
         $hotelService = new HotelService();
         $cancelBlockMessage = $hotelService->getCancelInvoiceBlockMessage($stay);
+        $editBlockMessage = $hotelService->getEditDatesBlockMessage($stay);
         $checkOutBlockMessage = $hotelService->getCheckOutOpenOrdersBlockMessage($stay);
+        $canCancelHotelOrder = $this->canCancelHotelOrder();
         $miga_pan = $this->breadcrumb('Estadia #' . $stay->id);
-        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'cancelBlockMessage', 'checkOutBlockMessage', 'miga_pan'));
+        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'cancelBlockMessage', 'editBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'miga_pan'));
     }
 
     public function createCheckIn()
@@ -149,21 +151,31 @@ class HotelStayController extends Controller
         return $options;
     }
 
-    private function anticiposCliente(HotelStay $stay)
+    private function canCancelHotelOrder()
     {
-        if (is_null($stay->mainGuest) || empty($stay->mainGuest->core_tercero_id)) {
-            return array();
+        if (!Auth::check()) {
+            return false;
         }
 
-        $rows = CxcMovimiento::get_documentos_tercero($stay->mainGuest->core_tercero_id, date('Y-m-d'));
-        $anticipos = array();
-        foreach ($rows as $row) {
-            if ((float)$row['saldo_pendiente'] < -0.1) {
-                $anticipos[] = $row;
+        $user = Auth::user();
+
+        if (method_exists($user, 'can')) {
+            try {
+                if ($user->can('hotel_pedido_anular')) {
+                    return true;
+                }
+            } catch (\Exception $e) {
+                // Algunas instalaciones antiguas pueden no tener este permiso sembrado.
             }
         }
 
-        return $anticipos;
+        if (method_exists($user, 'hasRole')) {
+            if ($user->hasRole('SuperAdmin') || $user->hasRole('Administrador') || $user->hasRole('Admin Colegio')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function breadcrumb($label)

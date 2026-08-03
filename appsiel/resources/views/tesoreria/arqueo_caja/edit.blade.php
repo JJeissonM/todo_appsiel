@@ -3,11 +3,25 @@
 @section('campos_adicionales')    
     <?php 
         $valor_base = $registro->base;
+        $pdv_id_arqueo = isset($registro->pdv_id) ? (int)$registro->pdv_id : 0;
+        $fecha_hora_apertura_arqueo = isset($registro->fecha_hora_apertura) ? $registro->fecha_hora_apertura : '';
+        $fecha_hora_cierre_arqueo = isset($registro->fecha_hora_cierre) ? $registro->fecha_hora_cierre : '';
+
+        if (substr($fecha_hora_apertura_arqueo, 0, 10) == '0000-00-00') {
+            $fecha_hora_apertura_arqueo = '';
+        }
+
+        if (substr($fecha_hora_cierre_arqueo, 0, 10) == '0000-00-00') {
+            $fecha_hora_cierre_arqueo = '';
+        }
     ?>
     <br>
     
     <div class="container-fluid">
         <input type="hidden" id="creado_por_arqueo" value="{{ $registro->creado_por }}">
+        <input type="hidden" id="pdv_id" name="pdv_id" value="{{ $pdv_id_arqueo }}">
+        <input type="hidden" id="fecha_hora_apertura" name="fecha_hora_apertura" value="{{ $fecha_hora_apertura_arqueo }}">
+        <input type="hidden" id="fecha_hora_cierre" name="fecha_hora_cierre" value="{{ $fecha_hora_cierre_arqueo }}">
         
         <h4><i class="fa fa-money"></i> Saldo inicial:</h4>
         <input type="number" id="base" min="0" autocomplete="off" class="form-control" name="base" placeholder="$" value="{{$valor_base}}" required="required" style="width: 200px; text-align: right;">
@@ -173,6 +187,12 @@
 
             var sum;
 
+            $('#teso_caja_id').on('change', function () {
+                $('#pdv_id').val('');
+                $('#fecha_hora_apertura').val('');
+                $('#fecha_hora_cierre').val('');
+            });
+
             // PARA BILLETES
             $('.cantidad_b').on('change keyup', function () {
                 var fila = $(this).closest('tr');
@@ -251,6 +271,23 @@
                 $('#lbl_total_efectivo').text('$' + new Intl.NumberFormat("de-DE").format(total_efectivo));
             }
 
+            function valorFechaHoraArqueo(selector) {
+                var valor = $(selector).val();
+                if (!valor || valor.indexOf('0000-00-00') === 0) {
+                    return '';
+                }
+
+                return valor;
+            }
+
+            function obtenerMensajeErrorAjax(xhr, fallback) {
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    return xhr.responseJSON.message;
+                }
+
+                return fallback;
+            }
+
             function get_mov_entrada(){
                 $('#div_cargando').show();
                 var url = '../../../tesoreria/get_tabla_movimiento';
@@ -259,7 +296,10 @@
                     fecha_desde: $('#fecha').val(),
                     fecha_hasta: $('#fecha').val(),
                     teso_caja_id: $('#teso_caja_id').val(),
-                    creado_por: $('#creado_por_arqueo').val()
+                    creado_por: $('#creado_por_arqueo').val(),
+                    pdv_id: $('#pdv_id').val(),
+                    fecha_hora_apertura: valorFechaHoraArqueo('#fecha_hora_apertura'),
+                    fecha_hora_cierre: valorFechaHoraArqueo('#fecha_hora_cierre')
                 })
                     .done(function (respuesta) {
                         $('#div_cargando').hide();
@@ -269,6 +309,9 @@
                         calcular_total_sistema();
 
                         calcular_total_saldo();
+                    }).fail(function (xhr) {
+                        $('#div_cargando').hide();
+                        alert(obtenerMensajeErrorAjax(xhr, 'No fue posible obtener los movimientos de entrada.'));
                     });
             }
 
@@ -306,7 +349,10 @@
                     fecha_desde: $('#fecha').val(),
                     fecha_hasta: $('#fecha').val(),
                     teso_caja_id: $('#teso_caja_id').val(),
-                    creado_por: $('#creado_por_arqueo').val()
+                    creado_por: $('#creado_por_arqueo').val(),
+                    pdv_id: $('#pdv_id').val(),
+                    fecha_hora_apertura: valorFechaHoraArqueo('#fecha_hora_apertura'),
+                    fecha_hora_cierre: valorFechaHoraArqueo('#fecha_hora_cierre')
                 })
                     .done(function (respuesta) {
                         $('#div_cargando').hide();
@@ -316,6 +362,9 @@
                         calcular_total_sistema();
 
                         calcular_total_saldo();
+                    }).fail(function (xhr) {
+                        $('#div_cargando').hide();
+                        alert(obtenerMensajeErrorAjax(xhr, 'No fue posible obtener los movimientos de salida.'));
                     });
             }
 

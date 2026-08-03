@@ -56,6 +56,10 @@ class RetefuenteController extends TransaccionController
         
         $documento_nomina = NomDocEncabezado::find( (int)$request->nom_doc_encabezado_id );
 
+        if ( !$documento_nomina->esta_activo_para_transacciones() ) {
+            return '<div class="alert alert-warning">El documento de nómina no puede modificarse porque no está en estado Activo.</div>';
+        }
+
         (new ParametroLegalService())->aplicarParametrosEnConfig($documento_nomina->fecha);
 
         // Se obtienen los Empleados del documento de nómina
@@ -173,6 +177,11 @@ class RetefuenteController extends TransaccionController
     public function retirar_liquidacion($doc_encabezado_id)
     {
         $documento_nomina = NomDocEncabezado::find( $doc_encabezado_id );
+
+        if ( !$documento_nomina->esta_activo_para_transacciones() ) {
+            return '<div class="alert alert-warning">El documento de nómina no puede modificarse porque no está en estado Activo.</div>';
+        }
+
         $registros_documento = $documento_nomina->registros_liquidacion;
 
         foreach ( $registros_documento as $registro )

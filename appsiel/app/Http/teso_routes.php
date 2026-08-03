@@ -126,6 +126,7 @@ Route::resource('tesoreria/conciliacion_bancaria', 'Tesoreria\ConciliacionBancar
 	REPORTES
 */
 Route::get('tesoreria/get_tabla_movimiento','Tesoreria\ReporteController@get_tabla_movimiento');
+Route::get('tesoreria/get_turnos_pdv_fecha','Tesoreria\ArqueoCajaController@get_turnos_pdv_fecha')->middleware('auth');
 Route::get('tesoreria/cartera_vencida_estudiantes','Tesoreria\ReporteController@cartera_vencida_estudiantes');
 Route::get('tesoreria/flujo_de_efectivo','Tesoreria\ReporteController@flujo_de_efectivo');
 Route::post('tesoreria/ajax_flujo_de_efectivo','Tesoreria\ReporteController@ajax_flujo_de_efectivo');

@@ -7,23 +7,34 @@
 @section('sidebar')
 	{{ Form::open(['url'=> $reporte->url_form_action . '?id=' . Input::get('id') ,'id'=>'form_consulta', 'data-url_form_action' => $reporte->url_form_action]) }}
 
-		@foreach( $lista_campos as $campo)
-			<?php 
-				$requerido = '';
-				if ( $campo['requerido'] )
-				{
-					$requerido = '*';
-				}
-			?>
-			<div class="form-group">
-				{{ Form::label( $campo['name'], $requerido.$campo['descripcion'] ) }}
-				@if( is_array($campo['opciones']) )
-					{{ Form::{$campo['tipo']}( $campo['name'], $campo['opciones'], null, $campo['atributos'] ) }}
+			@foreach( $lista_campos as $campo)
+				<?php
+					$requerido = '';
+					if ( $campo['requerido'] )
+					{
+						$requerido = '*';
+					}
+
+					$label = $requerido.$campo['descripcion'];
+					$componentes_con_opciones = array('bsSelect', 'bsSelectCreate', 'bsSelectName', 'bsSelectTerceros', 'multiselect_autocomplete', 'bsCheckBox', 'bsRadioBtn', 'bsFecha', 'bsFechaHora', 'bsHora');
+					$componentes_sin_opciones = array('bsLabel', 'bsText', 'bsEmail', 'bsNumber', 'bsTextArea', 'bsPassword', 'bsInputListaSugerencias', 'bsClienteAutocomplete');
+				?>
+
+				@if( in_array($campo['tipo'], $componentes_con_opciones) )
+					{{ Form::{$campo['tipo']}( $campo['name'], null, $label, is_array($campo['opciones']) ? $campo['opciones'] : array(), $campo['atributos'] ) }}
+				@elseif( in_array($campo['tipo'], $componentes_sin_opciones) )
+					{{ Form::{$campo['tipo']}( $campo['name'], null, $label, $campo['atributos'] ) }}
 				@else
-					{{ Form::{$campo['tipo']}( $campo['name'], null, $campo['atributos'] ) }}
+					<div class="form-group">
+						{{ Form::label( $campo['name'], $label ) }}
+						@if( is_array($campo['opciones']) )
+							{{ Form::{$campo['tipo']}( $campo['name'], $campo['opciones'], null, $campo['atributos'] ) }}
+						@else
+							{{ Form::{$campo['tipo']}( $campo['name'], null, $campo['atributos'] ) }}
+						@endif
+					</div>
 				@endif
-			</div>
-		@endforeach
+			@endforeach
 
 		<?php
 			$reports_list = [
@@ -32,14 +43,21 @@
 			$reports_list_print = [
 						75 // POS: Resúmen Diario de Ventas
 					];
+			$tam_hoja_default = null;
+			$orientacion_default = null;
+			if ( $reporte->url_form_action == 'hotel/reports/migration' )
+			{
+				$tam_hoja_default = 'folio';
+				$orientacion_default = 'Landscape';
+			}
 		?>
 		@if( !in_array(Input::get('reporte_id'), $reports_list) )
 			{{ Form::label( 'tam_hoja', 'Tamaño hoja' ) }}
-			{{ Form::select('tam_hoja',['letter'=>'Carta','folio'=>'Oficio','pos_80mm'=>'POS 80mm'],null,['id'=>'tam_hoja']) }}
+			{{ Form::select('tam_hoja',['letter'=>'Carta','folio'=>'Oficio','pos_80mm'=>'POS 80mm'],$tam_hoja_default,['id'=>'tam_hoja']) }}
 
 			<br>
 			{{ Form::label( 'orientacion', 'Orientación' ) }}
-			{{ Form::select('orientacion',['Portrait'=>'Vertical','Landscape'=>'Horizontal'],null,['id'=>'orientacion']) }}
+			{{ Form::select('orientacion',['Portrait'=>'Vertical','Landscape'=>'Horizontal'],$orientacion_default,['id'=>'orientacion']) }}
 		@endif
 
 		{{ Form::hidden( 'debug_trace', 0 ) }}

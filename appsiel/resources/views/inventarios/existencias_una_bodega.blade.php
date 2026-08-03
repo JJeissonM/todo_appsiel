@@ -23,6 +23,10 @@
 						<br/>
 						<input type="hidden" name="bodega_id" value="{{ $bodega->id }}" id="bodega_id">
 						{{ Form::bsFecha('fecha_corte', $fecha_corte, 'Fecha corte', null, ['id'=>'fecha_corte']) }}
+						{{ Form::label('hora_inicio', 'Hora inicio (opcional)') }}
+						{{ Form::input('time', 'hora_inicio', Input::get('hora_inicio'), ['class'=>'form-control','id'=>'hora_inicio','step'=>'1']) }}
+						{{ Form::label('hora_finalizacion', 'Hora finalizacion (opcional)') }}
+						{{ Form::input('time', 'hora_finalizacion', Input::get('hora_finalizacion'), ['class'=>'form-control','id'=>'hora_finalizacion','step'=>'1']) }}
 					</div>
 				</div>
 			</div>
@@ -114,12 +118,14 @@
 
 			$('#btn_excel').show();
 
-			$('#fecha_corte').change(function(event){
+			$('#fecha_corte, #hora_inicio, #hora_finalizacion').change(function(event){
 				var id = getParameterByName('id');
 				var fecha_corte = $('#fecha_corte').val();
 				var bodega_id = $('#bodega_id').val();
+				var hora_inicio = $('#hora_inicio').val();
+				var hora_finalizacion = $('#hora_finalizacion').val();
 
-				window.location.assign('../inv_consultar_existencias/'+bodega_id+'?id='+id+'&fecha_corte='+fecha_corte);
+				window.location.assign('../inv_consultar_existencias/'+bodega_id+'?id='+encodeURIComponent(id)+'&fecha_corte='+encodeURIComponent(fecha_corte)+'&hora_inicio='+encodeURIComponent(hora_inicio)+'&hora_finalizacion='+encodeURIComponent(hora_finalizacion));
 
 				//$('#consultar_existencias').attr('href','../inventarios/'+bodega_id+'?id='+id+'&fecha_corte='+fecha_corte);
 			});

@@ -2,13 +2,13 @@
 
 namespace App\Hotel;
 
+use App\Core\Ciudad;
 use App\Core\ModeloEavValor;
 use App\Core\Tercero;
 use App\Sistema\Campo;
 use App\Sistema\Modelo;
 use App\Ventas\Cliente;
 use App\Ventas\Services\CustomerServices;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 
 class HotelGuest extends Cliente
@@ -17,10 +17,11 @@ class HotelGuest extends Cliente
     const FIELD_NACIONALIDAD = 'hotel_guest_nacionalidad';
     const FIELD_PROCEDENCIA = 'hotel_guest_procedencia';
     const FIELD_DESTINO = 'hotel_guest_destino';
+    const FIELD_OCUPACION = 'hotel_guest_ocupacion';
 
     protected $table = 'vtas_clientes';
 
-    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificacion', 'Huesped', 'Fecha nacimiento', 'Nacionalidad', 'Procedencia', 'Destino', 'Estado');
+    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificacion', 'Huesped', 'Fecha nacimiento', 'Nacionalidad', 'Procedencia', 'Destino', 'Ocupación', 'Estado');
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
 
@@ -49,6 +50,8 @@ class HotelGuest extends Cliente
 
     private function validateGuestData($request, $controller, $id = null)
     {
+        self::mergeProcedenciaAsCodigoCiudad($request);
+
         $controller->validate($request, array(
             'id_tipo_documento_id' => 'required',
             'numero_identificacion' => 'required',
@@ -58,19 +61,17 @@ class HotelGuest extends Cliente
             'id_tipo_documento_id.required' => 'Debe seleccionar el tipo de documento.',
             'numero_identificacion.required' => 'Debe ingresar el numero de identificacion.',
             'descripcion.required' => 'Debe ingresar el nombre completo o establecimiento.',
-            'codigo_ciudad.required' => 'Debe seleccionar la ciudad.',
+            'codigo_ciudad.required' => 'Debe seleccionar la ciudad o una procedencia valida.',
         ));
 
         $validator = \Validator::make($request->all(), array());
         $validator->after(function ($validator) use ($request, $id) {
-            $empresaId = $request->core_empresa_id;
-            if (empty($empresaId) && Auth::check()) {
-                $empresaId = Auth::user()->empresa_id;
+            $numeroIdentificacion = trim((string)$request->numero_identificacion);
+            if ($numeroIdentificacion == '') {
+                return;
             }
 
-            $terceroQuery = Tercero::where('core_empresa_id', $empresaId)
-                ->where('id_tipo_documento_id', $request->id_tipo_documento_id)
-                ->where('numero_identificacion', $request->numero_identificacion);
+            $terceroQuery = Tercero::where('numero_identificacion', $numeroIdentificacion);
 
             if (!is_null($id)) {
                 $guest = self::find($id);
@@ -80,7 +81,7 @@ class HotelGuest extends Cliente
             }
 
             if ($terceroQuery->count() > 0) {
-                $validator->errors()->add('numero_identificacion', 'Ya existe un tercero con ese tipo y numero de identificacion.');
+                $validator->errors()->add('numero_identificacion', 'Ya existe un tercero o huesped con ese numero de identificacion.');
             }
         });
 
@@ -89,7 +90,7 @@ class HotelGuest extends Cliente
 
     private static function prepareGuestForGenericCrud($guest)
     {
-        $datos = (new CustomerServices())->preparar_datos(Input::all());
+        $datos = (new CustomerServices())->preparar_datos(self::getInputWithProcedenciaCity(Input::all()));
 
         $tercero = new Tercero;
         $tercero->fill($datos);
@@ -116,6 +117,8 @@ class HotelGuest extends Cliente
 
     public function update_adicional($datos, $id)
     {
+        $datos = self::getInputWithProcedenciaCity($datos);
+
         $guest = self::find($id);
         if (!is_null($guest)) {
             $this->updateTercero($guest, $datos);
@@ -133,7 +136,9 @@ class HotelGuest extends Cliente
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
         $lista_campos = parent::get_campos_adicionales_edit($lista_campos, $registro);
-        return $this->setTerceroValues($lista_campos, $registro);
+        $lista_campos = $this->setTerceroValues($lista_campos, $registro);
+
+        return $this->setHotelEavEditValues($lista_campos, $registro);
     }
 
     public function show_adicional($lista_campos, $registro)
@@ -173,6 +178,82 @@ class HotelGuest extends Cliente
         }
 
         return $lista_campos;
+    }
+
+    private function setHotelEavEditValues($lista_campos, $registro)
+    {
+        foreach ($lista_campos as $key => $campo) {
+            if (!isset($campo['name']) || strpos($campo['name'], 'core_campo_id-') === false) {
+                continue;
+            }
+
+            $fieldId = isset($campo['id']) ? (int)$campo['id'] : 0;
+            if ($fieldId == 0) {
+                $fieldId = (int)str_replace('core_campo_id-', '', $campo['name']);
+            }
+
+            if ($fieldId == 0) {
+                continue;
+            }
+
+            $value = self::getEavValue($registro->id, $fieldId);
+            $lista_campos[$key]['name'] = 'core_campo_id-' . $fieldId;
+            $lista_campos[$key]['value'] = $value;
+            $lista_campos[$key]['show_value'] = $value;
+        }
+
+        return $lista_campos;
+    }
+
+    private static function mergeProcedenciaAsCodigoCiudad($request)
+    {
+        $datos = self::getInputWithProcedenciaCity($request->all());
+
+        if (isset($datos['codigo_ciudad']) && !empty($datos['codigo_ciudad'])) {
+            $request->merge(array('codigo_ciudad' => $datos['codigo_ciudad']));
+        }
+    }
+
+    private static function getInputWithProcedenciaCity($datos)
+    {
+        if (!is_array($datos)) {
+            return $datos;
+        }
+
+        if (isset($datos['codigo_ciudad']) && trim($datos['codigo_ciudad']) != '') {
+            return $datos;
+        }
+
+        $procedencia = self::getProcedenciaValueFromInput($datos);
+        if ($procedencia != '' && self::isValidCityId($procedencia)) {
+            $datos['codigo_ciudad'] = $procedencia;
+        }
+
+        return $datos;
+    }
+
+    private static function getProcedenciaValueFromInput($datos)
+    {
+        $fieldIds = self::hotelFieldIds();
+        $fieldId = isset($fieldIds[self::FIELD_PROCEDENCIA]) ? (int)$fieldIds[self::FIELD_PROCEDENCIA] : 0;
+
+        if ($fieldId > 0) {
+            $key = 'core_campo_id-' . $fieldId;
+            if (isset($datos[$key]) && !is_array($datos[$key]) && trim($datos[$key]) != '') {
+                return trim($datos[$key]);
+            }
+        }
+
+        if (isset($datos[self::FIELD_PROCEDENCIA]) && !is_array($datos[self::FIELD_PROCEDENCIA]) && trim($datos[self::FIELD_PROCEDENCIA]) != '') {
+            return trim($datos[self::FIELD_PROCEDENCIA]);
+        }
+
+        return '';
+    }
+
+    private static function isValidCityId($cityId)
+    {
+        return Ciudad::where('id', $cityId)->count() > 0;
     }
 
     private function prepareShowFields($lista_campos, $registro)
@@ -266,7 +347,7 @@ class HotelGuest extends Cliente
                 return $this->getCountryGentilicio($value);
             case self::FIELD_PROCEDENCIA:
             case self::FIELD_DESTINO:
-                return $this->getTableDescription('core_paises', $value);
+                return $this->getLocationDescription($value);
             default:
                 return $this->cleanShowValue($value);
         }
@@ -284,6 +365,16 @@ class HotelGuest extends Cliente
         }
 
         return isset($pais->descripcion) ? $pais->descripcion : '';
+    }
+
+    private function getLocationDescription($value)
+    {
+        $city = $this->getCityDescription($value);
+        if ($city != '') {
+            return $city;
+        }
+
+        return $this->getTableDescription('core_paises', $value);
     }
 
     private function getCityDescription($cityId)
@@ -397,6 +488,7 @@ class HotelGuest extends Cliente
             self::FIELD_NACIONALIDAD => array('label' => 'Nacionalidad', 'type' => 'select'),
             self::FIELD_PROCEDENCIA => array('label' => 'Procedencia', 'type' => 'select'),
             self::FIELD_DESTINO => array('label' => 'Destino', 'type' => 'select'),
+            self::FIELD_OCUPACION => array('label' => 'Ocupación', 'type' => 'bsText'),
         );
     }
 
@@ -453,16 +545,17 @@ class HotelGuest extends Cliente
                 'core_terceros.numero_identificacion AS campo1',
                 'core_terceros.descripcion AS campo2',
                 'fecha_nacimiento.valor AS campo3',
-                'pais_nacionalidad.gentilicio AS campo4',
-                'pais_procedencia.descripcion AS campo5',
-                'pais_destino.descripcion AS campo6',
-                'vtas_clientes.estado AS campo7',
-                'vtas_clientes.id AS campo8'
+                \DB::raw("COALESCE(NULLIF(pais_nacionalidad.gentilicio, ''), NULLIF(pais_nacionalidad.descripcion, ''), nacionalidad.valor, '') AS campo4"),
+                \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), NULLIF(pais_procedencia.descripcion, ''), NULLIF(CONCAT(COALESCE(ciudad_tercero.descripcion,''), IF(depto_tercero.descripcion IS NULL OR depto_tercero.descripcion = '', '', CONCAT(', ', depto_tercero.descripcion))), ''), procedencia.valor, '') AS campo5"),
+                \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_destino.descripcion,''), IF(depto_destino.descripcion IS NULL OR depto_destino.descripcion = '', '', CONCAT(', ', depto_destino.descripcion))), ''), pais_destino.descripcion, '') AS campo6"),
+                \DB::raw("COALESCE(NULLIF(ocupacion.valor, ''), NULLIF(ocupacion_legacy.valor, ''), '') AS campo7"),
+                'vtas_clientes.estado AS campo8',
+                'vtas_clientes.id AS campo9'
             );
 
         self::applySearch($query, $search);
 
-        return $query->orderBy('core_terceros.descripcion')->paginate($nro_registros);
+        return $query->orderBy('vtas_clientes.created_at', 'DESC')->paginate($nro_registros);
     }
 
     public static function sqlString($search)
@@ -475,9 +568,10 @@ class HotelGuest extends Cliente
                 'core_terceros.numero_identificacion AS IDENTIFICACION',
                 'core_terceros.descripcion AS HUESPED',
                 'fecha_nacimiento.valor AS FECHA_NACIMIENTO',
-                'pais_nacionalidad.gentilicio AS NACIONALIDAD',
-                'pais_procedencia.descripcion AS PROCEDENCIA',
-                'pais_destino.descripcion AS DESTINO',
+                \DB::raw("COALESCE(NULLIF(pais_nacionalidad.gentilicio, ''), NULLIF(pais_nacionalidad.descripcion, ''), nacionalidad.valor, '') AS NACIONALIDAD"),
+                \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), NULLIF(pais_procedencia.descripcion, ''), NULLIF(CONCAT(COALESCE(ciudad_tercero.descripcion,''), IF(depto_tercero.descripcion IS NULL OR depto_tercero.descripcion = '', '', CONCAT(', ', depto_tercero.descripcion))), ''), procedencia.valor, '') AS PROCEDENCIA"),
+                \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_destino.descripcion,''), IF(depto_destino.descripcion IS NULL OR depto_destino.descripcion = '', '', CONCAT(', ', depto_destino.descripcion))), ''), pais_destino.descripcion, '') AS DESTINO"),
+                \DB::raw("COALESCE(NULLIF(ocupacion.valor, ''), NULLIF(ocupacion_legacy.valor, ''), '') AS OCUPACION"),
                 'vtas_clientes.estado AS ESTADO'
             );
 
@@ -514,8 +608,26 @@ class HotelGuest extends Cliente
                     ->where('destino.modelo_entidad_id', '=', 0)
                     ->where('destino.core_campo_id', '=', isset($ids[self::FIELD_DESTINO]) ? $ids[self::FIELD_DESTINO] : 0);
             })
+            ->leftJoin('core_eav_valores as ocupacion', function ($join) use ($ids, $modelId) {
+                $join->on('ocupacion.registro_modelo_padre_id', '=', 'vtas_clientes.id')
+                    ->where('ocupacion.modelo_padre_id', '=', $modelId)
+                    ->where('ocupacion.modelo_entidad_id', '=', 0)
+                    ->where('ocupacion.core_campo_id', '=', isset($ids[self::FIELD_OCUPACION]) ? $ids[self::FIELD_OCUPACION] : 0);
+            })
+            ->leftJoin('core_eav_valores as ocupacion_legacy', function ($join) use ($modelId) {
+                $join->on('ocupacion_legacy.registro_modelo_padre_id', '=', 'vtas_clientes.id')
+                    ->where('ocupacion_legacy.modelo_padre_id', '=', $modelId)
+                    ->where('ocupacion_legacy.modelo_entidad_id', '=', 0)
+                    ->where('ocupacion_legacy.core_campo_id', '=', 7);
+            })
             ->leftJoin('core_paises as pais_nacionalidad', 'pais_nacionalidad.id', '=', 'nacionalidad.valor')
+            ->leftJoin('core_ciudades as ciudad_tercero', 'ciudad_tercero.id', '=', 'core_terceros.codigo_ciudad')
+            ->leftJoin('core_departamentos as depto_tercero', 'depto_tercero.id', '=', 'ciudad_tercero.core_departamento_id')
+            ->leftJoin('core_ciudades as ciudad_procedencia', 'ciudad_procedencia.id', '=', 'procedencia.valor')
+            ->leftJoin('core_departamentos as depto_procedencia', 'depto_procedencia.id', '=', 'ciudad_procedencia.core_departamento_id')
             ->leftJoin('core_paises as pais_procedencia', 'pais_procedencia.id', '=', 'procedencia.valor')
+            ->leftJoin('core_ciudades as ciudad_destino', 'ciudad_destino.id', '=', 'destino.valor')
+            ->leftJoin('core_departamentos as depto_destino', 'depto_destino.id', '=', 'ciudad_destino.core_departamento_id')
             ->leftJoin('core_paises as pais_destino', 'pais_destino.id', '=', 'destino.valor');
     }
 
@@ -532,9 +644,17 @@ class HotelGuest extends Cliente
                 ->orWhere('nacionalidad.valor', 'LIKE', "%$search%")
                 ->orWhere('pais_nacionalidad.gentilicio', 'LIKE', "%$search%")
                 ->orWhere('procedencia.valor', 'LIKE', "%$search%")
+                ->orWhere('ciudad_procedencia.descripcion', 'LIKE', "%$search%")
+                ->orWhere('depto_procedencia.descripcion', 'LIKE', "%$search%")
                 ->orWhere('pais_procedencia.descripcion', 'LIKE', "%$search%")
                 ->orWhere('destino.valor', 'LIKE', "%$search%")
+                ->orWhere('ciudad_destino.descripcion', 'LIKE', "%$search%")
+                ->orWhere('depto_destino.descripcion', 'LIKE', "%$search%")
                 ->orWhere('pais_destino.descripcion', 'LIKE', "%$search%")
+                ->orWhere('ocupacion.valor', 'LIKE', "%$search%")
+                ->orWhere('ocupacion_legacy.valor', 'LIKE', "%$search%")
+                ->orWhere('ciudad_tercero.descripcion', 'LIKE', "%$search%")
+                ->orWhere('depto_tercero.descripcion', 'LIKE', "%$search%")
                 ->orWhere('vtas_clientes.estado', 'LIKE', "%$search%");
         });
     }

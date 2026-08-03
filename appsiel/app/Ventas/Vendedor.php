@@ -118,6 +118,10 @@ class Vendedor extends Model
                 continue;
             }
 
+            if($opcion->descripcion == '' || is_null($opcion->descripcion)){
+                $opcion->descripcion = $opcion->tercero->descripcion;
+            }
+            
             $vec[$opcion->id] = $opcion->descripcion;
         }
         

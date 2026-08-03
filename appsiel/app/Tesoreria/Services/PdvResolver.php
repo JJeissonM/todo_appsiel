@@ -8,7 +8,7 @@ class PdvResolver
 {
     public static function resolveFromArray(array $data)
     {
-        $pdv_id = self::normalize($data['pdv_id'] ?? null);
+        $pdv_id = self::normalize(isset($data['pdv_id']) ? $data['pdv_id'] : null);
         if ( !is_null($pdv_id) ) {
             return $pdv_id;
         }
@@ -33,9 +33,9 @@ class PdvResolver
 
     protected static function resolveFromPosDocument(array $data)
     {
-        $core_tipo_transaccion_id = (int)($data['core_tipo_transaccion_id'] ?? 0);
-        $core_tipo_doc_app_id = (int)($data['core_tipo_doc_app_id'] ?? 0);
-        $consecutivo = (int)($data['consecutivo'] ?? 0);
+        $core_tipo_transaccion_id = (int)(isset($data['core_tipo_transaccion_id']) ? $data['core_tipo_transaccion_id'] : 0);
+        $core_tipo_doc_app_id = (int)(isset($data['core_tipo_doc_app_id']) ? $data['core_tipo_doc_app_id'] : 0);
+        $consecutivo = (int)(isset($data['consecutivo']) ? $data['consecutivo'] : 0);
 
         if ( $core_tipo_transaccion_id === 0 || $core_tipo_doc_app_id === 0 || $consecutivo === 0 ) {
             return null;

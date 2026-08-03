@@ -6,6 +6,8 @@ use App\Http\Controllers\Tesoreria\ArqueoCajaController;
 use App\Sistema\Html\Boton;
 use App\Sistema\TipoTransaccion;
 use App\Traits\FiltraRegistrosPorUsuario;
+use App\VentasPos\Pdv;
+use App\VentasPos\Services\CashRegisterShiftService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -17,7 +19,7 @@ class ArqueoCaja extends Model
     protected $table = 'teso_arqueos_caja';
 
     protected $fillable = [
-        'fecha', 'core_empresa_id', 'teso_caja_id', 'total_billetes', 'billetes_contados',
+        'fecha', 'core_empresa_id', 'teso_caja_id', 'pdv_id', 'fecha_hora_apertura', 'fecha_hora_cierre', 'total_billetes', 'billetes_contados',
         'base', 'total_monedas', 'monedas_contadas', 'otros_saldos', 'detalle_otros_saldos', 'lbl_total_efectivo',
         'lbl_total_sistema', 'total_saldo', 'detalles_mov_entradas', 'total_mov_entradas', 'detalles_mov_salidas', 'total_mov_salidas', 'observaciones', 'estado', 'creado_por', 'modificado_por'
     ];
@@ -119,6 +121,8 @@ class ArqueoCaja extends Model
 
     public function store_adicional($datos, $arqueocaja)
     {
+        $datos = $this->applyStoredShiftData($datos, $arqueocaja);
+
         if ( Auth::user()->hasPermission('vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja') ) {
             $datos = $this->get_datos_adicionales( $datos );
             $arqueocaja->total_mov_entradas = $datos['total_mov_entradas'];
@@ -140,12 +144,66 @@ class ArqueoCaja extends Model
         }
     }
 
+    public function validar_datos_creacion($request, $controller)
+    {
+        $this->validateAndNormalizeShift($request, $controller);
+    }
+
+    public function validar_datos_actualizacion($request, $controller, $id)
+    {
+        $this->validateAndNormalizeShift($request, $controller);
+    }
+
+    protected function validateAndNormalizeShift($request, $controller)
+    {
+        $pdv = Pdv::where('id', (int)$request->pdv_id)
+            ->where('core_empresa_id', Auth::user()->empresa_id)
+            ->first();
+
+        if (is_null($pdv)) {
+            return;
+        }
+
+        try {
+            $range = (new CashRegisterShiftService())->normalizeEditableRange(
+                $request->fecha,
+                $request->fecha_hora_apertura,
+                $request->fecha_hora_cierre
+            );
+        } catch (\UnexpectedValueException $e) {
+            $controller->validate($request, [
+                'fecha_hora_apertura' => 'in:__invalid_range__'
+            ], [
+                'fecha_hora_apertura.in' => $e->getMessage()
+            ]);
+            return;
+        }
+
+        if (is_null($range)) {
+            $request->merge([
+                'fecha_hora_apertura' => null,
+                'fecha_hora_cierre' => null
+            ]);
+            return;
+        }
+
+        $request->merge([
+            'fecha_hora_apertura' => $range['opening_at'],
+            'fecha_hora_cierre' => $range['closing_at']
+        ]);
+    }
+
     public function get_datos_adicionales( $datos )
     {
+        $creado_por = isset($datos['creado_por']) ? $datos['creado_por'] : null;
+        $pdv_id = isset($datos['pdv_id']) ? (int)$datos['pdv_id'] : 0;
+        $fecha_hora_apertura = isset($datos['fecha_hora_apertura']) ? $datos['fecha_hora_apertura'] : null;
+        $fecha_hora_cierre = isset($datos['fecha_hora_cierre']) ? $datos['fecha_hora_cierre'] : null;
+
         /**
          * Entradas
          */
-        $movimientos_caja = $this->get_movimientos_caja( 'entrada', $datos['fecha'], $datos['fecha'], $datos['teso_caja_id'], $datos['creado_por'] ?? null );
+        $movimientos_caja = $this->get_movimientos_caja( 'entrada', $datos['fecha'], $datos['fecha'], $datos['teso_caja_id'], $creado_por, $pdv_id, $fecha_hora_apertura, $fecha_hora_cierre );
 
         $datos['movimientos_entradas'] = $this->get_string_movimientos( $movimientos_caja->toArray() );
         $datos['total_mov_entradas'] = $movimientos_caja->sum('valor_movimiento');
@@ -153,7 +211,7 @@ class ArqueoCaja extends Model
         /**
          * Salidas
          */
-        $movimientos_caja = $this->get_movimientos_caja( 'salida', $datos['fecha'], $datos['fecha'], $datos['teso_caja_id'], $datos['creado_por'] ?? null );
+        $movimientos_caja = $this->get_movimientos_caja( 'salida', $datos['fecha'], $datos['fecha'], $datos['teso_caja_id'], $creado_por, $pdv_id, $fecha_hora_apertura, $fecha_hora_cierre );
 
         $datos['movimientos_salidas'] = $this->get_string_movimientos( $movimientos_caja->toArray() );
         $datos['total_mov_salidas'] = $movimientos_caja->sum('valor_movimiento') * -1;
@@ -196,14 +254,28 @@ class ArqueoCaja extends Model
         return $string_movimientos;
     }
 
-    public function get_movimientos_caja( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id, $creado_por = null )
+    public function get_movimientos_caja( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null )
     {
-        return TesoMovimiento::movimiento_por_tipo_motivo( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id, $creado_por );
+        if (!is_null($fecha_hora_apertura) && $fecha_hora_apertura != '' && substr($fecha_hora_apertura, 0, 10) != $fecha_desde) {
+            $fecha_hora_apertura = null;
+            $fecha_hora_cierre = null;
+        }
+
+        if ( !is_null($fecha_hora_apertura) && $fecha_hora_apertura != '' ) {
+            $fecha_desde = substr($fecha_hora_apertura, 0, 10);
+        }
+
+        if ( !is_null($fecha_hora_cierre) && $fecha_hora_cierre != '' ) {
+            $fecha_hasta = substr($fecha_hora_cierre, 0, 10);
+        }
+
+        return TesoMovimiento::movimiento_por_tipo_motivo( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id, $creado_por, $pdv_id, $fecha_hora_apertura, $fecha_hora_cierre );
     }
 
     public function update_adicional($datos, $doc_encabezado_id)
     {
         $arqueocaja = ArqueoCaja::find($doc_encabezado_id);
+        $datos = $this->applyStoredShiftData($datos, $arqueocaja);
 
         if ( Auth::user()->hasPermission('vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja') ) {
             $datos = $this->get_datos_adicionales( $datos );
@@ -221,5 +293,14 @@ class ArqueoCaja extends Model
         $arqueocaja->save();
 
         return 'tesoreria/arqueo_caja/' . $arqueocaja->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'];
+    }
+
+    protected function applyStoredShiftData(array $data, ArqueoCaja $cashCount)
+    {
+        foreach (['fecha', 'pdv_id', 'teso_caja_id', 'base', 'fecha_hora_apertura', 'fecha_hora_cierre'] as $field) {
+            $data[$field] = $cashCount->{$field};
+        }
+
+        return $data;
     }
 }

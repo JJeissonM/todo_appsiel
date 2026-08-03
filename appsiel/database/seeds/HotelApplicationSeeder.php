@@ -251,6 +251,7 @@ class HotelApplicationSeeder extends Seeder
         $this->attachModelField($modelId, $this->getOrCreateHotelEavField('Nacionalidad', 'select', 'hotel_guest_nacionalidad', 'model_App\\Core\\Nacionalidad', '', $comboAttrs, 0), $baseOrder + 1);
         $this->attachModelField($modelId, $this->getOrCreateHotelEavField('Procedencia', 'select', 'hotel_guest_procedencia', 'model_App\\Core\\Procedencia', '', $comboAttrs, 0), $baseOrder + 2);
         $this->attachModelField($modelId, $this->getOrCreateHotelEavField('Destino', 'select', 'hotel_guest_destino', 'model_App\\Core\\Destino', '', $comboAttrs, 0), $baseOrder + 3);
+        $this->attachModelField($modelId, $this->getOrCreateHotelEavField('Ocupación', 'bsText', 'hotel_guest_ocupacion', '', '', $textAttrs, 0), $baseOrder + 4);
     }
 
     private function copyModelFields($sourceModelKey, $targetModelKey)
@@ -437,6 +438,7 @@ class HotelApplicationSeeder extends Seeder
             array('hotel.stays', 'Estadias operativas', 'hotel/stays', 'stays', $transactionsParentId, 15, 0, 'calendar'),
             array('hotel.invoices.standard', 'Generar factura estandar hotelera', 'hotel/orders/id_fila/generate-standard-invoice', 'orders', $transactionsParentId, 16, 0, 'file-text'),
             array('hotel.invoices.pos', 'Generar factura POS hotelera', 'hotel/orders/id_fila/generate-pos-invoice', 'orders', $transactionsParentId, 17, 0, 'print'),
+            array('hotel_pedido_anular', 'Anular pedido hotelero', 'hotel/orders/id_fila/cancel', 'orders', $transactionsParentId, 18, 0, 'ban'),
         );
 
         $permissionIds = array($parentId, $transactionsParentId, $catalogParentId);
@@ -525,7 +527,7 @@ class HotelApplicationSeeder extends Seeder
 
         $roomsReportId = $this->upsertReport('Listado de habitaciones hoteleras', 'hotel/reports/rooms');
         $staysReportId = $this->upsertReport('Listado de estadias hoteleras', 'hotel/reports/stays');
-        $migrationReportId = $this->upsertReport('Listado para SIRE', 'hotel/reports/migration');
+        $migrationReportId = $this->upsertReport('Libro de Huéspedes', 'hotel/reports/migration');
 
         if ($staysReportId && Schema::hasTable('sys_campos') && Schema::hasTable('sys_reporte_tiene_campos')) {
             $fechaDesdeId = $this->getOrCreateField('Fecha desde', 'date', 'fecha_desde', '', 'null', '{"class":"form-control"}', 0);

@@ -284,8 +284,11 @@ class TesoMovimiento extends Model
         return $registros;
     }
 
-    public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null, $creado_por = null)
+    public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null)
     {
+        $fecha_hora_apertura = self::normalizarFechaHoraFiltro($fecha_hora_apertura);
+        $fecha_hora_cierre = self::normalizarFechaHoraFiltro($fecha_hora_cierre);
+
         $operador = '>';
         if( $tipo_movimiento == 'salida' )
         {
@@ -303,20 +306,38 @@ class TesoMovimiento extends Model
                                 ->whereBetween('teso_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
                                 ->where( $array_wheres );
 
-        if ( !is_null($creado_por) )
-        {
-            $empresa_id = Auth::check() ? Auth::user()->empresa_id : null;
-            $userFiltro = self::obtenerUsuarioFiltroPorEmail($creado_por, $empresa_id);
+        if ( (int)$pdv_id != 0 ) {
+            $query = self::aplicarFiltroPdv($query, (int)$pdv_id, (int)$teso_caja_id, 0);
+        }
 
-            if ( is_null($userFiltro) || !self::usuarioTieneRolPrivilegiado($userFiltro, self::rolesSinFiltro()) )
+        if ( !is_null($fecha_hora_apertura) && $fecha_hora_apertura != '' ) {
+            $query->where('teso_movimientos.created_at', '>=', $fecha_hora_apertura);
+        }
+
+        if ( !is_null($fecha_hora_cierre) && $fecha_hora_cierre != '' ) {
+            $query->where('teso_movimientos.created_at', '<=', $fecha_hora_cierre);
+        }
+
+        // Un arqueo de PDV debe incluir todos los movimientos de ese punto de venta,
+        // incluso cuando no existe una apertura/cierre registrada para el día.
+        $filtrarPorUsuario = (int)$pdv_id == 0;
+
+        if ( $filtrarPorUsuario ) {
+            if ( !is_null($creado_por) )
             {
-                $emails = self::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
-                if ( !empty($emails) ) {
-                    $query->whereIn('teso_movimientos.creado_por', $emails);
+                $empresa_id = Auth::check() ? Auth::user()->empresa_id : null;
+                $userFiltro = self::obtenerUsuarioFiltroPorEmail($creado_por, $empresa_id);
+
+                if ( is_null($userFiltro) || !self::usuarioTieneRolPrivilegiado($userFiltro, self::rolesSinFiltro()) )
+                {
+                    $emails = self::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
+                    if ( !empty($emails) ) {
+                        $query->whereIn('teso_movimientos.creado_por', $emails);
+                    }
                 }
+            }else{
+                $query = self::aplicarFiltroCreadoPor($query, 'teso_movimientos.creado_por');
             }
-        }else{
-            $query = self::aplicarFiltroCreadoPor($query, 'teso_movimientos.creado_por');
         }
 
         return $query->groupBy('teso_movimientos.teso_motivo_id')
@@ -327,6 +348,21 @@ class TesoMovimiento extends Model
                                 DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento')
                             )
                     ->get();
+    }
+
+    protected static function normalizarFechaHoraFiltro($fecha_hora)
+    {
+        if (is_null($fecha_hora)) {
+            return null;
+        }
+
+        $fecha_hora = trim(str_replace('T', ' ', $fecha_hora));
+
+        if ($fecha_hora == '' || substr($fecha_hora, 0, 10) == '0000-00-00') {
+            return null;
+        }
+
+        return $fecha_hora;
     }
 
     public static function get_suma_movimientos_menor_a_la_fecha($fecha)

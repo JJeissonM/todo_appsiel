@@ -11,7 +11,7 @@ class CxpMovimiento extends Model
 {
   //protected $table = '';
 
-  protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'core_empresa_id', 'core_tercero_id', 'modelo_referencia_tercero_index', 'referencia_tercero_id', 'doc_proveedor_prefijo', 'doc_proveedor_consecutivo', 'fecha', 'fecha_vencimiento', 'valor_documento', 'valor_pagado', 'saldo_pendiente', 'creado_por', 'modificado_por', 'estado'];
+  protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'core_empresa_id', 'core_tercero_id', 'modelo_referencia_tercero_index', 'referencia_tercero_id', 'doc_proveedor_prefijo', 'doc_proveedor_consecutivo', 'fecha', 'fecha_vencimiento', 'valor_documento', 'valor_pagado', 'saldo_pendiente', 'creado_por', 'modificado_por', 'estado', 'detalle'];
 
   public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Proveedor', 'Documento', 'Fecha', 'Valor documento', 'Valor pagado', 'Saldo pendiente', 'Estado'];
 
@@ -169,7 +169,8 @@ class CxpMovimiento extends Model
         'cxp_movimientos.fecha_vencimiento',
         'cxp_movimientos.valor_documento',
         'cxp_movimientos.valor_pagado',
-        'cxp_movimientos.saldo_pendiente'
+        'cxp_movimientos.saldo_pendiente',
+        'cxp_movimientos.detalle'
       )
       ->orderBy('cxp_movimientos.fecha')
       ->get()->toArray();
@@ -222,6 +223,7 @@ class CxpMovimiento extends Model
                                           'cxp_movimientos.valor_pagado',
                                           'cxp_movimientos.saldo_pendiente',
                                           'cxp_movimientos.core_tercero_id',
+                                          'cxp_movimientos.detalle',
                                           'cxp_movimientos.estado')
                               ->orderBy('cxp_movimientos.fecha')
                   ->get()->toArray(); 

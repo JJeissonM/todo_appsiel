@@ -18,8 +18,8 @@
                     <td>{{ $stay->id }}</td>
                     <td>{{ $stay->room ? $stay->room->room_number : $stay->room_id }}</td>
                     <td>{{ $stay->mainGuest && $stay->mainGuest->tercero ? $stay->mainGuest->tercero->descripcion : $stay->main_cliente_id }}</td>
-                    <td>{{ $stay->check_in_at }}</td>
-                    <td>{{ $stay->expected_check_out_at }}</td>
+                    <td>{{ $stay->checkInAtDisplay() }}</td>
+                    <td>{{ $stay->expectedCheckOutAtDisplay() }}</td>
                     <td>{{ $stay->status }}</td>
                     <td><a href="{{ url($hotelUrl::url('hotel/stays/'.$stay->id)) }}" class="btn btn-info btn-xs">Ver</a></td>
                 </tr>

@@ -48,6 +48,10 @@ class PrestacionesSocialesController extends TransaccionController
 
         $documento_nomina = NomDocEncabezado::find( (int)$request->nom_doc_encabezado_id );
 
+        if ( !$documento_nomina->esta_activo_para_transacciones() ) {
+            return '<div class="alert alert-warning">El documento de nómina no puede modificarse porque no está en estado Activo.</div>';
+        }
+
         // Se obtienen los Empleados del documento de nómina
         $empleados_documento = $documento_nomina->empleados;
         
@@ -182,6 +186,11 @@ class PrestacionesSocialesController extends TransaccionController
     public function retirar_liquidacion($doc_encabezado_id,$prestaciones)
     {
         $documento_nomina = NomDocEncabezado::find( $doc_encabezado_id );
+
+        if ( !$documento_nomina->esta_activo_para_transacciones() ) {
+            return '<div class="alert alert-warning">El documento de nómina no puede modificarse porque no está en estado Activo.</div>';
+        }
+
         $registros_documento = $documento_nomina->registros_liquidacion;
 
         $vec_prestaciones = explode("-", $prestaciones);

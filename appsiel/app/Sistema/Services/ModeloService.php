@@ -19,7 +19,7 @@ class ModeloService
             'create' => '',
             'edit' => '',
             'store' => 'web',
-            'update' => 'web/id_fila',
+            'update' => 'web/id_fila' . $parametros_url,
             'show' => 'web/id_fila' . $parametros_url,
             'imprimir' => '',
             'eliminar' => '',
@@ -39,7 +39,7 @@ class ModeloService
 
         if ($modelo->url_form_create != '') {
             $acciones->store = $modelo->url_form_create;
-            $acciones->update = $modelo->url_form_create . '/id_fila';
+            $acciones->update = $modelo->url_form_create . '/id_fila' . $parametros_url;
         }
 
         if ($modelo->url_print != '') {
@@ -91,7 +91,7 @@ class ModeloService
 
             if (isset($urls_acciones->update)) {
                 if ($urls_acciones->update != 'no') {
-                    $acciones->update = $urls_acciones->update;
+                    $acciones->update = $urls_acciones->update . $parametros_url;
                 }
             }
 
