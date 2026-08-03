@@ -9,7 +9,6 @@ use App\Sistema\Campo;
 use App\Sistema\Modelo;
 use App\Ventas\Cliente;
 use App\Ventas\Services\CustomerServices;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 
 class HotelGuest extends Cliente
@@ -67,14 +66,12 @@ class HotelGuest extends Cliente
 
         $validator = \Validator::make($request->all(), array());
         $validator->after(function ($validator) use ($request, $id) {
-            $empresaId = $request->core_empresa_id;
-            if (empty($empresaId) && Auth::check()) {
-                $empresaId = Auth::user()->empresa_id;
+            $numeroIdentificacion = trim((string)$request->numero_identificacion);
+            if ($numeroIdentificacion == '') {
+                return;
             }
 
-            $terceroQuery = Tercero::where('core_empresa_id', $empresaId)
-                ->where('id_tipo_documento_id', $request->id_tipo_documento_id)
-                ->where('numero_identificacion', $request->numero_identificacion);
+            $terceroQuery = Tercero::where('numero_identificacion', $numeroIdentificacion);
 
             if (!is_null($id)) {
                 $guest = self::find($id);
@@ -84,7 +81,7 @@ class HotelGuest extends Cliente
             }
 
             if ($terceroQuery->count() > 0) {
-                $validator->errors()->add('numero_identificacion', 'Ya existe un tercero con ese tipo y numero de identificacion.');
+                $validator->errors()->add('numero_identificacion', 'Ya existe un tercero o huesped con ese numero de identificacion.');
             }
         });
 

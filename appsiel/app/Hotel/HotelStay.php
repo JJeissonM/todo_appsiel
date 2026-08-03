@@ -20,7 +20,7 @@ class HotelStay extends Model
 
     protected $fillable = array('empresa_id', 'main_cliente_id', 'room_id', 'check_in_at', 'expected_check_out_at', 'check_out_at', 'adults_count', 'children_count', 'total_guests', 'status', 'notes', 'created_by', 'closed_by', 'update_by');
 
-    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Habitacion', 'Cliente principal', 'Check-in', 'Salida esperada', 'Dias', 'Huespedes', 'Estado');
+    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Habitacion', 'Cliente principal', 'Check-in', 'Salida esperada', 'Check-out', 'Dias', 'Huespedes', 'Estado');
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"hotel/stays/id_fila"}';
 
@@ -583,10 +583,11 @@ class HotelStay extends Model
                 'core_terceros.descripcion AS campo2',
                 'hotel_stays.check_in_at AS campo3',
                 'hotel_stays.expected_check_out_at AS campo4',
-                DB::raw('IF(hotel_stays.expected_check_out_at IS NULL, 1, GREATEST(1, DATEDIFF(DATE(hotel_stays.expected_check_out_at), DATE(hotel_stays.check_in_at)))) AS campo5'),
-                'hotel_stays.total_guests AS campo6',
-                'hotel_stays.status AS campo7',
-                'hotel_stays.id AS campo8'
+                'hotel_stays.check_out_at AS campo5',
+                DB::raw('IF(hotel_stays.expected_check_out_at IS NULL, 1, GREATEST(1, DATEDIFF(DATE(hotel_stays.expected_check_out_at), DATE(hotel_stays.check_in_at)))) AS campo6'),
+                'hotel_stays.total_guests AS campo7',
+                'hotel_stays.status AS campo8',
+                'hotel_stays.id AS campo9'
             )
             ->orderBy('hotel_stays.check_in_at', 'DESC')
             ->paginate($nro_registros);
