@@ -545,17 +545,17 @@ class HotelGuest extends Cliente
                 'core_terceros.numero_identificacion AS campo1',
                 'core_terceros.descripcion AS campo2',
                 'fecha_nacimiento.valor AS campo3',
-                'pais_nacionalidad.gentilicio AS campo4',
-                \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), pais_procedencia.descripcion, '') AS campo5"),
+                \DB::raw("COALESCE(NULLIF(pais_nacionalidad.gentilicio, ''), NULLIF(pais_nacionalidad.descripcion, ''), nacionalidad.valor, '') AS campo4"),
+                \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), NULLIF(pais_procedencia.descripcion, ''), NULLIF(CONCAT(COALESCE(ciudad_tercero.descripcion,''), IF(depto_tercero.descripcion IS NULL OR depto_tercero.descripcion = '', '', CONCAT(', ', depto_tercero.descripcion))), ''), procedencia.valor, '') AS campo5"),
                 \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_destino.descripcion,''), IF(depto_destino.descripcion IS NULL OR depto_destino.descripcion = '', '', CONCAT(', ', depto_destino.descripcion))), ''), pais_destino.descripcion, '') AS campo6"),
-                'ocupacion.valor AS campo7',
+                \DB::raw("COALESCE(NULLIF(ocupacion.valor, ''), NULLIF(ocupacion_legacy.valor, ''), '') AS campo7"),
                 'vtas_clientes.estado AS campo8',
                 'vtas_clientes.id AS campo9'
             );
 
         self::applySearch($query, $search);
 
-        return $query->orderBy('core_terceros.descripcion')->paginate($nro_registros);
+        return $query->orderBy('vtas_clientes.created_at', 'DESC')->paginate($nro_registros);
     }
 
     public static function sqlString($search)
@@ -568,10 +568,10 @@ class HotelGuest extends Cliente
                 'core_terceros.numero_identificacion AS IDENTIFICACION',
                 'core_terceros.descripcion AS HUESPED',
                 'fecha_nacimiento.valor AS FECHA_NACIMIENTO',
-                'pais_nacionalidad.gentilicio AS NACIONALIDAD',
-                \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), pais_procedencia.descripcion, '') AS PROCEDENCIA"),
+                \DB::raw("COALESCE(NULLIF(pais_nacionalidad.gentilicio, ''), NULLIF(pais_nacionalidad.descripcion, ''), nacionalidad.valor, '') AS NACIONALIDAD"),
+                \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), NULLIF(pais_procedencia.descripcion, ''), NULLIF(CONCAT(COALESCE(ciudad_tercero.descripcion,''), IF(depto_tercero.descripcion IS NULL OR depto_tercero.descripcion = '', '', CONCAT(', ', depto_tercero.descripcion))), ''), procedencia.valor, '') AS PROCEDENCIA"),
                 \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_destino.descripcion,''), IF(depto_destino.descripcion IS NULL OR depto_destino.descripcion = '', '', CONCAT(', ', depto_destino.descripcion))), ''), pais_destino.descripcion, '') AS DESTINO"),
-                'ocupacion.valor AS OCUPACION',
+                \DB::raw("COALESCE(NULLIF(ocupacion.valor, ''), NULLIF(ocupacion_legacy.valor, ''), '') AS OCUPACION"),
                 'vtas_clientes.estado AS ESTADO'
             );
 
@@ -614,7 +614,15 @@ class HotelGuest extends Cliente
                     ->where('ocupacion.modelo_entidad_id', '=', 0)
                     ->where('ocupacion.core_campo_id', '=', isset($ids[self::FIELD_OCUPACION]) ? $ids[self::FIELD_OCUPACION] : 0);
             })
+            ->leftJoin('core_eav_valores as ocupacion_legacy', function ($join) use ($modelId) {
+                $join->on('ocupacion_legacy.registro_modelo_padre_id', '=', 'vtas_clientes.id')
+                    ->where('ocupacion_legacy.modelo_padre_id', '=', $modelId)
+                    ->where('ocupacion_legacy.modelo_entidad_id', '=', 0)
+                    ->where('ocupacion_legacy.core_campo_id', '=', 7);
+            })
             ->leftJoin('core_paises as pais_nacionalidad', 'pais_nacionalidad.id', '=', 'nacionalidad.valor')
+            ->leftJoin('core_ciudades as ciudad_tercero', 'ciudad_tercero.id', '=', 'core_terceros.codigo_ciudad')
+            ->leftJoin('core_departamentos as depto_tercero', 'depto_tercero.id', '=', 'ciudad_tercero.core_departamento_id')
             ->leftJoin('core_ciudades as ciudad_procedencia', 'ciudad_procedencia.id', '=', 'procedencia.valor')
             ->leftJoin('core_departamentos as depto_procedencia', 'depto_procedencia.id', '=', 'ciudad_procedencia.core_departamento_id')
             ->leftJoin('core_paises as pais_procedencia', 'pais_procedencia.id', '=', 'procedencia.valor')
@@ -644,6 +652,9 @@ class HotelGuest extends Cliente
                 ->orWhere('depto_destino.descripcion', 'LIKE', "%$search%")
                 ->orWhere('pais_destino.descripcion', 'LIKE', "%$search%")
                 ->orWhere('ocupacion.valor', 'LIKE', "%$search%")
+                ->orWhere('ocupacion_legacy.valor', 'LIKE', "%$search%")
+                ->orWhere('ciudad_tercero.descripcion', 'LIKE', "%$search%")
+                ->orWhere('depto_tercero.descripcion', 'LIKE', "%$search%")
                 ->orWhere('vtas_clientes.estado', 'LIKE', "%$search%");
         });
     }

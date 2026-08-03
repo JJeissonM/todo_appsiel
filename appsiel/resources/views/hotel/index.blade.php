@@ -550,6 +550,7 @@
 
 @section('scripts')
     @parent
+    @include('hotel.partials.guest_person_type_scripts')
     <script type="text/javascript">
         $(document).ready(function() {
             $('#hotel_guest_create_form').on('submit', function() {

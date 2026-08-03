@@ -128,8 +128,8 @@
             refreshHotelGuestNaturalFields($(document));
         });
 
-        $(document).off('shown.bs.modal.hotelGuestPersonType', '#hotelClienteAutocompleteModal');
-        $(document).on('shown.bs.modal.hotelGuestPersonType', '#hotelClienteAutocompleteModal', function () {
+        $(document).off('shown.bs.modal.hotelGuestPersonType', '#hotelClienteAutocompleteModal, #hotelGuestCreateModal');
+        $(document).on('shown.bs.modal.hotelGuestPersonType', '#hotelClienteAutocompleteModal, #hotelGuestCreateModal', function () {
             refreshHotelGuestNaturalFields($(this));
         });
     })(jQuery);
