@@ -256,6 +256,8 @@ class DocumentoSoporteService
          ];
       }
 
+      $line_accruals = $this->remove_duplicate_zero_day_vacations($line_accruals);
+
       $data = [
          'accruals' => $line_accruals,
          'deductions' => $line_deductions
@@ -416,6 +418,33 @@ class DocumentoSoporteService
       $tipos = array_values(array_unique($tipos));
 
       return count($tipos) === 1 ? $tipos[0] : null;
+   }
+
+   protected function remove_duplicate_zero_day_vacations($accruals)
+   {
+      foreach ($accruals as $key => $line) {
+         if (!isset($line['code']) || $line['code'] !== 'VACACION'
+            || !isset($line['days']) || (float)$line['days'] > 0
+            || !isset($line['amount'])) {
+            continue;
+         }
+
+         foreach ($accruals as $other_key => $other_line) {
+            if ($other_key === $key
+               || !isset($other_line['code']) || $other_line['code'] !== 'VACACION'
+               || !isset($other_line['days']) || (float)$other_line['days'] <= 0
+               || !isset($other_line['amount'])) {
+               continue;
+            }
+
+            if (abs((float)$other_line['amount'] - (float)$line['amount']) < 0.01) {
+               unset($accruals[$key]);
+               break;
+            }
+         }
+      }
+
+      return array_values($accruals);
    }
 
    protected function normalize_dian_code($codigo_cpto_dian, $descripcion_concepto)

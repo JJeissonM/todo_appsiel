@@ -365,7 +365,34 @@ class DocumentoSoporte extends Model
             }
          }
 
-         return $accruals;
+         return $this->remove_duplicate_zero_day_vacations($accruals);
+      }
+
+      protected function remove_duplicate_zero_day_vacations($accruals)
+      {
+         foreach ($accruals as $key => $line) {
+            if (!isset($line['code']) || $line['code'] !== 'VACACION'
+               || !isset($line['days']) || (float)$line['days'] > 0
+               || !isset($line['amount'])) {
+               continue;
+            }
+
+            foreach ($accruals as $other_key => $other_line) {
+               if ($other_key === $key
+                  || !isset($other_line['code']) || $other_line['code'] !== 'VACACION'
+                  || !isset($other_line['days']) || (float)$other_line['days'] <= 0
+                  || !isset($other_line['amount'])) {
+                  continue;
+               }
+
+               if (abs((float)$other_line['amount'] - (float)$line['amount']) < 0.01) {
+                  unset($accruals[$key]);
+                  break;
+               }
+            }
+         }
+
+         return array_values($accruals);
       }
 
       protected function get_medical_leave_types_for_period(LapsoNomina $lapso)
