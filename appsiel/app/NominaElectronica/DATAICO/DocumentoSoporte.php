@@ -10,6 +10,7 @@ use App\Sistema\Services\AppDocType;
 use App\Sistema\TipoTransaccion;
 
 use App\Nomina\NomContrato;
+use App\Nomina\NovedadTnl;
 use App\Nomina\ParametroLegal;
 use App\Nomina\ValueObjects\LapsoNomina;
 use Illuminate\Support\Facades\Auth;
@@ -303,7 +304,7 @@ class DocumentoSoporte extends Model
          'final-settlement-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
          'issue-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
          'payment-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
-         'accruals' => $this->normalize_accruals_to_send(json_decode($document_header['accruals_json'],true)),
+         'accruals' => $this->normalize_accruals_to_send(json_decode($document_header['accruals_json'],true), $lapso),
          'employee' => json_decode($document_header['employee_json'],true),
          'software' => [
             'pin' => config('nomina.pin_software'),
@@ -322,13 +323,29 @@ class DocumentoSoporte extends Model
 	   
 	   }
 
-      protected function normalize_accruals_to_send($accruals)
+      protected function normalize_accruals_to_send($accruals, LapsoNomina $lapso)
       {
          if (!is_array($accruals)) {
             return [];
          }
 
+         $medical_leave_types = $this->get_medical_leave_types_for_period($lapso);
+
          foreach ($accruals as $key => $line) {
+            if (isset($line['code']) && $line['code'] === 'INCAPACIDAD') {
+               $tipo_calculado = empty($medical_leave_types) ? null : array_shift($medical_leave_types);
+               $tipo_almacenado = isset($line['medical-leave-type'])
+                  ? NovedadTnl::normalizar_medical_leave_type($line['medical-leave-type'])
+                  : null;
+               $medical_leave_type = is_null($tipo_almacenado) ? $tipo_calculado : $tipo_almacenado;
+
+               if (is_null($medical_leave_type)) {
+                  throw new \UnexpectedValueException('El concepto de incapacidad requiere una novedad con Origen de incapacidad COMUN o LABORAL.');
+               }
+
+               $accruals[$key]['medical-leave-type'] = $medical_leave_type;
+            }
+
             if (!isset($line['code']) || $line['code'] != 'OTRO_CONCEPTO') {
                continue;
             }
@@ -342,6 +359,42 @@ class DocumentoSoporte extends Model
          }
 
          return $accruals;
+      }
+
+      protected function get_medical_leave_types_for_period(LapsoNomina $lapso)
+      {
+         if (is_null($this->empleado)) {
+            return [];
+         }
+
+         $registros = $this->empleado
+            ->get_registros_documentos_nomina_entre_fechas($lapso->fecha_inicial, $lapso->fecha_final)
+            ->groupBy('nom_concepto_id');
+         $tipos = [];
+
+         foreach ($registros as $registro_concepto) {
+            $primer_registro = $registro_concepto->first();
+            $concepto = is_null($primer_registro) ? null : $primer_registro->concepto;
+
+            if (is_null($concepto) || is_null($concepto->cpto_dian) || $concepto->cpto_dian->codigo !== 'INCAPACIDAD') {
+               continue;
+            }
+
+            $tipo = null;
+            foreach ($registro_concepto as $registro) {
+               if (!is_null($registro->novedad_tnl)) {
+                  $tipo = $registro->novedad_tnl->get_medical_leave_type();
+               }
+
+               if (!is_null($tipo)) {
+                  break;
+               }
+            }
+
+            $tipos[] = $tipo;
+         }
+
+         return $tipos;
       }
 
       protected function get_head_data_stored()

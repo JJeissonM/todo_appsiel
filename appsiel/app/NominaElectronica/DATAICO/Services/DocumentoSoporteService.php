@@ -345,16 +345,19 @@ class DocumentoSoporteService
          }
       }
       
-      if($concepto->cpto_dian->id == 32) // INCAPACIDAD
-      {
+      if ($codigo_cpto_dian === 'INCAPACIDAD') {
          if ($horas_dia_laboral <= 0) {
             return $this->get_error_line('No hay parámetro legal activo con Horas por día laboral mayor a cero para el periodo del documento. Revise nom_parametros_legales.');
          }
 
          $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / $horas_dia_laboral , 0 );
-         if ($registro_concepto->first()->novedad_tnl != null) {
-            $one_line['medical-leave-type'] = strtoupper($registro_concepto->first()->novedad_tnl->origen_incapacidad);
+
+         $medical_leave_type = $this->get_medical_leave_type($registro_concepto);
+         if (is_null($medical_leave_type)) {
+            return $this->get_error_line('El concepto de incapacidad requiere una novedad con Origen de incapacidad COMUN o LABORAL.');
          }
+
+         $one_line['medical-leave-type'] = $medical_leave_type;
       }
       
       $one_line['amount'] = $amount;
@@ -364,6 +367,22 @@ class DocumentoSoporteService
       }
 
       return $one_line;
+   }
+
+   protected function get_medical_leave_type($registro_concepto)
+   {
+      foreach ($registro_concepto as $registro) {
+         if (is_null($registro->novedad_tnl)) {
+            continue;
+         }
+
+         $tipo = $registro->novedad_tnl->get_medical_leave_type();
+         if (!is_null($tipo)) {
+            return $tipo;
+         }
+      }
+
+      return null;
    }
 
    protected function normalize_dian_code($codigo_cpto_dian, $descripcion_concepto)

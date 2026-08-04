@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\DB;
 
 class NovedadTnl extends Model
 {
+	const MEDICAL_LEAVE_TYPE_COMUN = 'COMUN';
+	const MEDICAL_LEAVE_TYPE_LABORAL = 'LABORAL';
+
 	/*
 		tipo_novedad_tnl: { incapacidad | permiso_remunerado | permiso_no_remunerado | suspencion | vacaciones }
 		origen_incapacidad: { comun | laboral }
@@ -41,6 +44,22 @@ class NovedadTnl extends Model
 	public function contrato()
 	{
 		return $this->belongsTo(NomContrato::class, 'nom_contrato_id');
+	}
+
+	public function get_medical_leave_type()
+	{
+		return self::normalizar_medical_leave_type($this->origen_incapacidad);
+	}
+
+	public static function normalizar_medical_leave_type($origen_incapacidad)
+	{
+		$tipo = strtoupper(trim((string) $origen_incapacidad));
+
+		if (in_array($tipo, [self::MEDICAL_LEAVE_TYPE_COMUN, self::MEDICAL_LEAVE_TYPE_LABORAL], true)) {
+			return $tipo;
+		}
+
+		return null;
 	}
 
 	public static function consultar_registros($nro_registros, $search)
