@@ -300,7 +300,6 @@ class DocumentoSoporteService
          // Solo se pagan Intereses
          $one_line['percentage'] = 12;
          $one_line['cesantias-interest'] = $amount;
-         $amount = 0;
          $codigo_cpto_dian = 'CESANTIAS';
       }
       
