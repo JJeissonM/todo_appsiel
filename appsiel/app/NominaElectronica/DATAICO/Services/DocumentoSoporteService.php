@@ -319,6 +319,14 @@ class DocumentoSoporteService
          $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / $horas_dia_laboral , 0 );
       }
 
+      if ($codigo_cpto_dian === 'LICENCIA_PATERNIDAD') {
+         if ($horas_dia_laboral <= 0) {
+            return $this->get_error_line('No hay parámetro legal activo con Horas por día laboral mayor a cero para el periodo del documento. Revise nom_parametros_legales.');
+         }
+
+         $one_line['days'] = min(30, round($registro_concepto->sum('cantidad_horas') / $horas_dia_laboral, 0));
+      }
+
       if ($codigo_cpto_dian === 'VACACION_COMPENSADA'
          && (!isset($one_line['days']) || (float)$one_line['days'] <= 0)) {
          $one_line['days'] = 15;
@@ -431,6 +439,11 @@ class DocumentoSoporteService
    protected function normalize_dian_code($codigo_cpto_dian, $descripcion_concepto)
    {
       $descripcion = $this->normalize_text($descripcion_concepto);
+
+      if ($codigo_cpto_dian === 'INCAPACIDAD'
+         && (strpos($descripcion, 'MATERNIDAD') !== false || strpos($descripcion, 'PATERNIDAD') !== false)) {
+         return 'LICENCIA_PATERNIDAD';
+      }
 
       if ($codigo_cpto_dian === 'VACACION' && strpos($descripcion, 'VACACIONES PAGADAS') !== false) {
          return 'VACACION_COMPENSADA';

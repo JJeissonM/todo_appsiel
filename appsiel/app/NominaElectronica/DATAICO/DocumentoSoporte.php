@@ -353,6 +353,13 @@ class DocumentoSoporte extends Model
 
             if (isset($line['code']) && $line['code'] === 'INCAPACIDAD') {
                $tipo_calculado = empty($medical_leave_types) ? null : array_shift($medical_leave_types);
+
+               if ($tipo_calculado === 'LICENCIA_PATERNIDAD') {
+                  $accruals[$key]['code'] = 'LICENCIA_PATERNIDAD';
+                  unset($accruals[$key]['medical-leave'], $accruals[$key]['medical-leave-type']);
+                  continue;
+               }
+
                $tipo_almacenado = null;
 
                if (isset($line['medical-leave']['medical-leave-type'])) {
@@ -448,6 +455,14 @@ class DocumentoSoporte extends Model
             }
 
             $tipo = null;
+
+            $descripcion_concepto = $this->normalize_text($concepto->descripcion);
+            if (strpos($descripcion_concepto, 'MATERNIDAD') !== false
+               || strpos($descripcion_concepto, 'PATERNIDAD') !== false) {
+               $tipos[] = 'LICENCIA_PATERNIDAD';
+               continue;
+            }
+
             foreach ($registro_concepto as $registro) {
                if (!is_null($registro->novedad_tnl)) {
                   $tipo = $registro->novedad_tnl->get_medical_leave_type();
