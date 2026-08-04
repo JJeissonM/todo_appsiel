@@ -337,6 +337,17 @@ class DocumentoSoporte extends Model
                && (!isset($line['days']) || (float)$line['days'] <= 0)) {
                $accruals[$key]['code'] = 'VACACION_COMPENSADA';
                $accruals[$key]['days'] = 15;
+               $accruals[$key]['amount-ns'] = (float)$line['amount'];
+               unset($accruals[$key]['amount']);
+               $line = $accruals[$key];
+            }
+
+            if (isset($line['code']) && $line['code'] === 'VACACION_COMPENSADA') {
+               if (!isset($line['amount-ns']) && isset($line['amount'])) {
+                  $accruals[$key]['amount-ns'] = (float)$line['amount'];
+               }
+
+               unset($accruals[$key]['amount']);
                $line = $accruals[$key];
             }
 
@@ -399,15 +410,18 @@ class DocumentoSoporte extends Model
          }
 
          foreach ($accruals as $line) {
-            if (isset($line['code']) && $line['code'] === 'VACACION_COMPENSADA'
-               && isset($line['amount']) && abs((float)$line['amount'] - $amount) < 0.01) {
-               return $accruals;
+            if (isset($line['code']) && $line['code'] === 'VACACION_COMPENSADA') {
+               $line_amount = isset($line['amount-ns']) ? $line['amount-ns'] : (isset($line['amount']) ? $line['amount'] : null);
+
+               if (!is_null($line_amount) && abs((float)$line_amount - $amount) < 0.01) {
+                  return $accruals;
+               }
             }
          }
 
          $accruals[] = [
             'code' => 'VACACION_COMPENSADA',
-            'amount' => $amount,
+            'amount-ns' => $amount,
             'days' => 15
          ];
 

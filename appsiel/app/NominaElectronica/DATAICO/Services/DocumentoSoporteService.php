@@ -377,6 +377,11 @@ class DocumentoSoporteService
          unset($one_line['amount']);
       }
 
+      if ($codigo_cpto_dian === 'VACACION_COMPENSADA') {
+         $one_line['amount-ns'] = $amount;
+         unset($one_line['amount']);
+      }
+
       return $one_line;
    }
 
