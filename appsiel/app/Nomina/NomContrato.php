@@ -91,7 +91,7 @@ class NomContrato extends Model
 
     public function registros_documentos_nomina()
     {
-        return $this->hasMany(NomDocRegistro::class, 'core_tercero_id', 'core_tercero_id');
+        return $this->hasMany(NomDocRegistro::class, 'nom_contrato_id', 'id');
     }
 
     public function cuentas_bancarias()
