@@ -357,7 +357,9 @@ class DocumentoSoporteService
             return $this->get_error_line('El concepto de incapacidad requiere una novedad con Origen de incapacidad COMUN o LABORAL.');
          }
 
-         $one_line['medical-leave-type'] = $medical_leave_type;
+         $one_line['medical-leave'] = [
+            'medical-leave-type' => $medical_leave_type
+         ];
       }
       
       $one_line['amount'] = $amount;
