@@ -8,6 +8,10 @@ Route::post('nomina/crear_registros2', 'Nomina\RegistrosDocumentosController@cre
 
 Route::resource('nom_registros_documentos', 'Nomina\RegistrosDocumentosController');
 
+Route::post('nom_contratos/{contrato_id}/cuentas_bancarias', 'Nomina\ContratoCuentaBancariaController@store');
+Route::put('nom_contratos/{contrato_id}/cuentas_bancarias/{cuenta_id}', 'Nomina\ContratoCuentaBancariaController@update');
+Route::delete('nom_contratos/{contrato_id}/cuentas_bancarias/{cuenta_id}', 'Nomina\ContratoCuentaBancariaController@destroy');
+
 
 //  NOMINA ELECTRONICA
 Route::resource('nom_electronica', 'Nomina\NominaElectronicaController');

@@ -1,5 +1,8 @@
 <?php
 	$url_parametros = 'id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion');
+	$url_base_cuentas_bancarias = isset($url_base_cuentas_bancarias)
+		? $url_base_cuentas_bancarias
+		: 'compras_proveedores/' . $registro->id . '/cuentas_bancarias';
 ?>
 
 <br>
@@ -7,7 +10,7 @@
 <div class="panel panel-default">
 	<div class="panel-heading"><strong>Agregar cuenta bancaria</strong></div>
 	<div class="panel-body">
-		<form method="POST" action="{{ url('compras_proveedores/' . $registro->id . '/cuentas_bancarias?' . $url_parametros) }}">
+		<form method="POST" action="{{ url($url_base_cuentas_bancarias . '?' . $url_parametros) }}">
 			{{ csrf_field() }}
 			<div class="row">
 				<div class="col-md-3">
@@ -84,7 +87,7 @@
 						<a class="btn btn-xs btn-info js-btn-editar-cuenta" href="#editar-cuenta-{{ $cuenta->id }}" data-cuenta-id="{{ $cuenta->id }}">
 							<i class="fa fa-pencil"></i> Editar
 						</a>
-						<form method="POST" action="{{ url('compras_proveedores/' . $registro->id . '/cuentas_bancarias/' . $cuenta->id . '?' . $url_parametros) }}" style="display:inline;">
+						<form method="POST" action="{{ url($url_base_cuentas_bancarias . '/' . $cuenta->id . '?' . $url_parametros) }}" style="display:inline;">
 							{{ csrf_field() }}
 							{{ method_field('DELETE') }}
 							<button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('¿Desea eliminar esta cuenta bancaria?');">
@@ -95,7 +98,7 @@
 				</tr>
 				<tr class="collapse" id="editar-cuenta-{{ $cuenta->id }}">
 					<td colspan="7">
-						<form method="POST" action="{{ url('compras_proveedores/' . $registro->id . '/cuentas_bancarias/' . $cuenta->id . '?' . $url_parametros) }}">
+						<form method="POST" action="{{ url($url_base_cuentas_bancarias . '/' . $cuenta->id . '?' . $url_parametros) }}">
 							{{ csrf_field() }}
 							{{ method_field('PUT') }}
 							<div class="row">

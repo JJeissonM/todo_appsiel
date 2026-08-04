@@ -10,6 +10,9 @@ use App\Nomina\NomDocRegistro;
 use App\Nomina\ParametroLegal;
 use App\Nomina\CambioSalario;
 use App\Nomina\ParametrosRetefuenteEmpleado;
+use App\Compras\ProveedorCuentaBancaria;
+use App\Core\Ciudad;
+use App\Tesoreria\TesoEntidadFinanciera;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,6 +32,7 @@ class NomContrato extends Model
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila","otros_enlaces":"[{\"url\":\"nomina/duplicar_contrato_retirado/id_fila?id=17&id_modelo=83\",\"title\":\"Duplicar contrato retirado\",\"color_bootstrap\":\"\",\"faicon\":\"copy\",\"size\":\"\",\"tag_html\":\"a\"}]"}';
     public $archivo_js = 'js/nomina/nom_contratos.js';
+    public $vistas = '{"show":"nomina.contratos.show"}';
 
     public function tercero()
     {
@@ -88,6 +92,36 @@ class NomContrato extends Model
     public function registros_documentos_nomina()
     {
         return $this->hasMany(NomDocRegistro::class, 'core_tercero_id', 'core_tercero_id');
+    }
+
+    public function cuentas_bancarias()
+    {
+        return $this->hasMany(ProveedorCuentaBancaria::class, 'tercero_id', 'core_tercero_id');
+    }
+
+    public function get_datos_adicionales_show($contrato)
+    {
+        $cuentas_bancarias = $contrato->cuentas_bancarias()
+            ->with('entidad_financiera', 'ciudad')
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        $entidades_financieras = TesoEntidadFinanciera::where('estado', 'Activo')
+            ->orderBy('descripcion')
+            ->get();
+
+        $ciudades = Ciudad::leftJoin('core_departamentos', 'core_departamentos.id', '=', 'core_ciudades.core_departamento_id')
+            ->select(
+                'core_ciudades.id',
+                'core_ciudades.descripcion as ciudad',
+                'core_departamentos.descripcion as departamento'
+            )
+            ->orderBy('core_ciudades.descripcion')
+            ->get();
+
+        return compact('cuentas_bancarias', 'entidades_financieras', 'ciudades') + [
+            'url_base_cuentas_bancarias' => 'nom_contratos/' . $contrato->id . '/cuentas_bancarias'
+        ];
     }
 
     public function prestaciones_consolidadas()

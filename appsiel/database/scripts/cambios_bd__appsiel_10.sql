@@ -872,3 +872,6 @@ WHERE `roles`.`name` IN ('SuperAdmin', 'Administrador')
             AND `role_has_permissions`.`role_id` = `roles`.`id`
         LIMIT 1
     );
+
+
+ALTER TABLE `nom_conceptos` CHANGE `cpto_dian_id` `cpto_dian_id` INT(10) UNSIGNED NULL DEFAULT NULL;
