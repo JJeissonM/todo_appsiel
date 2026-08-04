@@ -7,6 +7,7 @@ use App\Sistema\Services\AppDocType;
 use App\Sistema\TipoTransaccion;
 
 use App\Nomina\NomContrato;
+use App\Nomina\NovedadTnl;
 use App\Nomina\ParametroLegal;
 use App\Nomina\ValueObjects\LapsoNomina;
 use App\NominaElectronica\DATAICO\DocumentoSoporte;
@@ -215,6 +216,7 @@ class DocumentoSoporteService
       $horas_dia_laboral = $this->get_horas_dia_laboral($lapso->fecha_final);
 
       $registros_agrupados_por_concepto = $registros->groupBy('nom_concepto_id');
+      $medical_leave_type_periodo = $this->get_medical_leave_type_for_period($registros_agrupados_por_concepto);
       
       $line_accruals = [];
       $line_deductions = [];
@@ -225,13 +227,13 @@ class DocumentoSoporteService
 
          if ($concepto->naturaleza == 'devengo') {
 
-            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_devengo'),$registros,$horas_dia_laboral);
+            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_devengo'),$registros,$horas_dia_laboral,$medical_leave_type_periodo);
             if (!empty($value_json)) {
                $line_accruals[] = $value_json;
             }
             
          }else{
-            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_deduccion'),$registros,$horas_dia_laboral);
+            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_deduccion'),$registros,$horas_dia_laboral,$medical_leave_type_periodo);
             if (!empty($value_json)) {
                $line_deductions[] = $value_json;
             }
@@ -267,7 +269,7 @@ class DocumentoSoporteService
       return $data;
    }
 
-   public function get_linea_empleado($registro_concepto, $concepto, $amount, $registros, $horas_dia_laboral)
+   public function get_linea_empleado($registro_concepto, $concepto, $amount, $registros, $horas_dia_laboral, $medical_leave_type_periodo = null)
    {
       $one_line = [];
 
@@ -354,6 +356,10 @@ class DocumentoSoporteService
 
          $medical_leave_type = $this->get_medical_leave_type($registro_concepto);
          if (is_null($medical_leave_type)) {
+            $medical_leave_type = $medical_leave_type_periodo;
+         }
+
+         if (is_null($medical_leave_type)) {
             return $this->get_error_line('El concepto de incapacidad requiere una novedad con Origen de incapacidad COMUN o LABORAL.');
          }
 
@@ -374,17 +380,44 @@ class DocumentoSoporteService
    protected function get_medical_leave_type($registro_concepto)
    {
       foreach ($registro_concepto as $registro) {
-         if (is_null($registro->novedad_tnl)) {
-            continue;
+         if (!is_null($registro->novedad_tnl)) {
+            $tipo = $registro->novedad_tnl->get_medical_leave_type();
+            if (!is_null($tipo)) {
+               return $tipo;
+            }
          }
 
-         $tipo = $registro->novedad_tnl->get_medical_leave_type();
+         $descripcion_concepto = is_null($registro->concepto) ? '' : $registro->concepto->descripcion;
+         $tipo = NovedadTnl::inferir_medical_leave_type_desde_concepto($descripcion_concepto);
          if (!is_null($tipo)) {
             return $tipo;
          }
       }
 
       return null;
+   }
+
+   protected function get_medical_leave_type_for_period($registros_agrupados_por_concepto)
+   {
+      $tipos = [];
+
+      foreach ($registros_agrupados_por_concepto as $registro_concepto) {
+         $primer_registro = $registro_concepto->first();
+         $concepto = is_null($primer_registro) ? null : $primer_registro->concepto;
+
+         if (is_null($concepto) || is_null($concepto->cpto_dian) || $concepto->cpto_dian->codigo !== 'INCAPACIDAD') {
+            continue;
+         }
+
+         $tipo = $this->get_medical_leave_type($registro_concepto);
+         if (!is_null($tipo)) {
+            $tipos[] = $tipo;
+         }
+      }
+
+      $tipos = array_values(array_unique($tipos));
+
+      return count($tipos) === 1 ? $tipos[0] : null;
    }
 
    protected function normalize_dian_code($codigo_cpto_dian, $descripcion_concepto)

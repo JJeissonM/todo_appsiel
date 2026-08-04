@@ -401,7 +401,7 @@ class DocumentoSoporte extends Model
             }
 
             if (is_null($tipo)) {
-               $tipo = $this->infer_medical_leave_type_from_concept($concepto->descripcion);
+               $tipo = NovedadTnl::inferir_medical_leave_type_desde_concepto($concepto->descripcion);
             }
 
             $tipos[] = $tipo;
@@ -416,26 +416,6 @@ class DocumentoSoporte extends Model
          }
 
          return $tipos;
-      }
-
-      protected function infer_medical_leave_type_from_concept($descripcion)
-      {
-         $descripcion = strtoupper(trim((string) $descripcion));
-
-         if (strpos($descripcion, 'PROFESIONAL') !== false
-            || strpos($descripcion, 'LABORAL') !== false
-            || strpos($descripcion, 'ACCIDENTE DE TRABAJO') !== false
-            || strpos($descripcion, 'ACCIDENTE TRABAJO') !== false) {
-            return NovedadTnl::MEDICAL_LEAVE_TYPE_PROFESIONAL;
-         }
-
-         if (strpos($descripcion, 'ENFERMEDAD GENERAL') !== false
-            || strpos($descripcion, 'COMUN') !== false
-            || strpos($descripcion, 'COMÚN') !== false) {
-            return NovedadTnl::MEDICAL_LEAVE_TYPE_COMUN;
-         }
-
-         return null;
       }
 
       protected function get_head_data_stored()

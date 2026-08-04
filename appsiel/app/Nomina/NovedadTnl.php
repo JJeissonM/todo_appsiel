@@ -66,6 +66,26 @@ class NovedadTnl extends Model
 		return null;
 	}
 
+	public static function inferir_medical_leave_type_desde_concepto($descripcion)
+	{
+		$descripcion = strtoupper(trim((string) $descripcion));
+
+		if (strpos($descripcion, 'PROFESIONAL') !== false
+			|| strpos($descripcion, 'LABORAL') !== false
+			|| strpos($descripcion, 'ACCIDENTE DE TRABAJO') !== false
+			|| strpos($descripcion, 'ACCIDENTE TRABAJO') !== false) {
+			return self::MEDICAL_LEAVE_TYPE_PROFESIONAL;
+		}
+
+		if (strpos($descripcion, 'ENFERMEDAD GENERAL') !== false
+			|| strpos($descripcion, 'COMUN') !== false
+			|| strpos($descripcion, 'COMÚN') !== false) {
+			return self::MEDICAL_LEAVE_TYPE_COMUN;
+		}
+
+		return null;
+	}
+
 	public static function consultar_registros($nro_registros, $search)
 	{
 		if ( $search == '' )
