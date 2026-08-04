@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class NovedadTnl extends Model
 {
 	const MEDICAL_LEAVE_TYPE_COMUN = 'COMUN';
-	const MEDICAL_LEAVE_TYPE_LABORAL = 'LABORAL';
+	const MEDICAL_LEAVE_TYPE_PROFESIONAL = 'PROFESIONAL';
 
 	/*
 		tipo_novedad_tnl: { incapacidad | permiso_remunerado | permiso_no_remunerado | suspencion | vacaciones }
@@ -55,8 +55,12 @@ class NovedadTnl extends Model
 	{
 		$tipo = strtoupper(trim((string) $origen_incapacidad));
 
-		if (in_array($tipo, [self::MEDICAL_LEAVE_TYPE_COMUN, self::MEDICAL_LEAVE_TYPE_LABORAL], true)) {
-			return $tipo;
+		if ($tipo === self::MEDICAL_LEAVE_TYPE_COMUN) {
+			return self::MEDICAL_LEAVE_TYPE_COMUN;
+		}
+
+		if (in_array($tipo, ['LABORAL', self::MEDICAL_LEAVE_TYPE_PROFESIONAL], true)) {
+			return self::MEDICAL_LEAVE_TYPE_PROFESIONAL;
 		}
 
 		return null;
