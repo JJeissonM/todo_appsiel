@@ -516,15 +516,62 @@ class OseiPayrollService
         $documentoId = $respuestaJson['documentId'] ?? null;
         $statusDoc = $respuestaJson['status'] ?? null;
         $cune = $respuestaJson['cune'] ?? null;
-        $errores = $respuestaJson['errors'] ?? ($respuestaJson['message'] ?? 'Error desconocido');
         $esSimulacion = ($respuestaJson['simulation'] ?? false) === true;
+
+        // Extraer la respuesta detallada de la DIAN desde dianResponse
+        $dianResponse = $respuestaJson['dianResponse'] ?? [];
+        $dianStatusCode = $dianResponse['statusCode'] ?? '';
+        $dianStatusDescription = $dianResponse['statusDescription'] ?? '';
+        $dianStatusMessage = $dianResponse['statusMessage'] ?? '';
+        $dianErrors = $dianResponse['errors'] ?? [];
+
+        // Construir mensajes de error legibles desde los errores de la DIAN
+        $mensajesError = [];
+        if (!empty($dianErrors) && is_array($dianErrors)) {
+            foreach ($dianErrors as $error) {
+                if (is_array($error)) {
+                    $code = $error['code'] ?? '';
+                    $message = $error['message'] ?? '';
+                    if ($code !== '' && $message !== '') {
+                        $mensajesError[] = "[{$code}] {$message}";
+                    } elseif ($message !== '') {
+                        $mensajesError[] = $message;
+                    } elseif (!empty($error['raw'])) {
+                        $mensajesError[] = $error['raw'];
+                    }
+                } elseif (is_string($error) && $error !== '') {
+                    $mensajesError[] = $error;
+                }
+            }
+        }
+
+        // Si no hay errores detallados de la DIAN, usar el mensaje general
+        if (empty($mensajesError)) {
+            // Intentar con errors del nivel superior (formato de validación de OSEI)
+            $topErrors = $respuestaJson['errors'] ?? [];
+            if (!empty($topErrors) && is_array($topErrors)) {
+                foreach ($topErrors as $error) {
+                    if (is_array($error)) {
+                        $mensajesError[] = ($error['field'] ?? '') . ': ' . ($error['message'] ?? json_encode($error));
+                    } else {
+                        $mensajesError[] = (string)$error;
+                    }
+                }
+            }
+        }
+
+        // Mensaje final para guardar en BD
+        $dianMessages = empty($mensajesError)
+            ? ($dianStatusDescription ?: ($respuestaJson['message'] ?? 'Error desconocido'))
+            : implode(' | ', $mensajesError);
 
         $this->guardarResultado($documento, [
             'codigo' => $statusCode,
             'dian_status' => $dianStatus,
-            'dian_messages' => is_array($errores) ? json_encode($errores) : (string)$errores,
+            'dian_messages' => $dianMessages,
             'cune' => $cune,
             'number' => $documentoId,
+            'response_xml' => $body,
         ], $jsonEnviado);
 
         if ($exitoso) {
@@ -546,24 +593,16 @@ class OseiPayrollService
             ];
         }
 
-        $mensajesError = [];
-        if (is_array($errores)) {
-            foreach ($errores as $error) {
-                if (is_array($error)) {
-                    $mensajesError[] = ($error['field'] ?? '') . ': ' . ($error['message'] ?? json_encode($error));
-                } else {
-                    $mensajesError[] = (string)$error;
-                }
-            }
-        } else {
-            $mensajesError[] = (string)$errores;
-        }
-
         return [
             'ok' => false,
             'documento_id' => $documento->id,
             'statusCode' => $statusCode,
-            'message' => empty($mensajesError) ? 'El documento fue rechazado por OSEI.' : implode(' | ', $mensajesError),
+            'dianStatusCode' => $dianStatusCode,
+            'dianStatusDescription' => $dianStatusDescription,
+            'errors' => $mensajesError,
+            'message' => empty($mensajesError)
+                ? ($dianStatusDescription ?: ($respuestaJson['message'] ?? 'El documento fue rechazado por OSEI.'))
+                : implode(' | ', $mensajesError),
         ];
     }
 
@@ -583,6 +622,7 @@ class OseiPayrollService
             'dian_messages' => $data['dian_messages'] ?? null,
             'cune' => $data['cune'] ?? '',
             'number' => $data['number'] ?? $documento->consecutivo,
+            'response_xml' => $data['response_xml'] ?? null,
             'objeto_json_enviado' => json_encode($jsonEnviado),
         ];
 
