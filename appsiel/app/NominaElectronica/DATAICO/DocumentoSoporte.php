@@ -349,10 +349,8 @@ class DocumentoSoporte extends Model
                   throw new \UnexpectedValueException('El concepto de incapacidad requiere una novedad con Origen de incapacidad COMUN o LABORAL.');
                }
 
-               unset($accruals[$key]['medical-leave-type']);
-               $accruals[$key]['medical-leave'] = [
-                  'medical-leave-type' => $medical_leave_type
-               ];
+               unset($accruals[$key]['medical-leave']);
+               $accruals[$key]['medical-leave-type'] = $medical_leave_type;
             }
 
             if (!isset($line['code']) || $line['code'] != 'OTRO_CONCEPTO') {
