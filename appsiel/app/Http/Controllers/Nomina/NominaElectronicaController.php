@@ -413,38 +413,6 @@ class NominaElectronicaController extends TransaccionController
         // ── ENVÍO A DATAICO (original) ──
         $doc_soporte_service = new DocumentoSoporteService();
 
-        $proveedor = config('nomina.proveedor_tecnologico_default', 'DATAICO');
-
-        // ── ENVÍO A OSEI ──
-        if (strtoupper($proveedor) === 'OSEI') {
-            try {
-                $oseiService = new OseiPayrollService();
-                $resultado = $oseiService->enviarDocumento($document_header);
-
-                if ($resultado['ok']) {
-                    $document_header->estado = 'Enviado';
-                    $document_header->save();
-                }
-
-                return $resultado;
-            } catch ( \Throwable $e ) {
-                \Log::error('OSEl: Error enviando documento.', [
-                    'documento_id' => $document_header->id,
-                    'error' => $e->getMessage(),
-                ]);
-
-                return [
-                    'ok' => false,
-                    'documento_id' => (int)$document_header->id,
-                    'documento' => $document_header->get_value_to_show(),
-                    'message' => 'OSEl: ' . $e->getMessage()
-                ];
-            }
-        }
-
-        // ── ENVÍO A DATAICO (original) ──
-        $doc_soporte_service = new DocumentoSoporteService();
-
         try {
             $payload_documento = $document_header->get_json_to_send();
             $json_doc_electronico_enviado = json_encode($payload_documento, JSON_UNESCAPED_UNICODE);
@@ -463,6 +431,15 @@ class NominaElectronicaController extends TransaccionController
 
         $response = null;
         $array_respuesta = [];
+        $raw_response_body = '';
+        $request_metadata = [
+            'url' => config('nomina.url_servicio_emision'),
+            'headers' => [
+                'content-type' => 'application/json',
+                'auth-token' => '[OCULTO]'
+            ],
+            'body' => $payload_documento
+        ];
 
         try {
             $client = new Client();
@@ -472,6 +449,9 @@ class NominaElectronicaController extends TransaccionController
                               'auth-token' => config('nomina.tokenPassword')
                            ],
                 'body' => $json_doc_electronico_enviado,
+                'http_errors' => false,
+                'connect_timeout' => 10,
+                'timeout' => 60
             ]);
          } catch (\GuzzleHttp\Exception\ConnectException $e) {
              $array_respuesta = [
