@@ -332,6 +332,14 @@ class DocumentoSoporte extends Model
          $medical_leave_types = $this->get_medical_leave_types_for_period($lapso);
 
          foreach ($accruals as $key => $line) {
+            if (isset($line['code']) && $line['code'] === 'VACACION'
+               && isset($line['amount']) && (float)$line['amount'] > 0
+               && (!isset($line['days']) || (float)$line['days'] <= 0)) {
+               $accruals[$key]['code'] = 'VACACION_COMPENSADA';
+               $accruals[$key]['days'] = 15;
+               $line = $accruals[$key];
+            }
+
             if (isset($line['code']) && $line['code'] === 'INCAPACIDAD') {
                $tipo_calculado = empty($medical_leave_types) ? null : array_shift($medical_leave_types);
                $tipo_almacenado = null;
@@ -365,34 +373,45 @@ class DocumentoSoporte extends Model
             }
          }
 
-         return $this->remove_duplicate_zero_day_vacations($accruals);
+         return $this->append_missing_compensated_vacations($accruals, $lapso);
       }
 
-      protected function remove_duplicate_zero_day_vacations($accruals)
+      protected function append_missing_compensated_vacations($accruals, LapsoNomina $lapso)
       {
-         foreach ($accruals as $key => $line) {
-            if (!isset($line['code']) || $line['code'] !== 'VACACION'
-               || !isset($line['days']) || (float)$line['days'] > 0
-               || !isset($line['amount'])) {
-               continue;
-            }
+         if (is_null($this->empleado)) {
+            return $accruals;
+         }
 
-            foreach ($accruals as $other_key => $other_line) {
-               if ($other_key === $key
-                  || !isset($other_line['code']) || $other_line['code'] !== 'VACACION'
-                  || !isset($other_line['days']) || (float)$other_line['days'] <= 0
-                  || !isset($other_line['amount'])) {
-                  continue;
+         $registros = $this->empleado
+            ->get_registros_documentos_nomina_entre_fechas($lapso->fecha_inicial, $lapso->fecha_final)
+            ->filter(function ($registro) {
+               if (is_null($registro->concepto)) {
+                  return false;
                }
 
-               if (abs((float)$other_line['amount'] - (float)$line['amount']) < 0.01) {
-                  unset($accruals[$key]);
-                  break;
-               }
+               return strpos($this->normalize_text($registro->concepto->descripcion), 'VACACIONES PAGADAS') !== false
+                  && (float)$registro->valor_devengo > 0;
+            });
+
+         $amount = (float)$registros->sum('valor_devengo');
+         if ($amount <= 0) {
+            return $accruals;
+         }
+
+         foreach ($accruals as $line) {
+            if (isset($line['code']) && $line['code'] === 'VACACION_COMPENSADA'
+               && isset($line['amount']) && abs((float)$line['amount'] - $amount) < 0.01) {
+               return $accruals;
             }
          }
 
-         return array_values($accruals);
+         $accruals[] = [
+            'code' => 'VACACION_COMPENSADA',
+            'amount' => $amount,
+            'days' => 15
+         ];
+
+         return $accruals;
       }
 
       protected function get_medical_leave_types_for_period(LapsoNomina $lapso)

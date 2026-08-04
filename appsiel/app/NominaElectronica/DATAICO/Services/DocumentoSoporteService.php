@@ -256,8 +256,6 @@ class DocumentoSoporteService
          ];
       }
 
-      $line_accruals = $this->remove_duplicate_zero_day_vacations($line_accruals);
-
       $data = [
          'accruals' => $line_accruals,
          'deductions' => $line_deductions
@@ -319,6 +317,11 @@ class DocumentoSoporteService
          }
 
          $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / $horas_dia_laboral , 0 );
+      }
+
+      if ($codigo_cpto_dian === 'VACACION_COMPENSADA'
+         && (!isset($one_line['days']) || (float)$one_line['days'] <= 0)) {
+         $one_line['days'] = 15;
       }
       
       if ($concepto->cpto_dian->liquida_horas) {
@@ -420,40 +423,18 @@ class DocumentoSoporteService
       return count($tipos) === 1 ? $tipos[0] : null;
    }
 
-   protected function remove_duplicate_zero_day_vacations($accruals)
-   {
-      foreach ($accruals as $key => $line) {
-         if (!isset($line['code']) || $line['code'] !== 'VACACION'
-            || !isset($line['days']) || (float)$line['days'] > 0
-            || !isset($line['amount'])) {
-            continue;
-         }
-
-         foreach ($accruals as $other_key => $other_line) {
-            if ($other_key === $key
-               || !isset($other_line['code']) || $other_line['code'] !== 'VACACION'
-               || !isset($other_line['days']) || (float)$other_line['days'] <= 0
-               || !isset($other_line['amount'])) {
-               continue;
-            }
-
-            if (abs((float)$other_line['amount'] - (float)$line['amount']) < 0.01) {
-               unset($accruals[$key]);
-               break;
-            }
-         }
-      }
-
-      return array_values($accruals);
-   }
-
    protected function normalize_dian_code($codigo_cpto_dian, $descripcion_concepto)
    {
+      $descripcion = $this->normalize_text($descripcion_concepto);
+
+      if ($codigo_cpto_dian === 'VACACION' && strpos($descripcion, 'VACACIONES PAGADAS') !== false) {
+         return 'VACACION_COMPENSADA';
+      }
+
       if ($codigo_cpto_dian != 'OTRO_CONCEPTO') {
          return $codigo_cpto_dian;
       }
 
-      $descripcion = $this->normalize_text($descripcion_concepto);
       if (strpos($descripcion, 'AUXILIO') !== false || strpos($descripcion, 'ALIMENT') !== false || strpos($descripcion, 'ALMUERZO') !== false || strpos($descripcion, 'REEMBOLSO') !== false || strpos($descripcion, 'REMBOLSO') !== false) {
          return 'AUXILIO';
       }
