@@ -238,7 +238,7 @@ class OseiPayrollService
 
             switch ($code) {
                 case 'BASICO':
-                    $earnings['basicSalary']['workedDays'] = $days ?: 30;
+                    $earnings['basicSalary']['workedDays'] = min(30, $days ?: 30);
                     $earnings['basicSalary']['amount'] = $amount;
                     break;
 

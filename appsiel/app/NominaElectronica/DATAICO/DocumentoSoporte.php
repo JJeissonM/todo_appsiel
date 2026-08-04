@@ -209,6 +209,10 @@ class DocumentoSoporte extends Model
          }
 
          $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / $horas_dia_laboral , 0 );
+
+         if ($one_line['code'] === 'BASICO') {
+            $one_line['days'] = min(30, $one_line['days']);
+         }
       }
       
       if ($concepto->cpto_dian->liquida_horas) {
@@ -332,6 +336,11 @@ class DocumentoSoporte extends Model
          $medical_leave_types = $this->get_medical_leave_types_for_period($lapso);
 
          foreach ($accruals as $key => $line) {
+            if (isset($line['code']) && $line['code'] === 'BASICO' && isset($line['days'])) {
+               $accruals[$key]['days'] = min(30, (float)$line['days']);
+               $line = $accruals[$key];
+            }
+
             if (isset($line['code']) && $line['code'] === 'VACACION'
                && isset($line['amount']) && (float)$line['amount'] > 0
                && (!isset($line['days']) || (float)$line['days'] <= 0)) {

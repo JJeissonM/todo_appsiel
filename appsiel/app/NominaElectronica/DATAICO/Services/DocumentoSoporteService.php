@@ -316,6 +316,10 @@ class DocumentoSoporteService
          }
 
          $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / $horas_dia_laboral , 0 );
+
+         if ($codigo_cpto_dian === 'BASICO') {
+            $one_line['days'] = min(30, $one_line['days']);
+         }
       }
 
       if ($codigo_cpto_dian === 'LICENCIA_PATERNIDAD') {
