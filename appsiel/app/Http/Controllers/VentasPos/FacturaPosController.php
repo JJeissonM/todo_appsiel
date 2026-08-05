@@ -268,6 +268,9 @@ class FacturaPosController extends TransaccionController
         }
 
         $lineas_registros = json_decode($request->lineas_registros);
+        if (is_array($lineas_registros)) {
+            (new InvoicingService())->normalizar_cambio_efectivo_request($request, $lineas_registros);
+        }
 
         $acumular_factura = false;
         if ((int)config('ventas_pos.acumular_facturas_en_tiempo_real') ) {
@@ -788,8 +791,12 @@ class FacturaPosController extends TransaccionController
      */
     public function update(Request $request, $id)
     {
+        $this->aplicar_excedente_transferencia_como_otros_recaudos($request);
         $lineas_registros = json_decode($request->lineas_registros);
         $total_factura = $this->get_total_factura_from_arr_lineas_registros($lineas_registros);
+        if (is_array($lineas_registros)) {
+            (new InvoicingService())->normalizar_cambio_efectivo_request($request, $lineas_registros);
+        }
 
         if ((int)config('inventarios.manejar_platillos_con_contorno')) {
             $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
@@ -1347,20 +1354,33 @@ class FacturaPosController extends TransaccionController
     */
     public function acumular_una_factura($factura_id)
     {
-        $invoice = FacturaPos::find($factura_id);
+        try {
+            $invoice = FacturaPos::find($factura_id);
 
-        if (!is_null($invoice)) {
-            $obj_acumm_serv = new AccumulationService($invoice->pdv_id);
-            if ($obj_acumm_serv->debe_crear_ensamble_de_recetas()) {
-                $obj_acumm_serv->hacer_preparaciones_recetas('Creado por factura POS ' . $invoice->get_label_documento(), $invoice->fecha, $invoice->id);
+            if (!is_null($invoice)) {
+                $obj_acumm_serv = new AccumulationService($invoice->pdv_id);
+                if ($obj_acumm_serv->debe_crear_ensamble_de_recetas()) {
+                    $obj_acumm_serv->hacer_preparaciones_recetas('Creado por factura POS ' . $invoice->get_label_documento(), $invoice->fecha, $invoice->id);
+                }
             }
+
+            $obj_acumm_serv = new AccumulationService( 0 );
+
+            $obj_acumm_serv->accumulate_one_invoice($factura_id);
+
+            // Se conserva el cuerpo historico "1" porque el acumulador del
+            // frontend usa esta respuesta para continuar con la siguiente factura.
+            return 1;
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
+        } catch (\UnexpectedValueException $e) {
+            Log::warning('POS_ACCUMULATION_UNBALANCED', [
+                'factura_id' => (int)$factura_id,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
         }
-
-        $obj_acumm_serv = new AccumulationService( 0 );
-
-        $obj_acumm_serv->accumulate_one_invoice($factura_id);
-
-        return 1;
     }
 
     // Llamado desde la vista Show (Boton de accion)

@@ -157,6 +157,11 @@ class AccumulationService
             return 1;
         }
 
+        // Solo se autocorrigen documentos pendientes. Los documentos ya
+        // acumulados/contabilizados requieren conciliacion de tesoreria y no
+        // deben alterarse automaticamente.
+        $this->normalizar_cambio_en_medios_recaudo($invoice);
+
         if ( $invoice->core_tercero_id == 0 )
         {
             $invoice->core_tercero_id = $invoice->pdv->cliente->tercero->core_tercero_id;
@@ -242,6 +247,36 @@ class AccumulationService
         //}
 
         return 1;
+    }
+
+    /**
+     * Compatibilidad para facturas pendientes antiguas que guardaron como
+     * recaudo el efectivo recibido sin descontar el cambio entregado.
+     */
+    protected function normalizar_cambio_en_medios_recaudo(FacturaPos $invoice)
+    {
+        if ($invoice->forma_pago != 'contado' || (float)$invoice->valor_total_cambio <= 0) {
+            return false;
+        }
+
+        $total_documento = (float)$invoice->valor_total
+                            + (float)$invoice->valor_ajuste_al_peso
+                            + (float)$invoice->valor_total_bolsas;
+
+        $resultado = (new PaymentReconciliationService())->normalizar_cambio_en_efectivo(
+            $invoice->lineas_registros_medios_recaudos,
+            $total_documento,
+            $invoice->valor_total_cambio
+        );
+
+        if (!$resultado['normalizado']) {
+            return false;
+        }
+
+        $invoice->lineas_registros_medios_recaudos = $resultado['lineas_json'];
+        $invoice->save();
+
+        return true;
     }
 
     public function is_pending_mov_ventas($array_wheres)

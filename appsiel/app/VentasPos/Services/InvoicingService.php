@@ -49,6 +49,7 @@ class InvoicingService
 
         $this->validar_lineas_registros_pos($lineas_registros, $request);
         $this->quitar_medios_recaudo_repetidos_en_exceso($request, $lineas_registros);
+        $this->normalizar_cambio_efectivo_request($request, $lineas_registros);
 
         // Encabezado
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
@@ -318,6 +319,27 @@ class InvoicingService
                 'lineas_registros_medios_recaudos' => json_encode(array_values($lineas_filtradas))
             ]);
         }
+    }
+
+    public function normalizar_cambio_efectivo_request(Request $request, array $lineas_registros)
+    {
+        if ($request->get('forma_pago') != 'contado') {
+            return false;
+        }
+
+        $resultado = (new PaymentReconciliationService())->normalizar_cambio_en_efectivo(
+            $request->get('lineas_registros_medios_recaudos', '[]'),
+            $this->get_total_documento_pos($request, $lineas_registros),
+            $request->get('valor_total_cambio', 0)
+        );
+
+        if (!$resultado['normalizado']) {
+            return false;
+        }
+
+        $request->merge(['lineas_registros_medios_recaudos' => $resultado['lineas_json']]);
+
+        return true;
     }
 
     protected function get_total_documento_pos(Request $request, array $lineas_registros)
