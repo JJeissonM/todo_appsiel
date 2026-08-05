@@ -65,4 +65,97 @@ class PaymentReconciliationServiceTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($resultado['normalizado']);
         $this->assertEquals(178600.0, $resultado['total_recaudos']);
     }
+
+    public function test_corrige_el_ajuste_despues_de_agregar_comision_datafono()
+    {
+        $json = '[{"teso_motivo_id":"83-Ventas","valor":"$178570"},{"teso_motivo_id":"84-Comision datafono","valor":"$8930"}]';
+
+        $resultado = $this->service->normalizar_ajuste_datafono(
+            $json,
+            178595,
+            0,
+            5,
+            84,
+            true
+        );
+
+        $this->assertTrue($resultado['normalizado']);
+        $this->assertEquals(-25.0, $resultado['ajuste']);
+        $this->assertEquals(8930.0, $resultado['valor_datafono']);
+        $this->assertEquals(187500.0, $resultado['total_recaudos']);
+    }
+
+    public function test_no_corrige_datafono_si_los_recaudos_no_coinciden_con_el_total_redondeado()
+    {
+        $json = '[{"teso_motivo_id":"83-Ventas","valor":"$178595"},{"teso_motivo_id":"84-Comision datafono","valor":"$8930"}]';
+
+        $resultado = $this->service->normalizar_ajuste_datafono($json, 178595, 0, 5, 84, true);
+
+        $this->assertFalse($resultado['normalizado']);
+        $this->assertEquals(5.0, $resultado['ajuste']);
+    }
+
+    public function test_no_corrige_facturas_sin_motivo_datafono_configurado()
+    {
+        $json = '[{"teso_motivo_id":"84-Comision datafono","valor":"$8930"}]';
+
+        $resultado = $this->service->normalizar_ajuste_datafono($json, 178595, 0, 5, 0, true);
+
+        $this->assertFalse($resultado['normalizado']);
+        $this->assertEquals(0.0, $resultado['valor_datafono']);
+    }
+
+    public function test_no_modifica_ajuste_datafono_que_ya_es_correcto()
+    {
+        $json = '[{"teso_motivo_id":"83-Ventas","valor":"$178570"},{"teso_motivo_id":"84-Comision datafono","valor":"$8930"}]';
+
+        $resultado = $this->service->normalizar_ajuste_datafono($json, 178595, 0, -25, 84, true);
+
+        $this->assertFalse($resultado['normalizado']);
+        $this->assertEquals(-25.0, $resultado['ajuste']);
+    }
+
+    public function test_calcula_ajuste_a_unidad_si_no_se_redondea_a_centena()
+    {
+        $json = '[{"teso_motivo_id":"83-Ventas","valor":"$178595"},{"teso_motivo_id":"84-Comision datafono","valor":"$8930"}]';
+
+        $resultado = $this->service->normalizar_ajuste_datafono($json, 178594.6, 0, 5, 84, false);
+
+        $this->assertTrue($resultado['normalizado']);
+        $this->assertEquals(0.4, $resultado['ajuste']);
+    }
+
+    public function test_corrige_ajuste_para_propina_manual()
+    {
+        $json = '[{"teso_motivo_id":"83-Ventas","valor":"$178570"},{"teso_motivo_id":"85-Propina","valor":"$8930"}]';
+
+        $resultado = $this->service->normalizar_ajuste_recargos($json, 178595, 0, 5, [85], true);
+
+        $this->assertTrue($resultado['normalizado']);
+        $this->assertEquals(-25.0, $resultado['ajuste']);
+        $this->assertEquals(8930.0, $resultado['valor_recargos']);
+        $this->assertEquals(8930.0, $resultado['valores_por_motivo'][85]);
+    }
+
+    public function test_calcula_un_solo_ajuste_para_propina_y_datafono()
+    {
+        $json = '[{"teso_motivo_id":"83-Ventas","valor":"$178570"},{"teso_motivo_id":"85-Propina","valor":"$8900"},{"teso_motivo_id":"84-Comision datafono","valor":"$8930"}]';
+
+        $resultado = $this->service->normalizar_ajuste_recargos($json, 178595, 0, 5, [85, 84], true);
+
+        $this->assertTrue($resultado['normalizado']);
+        $this->assertEquals(-25.0, $resultado['ajuste']);
+        $this->assertEquals(17830.0, $resultado['valor_recargos']);
+        $this->assertEquals(196400.0, $resultado['total_recaudos']);
+    }
+
+    public function test_no_corrige_propina_historica_si_el_recaudo_no_cuadra_con_el_total_final()
+    {
+        $json = '[{"teso_motivo_id":"83-Ventas","valor":"$178595"},{"teso_motivo_id":"85-Propina","valor":"$8930"}]';
+
+        $resultado = $this->service->normalizar_ajuste_recargos($json, 178595, 0, 5, [85], true);
+
+        $this->assertFalse($resultado['normalizado']);
+        $this->assertEquals(5.0, $resultado['ajuste']);
+    }
 }

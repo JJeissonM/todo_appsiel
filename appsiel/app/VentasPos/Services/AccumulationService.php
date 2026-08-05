@@ -160,6 +160,7 @@ class AccumulationService
         // Solo se autocorrigen documentos pendientes. Los documentos ya
         // acumulados/contabilizados requieren conciliacion de tesoreria y no
         // deben alterarse automaticamente.
+        $this->normalizar_ajuste_recargos($invoice);
         $this->normalizar_cambio_en_medios_recaudo($invoice);
 
         if ( $invoice->core_tercero_id == 0 )
@@ -261,7 +262,9 @@ class AccumulationService
 
         $total_documento = (float)$invoice->valor_total
                             + (float)$invoice->valor_ajuste_al_peso
-                            + (float)$invoice->valor_total_bolsas;
+                            + (float)$invoice->valor_total_bolsas
+                            + (new TipService())->get_tip_amount($invoice)
+                            + (new DatafonoService())->get_datafono_amount($invoice);
 
         $resultado = (new PaymentReconciliationService())->normalizar_cambio_en_efectivo(
             $invoice->lineas_registros_medios_recaudos,
@@ -274,6 +277,31 @@ class AccumulationService
         }
 
         $invoice->lineas_registros_medios_recaudos = $resultado['lineas_json'];
+        $invoice->save();
+
+        return true;
+    }
+
+    protected function normalizar_ajuste_recargos(FacturaPos $invoice)
+    {
+        if ($invoice->forma_pago != 'contado') {
+            return false;
+        }
+
+        $resultado = (new PaymentReconciliationService())->normalizar_ajuste_recargos(
+            $invoice->lineas_registros_medios_recaudos,
+            $invoice->valor_total,
+            $invoice->valor_total_bolsas,
+            $invoice->valor_ajuste_al_peso,
+            [config('ventas_pos.motivo_tesoreria_propinas'), config('ventas_pos.motivo_tesoreria_datafono')],
+            (int)config('ventas_pos.redondear_centena') === 1
+        );
+
+        if (!$resultado['normalizado']) {
+            return false;
+        }
+
+        $invoice->valor_ajuste_al_peso = $resultado['ajuste'];
         $invoice->save();
 
         return true;

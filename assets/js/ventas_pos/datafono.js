@@ -1,16 +1,12 @@
 
 function calcular_totales_datafono () {
-    
-    var valor_datafono = Math.round( parseFloat( $('#valor_datafono').val() ) );
-
-    var valor_total_factura = parseFloat( $('#valor_total_factura').val() ) + Math.round(  valor_datafono );
+    var valor_datafono = Math.round( parseFloat( $('#valor_datafono').val() ) || 0 );
 
     $('#lbl_datafono').text('$ ' + new Intl.NumberFormat("de-DE").format( valor_datafono ));
-    $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( valor_total_factura ));
 
     // input hidden
-    $('#aux_datafono').val( Math.round( valor_datafono ) );
-    $('#valor_total_factura').val( valor_total_factura );
+    $('#aux_datafono').val( valor_datafono );
+    pos_recalcular_total_con_recargos();
 }
 
 function calcular_valor_a_pagar_datafono (total_factura) {
@@ -98,27 +94,13 @@ function existe_motivo_tesoreria_datafono() {
     return true;
 }
 
-function separar_json_linea_medios_recaudo(json_table2){
-
-    var valor_datafono = Math.round( $('#valor_datafono').val() );
-
-    if ( valor_datafono == 0) {
-        return json_table2;
-    }
-
-    var new_json = JSON.parse(json_table2);
-    if ( new_json.length > 1 ) {
-        return json_table2;
-    }
-
-    var linea = new_json[0];
-
-    var new_value =  Math.abs( parseFloat( linea.valor.substring(1) ) - valor_datafono ) ;
-
-    let teso_motivo_default_id = $( "#teso_motivo_default_id" ).val();
-    let texto_motivo = get_text_from_select_for_value( teso_motivo_default_id );
-    
-    return '[{"teso_medio_recaudo_id":"' + linea.teso_medio_recaudo_id + '","teso_motivo_id":"' + teso_motivo_default_id + '-' + texto_motivo + '","teso_caja_id":"' + linea.teso_caja_id + '","teso_cuenta_bancaria_id":"' + linea.teso_cuenta_bancaria_id + '","valor":"$' + new_value + '"},{"teso_medio_recaudo_id":"' + linea.teso_medio_recaudo_id + '","teso_motivo_id":"' + $('#motivo_tesoreria_datafono').val() + '-' + $('#motivo_tesoreria_datafono_label').val() + '","teso_caja_id":"' + linea.teso_caja_id + '","teso_cuenta_bancaria_id":"' + linea.teso_cuenta_bancaria_id + '","valor":"$' + valor_datafono + '"}]';
+function separar_json_linea_medios_recaudo_datafono(json_table2){
+    return pos_separar_recargo_medio_recaudo(
+        json_table2,
+        Math.round($('#valor_datafono').val()),
+        $('#motivo_tesoreria_datafono').val(),
+        $('#motivo_tesoreria_datafono_label').val()
+    );
 }
 
 $(document).ready(function () {

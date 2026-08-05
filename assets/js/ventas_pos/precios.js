@@ -228,6 +228,10 @@ function calcular_totales() {
     );
     $("#valor_total_bolsas").val(valor_total_bolsas);
 
+    // Base sin recargos. Las funciones de propina y datafono calculan desde
+    // este valor para aplicar un unico redondeo al final.
+    $("#valor_sub_total_factura").val(total_factura);
+
     // Si se maneja propina
     if ($("#manejar_propinas").val() == 1) {
         calcular_valor_a_pagar_propina(total_factura);
@@ -245,7 +249,6 @@ function calcular_totales() {
         calcular_totales_datafono();
     }
 
-    $("#valor_sub_total_factura").val(total_factura);
     $("#lbl_sub_total_factura").text(
         "$ " + new Intl.NumberFormat("de-DE").format(total_factura)
     );

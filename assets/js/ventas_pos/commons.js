@@ -237,6 +237,91 @@ function pos_get_manejo_recargos_flags()
   };
 }
 
+/**
+ * Calcula una sola vez el total y el ajuste despues de sumar todos los
+ * recargos POS. Evita redondear primero la propina y luego el datafono.
+ */
+function pos_recalcular_total_con_recargos()
+{
+  var subtotal = parseFloat($('#valor_sub_total_factura').val()) || 0;
+  var valor_propina = parseFloat($('#valor_propina').val()) || 0;
+  var valor_datafono = parseFloat($('#valor_datafono').val()) || 0;
+  var total_sin_redondear = subtotal + valor_propina + valor_datafono;
+  var total_redondeado = redondear_a_centena(total_sin_redondear);
+  var ajuste_final = total_redondeado - total_sin_redondear;
+
+  $('#total_factura').text('$ ' + new Intl.NumberFormat('de-DE').format(total_redondeado));
+  $('#valor_total_factura').val(total_sin_redondear);
+  $('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat('de-DE').format(ajuste_final));
+  $('#valor_ajuste_al_peso').val(ajuste_final);
+  valor_ajuste_al_peso = ajuste_final;
+
+  return {
+    total_sin_redondear: total_sin_redondear,
+    total_redondeado: total_redondeado,
+    ajuste: ajuste_final
+  };
+}
+
+function pos_separar_recargo_medio_recaudo(json_recaudos, valor_recargo, motivo_id, motivo_label)
+{
+  valor_recargo = parseFloat(valor_recargo) || 0;
+  motivo_id = parseInt(motivo_id) || 0;
+  if (valor_recargo <= 0 || motivo_id <= 0) {
+    return json_recaudos;
+  }
+
+  var lineas;
+  try {
+    lineas = JSON.parse(json_recaudos);
+  } catch (e) {
+    return json_recaudos;
+  }
+
+  if (!Array.isArray(lineas) || lineas.length === 0) {
+    return json_recaudos;
+  }
+
+  var ya_registrado = lineas.some(function(linea) {
+    return parseInt((linea.teso_motivo_id || '0').toString().split('-')[0]) === motivo_id;
+  });
+  if (ya_registrado) {
+    return json_recaudos;
+  }
+
+  var indice_origen = -1;
+  for (var i = 0; i < lineas.length; i++) {
+    var valor_linea = parseFloat((lineas[i].valor || '$0').toString().replace('$', '')) || 0;
+    if (valor_linea >= valor_recargo) {
+      indice_origen = i;
+      break;
+    }
+  }
+
+  if (indice_origen < 0) {
+    return json_recaudos;
+  }
+
+  var linea_origen = lineas[indice_origen];
+  var valor_origen = parseFloat((linea_origen.valor || '$0').toString().replace('$', '')) || 0;
+  var nuevo_valor = valor_origen - valor_recargo;
+  if (nuevo_valor <= 0) {
+    lineas.splice(indice_origen, 1);
+  } else {
+    lineas[indice_origen].valor = '$' + nuevo_valor;
+  }
+
+  lineas.push({
+    teso_medio_recaudo_id: linea_origen.teso_medio_recaudo_id,
+    teso_motivo_id: motivo_id + '-' + motivo_label,
+    teso_caja_id: linea_origen.teso_caja_id,
+    teso_cuenta_bancaria_id: linea_origen.teso_cuenta_bancaria_id,
+    valor: '$' + valor_recargo
+  });
+
+  return JSON.stringify(lineas);
+}
+
 function pos_parse_numero_linea(valor)
 {
   if (valor === undefined || valor === null) {
@@ -383,12 +468,12 @@ function pos_preparar_payload_guardado(opciones)
   var json_table2 = get_json_registros_medios_recaudo();
   if (flags.manejar_propinas) {
     // Si hay propina, siempre va a venir una sola linea de medio de pago
-    json_table2 = separar_json_linea_medios_recaudo(json_table2);
+    json_table2 = separar_json_linea_medios_recaudo_propina(json_table2);
   }
 
   if (flags.manejar_datafono) {
     // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
-    json_table2 = separar_json_linea_medios_recaudo(json_table2);
+    json_table2 = separar_json_linea_medios_recaudo_datafono(json_table2);
   }
 
   // Se asigna el objeto JSON a un campo oculto del formulario

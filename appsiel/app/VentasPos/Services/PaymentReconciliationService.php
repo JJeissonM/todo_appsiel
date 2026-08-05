@@ -70,6 +70,97 @@ class PaymentReconciliationService
         return $resultado;
     }
 
+    /**
+     * Corrige el ajuste calculado antes de agregar la comision de datafono.
+     * Solo actua cuando los recaudos coinciden con el total final redondeado.
+     */
+    public function normalizar_ajuste_datafono($lineas_json, $valor_productos, $valor_bolsas, $ajuste_actual, $motivo_datafono_id, $redondear_centena = true, $tolerancia = 0.01)
+    {
+        $resultado = $this->normalizar_ajuste_recargos(
+            $lineas_json,
+            $valor_productos,
+            $valor_bolsas,
+            $ajuste_actual,
+            [$motivo_datafono_id],
+            $redondear_centena,
+            $tolerancia
+        );
+        $resultado['valor_datafono'] = isset($resultado['valores_por_motivo'][(int)$motivo_datafono_id])
+                                        ? $resultado['valores_por_motivo'][(int)$motivo_datafono_id]
+                                        : 0.0;
+
+        return $resultado;
+    }
+
+    public function normalizar_ajuste_recargos($lineas_json, $valor_productos, $valor_bolsas, $ajuste_actual, array $motivos_recargos, $redondear_centena = true, $tolerancia = 0.01)
+    {
+        $motivos = [];
+        foreach ($motivos_recargos as $motivo_id) {
+            if ((int)$motivo_id > 0) {
+                $motivos[(int)$motivo_id] = (int)$motivo_id;
+            }
+        }
+
+        $resultado = [
+            'normalizado' => false,
+            'ajuste' => round((float)$ajuste_actual, 2),
+            'valor_recargos' => 0.0,
+            'valores_por_motivo' => [],
+            'total_recaudos' => 0.0
+        ];
+
+        $lineas = json_decode((string)$lineas_json, true);
+        if (empty($motivos) || !is_array($lineas) || empty($lineas)) {
+            return $resultado;
+        }
+
+        foreach ($lineas as $linea) {
+            if (!is_array($linea)) {
+                continue;
+            }
+
+            $motivo_id = isset($linea['teso_motivo_id']) ? (int)explode('-', (string)$linea['teso_motivo_id'])[0] : 0;
+            if (!isset($motivos[$motivo_id])) {
+                continue;
+            }
+
+            if (!isset($resultado['valores_por_motivo'][$motivo_id])) {
+                $resultado['valores_por_motivo'][$motivo_id] = 0.0;
+            }
+            $resultado['valores_por_motivo'][$motivo_id] += $this->parsear_valor(isset($linea['valor']) ? $linea['valor'] : 0);
+        }
+
+        foreach ($resultado['valores_por_motivo'] as $motivo_id => $valor) {
+            $resultado['valores_por_motivo'][$motivo_id] = round($valor, 2);
+            $resultado['valor_recargos'] += $valor;
+        }
+        $resultado['valor_recargos'] = round($resultado['valor_recargos'], 2);
+        $resultado['total_recaudos'] = $this->sumar_recaudos($lineas);
+
+        if ($resultado['valor_recargos'] <= 0) {
+            return $resultado;
+        }
+
+        $total_sin_redondear = round((float)$valor_productos + (float)$valor_bolsas + $resultado['valor_recargos'], 2);
+        $total_redondeado = $redondear_centena
+                            ? round($total_sin_redondear / 100, 0) * 100
+                            : round($total_sin_redondear, 0);
+        $ajuste_correcto = round($total_redondeado - $total_sin_redondear, 2);
+
+        if (abs($resultado['total_recaudos'] - $total_redondeado) > (float)$tolerancia) {
+            return $resultado;
+        }
+
+        if (abs($ajuste_correcto - (float)$ajuste_actual) <= (float)$tolerancia) {
+            return $resultado;
+        }
+
+        $resultado['normalizado'] = true;
+        $resultado['ajuste'] = $ajuste_correcto;
+
+        return $resultado;
+    }
+
     public function sumar_recaudos(array $lineas)
     {
         $total = 0.0;

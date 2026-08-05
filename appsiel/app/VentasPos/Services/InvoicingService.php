@@ -323,18 +323,33 @@ class InvoicingService
 
     public function normalizar_cambio_efectivo_request(Request $request, array $lineas_registros)
     {
+        $normalizado = false;
+        $resultado_recargos = (new PaymentReconciliationService())->normalizar_ajuste_recargos(
+            $request->get('lineas_registros_medios_recaudos', '[]'),
+            $this->get_total_productos_pos($lineas_registros),
+            $request->get('valor_total_bolsas', 0),
+            $request->get('valor_ajuste_al_peso', 0),
+            [config('ventas_pos.motivo_tesoreria_propinas'), config('ventas_pos.motivo_tesoreria_datafono')],
+            (int)config('ventas_pos.redondear_centena') === 1
+        );
+
+        if ($resultado_recargos['normalizado']) {
+            $request->merge(['valor_ajuste_al_peso' => $resultado_recargos['ajuste']]);
+            $normalizado = true;
+        }
+
         if ($request->get('forma_pago') != 'contado') {
-            return false;
+            return $normalizado;
         }
 
         $resultado = (new PaymentReconciliationService())->normalizar_cambio_en_efectivo(
             $request->get('lineas_registros_medios_recaudos', '[]'),
-            $this->get_total_documento_pos($request, $lineas_registros),
+            $this->get_total_documento_pos($request, $lineas_registros) + $resultado_recargos['valor_recargos'],
             $request->get('valor_total_cambio', 0)
         );
 
         if (!$resultado['normalizado']) {
-            return false;
+            return $normalizado;
         }
 
         $request->merge(['lineas_registros_medios_recaudos' => $resultado['lineas_json']]);
@@ -342,14 +357,19 @@ class InvoicingService
         return true;
     }
 
-    protected function get_total_documento_pos(Request $request, array $lineas_registros)
+    protected function get_total_productos_pos(array $lineas_registros)
     {
         $total = 0;
         foreach ($lineas_registros as $linea) {
             $total += (float)$this->get_line_value($linea, 'precio_total', 0);
         }
 
-        return $total
+        return $total;
+    }
+
+    protected function get_total_documento_pos(Request $request, array $lineas_registros)
+    {
+        return $this->get_total_productos_pos($lineas_registros)
             + (float)$request->get('valor_ajuste_al_peso', 0)
             + (float)$request->get('valor_total_bolsas', 0);
     }
