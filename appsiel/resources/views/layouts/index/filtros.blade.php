@@ -1,11 +1,20 @@
 @if(!empty($filtros_avanzados))
+	<?php
+		$filtros_index_activos = false;
+		foreach (array_keys($filtros_avanzados) as $nombre_filtro) {
+			if (trim((string) Input::get($nombre_filtro, '')) !== '') {
+				$filtros_index_activos = true;
+				break;
+			}
+		}
+	?>
 	<div class="panel panel-default" style="margin: 15px 0;">
 		<div class="panel-heading" style="padding: 10px 15px;">
-			<a role="button" data-toggle="collapse" href="#filtros-avanzados-index" aria-expanded="{{ Input::has('filtro_documento') || Input::has('filtro_empleado') || Input::has('filtro_fecha') || Input::has('filtro_concepto') ? 'true' : 'false' }}">
+			<a role="button" data-toggle="collapse" href="#filtros-avanzados-index" aria-expanded="{{ $filtros_index_activos ? 'true' : 'false' }}">
 				<i class="fa fa-filter"></i> Filtros avanzados
 			</a>
 		</div>
-		<div id="filtros-avanzados-index" class="panel-collapse collapse {{ Input::has('filtro_documento') || Input::has('filtro_empleado') || Input::has('filtro_fecha') || Input::has('filtro_concepto') ? 'in' : '' }}">
+		<div id="filtros-avanzados-index" class="panel-collapse collapse {{ $filtros_index_activos ? 'in' : '' }}">
 			<div class="panel-body">
 				<form method="get" action="{{ route('web.index') }}">
 					<input type="hidden" name="id" value="{{ $id_app }}">
