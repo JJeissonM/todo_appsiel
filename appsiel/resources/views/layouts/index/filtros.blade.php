@@ -27,11 +27,7 @@
 							<div class="col-md-3 col-sm-6 form-group">
 								<label for="{{ $nombre }}">{{ $filtro['label'] }}</label>
 								@if($filtro['type'] === 'combobox')
-									<select name="{{ $nombre }}" id="{{ $nombre }}" class="combobox">
-										@foreach($filtro['options'] as $valor => $etiqueta)
-											<option value="{{ $valor }}" {{ (string) Input::get($nombre) === (string) $valor ? 'selected' : '' }}>{{ $etiqueta }}</option>
-										@endforeach
-									</select>
+									{{ Form::select($nombre, $filtro['options'], Input::get($nombre), ['id' => $nombre, 'class' => 'combobox']) }}
 								@else
 									<input type="date" name="{{ $nombre }}" id="{{ $nombre }}" value="{{ Input::get($nombre) }}" class="form-control">
 								@endif
