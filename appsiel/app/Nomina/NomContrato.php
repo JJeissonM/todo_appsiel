@@ -309,13 +309,13 @@ class NomContrato extends Model
      */
     public static function get_filtros_avanzados_index()
     {
-        $empleados = self::opciones_filtro('core_terceros.id', 'core_terceros.descripcion');
+        $contratos = self::opciones_contrato_filtro();
         $grupos = self::opciones_filtro('nom_grupos_empleados.id', 'nom_grupos_empleados.descripcion');
         $cargos = self::opciones_filtro('nom_cargos.id', 'nom_cargos.descripcion');
         $estados = self::opciones_filtro('nom_contratos.estado', 'nom_contratos.estado');
 
         return [
-            'filtro_empleado' => ['label' => 'Empleado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $empleados],
+            'filtro_empleado' => ['label' => 'Contrato / empleado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $contratos],
             'filtro_grupo_empleado' => ['label' => 'Grupo empleado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $grupos],
             'filtro_cargo' => ['label' => 'Cargo', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $cargos],
             'filtro_estado' => ['label' => 'Estado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $estados],
@@ -359,7 +359,7 @@ class NomContrato extends Model
         }
 
         $filtros = [
-            'filtro_empleado' => 'nom_contratos.core_tercero_id',
+            'filtro_empleado' => 'nom_contratos.id',
             'filtro_grupo_empleado' => 'nom_contratos.grupo_empleado_id',
             'filtro_cargo' => 'nom_contratos.cargo_id',
             'filtro_estado' => 'nom_contratos.estado',
@@ -375,6 +375,32 @@ class NomContrato extends Model
         }
 
         return $query;
+    }
+
+    protected static function opciones_contrato_filtro()
+    {
+        $opciones = self::query_listado()
+            ->select(
+                'nom_contratos.id',
+                'core_terceros.descripcion',
+                'core_terceros.numero_identificacion',
+                'nom_contratos.sueldo',
+                'nom_contratos.estado'
+            )
+            ->orderBy('core_terceros.descripcion')
+            ->orderBy('nom_contratos.id', 'DESC')
+            ->get();
+
+        $contratos = [];
+        foreach ($opciones as $opcion) {
+            $contratos[$opcion->id] = $opcion->descripcion
+                . ' (' . $opcion->numero_identificacion . ')'
+                . ' - $' . number_format($opcion->sueldo, 0, ',', '.')
+                . ' - ' . $opcion->estado
+                . ' [Contrato #' . $opcion->id . ']';
+        }
+
+        return $contratos;
     }
 
     protected static function opciones_filtro($id, $descripcion)
