@@ -85,6 +85,53 @@ class PaymentReconciliationServiceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(187500.0, $resultado['total_recaudos']);
     }
 
+    public function test_reconstruye_linea_unica_marcada_como_comision_datafono()
+    {
+        $json = '[{"teso_medio_recaudo_id":"2-Tarjeta debito","teso_motivo_id":"84-Comision datafono","teso_caja_id":"0-","teso_cuenta_bancaria_id":"11-Banco","valor":"$54900"}]';
+
+        $resultado = $this->service->reconstruir_recargo_porcentual_linea_unica(
+            $json,
+            54910,
+            0,
+            5,
+            84,
+            'Comision datafono',
+            83,
+            'Ventas de contado',
+            true
+        );
+
+        $lineas = json_decode($resultado['lineas_json'], true);
+        $this->assertTrue($resultado['normalizado']);
+        $this->assertEquals(44.0, $resultado['ajuste']);
+        $this->assertEquals(2746.0, $resultado['valor_recargo']);
+        $this->assertEquals(57700.0, $resultado['total_recaudos']);
+        $this->assertSame('83-Ventas de contado', $lineas[0]['teso_motivo_id']);
+        $this->assertSame('$54954', $lineas[0]['valor']);
+        $this->assertSame('84-Comision datafono', $lineas[1]['teso_motivo_id']);
+        $this->assertSame('$2746', $lineas[1]['valor']);
+    }
+
+    public function test_no_reconstruye_recaudo_que_ya_tiene_venta_y_comision()
+    {
+        $json = '[{"teso_motivo_id":"83-Ventas","valor":"$54954"},{"teso_motivo_id":"84-Comision datafono","valor":"$2746"}]';
+
+        $resultado = $this->service->reconstruir_recargo_porcentual_linea_unica(
+            $json,
+            54910,
+            0,
+            5,
+            84,
+            'Comision datafono',
+            83,
+            'Ventas de contado',
+            true
+        );
+
+        $this->assertFalse($resultado['normalizado']);
+        $this->assertSame($json, $resultado['lineas_json']);
+    }
+
     public function test_no_corrige_datafono_si_los_recaudos_no_coinciden_con_el_total_redondeado()
     {
         $json = '[{"teso_motivo_id":"83-Ventas","valor":"$178595"},{"teso_motivo_id":"84-Comision datafono","valor":"$8930"}]';

@@ -267,7 +267,7 @@ function pos_separar_recargo_medio_recaudo(json_recaudos, valor_recargo, motivo_
 {
   valor_recargo = parseFloat(valor_recargo) || 0;
   motivo_id = parseInt(motivo_id) || 0;
-  if (valor_recargo <= 0 || motivo_id <= 0) {
+  if (motivo_id <= 0) {
     return json_recaudos;
   }
 
@@ -279,6 +279,53 @@ function pos_separar_recargo_medio_recaudo(json_recaudos, valor_recargo, motivo_
   }
 
   if (!Array.isArray(lineas) || lineas.length === 0) {
+    return json_recaudos;
+  }
+
+  var indices_registrados = [];
+  lineas.forEach(function(linea, indice) {
+    if (parseInt((linea.teso_motivo_id || '0').toString().split('-')[0]) === motivo_id) {
+      indices_registrados.push(indice);
+    }
+  });
+
+  /*
+   * Al ingresar una sola linea con el motivo del recargo, la linea contiene
+   * el total pagado, no el valor de la comision/propina. Se debe reconstruir
+   * como venta + recargo. Dejarla intacta hace que todo el pago se interprete
+   * como comision al volver a abrir o contabilizar la factura.
+   */
+  if (lineas.length === 1 && indices_registrados.length === 1) {
+    var linea_recargo = lineas[0];
+    var valor_linea_recargo = parseFloat((linea_recargo.valor || '$0').toString().replace('$', '')) || 0;
+    var motivo_default_id = parseInt($('#teso_motivo_default_id').val()) || 0;
+
+    if (motivo_default_id <= 0 || valor_linea_recargo < valor_recargo) {
+      return json_recaudos;
+    }
+
+    var motivo_default_label = get_text_from_select_for_value(motivo_default_id);
+    if (valor_recargo <= 0) {
+      linea_recargo.teso_motivo_id = motivo_default_id + '-' + motivo_default_label;
+      return JSON.stringify(lineas);
+    }
+
+    var valor_venta = valor_linea_recargo - valor_recargo;
+    if (valor_venta > 0) {
+      lineas.unshift({
+        teso_medio_recaudo_id: linea_recargo.teso_medio_recaudo_id,
+        teso_motivo_id: motivo_default_id + '-' + motivo_default_label,
+        teso_caja_id: linea_recargo.teso_caja_id,
+        teso_cuenta_bancaria_id: linea_recargo.teso_cuenta_bancaria_id,
+        valor: '$' + valor_venta
+      });
+      lineas[1].valor = '$' + valor_recargo;
+    }
+
+    return JSON.stringify(lineas);
+  }
+
+  if (valor_recargo <= 0) {
     return json_recaudos;
   }
 

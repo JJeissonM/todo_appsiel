@@ -5,6 +5,77 @@ namespace App\VentasPos\Services;
 class PaymentReconciliationService
 {
     /**
+     * Reconstruye una linea unica que fue guardada completa con el motivo de
+     * un recargo porcentual. Ese formato es ambiguo y hace que todo el recaudo
+     * se contabilice como comision; el formato valido tiene venta + recargo.
+     */
+    public function reconstruir_recargo_porcentual_linea_unica(
+        $lineas_json,
+        $valor_productos,
+        $valor_bolsas,
+        $porcentaje_recargo,
+        $motivo_recargo_id,
+        $motivo_recargo_label,
+        $motivo_default_id,
+        $motivo_default_label,
+        $redondear_centena = true
+    ) {
+        $resultado = [
+            'lineas_json' => $lineas_json,
+            'normalizado' => false,
+            'ajuste' => 0.0,
+            'valor_recargo' => 0.0,
+            'total_recaudos' => 0.0
+        ];
+
+        $lineas = json_decode((string)$lineas_json, true);
+        if (!is_array($lineas) || count($lineas) !== 1 || (int)$motivo_recargo_id <= 0 ||
+            (int)$motivo_default_id <= 0 || (float)$porcentaje_recargo <= 0) {
+            return $resultado;
+        }
+
+        $linea = $lineas[0];
+        $motivo_linea = isset($linea['teso_motivo_id'])
+                        ? (int)explode('-', (string)$linea['teso_motivo_id'])[0]
+                        : 0;
+        if ($motivo_linea !== (int)$motivo_recargo_id) {
+            return $resultado;
+        }
+
+        $valor_productos = (float)$valor_productos;
+        $valor_bolsas = (float)$valor_bolsas;
+        $valor_recargo = round($valor_productos * (float)$porcentaje_recargo / 100, 0);
+        if ($valor_recargo <= 0) {
+            return $resultado;
+        }
+
+        $total_sin_redondear = round($valor_productos + $valor_bolsas + $valor_recargo, 2);
+        $total_redondeado = $redondear_centena
+                            ? round($total_sin_redondear / 100, 0) * 100
+                            : round($total_sin_redondear, 0);
+        $valor_venta = round($total_redondeado - $valor_recargo, 2);
+        if ($valor_venta <= 0) {
+            return $resultado;
+        }
+
+        $linea_venta = $linea;
+        $linea_venta['teso_motivo_id'] = (int)$motivo_default_id . '-' . $motivo_default_label;
+        $linea_venta['valor'] = $this->formatear_valor($valor_venta);
+
+        $linea_recargo = $linea;
+        $linea_recargo['teso_motivo_id'] = (int)$motivo_recargo_id . '-' . $motivo_recargo_label;
+        $linea_recargo['valor'] = $this->formatear_valor($valor_recargo);
+
+        $resultado['lineas_json'] = json_encode([$linea_venta, $linea_recargo]);
+        $resultado['normalizado'] = true;
+        $resultado['ajuste'] = round($total_redondeado - $total_sin_redondear, 2);
+        $resultado['valor_recargo'] = $valor_recargo;
+        $resultado['total_recaudos'] = round($total_redondeado, 2);
+
+        return $resultado;
+    }
+
+    /**
      * Descuenta el cambio de las lineas de efectivo cuando el excedente de los
      * recaudos coincide exactamente con el cambio registrado en la factura.
      *

@@ -17,6 +17,7 @@ use App\CxC\DocumentosPendientes;
 
 use App\Inventarios\Services\InvDocumentsService;
 use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\TesoMotivo;
 use Illuminate\Support\Facades\DB;
 
 class AccumulationService
@@ -160,6 +161,7 @@ class AccumulationService
         // Solo se autocorrigen documentos pendientes. Los documentos ya
         // acumulados/contabilizados requieren conciliacion de tesoreria y no
         // deben alterarse automaticamente.
+        $this->normalizar_linea_unica_datafono($invoice);
         $this->normalizar_ajuste_recargos($invoice);
         $this->normalizar_cambio_en_medios_recaudo($invoice);
 
@@ -302,6 +304,49 @@ class AccumulationService
         }
 
         $invoice->valor_ajuste_al_peso = $resultado['ajuste'];
+        $invoice->save();
+
+        return true;
+    }
+
+    /**
+     * Compatibilidad para facturas pendientes cuya unica linea de tarjeta fue
+     * guardada completa con el motivo "Comision datafono".
+     */
+    protected function normalizar_linea_unica_datafono(FacturaPos $invoice)
+    {
+        if ($invoice->forma_pago != 'contado' || !(int)config('ventas_pos.manejar_datafono')) {
+            return false;
+        }
+
+        $motivo_datafono_id = (int)config('ventas_pos.motivo_tesoreria_datafono');
+        $motivo_default_id = (int)config('tesoreria.motivo_tesoreria_ventas_contado');
+        $motivo_datafono = TesoMotivo::find($motivo_datafono_id);
+        $motivo_default = TesoMotivo::find($motivo_default_id);
+        if (is_null($motivo_datafono) || is_null($motivo_default)) {
+            return false;
+        }
+
+        $resultado = (new PaymentReconciliationService())->reconstruir_recargo_porcentual_linea_unica(
+            $invoice->lineas_registros_medios_recaudos,
+            $invoice->valor_total,
+            $invoice->valor_total_bolsas,
+            config('ventas_pos.porcentaje_datafono'),
+            $motivo_datafono_id,
+            $motivo_datafono->descripcion,
+            $motivo_default_id,
+            $motivo_default->descripcion,
+            (int)config('ventas_pos.redondear_centena') === 1
+        );
+
+        if (!$resultado['normalizado']) {
+            return false;
+        }
+
+        $invoice->lineas_registros_medios_recaudos = $resultado['lineas_json'];
+        $invoice->valor_ajuste_al_peso = $resultado['ajuste'];
+        $invoice->total_efectivo_recibido = $resultado['total_recaudos'];
+        $invoice->valor_total_cambio = 0;
         $invoice->save();
 
         return true;
