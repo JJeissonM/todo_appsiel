@@ -27,6 +27,8 @@ Route::get('nom_electronica_consultar_documentos_emitidos/{doc_encabezado_id}/{t
 
 Route::get('nom_eliminar_asignacion/registro_modelo_hijo_id/{registro_modelo_hijo_id}/registro_modelo_padre_id/{registro_modelo_padre_id}/id_app/{id_app}/id_modelo_padre/{id_modelo_padre}', 'Nomina\NominaController@eliminar_asignacion');
 Route::post('nom_guardar_asignacion', 'Nomina\NominaController@guardar_asignacion');
+Route::post('nomina/documentos/{nom_doc_encabezado_id}/empleados/agregar', 'Nomina\NominaController@agregar_empleados_documento');
+Route::post('nomina/documentos/{nom_doc_encabezado_id}/empleados/retirar', 'Nomina\NominaController@retirar_empleados_documento');
 
 
 // Documentos de nómina

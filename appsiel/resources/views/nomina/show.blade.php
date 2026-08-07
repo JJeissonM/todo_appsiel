@@ -187,6 +187,14 @@
 				event.preventDefault();
 				var $form = $(this);
 				var $btnGuardar = $('#btn_guardar_empleado');
+				var $opcionSeleccionada = $('#registro_modelo_hijo_id option:selected');
+				var textoEmpleado = $opcionSeleccionada.text().trim();
+				var partesEmpleado = textoEmpleado.split(' ');
+				var empleadoSeleccionado = {
+					id: $opcionSeleccionada.val(),
+					identificacion: partesEmpleado.shift() || '',
+					nombre: partesEmpleado.join(' ').trim()
+				};
 				$btnGuardar.prop('disabled', true);
 				$btnGuardar.find('.btn-text').text('Guardando...');
 				$btnGuardar.find('.btn-spinner').show();
@@ -197,8 +205,7 @@
 					data: $form.serialize(),
 					success: function(respuesta){
 						actualizarTablaEmpleados(respuesta);
-						agregarEmpleadoATablaRegistros();
-						$('#registro_modelo_hijo_id option:selected').remove();
+						agregarEmpleadoATablaRegistros(empleadoSeleccionado);
 						$('#form-asignar-empleado').find('input[type="text"]').val('');
 						$('#form-asignar-empleado').find('.custom-combobox-input').val('');
 						$btnGuardar.prop('disabled', false);
@@ -207,13 +214,82 @@
 					},
 					error: function(xhr){
 						var mensaje = 'No se pudo agregar el empleado.';
-						if (xhr.responseJSON && xhr.responseJSON.message) {
-							mensaje = xhr.responseJSON.message;
+						if (xhr.responseJSON && (xhr.responseJSON.mensaje_error || xhr.responseJSON.message)) {
+							mensaje = xhr.responseJSON.mensaje_error || xhr.responseJSON.message;
 						}
 						$('#empleados-alerta').html('<div class="alert alert-danger">' + mensaje + '</div>');
 						$btnGuardar.prop('disabled', false);
 						$btnGuardar.find('.btn-text').text('Guardar');
 						$btnGuardar.find('.btn-spinner').hide();
+					}
+				});
+			});
+
+			function cambiarEstadoBoton($boton, procesando, textoNormal, textoProcesando) {
+				$boton.prop('disabled', procesando);
+				$boton.find('.btn-text').text(procesando ? textoProcesando : textoNormal);
+				$boton.find('.btn-spinner').toggle(procesando);
+			}
+
+			function datosGestionEmpleados() {
+				return {
+					_token: '{{ csrf_token() }}',
+					url_id: '{{ Input::get('id') }}',
+					url_id_modelo: '{{ Input::get('id_modelo') }}',
+					url_id_transaccion: '{{ Input::get('id_transaccion') }}'
+				};
+			}
+
+			$('#btn_confirmar_agregar_empleados').on('click', function(){
+				var $boton = $(this);
+				cambiarEstadoBoton($boton, true, 'Agregar empleados', 'Agregando...');
+
+				$.ajax({
+					url: $boton.data('url'),
+					type: 'POST',
+					data: datosGestionEmpleados(),
+					success: function(respuesta){
+						actualizarTablaEmpleados(respuesta);
+						$.each(respuesta.contratos_agregados || [], function(indice, empleado){
+							agregarEmpleadoATablaRegistros(empleado);
+						});
+						$('#modal_agregar_empleados_documento').modal('hide');
+						cambiarEstadoBoton($boton, false, 'Agregar empleados', 'Agregando...');
+					},
+					error: function(xhr){
+						var mensaje = xhr.responseJSON && xhr.responseJSON.mensaje_error
+							? xhr.responseJSON.mensaje_error
+							: 'No se pudieron agregar los empleados.';
+						$('#empleados-alerta').html('<div class="alert alert-danger">' + mensaje + '</div>');
+						$('#modal_agregar_empleados_documento').modal('hide');
+						cambiarEstadoBoton($boton, false, 'Agregar empleados', 'Agregando...');
+					}
+				});
+			});
+
+			$('#btn_confirmar_retirar_empleados').on('click', function(){
+				var $boton = $(this);
+				cambiarEstadoBoton($boton, true, 'Retirar empleados', 'Retirando...');
+
+				$.ajax({
+					url: $boton.data('url'),
+					type: 'POST',
+					data: datosGestionEmpleados(),
+					success: function(respuesta){
+						actualizarTablaEmpleados(respuesta);
+						retirarContratosDeTablaRegistros(respuesta.contratos_retirados || []);
+						var tipoMensaje = respuesta.tipo_mensaje || 'success';
+						$('#empleados-alerta').html('<div class="alert alert-' + tipoMensaje + '">' + respuesta.mensaje + '</div>');
+						$('#modal_retirar_empleados_documento').modal('hide');
+						cambiarEstadoBoton($boton, false, 'Retirar empleados', 'Retirando...');
+					},
+					error: function(xhr){
+						var mensaje = xhr.responseJSON && xhr.responseJSON.mensaje_error
+							? xhr.responseJSON.mensaje_error
+							: 'No se pudieron retirar los empleados.';
+						$('#empleados-alerta').html('<div class="alert alert-danger">' + mensaje + '</div>');
+						$('#modal_retirar_empleados_documento').modal('hide');
+						cambiarEstadoBoton($boton, false, 'Retirar empleados', 'Retirando...');
 					}
 				});
 			});
@@ -294,9 +370,9 @@
 				});
 			});
 
-			function agregarEmpleadoATablaRegistros() {
-				var $select = $('#registro_modelo_hijo_id');
-				var contratoId = $select.val();
+			function agregarEmpleadoATablaRegistros(empleado) {
+				empleado = empleado || {};
+				var contratoId = empleado.id;
 				if (!contratoId) {
 					return;
 				}
@@ -305,10 +381,8 @@
 					return;
 				}
 
-				var texto = $select.find('option:selected').text().trim();
-				var partes = texto.split(' ');
-				var cc = partes.shift() || '';
-				var nombre = partes.join(' ').trim();
+				var cc = empleado.identificacion || '';
+				var nombre = empleado.nombre || '';
 
 				var $tabla = $('#tabla_registros_documento');
 				var conceptosCount = parseInt($tabla.data('conceptos-count') || '0', 10);
@@ -340,6 +414,12 @@
 				} else {
 					$tbody.append($fila);
 				}
+			}
+
+			function retirarContratosDeTablaRegistros(contratosIds) {
+				$.each(contratosIds, function(indice, contratoId){
+					$('#tabla_registros_documento > tbody > tr[data-contrato-id="' + contratoId + '"]').remove();
+				});
 			}
 
 			function monedaHtml(valor) {
