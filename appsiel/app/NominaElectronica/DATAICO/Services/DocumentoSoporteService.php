@@ -711,7 +711,12 @@ class DocumentoSoporteService
       //$url_emision2 = 'https://api.dataico.com/direct/payroll-api/payroll-entries/NE/51?include-pdf=true';
          
       try {
-         $client = new Client(['base_uri' => $url_emision]);
+         $client = new Client([
+            'base_uri' => $url_emision,
+            'timeout' => 45,
+            'connect_timeout' => 15,
+            'http_errors' => false
+         ]);
 
          $response = $client->get( $url_emision . '/' . $doc_encabezado->tipo_documento_app->prefijo . '/' .$doc_encabezado->consecutivo . '?include-pdf=true', [
              // un array con la data de los headers como tipo de peticion, etc.
@@ -720,8 +725,12 @@ class DocumentoSoporteService
 	                           'auth-token' => config('nomina.tokenPassword')
 	                        ]
 	         ]);
-	      } catch (\GuzzleHttp\Exception\RequestException $e) {
-	          $response = $e->getResponse();
+	      } catch (\Throwable $e) {
+	          $response = null;
+	          \Log::warning('DATAICO: error consultando la representación gráfica.', [
+	             'documento_id' => $doc_encabezado->id,
+	             'error' => $e->getMessage()
+	          ]);
 	      }
 
 	      if ( is_null($response) ) {

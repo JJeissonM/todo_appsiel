@@ -13,6 +13,8 @@
             </div>
         </div>
     @endif
+    
+    <div id="empleados-alerta"></div>
 
         <div class="row">
             <div class="col-md-12">
@@ -22,7 +24,6 @@
             </div>
         </div>
 
-    <div id="empleados-alerta"></div>
 
     {{ Form::open(array('url'=>'nom_guardar_asignacion','id'=>'form-asignar-empleado')) }}
         <div class="row">

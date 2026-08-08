@@ -15,6 +15,7 @@ use App\Nomina\ValueObjects\LapsoNomina;
 use App\NominaElectronica\DATAICO\DocumentoSoporte;
 use App\NominaElectronica\DATAICO\Services\DocumentoSoporteService;
 use App\NominaElectronica\Services\OseiPayrollService;
+use App\NominaElectronica\Services\RepresentacionGraficaService;
 use App\NominaElectronica\ResultadoEnvioDocumento;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 use GuzzleHttp\Client;
@@ -744,7 +745,6 @@ class NominaElectronicaController extends TransaccionController
         return redirect($redirect_url)->with('flash_message', $resultado['message']);
     }
 
-    // SOLO DATAICO
     public function consultar_documentos_emitidos( $doc_encabezado_id, $tipo_operacion )
     {
         switch ( $tipo_operacion )
@@ -756,45 +756,33 @@ class NominaElectronicaController extends TransaccionController
                     return '<div class="alert alert-warning">Documento no encontrado.</div>';
                 }
 
-                $json_response = (new DocumentoSoporteService())->consultar_documento_emitido($encabezado_doc);
-
                 break;
             
             default:
-                // code...
-                break;
+                return '<div class="alert alert-warning">Tipo de representación gráfica no soportado.</div>';
         }
 
-        /**
-         * CAMPOS DEL JSON
-         * "dian_status": { 'DIAN_ACEPTADO', 'DIAN_RECHAZADO'}
-         * "number"
-         * "dian_messages": []
-         * "pdf": Cuando es aceptado
-         * "email_status"
-         * "cune"
-         * "qrcode"
-         * "response_xml": Cuando es aceptado
-         * "request_xml": Cuando es rechazado.
-         */
-
-        if ( is_null($json_response) )
-        {
-            return '<div class="alert alert-warning">No fue posible leer la respuesta del proveedor tecnológico.</div>';
+        $representacion = (new RepresentacionGraficaService())->obtenerPdf($encabezado_doc);
+        if (!$representacion['ok']) {
+            return '<div class="alert alert-warning">' . e($representacion['message']) . '</div>';
         }
 
-        $dian_status = isset($json_response->dian_status) ? $json_response->dian_status : null;
-        $documento_electronico = isset($json_response->pdf) ? $json_response->pdf : null;
+        $pdf = $representacion['content'];
+        $nombre = preg_replace('/[^A-Za-z0-9_-]/', '', $encabezado_doc->get_value_to_show());
+        $etag = '"' . sha1($pdf) . '"';
 
-        if ( $documento_electronico == '' || is_null($documento_electronico) )
-        {
-            $detalle_respuesta = json_encode($json_response, JSON_PRETTY_PRINT);
-            return '<div class="alert alert-warning">El proveedor tecnológico no retornó la representación gráfica PDF para este documento. Estado DIAN: ' . ($dian_status ? $dian_status : 'No informado') . '</div><pre>' . htmlentities($detalle_respuesta) . '</pre>';
+        if (request()->header('If-None-Match') === $etag) {
+            return response('', 304, ['ETag' => $etag]);
         }
 
-        $view_pdf = View::make('nomina.nomina_electronica.pdf_base64_show',compact('documento_electronico','encabezado_doc') )->render();
-
-        return $view_pdf;
+        return response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="nomina-electronica-' . $nombre . '.pdf"',
+            'Content-Length' => strlen($pdf),
+            'Cache-Control' => 'private, max-age=300',
+            'ETag' => $etag,
+            'X-PDF-Source' => $representacion['source'],
+        ]);
     }
     /**
      * Conceptos deduccion DATAICO-DIAN:
