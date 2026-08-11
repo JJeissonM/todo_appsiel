@@ -447,7 +447,7 @@ class TiempoNoLaborado implements Estrategia
 	            return 0;
 	        }
 
-			dd( [ 'Class TiempoNoLaborado@retirar(), $registro->novedad_tnl = NULL', $registro] );
+			throw new \RuntimeException('El registro de tiempo no laborado no tiene una novedad TNL válida asociada.');
 		}
 
 		// Se elimina cuando solo hay Amortización de tiempo (no dinero) de vacaciones 
@@ -461,7 +461,7 @@ class TiempoNoLaborado implements Estrategia
 
 		if( is_null( $registro->contrato ) )
 		{
-			dd( [ 'TiempoNoLaborado@retirar(), $registro->contrato = NULL', $registro] );
+			throw new \RuntimeException('El registro de tiempo no laborado no tiene un contrato válido asociado.');
 		}
 
 		$cantidad_horas_a_liquidar = abs( $registro->cantidad_horas );

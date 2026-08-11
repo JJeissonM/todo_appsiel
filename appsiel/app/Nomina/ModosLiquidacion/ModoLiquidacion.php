@@ -44,9 +44,19 @@ class ModoLiquidacion
 
 	public function retirar( int $modo_liquidacion_id, NomDocRegistro $registro )
 	{
+		if ( !$this->soporta($modo_liquidacion_id) )
+		{
+			throw new \InvalidArgumentException('Modo de liquidación sin estrategia de reversión: ' . $modo_liquidacion_id);
+		}
+
 		$estrategia = new $this->modos_liquidacion_automaticos[$modo_liquidacion_id];
 		$contexto = new Contexto( $estrategia );
 
 		return $contexto->retirar_registro_concepto( $registro );
+	}
+
+	public function soporta( int $modo_liquidacion_id )
+	{
+		return isset($this->modos_liquidacion_automaticos[$modo_liquidacion_id]);
 	}
 }

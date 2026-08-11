@@ -15,6 +15,35 @@
 		td > table > tbody{
 			background-color: unset;
 		}
+
+		#espera_liquidacion_automatica {
+			display: none;
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			z-index: 20000;
+			background: rgba(0, 0, 0, 0.55);
+			align-items: center;
+			justify-content: center;
+		}
+
+		.espera-liquidacion-contenido {
+			width: 420px;
+			max-width: calc(100% - 30px);
+			padding: 32px 24px;
+			border-radius: 5px;
+			background: #fff;
+			box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
+			text-align: center;
+		}
+
+		.espera-liquidacion-contenido .fa-spinner {
+			margin-bottom: 15px;
+			color: #2196f3;
+			font-size: 48px;
+		}
 	</style>
 @endsection
 
@@ -39,12 +68,18 @@
 							['link' => 'nom_liquidar_prima_antiguedad/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
 							'etiqueta' => 'Primas de antigüedad']
 						] ) }}
-				&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Retirar', 'warning', 'history', 
-						[ 
-							['link' => 'nomina/retirar_liquidacion/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 'etiqueta' => 'Registros automáticos (todo)' ],
-							['link' => 'nom_retirar_prima_antiguedad/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
-							'etiqueta' => 'Primas de antigüedad']
-						] ) }}
+				&nbsp;&nbsp;&nbsp;
+				<div class="dropdown" style="display:inline-block;">
+					<button class="btn btn-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+						<i class="fa fa-history"></i> Retirar <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li><a href="{{ url('nomina/retirar_liquidacion/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion')) }}">Registros automáticos (todo)</a></li>
+						<li><a href="{{ url('nom_retirar_prima_antiguedad/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion')) }}">Primas de antigüedad</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="#" id="btn_abrir_retiro_personalizado"><i class="fa fa-filter"></i> Retiro personalizado</a></li>
+					</ul>
+				</div>
 			@else
 				<small>(Documento está <b>{{ $encabezado_doc->estado }}</b>)</small>
 			@endif
@@ -77,6 +112,15 @@
 
 	@include('layouts.mensajes')
 
+	<div id="espera_liquidacion_automatica" role="alert" aria-live="assertive" aria-busy="true">
+		<div class="espera-liquidacion-contenido">
+			<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+			<h3 style="margin-top:0;">Liquidando registros automáticos</h3>
+			<p style="margin-bottom:0;">Espere por favor. Este proceso puede tardar varios minutos.</p>
+			<small>No cierre ni recargue esta página.</small>
+		</div>
+	</div>
+
 	<div class="container-fluid">
 		<div class="marco_formulario">
 
@@ -106,6 +150,8 @@
 		</div>
 	</div>
 	<br/><br/>	
+
+	@include('nomina.incluir.modal_retiro_personalizado')
 
 	<div class="modal fade" id="modal_confirmar_eliminar_empleado" tabindex="-1" role="dialog" aria-labelledby="modal_confirmar_eliminar_empleado_label" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog" role="document">
@@ -231,6 +277,36 @@
 				$boton.find('.btn-spinner').toggle(procesando);
 			}
 
+			var liquidacionAutomaticaEnProceso = false;
+			var urlLiquidacionAutomatica = '{{ url('nomina/liquidacion/'.$encabezado_doc_id) }}'.split('?')[0];
+
+			$(document).on('click', 'a.enlace_dropdown', function(event){
+				var enlace = this.href.split('?')[0];
+				if (enlace !== urlLiquidacionAutomatica) {
+					return;
+				}
+
+				event.preventDefault();
+				if (liquidacionAutomaticaEnProceso) {
+					return;
+				}
+
+				liquidacionAutomaticaEnProceso = true;
+				var destino = this.href;
+				var $botonLiquidar = $(this).closest('.dropdown').find('.dropdown-toggle');
+				$botonLiquidar.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Liquidando...');
+				$('#espera_liquidacion_automatica').css('display', 'flex');
+
+				setTimeout(function(){
+					window.location.href = destino;
+				}, 100);
+			});
+
+			window.addEventListener('pageshow', function(){
+				liquidacionAutomaticaEnProceso = false;
+				$('#espera_liquidacion_automatica').hide();
+			});
+
 			function datosGestionEmpleados(accion) {
 				return {
 					_token: '{{ csrf_token() }}',
@@ -294,6 +370,220 @@
 						cambiarEstadoBoton($boton, false, 'Retirar empleados', 'Retirando...');
 					}
 				});
+			});
+
+			var retiroPersonalizadoFilas = {!! json_encode($opciones_retiro_personalizado, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!};
+
+			function agregarOpcionesUnicas($select, filas, campoId, construirTexto) {
+				var usados = {};
+				$.each(filas, function(indice, fila){
+					var id = String(fila[campoId]);
+					if (usados[id]) {
+						return true;
+					}
+					usados[id] = true;
+					$select.append($('<option></option>').attr('value', id).text(construirTexto(fila)));
+				});
+			}
+
+			function cargarOpcionesRetiroPersonalizado() {
+				var $grupo = $('#retiro_grupo_empleado_id');
+				$grupo.empty().append($('<option></option>').attr('value', '').text('Todos los grupos'));
+				agregarOpcionesUnicas($grupo, retiroPersonalizadoFilas, 'grupo_id', function(fila){
+					return fila.grupo;
+				});
+
+				var $empleado = $('#retiro_nom_contrato_id');
+				$empleado.empty().append($('<option></option>').attr('value', '').text('Todos los empleados'));
+				agregarOpcionesUnicas($empleado, retiroPersonalizadoFilas, 'contrato_id', function(fila){
+					return fila.identificacion + ' - ' + fila.empleado;
+				});
+
+				var $concepto = $('#retiro_nom_concepto_id');
+				$concepto.empty().append($('<option></option>').attr('value', '').text('Todos los conceptos'));
+				agregarOpcionesUnicas($concepto, retiroPersonalizadoFilas, 'concepto_id', function(fila){
+					return fila.concepto;
+				});
+			}
+
+			function inicializarBuscadoresRetiroPersonalizado() {
+				if (!$.fn.select2) {
+					return;
+				}
+
+				$('.retiro-personalizado-select').each(function(){
+					var $select = $(this);
+					$select.select2({
+						width: '100%',
+						dropdownParent: $('#modal_retiro_personalizado'),
+						placeholder: $select.find('option:first').text(),
+						allowClear: true,
+						minimumResultsForSearch: 0
+					});
+				});
+			}
+
+			function valorFiltroRetiroPersonalizado(selector) {
+				var valor = $(selector).val();
+				return valor === null || typeof valor === 'undefined' ? '' : String(valor);
+			}
+
+			function actualizarCantidadRetiroPersonalizado() {
+				var grupoId = valorFiltroRetiroPersonalizado('#retiro_grupo_empleado_id');
+				var contratoId = valorFiltroRetiroPersonalizado('#retiro_nom_contrato_id');
+				var conceptoId = valorFiltroRetiroPersonalizado('#retiro_nom_concepto_id');
+				var cantidad = 0;
+
+				var hayFiltro = grupoId !== '' || contratoId !== '' || conceptoId !== '';
+
+				if (hayFiltro) {
+					$.each(retiroPersonalizadoFilas, function(indice, fila){
+						if (grupoId !== '' && String(fila.grupo_id) !== String(grupoId)) {
+							return true;
+						}
+						if (contratoId !== '' && String(fila.contrato_id) !== String(contratoId)) {
+							return true;
+						}
+						if (conceptoId !== '' && String(fila.concepto_id) !== String(conceptoId)) {
+							return true;
+						}
+						cantidad += Number(fila.cantidad || 0);
+					});
+				}
+
+				$('#retiro_personalizado_cantidad').text(cantidad);
+				$('#btn_ejecutar_retiro_personalizado').prop('disabled', !hayFiltro || cantidad < 1);
+				return cantidad;
+			}
+
+			function descripcionFiltrosRetiroPersonalizado() {
+				var filtros = [];
+				if (valorFiltroRetiroPersonalizado('#retiro_grupo_empleado_id') !== '') {
+					filtros.push('Grupo: ' + $('#retiro_grupo_empleado_id option:selected').text());
+				}
+				if (valorFiltroRetiroPersonalizado('#retiro_nom_contrato_id') !== '') {
+					filtros.push('Empleado: ' + $('#retiro_nom_contrato_id option:selected').text());
+				}
+				if (valorFiltroRetiroPersonalizado('#retiro_nom_concepto_id') !== '') {
+					filtros.push('Concepto: ' + $('#retiro_nom_concepto_id option:selected').text());
+				}
+
+				return filtros.join('; ');
+			}
+
+			function mostrarErrorRetiroPersonalizado(mensaje) {
+				$('#retiro-personalizado-alerta').text(mensaje).show();
+			}
+
+			$('#btn_abrir_retiro_personalizado').on('click', function(event){
+				event.preventDefault();
+				$('#retiro-personalizado-alerta').hide().text('');
+				if (!$('#retiro_grupo_empleado_id').data('select2')) {
+					cargarOpcionesRetiroPersonalizado();
+					inicializarBuscadoresRetiroPersonalizado();
+				}
+				$('.retiro-personalizado-select').val('').trigger('change');
+				$('#retiro_personalizado_cantidad').text('0');
+				$('#btn_ejecutar_retiro_personalizado').prop('disabled', true);
+
+				if (retiroPersonalizadoFilas.length === 0) {
+					mostrarErrorRetiroPersonalizado('El documento no tiene registros disponibles para retirar.');
+				}
+
+				$('#modal_retiro_personalizado').modal('show');
+			});
+
+			$('.retiro-personalizado-select').on('change', function(){
+				$('#retiro-personalizado-alerta').hide();
+				actualizarCantidadRetiroPersonalizado();
+			});
+
+			function ejecutarRetiroPersonalizado() {
+				var $boton = $('#btn_ejecutar_retiro_personalizado');
+				cambiarEstadoBoton($boton, true, 'Retirar', 'Retirando...');
+				$('#modal_retiro_personalizado select, #modal_retiro_personalizado .close, #modal_retiro_personalizado .btn-default').prop('disabled', true);
+				$('.retiro-personalizado-select').trigger('change.select2');
+
+				$.ajax({
+					url: {!! json_encode(url('nomina/retirar_personalizado/'.$encabezado_doc_id).'?'.http_build_query([
+						'id' => Input::get('id'),
+						'id_modelo' => Input::get('id_modelo'),
+						'id_transaccion' => Input::get('id_transaccion'),
+					])) !!},
+					type: 'POST',
+					dataType: 'json',
+					headers: {
+						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+						'Accept': 'application/json'
+					},
+					data: {
+						_token: '{{ csrf_token() }}',
+						grupo_empleado_id: valorFiltroRetiroPersonalizado('#retiro_grupo_empleado_id'),
+						nom_contrato_id: valorFiltroRetiroPersonalizado('#retiro_nom_contrato_id'),
+						nom_concepto_id: valorFiltroRetiroPersonalizado('#retiro_nom_concepto_id'),
+						cantidad_esperada: actualizarCantidadRetiroPersonalizado(),
+						confirmar_retiro: 1
+					},
+					success: function(respuesta){
+						$('#modal_retiro_personalizado').modal('hide');
+						var mensaje = respuesta.mensaje || 'Retiro realizado correctamente.';
+						if (typeof Swal !== 'undefined' && Swal.fire) {
+							Swal.fire({ title: 'Retiro completado', text: mensaje, type: 'success', icon: 'success' })
+								.then(function(){ window.location.reload(); });
+						} else {
+							window.location.reload();
+						}
+					},
+						error: function(xhr){
+						var mensaje = xhr.responseJSON && (xhr.responseJSON.mensaje_error || xhr.responseJSON.message)
+							? (xhr.responseJSON.mensaje_error || xhr.responseJSON.message)
+							: 'No fue posible realizar el retiro.';
+						mostrarErrorRetiroPersonalizado(mensaje);
+						cambiarEstadoBoton($boton, false, 'Retirar', 'Retirando...');
+						$('#modal_retiro_personalizado select, #modal_retiro_personalizado .close, #modal_retiro_personalizado .btn-default').prop('disabled', false);
+						$('.retiro-personalizado-select').trigger('change.select2');
+						actualizarCantidadRetiroPersonalizado();
+						if (typeof Swal !== 'undefined' && Swal.fire) {
+							Swal.fire({ title: 'No se realizó el retiro', text: mensaje, type: 'error', icon: 'error' });
+						}
+					}
+				});
+			}
+
+			$('#btn_ejecutar_retiro_personalizado').on('click', function(){
+				var cantidad = actualizarCantidadRetiroPersonalizado();
+				if (descripcionFiltrosRetiroPersonalizado() === '') {
+					mostrarErrorRetiroPersonalizado('Debe seleccionar al menos un grupo, empleado o concepto.');
+					return;
+				}
+				if (cantidad < 1) {
+					mostrarErrorRetiroPersonalizado('No hay registros que coincidan con los filtros seleccionados.');
+					return;
+				}
+
+				var texto = 'Se retirarán ' + cantidad + ' registro(s). ' + descripcionFiltrosRetiroPersonalizado() + '. Esta operación revertirá sus movimientos asociados.';
+
+				if (typeof Swal !== 'undefined' && Swal.fire) {
+					Swal.fire({
+						title: '¿Realmente quiere ejecutar el retiro?',
+						text: texto,
+						type: 'warning',
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#d33',
+						confirmButtonText: 'Sí, retirar',
+						cancelButtonText: 'Cancelar'
+					}).then(function(resultado){
+						if (resultado.isConfirmed || resultado.value === true) {
+							ejecutarRetiroPersonalizado();
+						}
+					});
+					return;
+				}
+
+				if (window.confirm('¿Realmente quiere ejecutar el retiro?\n\n' + texto)) {
+					ejecutarRetiroPersonalizado();
+				}
 			});
 
 			var eliminarEmpleadoData = { url: null, contratoId: null };

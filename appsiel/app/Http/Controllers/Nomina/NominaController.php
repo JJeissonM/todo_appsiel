@@ -19,13 +19,17 @@ use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
+use App\Nomina\Exceptions\RetiroPersonalizadoException;
 use App\Nomina\Services\Cotizante51Service;
 use App\Nomina\Services\LiquidacionPorTurnosService;
 use App\Nomina\Services\ParametroLegalService;
+use App\Nomina\Services\RetiroPersonalizadoNominaService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 use Maatwebsite\Excel\Facades\Excel as Excel;
 
@@ -296,7 +300,11 @@ class NominaController extends TransaccionController
 
         $registros_contabilidad = $encabezado_doc->get_movimiento_contable();
 
-        return view( 'nomina.show', compact( 'reg_anterior', 'reg_siguiente', 'miga_pan', 'empleados', 'conceptos', 'encabezado_doc', 'encabezado_doc_id', 'lapso_documento', 'tabla', 'opciones', 'registro_modelo_padre_id', 'titulo_tab', 'empresa', 'ciudad', 'descripcion_transaccion', 'registros_contabilidad', 'totales_por_empleado_concepto', 'totales_por_empleado', 'totales_por_concepto' ) );
+        $opciones_retiro_personalizado = $encabezado_doc->esta_activo_para_transacciones()
+            ? (new RetiroPersonalizadoNominaService())->opciones($encabezado_doc)
+            : [];
+
+        return view( 'nomina.show', compact( 'reg_anterior', 'reg_siguiente', 'miga_pan', 'empleados', 'conceptos', 'encabezado_doc', 'encabezado_doc_id', 'lapso_documento', 'tabla', 'opciones', 'registro_modelo_padre_id', 'titulo_tab', 'empresa', 'ciudad', 'descripcion_transaccion', 'registros_contabilidad', 'totales_por_empleado_concepto', 'totales_por_empleado', 'totales_por_concepto', 'opciones_retiro_personalizado' ) );
 
     }
 
@@ -409,6 +417,19 @@ class NominaController extends TransaccionController
                 continue;
             }
 
+            // El apoyo de sostenimiento de los pasantes se crea desde la estrategia
+            // TiempoLaborado (modo 1), aunque el concepto configurado sea manual.
+            // Por eso debe retirarse como un registro automático de tiempo laborado.
+            if (
+                $registro->concepto != null &&
+                $registro->contrato->es_pasante_sena &&
+                (int)$registro->nom_concepto_id === (int)config('nomina.concepto_a_pagar_pasante_sena')
+            ) {
+                $liquidacion = new LiquidacionConcepto($registro->concepto->id, $registro->contrato, $documento_nomina);
+                $liquidacion->retirar(1, $registro);
+                continue;
+            }
+
             if ( $registro->concepto != null )
             {
                 if ( in_array( $registro->concepto->modo_liquidacion_id, $this->array_ids_modos_liquidacion_automaticos) )
@@ -422,7 +443,94 @@ class NominaController extends TransaccionController
 
         $this->actualizar_totales_documento($id);
 
-        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'mensaje_error','Registros automáticos retirados correctamente.' );
+        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message','Registros automáticos retirados correctamente.' );
+    }
+
+    public function retirar_personalizado(Request $request, $nom_doc_encabezado_id)
+    {
+        $reglas = [
+            'cantidad_esperada' => 'required|integer|min:1',
+            'confirmar_retiro' => 'required|accepted',
+        ];
+
+        if ($request->grupo_empleado_id !== null && $request->grupo_empleado_id !== '') {
+            $reglas['grupo_empleado_id'] = 'integer|min:0';
+        }
+        if ($request->nom_contrato_id !== null && $request->nom_contrato_id !== '') {
+            $reglas['nom_contrato_id'] = 'integer|min:1';
+        }
+        if ($request->nom_concepto_id !== null && $request->nom_concepto_id !== '') {
+            $reglas['nom_concepto_id'] = 'integer|min:1';
+        }
+
+        $validator = Validator::make($request->all(), $reglas, [
+            'confirmar_retiro.accepted' => 'Debe confirmar el retiro.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'ok' => false,
+                'mensaje_error' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        if (
+            ($request->grupo_empleado_id === null || $request->grupo_empleado_id === '') &&
+            ($request->nom_contrato_id === null || $request->nom_contrato_id === '') &&
+            ($request->nom_concepto_id === null || $request->nom_concepto_id === '')
+        ) {
+            return response()->json([
+                'ok' => false,
+                'mensaje_error' => 'Debe seleccionar al menos un grupo, empleado o concepto.',
+            ], 422);
+        }
+
+        $documento = NomDocEncabezado::find((int) $nom_doc_encabezado_id);
+        if (is_null($documento)) {
+            return response()->json(['ok' => false, 'mensaje_error' => 'El documento de nómina no existe.'], 404);
+        }
+
+        if (Auth::check() && (int) $documento->core_empresa_id !== (int) Auth::user()->empresa_id) {
+            return response()->json(['ok' => false, 'mensaje_error' => 'No está autorizado para modificar este documento.'], 403);
+        }
+
+        if (!$documento->esta_activo_para_transacciones()) {
+            return response()->json([
+                'ok' => false,
+                'mensaje_error' => 'El documento de nómina no puede modificarse porque no está en estado Activo.',
+            ], 422);
+        }
+
+        (new ParametroLegalService())->aplicarParametrosEnConfig($documento->fecha);
+
+        try {
+            $resultado = (new RetiroPersonalizadoNominaService())->retirar(
+                $documento,
+                $request->grupo_empleado_id,
+                $request->nom_contrato_id,
+                $request->nom_concepto_id,
+                $request->cantidad_esperada
+            );
+
+            return response()->json(['ok' => true] + $resultado + [
+                'mensaje' => $resultado['cantidad_retirada'] . ' registro(s) retirado(s) correctamente.',
+            ]);
+        } catch (RetiroPersonalizadoException $e) {
+            return response()->json(['ok' => false, 'mensaje_error' => $e->getMessage()], 422);
+        } catch (\Throwable $e) {
+            Log::error('Nómina: error en retiro personalizado.', [
+                'documento_id' => $documento->id,
+                'grupo_empleado_id' => $request->grupo_empleado_id,
+                'nom_contrato_id' => $request->nom_contrato_id,
+                'nom_concepto_id' => $request->nom_concepto_id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'ok' => false,
+                'mensaje_error' => 'No fue posible completar el retiro. No se modificó ningún registro.',
+            ], 500);
+        }
     }
 
     function actualizar_totales_documento($nom_doc_encabezado_id)

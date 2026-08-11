@@ -76,8 +76,8 @@ class NomDocEncabezado extends Model
 
     public function actualizar_totales()
     {
-        $this->total_devengos = NomDocRegistro::where('nom_doc_encabezado_id',$this->id)->sum('valor_devengo');
-        $this->total_deducciones = NomDocRegistro::where('nom_doc_encabezado_id',$this->id)->sum('valor_deduccion');
+        $this->total_devengos = (float) NomDocRegistro::where('nom_doc_encabezado_id',$this->id)->sum('valor_devengo');
+        $this->total_deducciones = (float) NomDocRegistro::where('nom_doc_encabezado_id',$this->id)->sum('valor_deduccion');
         $this->save();
     }
 
