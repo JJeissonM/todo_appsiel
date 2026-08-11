@@ -315,7 +315,7 @@ class NomContrato extends Model
         $estados = self::opciones_filtro('nom_contratos.estado', 'nom_contratos.estado');
 
         return [
-            'filtro_empleado' => ['label' => 'Contrato / empleado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $contratos],
+            'filtro_empleado' => ['label' => 'Empleado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $contratos],
             'filtro_grupo_empleado' => ['label' => 'Grupo empleado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $grupos],
             'filtro_cargo' => ['label' => 'Cargo', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $cargos],
             'filtro_estado' => ['label' => 'Estado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $estados],
@@ -382,17 +382,25 @@ class NomContrato extends Model
         $opciones = self::query_listado()
             ->select(
                 'nom_contratos.id',
+                'core_terceros.id AS tercero_id',
                 'core_terceros.descripcion',
                 'core_terceros.numero_identificacion',
                 'nom_contratos.sueldo',
                 'nom_contratos.estado'
             )
             ->orderBy('core_terceros.descripcion')
+            ->orderByRaw("CASE WHEN nom_contratos.estado = 'Activo' THEN 0 ELSE 1 END")
             ->orderBy('nom_contratos.id', 'DESC')
             ->get();
 
         $contratos = [];
+        $terceros_agregados = [];
         foreach ($opciones as $opcion) {
+            if (isset($terceros_agregados[$opcion->tercero_id])) {
+                continue;
+            }
+
+            $terceros_agregados[$opcion->tercero_id] = true;
             $contratos[$opcion->id] = $opcion->descripcion
                 . ' (' . $opcion->numero_identificacion . ')'
                 . ' - $' . number_format($opcion->sueldo, 0, ',', '.')

@@ -74,7 +74,7 @@
 						<i class="fa fa-history"></i> Retirar <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu">
-						<li><a href="{{ url('nomina/retirar_liquidacion/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion')) }}">Registros automáticos (todo)</a></li>
+						<li><a id="btn_retirar_registros_automaticos" href="{{ url('nomina/retirar_liquidacion/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion')) }}">Registros automáticos (todo)</a></li>
 						<li><a href="{{ url('nom_retirar_prima_antiguedad/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion')) }}">Primas de antigüedad</a></li>
 						<li role="separator" class="divider"></li>
 						<li><a href="#" id="btn_abrir_retiro_personalizado"><i class="fa fa-filter"></i> Retiro personalizado</a></li>
@@ -115,8 +115,8 @@
 	<div id="espera_liquidacion_automatica" role="alert" aria-live="assertive" aria-busy="true">
 		<div class="espera-liquidacion-contenido">
 			<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
-			<h3 style="margin-top:0;">Liquidando registros automáticos</h3>
-			<p style="margin-bottom:0;">Espere por favor. Este proceso puede tardar varios minutos.</p>
+			<h3 id="espera_proceso_automatico_titulo" style="margin-top:0;">Liquidando registros automáticos</h3>
+			<p id="espera_proceso_automatico_mensaje" style="margin-bottom:0;">Espere por favor. Este proceso puede tardar varios minutos.</p>
 			<small>No cierre ni recargue esta página.</small>
 		</div>
 	</div>
@@ -278,7 +278,19 @@
 			}
 
 			var liquidacionAutomaticaEnProceso = false;
+			var retiroAutomaticoEnProceso = false;
 			var urlLiquidacionAutomatica = '{{ url('nomina/liquidacion/'.$encabezado_doc_id) }}'.split('?')[0];
+
+			function mostrarEsperaProcesoAutomatico($boton, textoBoton, titulo, mensaje) {
+				$boton
+					.data('contenido-original', $boton.html())
+					.addClass('boton-proceso-automatico')
+					.prop('disabled', true)
+					.html('<i class="fa fa-spinner fa-spin"></i> ' + textoBoton);
+				$('#espera_proceso_automatico_titulo').text(titulo);
+				$('#espera_proceso_automatico_mensaje').text(mensaje);
+				$('#espera_liquidacion_automatica').css('display', 'flex');
+			}
 
 			$(document).on('click', 'a.enlace_dropdown', function(event){
 				var enlace = this.href.split('?')[0];
@@ -294,8 +306,33 @@
 				liquidacionAutomaticaEnProceso = true;
 				var destino = this.href;
 				var $botonLiquidar = $(this).closest('.dropdown').find('.dropdown-toggle');
-				$botonLiquidar.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Liquidando...');
-				$('#espera_liquidacion_automatica').css('display', 'flex');
+				mostrarEsperaProcesoAutomatico(
+					$botonLiquidar,
+					'Liquidando...',
+					'Liquidando registros automáticos',
+					'Espere por favor. Este proceso puede tardar varios minutos.'
+				);
+
+				setTimeout(function(){
+					window.location.href = destino;
+				}, 100);
+			});
+
+			$(document).on('click', '#btn_retirar_registros_automaticos', function(event){
+				event.preventDefault();
+				if (retiroAutomaticoEnProceso) {
+					return;
+				}
+
+				retiroAutomaticoEnProceso = true;
+				var destino = this.href;
+				var $botonRetirar = $(this).closest('.dropdown').find('.dropdown-toggle');
+				mostrarEsperaProcesoAutomatico(
+					$botonRetirar,
+					'Retirando...',
+					'Retirando registros automáticos',
+					'Espere por favor mientras se revierten los registros y sus operaciones asociadas.'
+				);
 
 				setTimeout(function(){
 					window.location.href = destino;
@@ -304,7 +341,12 @@
 
 			window.addEventListener('pageshow', function(){
 				liquidacionAutomaticaEnProceso = false;
+				retiroAutomaticoEnProceso = false;
 				$('#espera_liquidacion_automatica').hide();
+				$('.boton-proceso-automatico').each(function(){
+					var $boton = $(this);
+					$boton.html($boton.data('contenido-original')).prop('disabled', false).removeClass('boton-proceso-automatico');
+				});
 			});
 
 			function datosGestionEmpleados(accion) {
