@@ -69,7 +69,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="btn_confirmar_agregar_empleados"
-                        data-url="{{ url('nomina/documentos/' . $encabezado_doc_id . '/empleados/agregar') }}">
+                        data-url="{{ url('nom_guardar_asignacion') }}">
                         <span class="btn-text">Agregar empleados</span>
                         <i class="fa fa-spinner fa-spin btn-spinner" style="display: none; margin-left: 6px;"></i>
                     </button>
@@ -94,7 +94,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-danger" id="btn_confirmar_retirar_empleados"
-                        data-url="{{ url('nomina/documentos/' . $encabezado_doc_id . '/empleados/retirar') }}">
+                        data-url="{{ url('nom_guardar_asignacion') }}">
                         <span class="btn-text">Retirar empleados</span>
                         <i class="fa fa-spinner fa-spin btn-spinner" style="display: none; margin-left: 6px;"></i>
                     </button>

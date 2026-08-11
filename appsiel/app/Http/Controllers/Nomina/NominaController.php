@@ -550,6 +550,14 @@ class NominaController extends TransaccionController
     // ASIGNACIÓN DE EMPLEADO A UN DOCUMENTO DE LIQUIDACION
     public function guardar_asignacion(Request $request)
     {
+        if ($request->accion_masiva === 'agregar_empleados') {
+            return $this->agregar_empleados_documento($request, $request->nom_doc_encabezado_id);
+        }
+
+        if ($request->accion_masiva === 'retirar_empleados') {
+            return $this->retirar_empleados_documento($request, $request->nom_doc_encabezado_id);
+        }
+
         // Se obtiene el modelo "Padre"
         $modelo = Modelo::find($request->url_id_modelo);
 

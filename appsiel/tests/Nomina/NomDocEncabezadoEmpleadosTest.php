@@ -1,7 +1,9 @@
 <?php
 
 use App\Nomina\NomDocEncabezado;
+use App\Http\Controllers\Nomina\NominaController;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -91,5 +93,25 @@ class NomDocEncabezadoEmpleadosTest extends TestCase
         $this->assertSame('2026-07-01', $lapso->fecha_inicial);
         $this->assertSame('2026-07-30', $lapso->fecha_final);
         $this->assertEquals([1, 2], array_values($ids));
+    }
+
+    /** @test */
+    public function el_endpoint_existente_despacha_el_retiro_masivo()
+    {
+        $request = Request::create('/nom_guardar_asignacion', 'POST', [
+            'accion_masiva' => 'retirar_empleados',
+            'nom_doc_encabezado_id' => 2296
+        ]);
+        $controller = new NominaControllerEmpleadosTestDouble;
+
+        $this->assertSame('retirar:2296', $controller->guardar_asignacion($request));
+    }
+}
+
+class NominaControllerEmpleadosTestDouble extends NominaController
+{
+    public function retirar_empleados_documento(Request $request, $nom_doc_encabezado_id)
+    {
+        return 'retirar:' . $nom_doc_encabezado_id;
     }
 }

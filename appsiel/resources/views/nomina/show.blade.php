@@ -231,9 +231,11 @@
 				$boton.find('.btn-spinner').toggle(procesando);
 			}
 
-			function datosGestionEmpleados() {
+			function datosGestionEmpleados(accion) {
 				return {
 					_token: '{{ csrf_token() }}',
+					accion_masiva: accion,
+					nom_doc_encabezado_id: '{{ $encabezado_doc_id }}',
 					url_id: '{{ Input::get('id') }}',
 					url_id_modelo: '{{ Input::get('id_modelo') }}',
 					url_id_transaccion: '{{ Input::get('id_transaccion') }}'
@@ -247,7 +249,7 @@
 				$.ajax({
 					url: $boton.data('url'),
 					type: 'POST',
-					data: datosGestionEmpleados(),
+					data: datosGestionEmpleados('agregar_empleados'),
 					success: function(respuesta){
 						actualizarTablaEmpleados(respuesta);
 						$.each(respuesta.contratos_agregados || [], function(indice, empleado){
@@ -274,7 +276,7 @@
 				$.ajax({
 					url: $boton.data('url'),
 					type: 'POST',
-					data: datosGestionEmpleados(),
+					data: datosGestionEmpleados('retirar_empleados'),
 					success: function(respuesta){
 						actualizarTablaEmpleados(respuesta);
 						retirarContratosDeTablaRegistros(respuesta.contratos_retirados || []);
