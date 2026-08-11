@@ -674,6 +674,7 @@
 
 						if (contratoId) {
 							$('#tabla_registros_documento > tbody > tr[data-contrato-id="' + contratoId + '"]').remove();
+							ordenarFilasRegistrosPorEmpleado();
 						}
 					},
 					error: function(xhr){
@@ -748,12 +749,36 @@
 				} else {
 					$tbody.append($fila);
 				}
+
+				ordenarFilasRegistrosPorEmpleado();
+			}
+
+			function ordenarFilasRegistrosPorEmpleado() {
+				var $tbody = $('#tabla_registros_documento > tbody');
+				var $filaTotales = $tbody.find('> tr.fila-totales').detach();
+				var filas = $tbody.find('> tr[data-contrato-id]').get();
+
+				filas.sort(function(filaA, filaB){
+					var empleadoA = $(filaA).children('td').eq(1).text().trim();
+					var empleadoB = $(filaB).children('td').eq(1).text().trim();
+					return empleadoA.localeCompare(empleadoB, 'es', { sensitivity: 'base' });
+				});
+
+				$.each(filas, function(indice, fila){
+					$(fila).children('td').eq(0).text(indice + 1);
+					$tbody.append(fila);
+				});
+
+				if ($filaTotales.length) {
+					$tbody.append($filaTotales);
+				}
 			}
 
 			function retirarContratosDeTablaRegistros(contratosIds) {
 				$.each(contratosIds, function(indice, contratoId){
 					$('#tabla_registros_documento > tbody > tr[data-contrato-id="' + contratoId + '"]').remove();
 				});
+				ordenarFilasRegistrosPorEmpleado();
 			}
 
 			function monedaHtml(valor) {
