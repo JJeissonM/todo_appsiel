@@ -103,6 +103,8 @@ class NominaController extends TransaccionController
 
         (new ParametroLegalService())->aplicarParametrosEnConfig($documento->fecha);
 
+        $cantidad_registros_antes = NomDocRegistro::where('nom_doc_encabezado_id', $documento->id)->count();
+
         // Se obtienen los Empleados del documento
         $empleados_documento = $documento->empleados;
 
@@ -128,7 +130,8 @@ class NominaController extends TransaccionController
 
         $this->actualizar_totales_documento($id);
 
-        $message = $this->get_message( $this->registros_procesados );
+        $cantidad_registros_despues = NomDocRegistro::where('nom_doc_encabezado_id', $documento->id)->count();
+        $message = $this->get_message(max(0, $cantidad_registros_despues - $cantidad_registros_antes));
 
         return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message', $message );
     }
@@ -137,10 +140,10 @@ class NominaController extends TransaccionController
     {
         if ( $registros_procesados > 0 )
         {
-            return 'Liquidación realizada. Se procesaron '.$this->registros_procesados.' registros. Debe ejecutar NUEVAMENTE hasta llegar a cero (0).';
+            return 'Liquidación automática finalizada correctamente. Se generaron '.$registros_procesados.' registros en una sola ejecución.';
         }
 
-        return 'Liquidación Finalizada correctamente. No hay más registros por procesar.';
+        return 'Liquidación automática finalizada correctamente. No se encontraron registros nuevos por generar.';
         
     }
     
@@ -212,6 +215,8 @@ class NominaController extends TransaccionController
 
         $documento = NomDocEncabezado::find($id);
 
+        $cantidad_registros_antes = NomDocRegistro::where('nom_doc_encabezado_id', $documento->id)->count();
+
         // Se obtienen los Empleados del documento
         $empleados_documento = $documento->empleados;
 
@@ -235,7 +240,8 @@ class NominaController extends TransaccionController
 
         $this->actualizar_totales_documento($id);
 
-        $message = $this->get_message( $this->registros_procesados );
+        $cantidad_registros_despues = NomDocRegistro::where('nom_doc_encabezado_id', $documento->id)->count();
+        $message = $this->get_message(max(0, $cantidad_registros_despues - $cantidad_registros_antes));
 
         return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message', $message );
     }

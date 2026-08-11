@@ -88,64 +88,41 @@ class NomDocEncabezado extends Model
 
     public function horas_liquidadas_empleado($core_tercero_id)
     {
-        $registros_documento = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)->all();
-
-        $horas_liquidadas = 0;
-        foreach ($registros_documento as $registro)
-        {
-            if (!is_null($registro->concepto))
-            {
-                // 7: Tiempo NO Laborado, 1: tiempo laborado
-                if ( in_array($registro->concepto->modo_liquidacion_id, [1, 7]) )
-                {
-                    $horas_liquidadas += $registro->cantidad_horas;
-                }
-            }
-        }
-
-        return $horas_liquidadas;
+        return (float) $this->registros_liquidacion()
+            ->join('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
+            ->where('nom_doc_registros.core_tercero_id', $core_tercero_id)
+            ->whereIn('nom_conceptos.modo_liquidacion_id', [1, 7])
+            ->sum('nom_doc_registros.cantidad_horas');
     }
 
     public function get_valor_neto_empleado_concepto($core_tercero_id, $nom_concepto_id)
     {
-        $registros_documento = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)
+        $query = $this->registros_liquidacion()
             ->where('core_tercero_id', $core_tercero_id)
-            ->get()
-            ->first();
+            ->where('nom_concepto_id', $nom_concepto_id);
 
-        if (is_null($registros_documento)) {
-            return 0;
-        }
-
-        return ($registros_documento->valor_devengo - $registros_documento->valor_deduccion);
+        return (float) (clone $query)->sum('valor_devengo') - (float) (clone $query)->sum('valor_deduccion');
     }
 
     public function horas_liquidadas_tiempo_laborado_empleado($core_tercero_id)
     {
-        $registros_documento = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)->all();
-
-        $horas_liquidadas = 0;
-        foreach ($registros_documento as $registro) {
-            if (!is_null($registro->concepto)) {
-                // 1: tiempo laborado
-                if (in_array($registro->concepto->modo_liquidacion_id, [1]))
-                {
-                    $horas_liquidadas += $registro->cantidad_horas;
-                }
-            }
-        }
-
-        return $horas_liquidadas;
+        return (float) $this->registros_liquidacion()
+            ->join('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
+            ->where('nom_doc_registros.core_tercero_id', $core_tercero_id)
+            ->where('nom_conceptos.modo_liquidacion_id', 1)
+            ->sum('nom_doc_registros.cantidad_horas');
     }
 
     public function get_valor_neto_empleado_segun_grupo_conceptos(array $conceptos, $core_tercero_id)
     {
-        $total_devengos = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)
-            ->whereIn('nom_concepto_id', $conceptos)
+        $query = $this->registros_liquidacion()
+            ->where('core_tercero_id', $core_tercero_id)
+            ->whereIn('nom_concepto_id', $conceptos);
+
+        $total_devengos = (clone $query)
             ->sum('valor_devengo');
 
-        $total_deducciones = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)
-            ->whereIn('nom_concepto_id', $conceptos)
+        $total_deducciones = (clone $query)
             ->sum('valor_deduccion');
 
         return ($total_devengos - $total_deducciones);

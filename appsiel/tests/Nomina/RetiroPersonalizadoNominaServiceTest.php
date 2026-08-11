@@ -244,6 +244,30 @@ class RetiroPersonalizadoNominaServiceTest extends TestCase
         $this->assertEquals([132], DB::table('nom_doc_registros')->lists('id'));
     }
 
+    /** @test */
+    public function los_calculos_del_documento_consultan_registros_creados_despues_de_cargar_la_relacion()
+    {
+        DB::table('nom_conceptos')->insert([
+            'id' => 22, 'modo_liquidacion_id' => 1, 'naturaleza' => 'devengo', 'descripcion' => 'SUELDO'
+        ]);
+
+        $documento = NomDocEncabezado::find(1);
+        $this->assertCount(0, $documento->registros_liquidacion);
+
+        $this->insertarRegistroNomina([
+            'id' => 140,
+            'nom_concepto_id' => 22,
+            'cantidad_horas' => 210,
+            'valor_devengo' => 1750905,
+            'valor_deduccion' => 0,
+        ]);
+
+        $this->assertEquals(210, $documento->horas_liquidadas_empleado(50));
+        $this->assertEquals(210, $documento->horas_liquidadas_tiempo_laborado_empleado(50));
+        $this->assertEquals(1750905, $documento->get_valor_neto_empleado_concepto(50, 22));
+        $this->assertEquals(1750905, $documento->get_valor_neto_empleado_segun_grupo_conceptos([22], 50));
+    }
+
     protected function crearEsquema()
     {
         Schema::create('nom_doc_encabezados', function (Blueprint $table) {
