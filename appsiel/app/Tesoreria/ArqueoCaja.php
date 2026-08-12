@@ -156,6 +156,14 @@ class ArqueoCaja extends Model
 
     protected function validateAndNormalizeShift($request, $controller)
     {
+        if ( !TesoMovimiento::usarMovimientosTesoreriaPorHora() ) {
+            $request->merge([
+                'fecha_hora_apertura' => null,
+                'fecha_hora_cierre' => null
+            ]);
+            return;
+        }
+
         $pdv = Pdv::where('id', (int)$request->pdv_id)
             ->where('core_empresa_id', Auth::user()->empresa_id)
             ->first();
@@ -256,6 +264,11 @@ class ArqueoCaja extends Model
 
     public function get_movimientos_caja( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null )
     {
+        if ( !TesoMovimiento::usarMovimientosTesoreriaPorHora() ) {
+            $fecha_hora_apertura = null;
+            $fecha_hora_cierre = null;
+        }
+
         if (!is_null($fecha_hora_apertura) && $fecha_hora_apertura != '' && substr($fecha_hora_apertura, 0, 10) != $fecha_desde) {
             $fecha_hora_apertura = null;
             $fecha_hora_cierre = null;

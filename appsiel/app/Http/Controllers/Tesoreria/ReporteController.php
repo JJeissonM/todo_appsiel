@@ -991,6 +991,11 @@ class ReporteController extends TesoreriaController
         $fecha_hora_apertura = $this->normalizarFechaHoraArqueo(Input::get('fecha_hora_apertura'));
         $fecha_hora_cierre = $this->normalizarFechaHoraArqueo(Input::get('fecha_hora_cierre'));
 
+        if ( !TesoMovimiento::usarMovimientosTesoreriaPorHora() ) {
+            $fecha_hora_apertura = null;
+            $fecha_hora_cierre = null;
+        }
+
         if ( !TesoMovimiento::usuario_tiene_restriccion_movimientos() && $pdv_id == 0 ) {
             $creado_por = null;
         }
@@ -1000,7 +1005,7 @@ class ReporteController extends TesoreriaController
         }
 
         // Nunca aplicar a una fecha histórica el turno que quedó cargado al abrir la pantalla.
-        if ($pdv_id > 0 && $fecha_desde == $fecha_hasta) {
+        if (TesoMovimiento::usarMovimientosTesoreriaPorHora() && $pdv_id > 0 && $fecha_desde == $fecha_hasta) {
             $pdv = Pdv::where('id', $pdv_id)
                 ->where('core_empresa_id', Auth::user()->empresa_id)
                 ->first();

@@ -321,8 +321,13 @@ class TesoMovimiento extends Model
 
     public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null)
     {
-        $fecha_hora_apertura = self::normalizarFechaHoraFiltro($fecha_hora_apertura);
-        $fecha_hora_cierre = self::normalizarFechaHoraFiltro($fecha_hora_cierre);
+        if ( self::usarMovimientosTesoreriaPorHora() ) {
+            $fecha_hora_apertura = self::normalizarFechaHoraFiltro($fecha_hora_apertura);
+            $fecha_hora_cierre = self::normalizarFechaHoraFiltro($fecha_hora_cierre);
+        } else {
+            $fecha_hora_apertura = null;
+            $fecha_hora_cierre = null;
+        }
 
         $operador = '>';
         if( $tipo_movimiento == 'salida' )
@@ -383,6 +388,11 @@ class TesoMovimiento extends Model
                                 DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento')
                             )
                     ->get();
+    }
+
+    public static function usarMovimientosTesoreriaPorHora()
+    {
+        return (int)config('tesoreria.usar_movimientos_tesoreria_por_hora', 1) === 1;
     }
 
     protected static function normalizarFechaHoraFiltro($fecha_hora)
