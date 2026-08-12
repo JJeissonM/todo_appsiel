@@ -132,6 +132,53 @@ class PaymentReconciliationServiceTest extends PHPUnit_Framework_TestCase
         $this->assertSame($json, $resultado['lineas_json']);
     }
 
+    public function test_corrige_comision_datafono_sobredimensionada_en_pago_mixto()
+    {
+        $json = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"83-Ventas","teso_caja_id":"2-Caja","teso_cuenta_bancaria_id":"0-","valor":"$76900"},{"teso_medio_recaudo_id":"2-Tarjeta","teso_motivo_id":"84-Comision","teso_caja_id":"0-","teso_cuenta_bancaria_id":"11-Banco","valor":"$100000"}]';
+
+        $resultado = $this->service->normalizar_lineas_recargo(
+            $json,
+            8422,
+            84,
+            'Comision datafono',
+            83,
+            'Ventas de contado'
+        );
+
+        $lineas = json_decode($resultado['lineas_json'], true);
+        $this->assertTrue($resultado['normalizado']);
+        $this->assertEquals(176900.0, $resultado['total_recaudos']);
+        $this->assertCount(3, $lineas);
+        $this->assertSame('$91578', $lineas[1]['valor']);
+        $this->assertSame('83-Ventas de contado', $lineas[1]['teso_motivo_id']);
+        $this->assertSame('11-Banco', $lineas[1]['teso_cuenta_bancaria_id']);
+        $this->assertSame('$8422', $lineas[2]['valor']);
+        $this->assertSame('84-Comision datafono', $lineas[2]['teso_motivo_id']);
+    }
+
+    public function test_completa_comision_datafono_deficitaria_desde_una_linea_normal()
+    {
+        $json = '[{"teso_medio_recaudo_id":"2-Tarjeta","teso_motivo_id":"83-Ventas","valor":"$99500"},{"teso_medio_recaudo_id":"2-Tarjeta","teso_motivo_id":"84-Comision","valor":"$500"}]';
+
+        $resultado = $this->service->normalizar_lineas_recargo(
+            $json,
+            5000,
+            84,
+            'Comision datafono',
+            83,
+            'Ventas de contado'
+        );
+
+        $lineas = json_decode($resultado['lineas_json'], true);
+        $this->assertTrue($resultado['normalizado']);
+        $this->assertEquals(100000.0, $resultado['total_recaudos']);
+        $this->assertEquals(5000.0, collect($lineas)->filter(function ($linea) {
+            return strpos($linea['teso_motivo_id'], '84-') === 0;
+        })->sum(function ($linea) {
+            return (float)substr($linea['valor'], 1);
+        }));
+    }
+
     public function test_no_corrige_datafono_si_los_recaudos_no_coinciden_con_el_total_redondeado()
     {
         $json = '[{"teso_motivo_id":"83-Ventas","valor":"$178595"},{"teso_motivo_id":"84-Comision datafono","valor":"$8930"}]';

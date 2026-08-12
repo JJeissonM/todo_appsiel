@@ -289,50 +289,54 @@ function pos_separar_recargo_medio_recaudo(json_recaudos, valor_recargo, motivo_
     }
   });
 
-  /*
-   * Al ingresar una sola linea con el motivo del recargo, la linea contiene
-   * el total pagado, no el valor de la comision/propina. Se debe reconstruir
-   * como venta + recargo. Dejarla intacta hace que todo el pago se interprete
-   * como comision al volver a abrir o contabilizar la factura.
-   */
-  if (lineas.length === 1 && indices_registrados.length === 1) {
-    var linea_recargo = lineas[0];
-    var valor_linea_recargo = parseFloat((linea_recargo.valor || '$0').toString().replace('$', '')) || 0;
-    var motivo_default_id = parseInt($('#teso_motivo_default_id').val()) || 0;
+  if (indices_registrados.length > 0) {
+    var total_recargo_registrado = indices_registrados.reduce(function(total, indice) {
+      return total + (parseFloat((lineas[indice].valor || '$0').toString().replace('$', '')) || 0);
+    }, 0);
 
-    if (motivo_default_id <= 0 || valor_linea_recargo < valor_recargo) {
+    if (Math.abs(total_recargo_registrado - valor_recargo) <= 0.01) {
+      return json_recaudos;
+    }
+
+    var motivo_default_id = parseInt($('#teso_motivo_default_id').val()) || 0;
+    if (motivo_default_id <= 0 || total_recargo_registrado < valor_recargo) {
+      // El backend completa de forma autoritativa los casos deficitarios.
       return json_recaudos;
     }
 
     var motivo_default_label = get_text_from_select_for_value(motivo_default_id);
-    if (valor_recargo <= 0) {
-      linea_recargo.teso_motivo_id = motivo_default_id + '-' + motivo_default_label;
-      return JSON.stringify(lineas);
-    }
+    var recargo_pendiente = valor_recargo;
+    var lineas_normalizadas = [];
 
-    var valor_venta = valor_linea_recargo - valor_recargo;
-    if (valor_venta > 0) {
-      lineas.unshift({
-        teso_medio_recaudo_id: linea_recargo.teso_medio_recaudo_id,
-        teso_motivo_id: motivo_default_id + '-' + motivo_default_label,
-        teso_caja_id: linea_recargo.teso_caja_id,
-        teso_cuenta_bancaria_id: linea_recargo.teso_cuenta_bancaria_id,
-        valor: '$' + valor_venta
-      });
-      lineas[1].valor = '$' + valor_recargo;
-    }
+    lineas.forEach(function(linea) {
+      var es_recargo = parseInt((linea.teso_motivo_id || '0').toString().split('-')[0]) === motivo_id;
+      if (!es_recargo) {
+        lineas_normalizadas.push(linea);
+        return;
+      }
 
-    return JSON.stringify(lineas);
+      var valor_linea = parseFloat((linea.valor || '$0').toString().replace('$', '')) || 0;
+      var valor_aplicado = Math.min(valor_linea, Math.max(0, recargo_pendiente));
+      var valor_excedente = valor_linea - valor_aplicado;
+      recargo_pendiente -= valor_aplicado;
+
+      if (valor_excedente > 0.01) {
+        var linea_venta = $.extend({}, linea);
+        linea_venta.teso_motivo_id = motivo_default_id + '-' + motivo_default_label;
+        linea_venta.valor = '$' + valor_excedente;
+        lineas_normalizadas.push(linea_venta);
+      }
+
+      if (valor_aplicado > 0.01) {
+        linea.valor = '$' + valor_aplicado;
+        lineas_normalizadas.push(linea);
+      }
+    });
+
+    return JSON.stringify(lineas_normalizadas);
   }
 
   if (valor_recargo <= 0) {
-    return json_recaudos;
-  }
-
-  var ya_registrado = lineas.some(function(linea) {
-    return parseInt((linea.teso_motivo_id || '0').toString().split('-')[0]) === motivo_id;
-  });
-  if (ya_registrado) {
     return json_recaudos;
   }
 

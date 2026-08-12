@@ -161,7 +161,7 @@ class AccumulationService
         // Solo se autocorrigen documentos pendientes. Los documentos ya
         // acumulados/contabilizados requieren conciliacion de tesoreria y no
         // deben alterarse automaticamente.
-        $this->normalizar_linea_unica_datafono($invoice);
+        $this->normalizar_lineas_datafono($invoice);
         $this->normalizar_ajuste_recargos($invoice);
         $this->normalizar_cambio_en_medios_recaudo($invoice);
 
@@ -310,10 +310,10 @@ class AccumulationService
     }
 
     /**
-     * Compatibilidad para facturas pendientes cuya unica linea de tarjeta fue
-     * guardada completa con el motivo "Comision datafono".
+     * Corrige facturas pendientes con una o varias lineas donde el pago
+     * completo fue marcado como "Comision datafono".
      */
-    protected function normalizar_linea_unica_datafono(FacturaPos $invoice)
+    protected function normalizar_lineas_datafono(FacturaPos $invoice)
     {
         if ($invoice->forma_pago != 'contado' || !(int)config('ventas_pos.manejar_datafono')) {
             return false;
@@ -327,16 +327,18 @@ class AccumulationService
             return false;
         }
 
-        $resultado = (new PaymentReconciliationService())->reconstruir_recargo_porcentual_linea_unica(
+        $valor_datafono = round(
+            (float)$invoice->valor_total * (float)config('ventas_pos.porcentaje_datafono') / 100,
+            0
+        );
+
+        $resultado = (new PaymentReconciliationService())->normalizar_lineas_recargo(
             $invoice->lineas_registros_medios_recaudos,
-            $invoice->valor_total,
-            $invoice->valor_total_bolsas,
-            config('ventas_pos.porcentaje_datafono'),
+            $valor_datafono,
             $motivo_datafono_id,
             $motivo_datafono->descripcion,
             $motivo_default_id,
-            $motivo_default->descripcion,
-            (int)config('ventas_pos.redondear_centena') === 1
+            $motivo_default->descripcion
         );
 
         if (!$resultado['normalizado']) {
@@ -344,9 +346,7 @@ class AccumulationService
         }
 
         $invoice->lineas_registros_medios_recaudos = $resultado['lineas_json'];
-        $invoice->valor_ajuste_al_peso = $resultado['ajuste'];
         $invoice->total_efectivo_recibido = $resultado['total_recaudos'];
-        $invoice->valor_total_cambio = 0;
         $invoice->save();
 
         return true;

@@ -12,6 +12,7 @@ use App\Ventas\VtasMovimiento;
 use App\VentasPos\DocRegistro;
 use App\VentasPos\Movimiento;
 use App\VentasPos\Pdv;
+use App\Tesoreria\TesoMotivo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -324,6 +325,10 @@ class InvoicingService
     public function normalizar_cambio_efectivo_request(Request $request, array $lineas_registros)
     {
         $normalizado = false;
+        if ($this->normalizar_comision_datafono_request($request, $lineas_registros)) {
+            $normalizado = true;
+        }
+
         $resultado_recargos = (new PaymentReconciliationService())->normalizar_ajuste_recargos(
             $request->get('lineas_registros_medios_recaudos', '[]'),
             $this->get_total_productos_pos($lineas_registros),
@@ -349,12 +354,77 @@ class InvoicingService
         );
 
         if (!$resultado['normalizado']) {
+            $this->validar_cuadre_recaudos_pos($request, $lineas_registros, $resultado_recargos['valor_recargos']);
             return $normalizado;
         }
 
         $request->merge(['lineas_registros_medios_recaudos' => $resultado['lineas_json']]);
+        $this->validar_cuadre_recaudos_pos($request, $lineas_registros, $resultado_recargos['valor_recargos']);
 
         return true;
+    }
+
+    protected function normalizar_comision_datafono_request(Request $request, array $lineas_registros)
+    {
+        if (!(int)config('ventas_pos.manejar_datafono')) {
+            return false;
+        }
+
+        $motivo_datafono_id = (int)config('ventas_pos.motivo_tesoreria_datafono');
+        $motivo_default_id = (int)config('tesoreria.motivo_tesoreria_ventas_contado');
+        $motivo_datafono = TesoMotivo::find($motivo_datafono_id);
+        $motivo_default = TesoMotivo::find($motivo_default_id);
+        if (is_null($motivo_datafono) || is_null($motivo_default)) {
+            return false;
+        }
+
+        $valor_datafono = round(
+            $this->get_total_productos_pos($lineas_registros) * (float)config('ventas_pos.porcentaje_datafono') / 100,
+            0
+        );
+
+        $resultado = (new PaymentReconciliationService())->normalizar_lineas_recargo(
+            $request->get('lineas_registros_medios_recaudos', '[]'),
+            $valor_datafono,
+            $motivo_datafono_id,
+            $motivo_datafono->descripcion,
+            $motivo_default_id,
+            $motivo_default->descripcion
+        );
+
+        if (!$resultado['normalizado']) {
+            return false;
+        }
+
+        $request->merge(['lineas_registros_medios_recaudos' => $resultado['lineas_json']]);
+        return true;
+    }
+
+    protected function validar_cuadre_recaudos_pos(Request $request, array $lineas_registros, $valor_recargos)
+    {
+        if ($request->get('forma_pago') != 'contado') {
+            return;
+        }
+
+        $lineas_recaudos = json_decode((string)$request->get('lineas_registros_medios_recaudos', '[]'), true);
+        if (!is_array($lineas_recaudos) || empty($lineas_recaudos)) {
+            throw new \InvalidArgumentException('La factura POS no tiene medios de recaudo válidos.');
+        }
+
+        $total_recaudos = (new PaymentReconciliationService())->sumar_recaudos($lineas_recaudos);
+        $total_documento = round(
+            $this->get_total_documento_pos($request, $lineas_registros) + (float)$valor_recargos,
+            2
+        );
+
+        if (abs($total_recaudos - $total_documento) > 1.0) {
+            throw new \InvalidArgumentException(
+                'La factura POS no fue guardada porque los medios de recaudo están descuadrados. Total factura: $' .
+                number_format($total_documento, 2, ',', '.') . '; recaudos: $' .
+                number_format($total_recaudos, 2, ',', '.') . '; diferencia: $' .
+                number_format(abs($total_recaudos - $total_documento), 2, ',', '.') . '.'
+            );
+        }
     }
 
     protected function get_total_productos_pos(array $lineas_registros)

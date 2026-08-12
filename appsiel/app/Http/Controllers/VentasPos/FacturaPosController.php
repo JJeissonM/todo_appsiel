@@ -269,7 +269,15 @@ class FacturaPosController extends TransaccionController
 
         $lineas_registros = json_decode($request->lineas_registros);
         if (is_array($lineas_registros)) {
-            (new InvoicingService())->normalizar_cambio_efectivo_request($request, $lineas_registros);
+            try {
+                (new InvoicingService())->normalizar_cambio_efectivo_request($request, $lineas_registros);
+            } catch (\InvalidArgumentException $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                    'request_id' => $request_id
+                ], 422);
+            }
         }
 
         $acumular_factura = false;
@@ -794,15 +802,15 @@ class FacturaPosController extends TransaccionController
         $this->aplicar_excedente_transferencia_como_otros_recaudos($request);
         $lineas_registros = json_decode($request->lineas_registros);
         $total_factura = $this->get_total_factura_from_arr_lineas_registros($lineas_registros);
-        if (is_array($lineas_registros)) {
-            (new InvoicingService())->normalizar_cambio_efectivo_request($request, $lineas_registros);
-        }
-
-        if ((int)config('inventarios.manejar_platillos_con_contorno')) {
-            $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
-        }
-
         try {
+            if (is_array($lineas_registros)) {
+                (new InvoicingService())->normalizar_cambio_efectivo_request($request, $lineas_registros);
+            }
+
+            if ((int)config('inventarios.manejar_platillos_con_contorno')) {
+                $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
+            }
+
             (new InvoicingService())->validar_lineas_registros_pos($lineas_registros, $request);
         } catch (\InvalidArgumentException $e) {
             return response()->json([

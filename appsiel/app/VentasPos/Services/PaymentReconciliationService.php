@@ -5,6 +5,120 @@ namespace App\VentasPos\Services;
 class PaymentReconciliationService
 {
     /**
+     * Ajusta las lineas marcadas con un motivo de recargo para que su suma sea
+     * exactamente el valor calculado. El excedente conserva medio de recaudo y
+     * destino, pero vuelve al motivo normal de venta.
+     */
+    public function normalizar_lineas_recargo($lineas_json, $valor_recargo, $motivo_recargo_id, $motivo_recargo_label, $motivo_default_id, $motivo_default_label, $tolerancia = 0.01)
+    {
+        $resultado = [
+            'lineas_json' => $lineas_json,
+            'normalizado' => false,
+            'valor_recargo' => 0.0,
+            'total_recaudos' => 0.0
+        ];
+
+        $lineas = json_decode((string)$lineas_json, true);
+        $motivo_recargo_id = (int)$motivo_recargo_id;
+        $motivo_default_id = (int)$motivo_default_id;
+        $valor_recargo = round((float)$valor_recargo, 2);
+        if (!is_array($lineas) || empty($lineas) || $motivo_recargo_id <= 0 || $motivo_default_id <= 0 || $valor_recargo < 0) {
+            return $resultado;
+        }
+
+        $total_recaudos = $this->sumar_recaudos($lineas);
+        $total_recargo_actual = 0.0;
+        foreach ($lineas as $linea) {
+            if ($this->get_motivo_id($linea) === $motivo_recargo_id) {
+                $total_recargo_actual += $this->parsear_valor(isset($linea['valor']) ? $linea['valor'] : 0);
+            }
+        }
+        $total_recargo_actual = round($total_recargo_actual, 2);
+
+        // No se agrega un recargo que no venia seleccionado en el recaudo.
+        if ($total_recargo_actual <= (float)$tolerancia) {
+            return $resultado;
+        }
+
+        if (abs($total_recargo_actual - $valor_recargo) <= (float)$tolerancia) {
+            $resultado['valor_recargo'] = $total_recargo_actual;
+            $resultado['total_recaudos'] = $total_recaudos;
+            return $resultado;
+        }
+
+        $normalizadas = [];
+        $pendiente_recargo = $valor_recargo;
+
+        // Primero reduce lineas de recargo sobredimensionadas y devuelve el
+        // excedente a ventas sin cambiar caja, banco ni medio de recaudo.
+        foreach ($lineas as $linea) {
+            if ($this->get_motivo_id($linea) !== $motivo_recargo_id) {
+                $normalizadas[] = $linea;
+                continue;
+            }
+
+            $valor_linea = $this->parsear_valor(isset($linea['valor']) ? $linea['valor'] : 0);
+            $valor_aplicado = min($valor_linea, max(0, $pendiente_recargo));
+            $valor_excedente = round($valor_linea - $valor_aplicado, 2);
+            $pendiente_recargo = round($pendiente_recargo - $valor_aplicado, 2);
+
+            if ($valor_excedente > (float)$tolerancia) {
+                $linea_venta = $linea;
+                $linea_venta['teso_motivo_id'] = $motivo_default_id . '-' . $motivo_default_label;
+                $linea_venta['valor'] = $this->formatear_valor($valor_excedente);
+                $normalizadas[] = $linea_venta;
+            }
+
+            if ($valor_aplicado > (float)$tolerancia) {
+                $linea['teso_motivo_id'] = $motivo_recargo_id . '-' . $motivo_recargo_label;
+                $linea['valor'] = $this->formatear_valor($valor_aplicado);
+                $normalizadas[] = $linea;
+            }
+        }
+
+        // Si las lineas marcadas eran menores al recargo, toma la diferencia
+        // de lineas normales conservando el mismo destino del recaudo.
+        if ($pendiente_recargo > (float)$tolerancia) {
+            for ($index = count($normalizadas) - 1; $index >= 0 && $pendiente_recargo > (float)$tolerancia; $index--) {
+                if ($this->get_motivo_id($normalizadas[$index]) === $motivo_recargo_id) {
+                    continue;
+                }
+
+                $valor_linea = $this->parsear_valor(isset($normalizadas[$index]['valor']) ? $normalizadas[$index]['valor'] : 0);
+                $valor_aplicado = min($valor_linea, $pendiente_recargo);
+                if ($valor_aplicado <= (float)$tolerancia) {
+                    continue;
+                }
+
+                $linea_recargo = $normalizadas[$index];
+                $linea_recargo['teso_motivo_id'] = $motivo_recargo_id . '-' . $motivo_recargo_label;
+                $linea_recargo['valor'] = $this->formatear_valor($valor_aplicado);
+                $nuevo_valor = round($valor_linea - $valor_aplicado, 2);
+                $pendiente_recargo = round($pendiente_recargo - $valor_aplicado, 2);
+
+                if ($nuevo_valor <= (float)$tolerancia) {
+                    array_splice($normalizadas, $index, 1, [$linea_recargo]);
+                } else {
+                    $normalizadas[$index]['valor'] = $this->formatear_valor($nuevo_valor);
+                    array_splice($normalizadas, $index + 1, 0, [$linea_recargo]);
+                }
+            }
+        }
+
+        // Nunca deja una correccion parcial.
+        if ($pendiente_recargo > (float)$tolerancia) {
+            return $resultado;
+        }
+
+        $resultado['lineas_json'] = json_encode(array_values($normalizadas));
+        $resultado['normalizado'] = true;
+        $resultado['valor_recargo'] = $valor_recargo;
+        $resultado['total_recaudos'] = $total_recaudos;
+
+        return $resultado;
+    }
+
+    /**
      * Reconstruye una linea unica que fue guardada completa con el motivo de
      * un recargo porcentual. Ese formato es ambiguo y hace que todo el recaudo
      * se contabilice como comision; el formato valido tiene venta + recargo.
@@ -242,6 +356,15 @@ class PaymentReconciliationService
         }
 
         return round($total, 2);
+    }
+
+    protected function get_motivo_id($linea)
+    {
+        if (!is_array($linea) || !isset($linea['teso_motivo_id'])) {
+            return 0;
+        }
+
+        return (int)explode('-', (string)$linea['teso_motivo_id'])[0];
     }
 
     public function parsear_valor($valor)
