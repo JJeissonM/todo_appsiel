@@ -33,7 +33,7 @@
                         <br/>
                         <b>Observaciones:</b> {{$registro->observaciones}}
                         <br/>
-                        <b>Responsable:</b> {{$user->name}}
+                        <b>Responsable:</b> {{$responsable}}
                         <br/>
                         <b>Fecha/Hora: &nbsp;&nbsp;</b> {{$registro->created_at}}
                         <br/>

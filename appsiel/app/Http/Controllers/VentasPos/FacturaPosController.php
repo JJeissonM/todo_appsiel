@@ -1473,6 +1473,14 @@ class FacturaPosController extends TransaccionController
      */
     public function store_registro_ingresos_gastos(Request $request)
     {
+        $pdv = Pdv::where('id', (int)$request->pdv_id)
+            ->where('core_empresa_id', Auth::user()->empresa_id)
+            ->first();
+
+        if (is_null($pdv)) {
+            return '<div class="alert alert-danger"><strong>Error:</strong> El punto de venta no existe o no pertenece a la empresa.</div>';
+        }
+
         $core_tercero_id = (int)$request->cliente_proveedor_id;
         if ($core_tercero_id <= 0) {
             $core_tercero_id = (int)$request->core_tercero_id;
@@ -1489,6 +1497,7 @@ class FacturaPosController extends TransaccionController
 
         // $this->datos es una variable de 
         $this->datos = $request->all();
+        $this->datos['pdv_id'] = $pdv->id;
         $this->datos['cliente_proveedor_id'] = $core_tercero_id;
         $this->datos['core_tercero_id'] = $core_tercero_id;
         $this->datos['descripcion'] = $request->detalle_operacion;

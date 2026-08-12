@@ -42,7 +42,7 @@
                                     <br/>
                                 </td>
                                 <td style="border: solid 1px #ddd;">
-                                    <b>Responsable:</b> {{$user->name}}
+                                    <b>Responsable:</b> {{$responsable}}
                                     <br/>
                                     <b>Fecha y Hora de Realización: &nbsp;&nbsp;</b> {{$registro->created_at}}
                                     <br/>
