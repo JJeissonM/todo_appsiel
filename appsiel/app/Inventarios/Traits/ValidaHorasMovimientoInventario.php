@@ -11,13 +11,16 @@ trait ValidaHorasMovimientoInventario
      * Valida solo cuando la implementacion envia horas. Si no las envia, no
      * agrega valores por defecto y se conserva el comportamiento por fecha.
      */
-    protected function validarYNormalizarHorasMovimiento(Request $request)
+    protected function validarYNormalizarHorasMovimiento(Request $request, $validarTurno = false)
     {
         $campos = ['hora_inicio', 'hora_finalizacion'];
         $datos = [];
 
         foreach ($campos as $campo) {
             if (!$request->has($campo)) {
+                if ($validarTurno) {
+                    $datos[$campo] = null;
+                }
                 continue;
             }
 
@@ -25,7 +28,7 @@ trait ValidaHorasMovimientoInventario
             $datos[$campo] = $valor === '' ? null : $valor;
         }
 
-        if (empty($datos)) {
+        if (empty($datos) && !$validarTurno) {
             return;
         }
 
@@ -43,12 +46,17 @@ trait ValidaHorasMovimientoInventario
             'hora_finalizacion.regex' => 'La hora de finalizacion debe tener el formato HH:MM o HH:MM:SS.'
         ]);
 
-        $validator->after(function ($validator) use ($datos) {
+        $validator->after(function ($validator) use ($datos, $validarTurno) {
+            if ($validarTurno && (empty($datos['hora_inicio']) || empty($datos['hora_finalizacion']))) {
+                $validator->errors()->add('hora_inicio', 'Debe registrar tanto la hora de apertura como la hora de cierre del Inventario Fisico.');
+                return;
+            }
+
             if (!empty($datos['hora_inicio']) && !empty($datos['hora_finalizacion'])) {
                 $inicio = $this->normalizarHoraMovimiento($datos['hora_inicio']);
                 $fin = $this->normalizarHoraMovimiento($datos['hora_finalizacion']);
 
-                if ($fin < $inicio) {
+                if ($fin < $inicio && !$validarTurno) {
                     $validator->errors()->add('hora_finalizacion', 'La hora de finalizacion debe ser igual o posterior a la hora de inicio.');
                 }
             }

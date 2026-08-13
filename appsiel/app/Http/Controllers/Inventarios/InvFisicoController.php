@@ -132,7 +132,10 @@ class InvFisicoController extends TransaccionController
      */
     public function store(Request $request)
     {
-        $this->validarYNormalizarHorasMovimiento($request);
+        $this->validarYNormalizarHorasMovimiento(
+            $request,
+            (new \App\Inventarios\Services\InventoryPhysicalShiftService())->isEnabled()
+        );
 
         $lineas_registros = $this->preparar_array_lineas_registros( $request->movimiento );
         
@@ -300,6 +303,10 @@ class InvFisicoController extends TransaccionController
         $core_empresa_id = (int)$doc_encabezado->core_empresa_id;
         $hora_inicio = $doc_encabezado->hora_inicio;
         $hora_finalizacion = $doc_encabezado->hora_finalizacion;
+        $shift_service = new \App\Inventarios\Services\InventoryPhysicalShiftService();
+        $shift_range = $shift_service->isEnabled()
+            ? $shift_service->getRange($fecha, $hora_inicio, $hora_finalizacion)
+            : null;
 
         $lineas = InvDocRegistro::where('inv_doc_encabezado_id', $id)
                     ->orderBy('id')
@@ -324,6 +331,7 @@ class InvFisicoController extends TransaccionController
             return [
                 'fecha_desde' => $fecha,
                 'fecha_hasta' => $fecha,
+                'turno' => $shift_range,
                 'bodega' => null,
                 'items' => [],
                 'totales' => (object)[
@@ -348,10 +356,10 @@ class InvFisicoController extends TransaccionController
         // condicionar el saldo a que la cabecera siga existiendo: un movimiento
         // historico huerfano continua afectando la existencia de la bodega.
         $saldos_items = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
-                            ->where('inv_movimientos.fecha', '<', $fecha)
                             ->where('inv_movimientos.inv_bodega_id', $inv_bodega_id)
                             ->where('inv_movimientos.core_empresa_id', $core_empresa_id)
                             ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
+                            ->antesTurnoInventarioFisico($fecha, $hora_inicio, $hora_finalizacion)
                             ->select(
                                 'inv_productos.id AS item_id',
                                 DB::raw('sum(inv_movimientos.cantidad) as cantidad_total_movimiento')
@@ -365,7 +373,7 @@ class InvFisicoController extends TransaccionController
                             ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
                             ->where('inv_movimientos.inv_bodega_id', $inv_bodega_id)
                             ->where('inv_movimientos.core_empresa_id', $core_empresa_id)
-                            ->entreFechasHoras($fecha, $fecha, $hora_inicio, $hora_finalizacion)
+                            ->duranteTurnoInventarioFisico($fecha, $hora_inicio, $hora_finalizacion)
                             ->where('inv_motivos.movimiento', 'entrada')
                             ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
                             ->select(
@@ -383,7 +391,7 @@ class InvFisicoController extends TransaccionController
                             ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
                             ->where('inv_movimientos.inv_bodega_id', $inv_bodega_id)
                             ->where('inv_movimientos.core_empresa_id', $core_empresa_id)
-                            ->entreFechasHoras($fecha, $fecha, $hora_inicio, $hora_finalizacion)
+                            ->duranteTurnoInventarioFisico($fecha, $hora_inicio, $hora_finalizacion)
                             ->where('inv_motivos.movimiento', 'salida')
                             ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
                             ->select(
@@ -509,7 +517,8 @@ class InvFisicoController extends TransaccionController
 
         return [
             'fecha_desde' => $fecha,
-            'fecha_hasta' => $fecha,
+            'fecha_hasta' => is_null($shift_range) ? $fecha : $shift_range['closing_date'],
+            'turno' => $shift_range,
             'bodega' => $bodega,
             'items' => $filas,
             'totales' => $totales,
@@ -557,7 +566,7 @@ class InvFisicoController extends TransaccionController
 
         foreach ($doc_registros as $fila)
         {
-            $fila->cantidad_sistema = InvMovimiento::get_existencia_producto($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha, $doc_encabezado->hora_inicio, $doc_encabezado->hora_finalizacion)->Cantidad;
+            $fila->cantidad_sistema = InvMovimiento::get_existencia_producto($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha, $doc_encabezado->hora_inicio, $doc_encabezado->hora_finalizacion, true)->Cantidad;
             $fila->costo_prom_sistema = InvCostoPromProducto::get_costo_promedio( $fila->inv_bodega_id, $fila->producto_id  );
         }
 
@@ -778,7 +787,10 @@ class InvFisicoController extends TransaccionController
      */
     public function update(Request $request, $id)
     {
-        $this->validarYNormalizarHorasMovimiento($request);
+        $this->validarYNormalizarHorasMovimiento(
+            $request,
+            (new \App\Inventarios\Services\InventoryPhysicalShiftService())->isEnabled()
+        );
 
         if ( $this->tiene_ajuste_asociado($id) )
         {
@@ -982,7 +994,7 @@ class InvFisicoController extends TransaccionController
         {
             $fecha_corte = \Carbon\Carbon::parse( $fecha_corte )->format('Y-m-d');
             $existencias = InvMovimiento::where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                                ->hastaFechaHora($fecha_corte, $hora_inicio, $hora_finalizacion)
+                                ->hastaCierreTurnoInventarioFisico($fecha_corte, $hora_inicio, $hora_finalizacion)
                                 ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
                                 ->whereIn('inv_movimientos.inv_bodega_id', $bodega_ids)
                                 ->select(
@@ -1332,17 +1344,21 @@ class InvFisicoController extends TransaccionController
 
         $ventas_platillos_query = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
                             ->where('vtas_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                            ->where('vtas_movimientos.fecha', $doc_inv_fisico->fecha)
                             ->where('inv_productos.inv_grupo_id', (int)$cocina->grupo_inventarios_id)
                             ->where('vtas_movimientos.estado', '<>', 'Anulado');
 
         // vtas_movimientos no posee columnas de hora; created_at es la marca temporal real.
-        // Si el IF historico no tiene horas, se conserva la consulta completa por fecha.
-        if ($doc_inv_fisico->hora_inicio && $doc_inv_fisico->hora_finalizacion) {
-            $ventas_platillos_query->whereBetween('vtas_movimientos.created_at', [
-                $doc_inv_fisico->fecha . ' ' . $doc_inv_fisico->hora_inicio,
-                $doc_inv_fisico->fecha . ' ' . $doc_inv_fisico->hora_finalizacion
-            ]);
+        // Con la modalidad inactiva o sin horas se conserva la consulta por fecha.
+        $shift_service = new \App\Inventarios\Services\InventoryPhysicalShiftService();
+        $shift_range = $shift_service->isEnabled()
+            ? $shift_service->getRange($doc_inv_fisico->fecha, $doc_inv_fisico->hora_inicio, $doc_inv_fisico->hora_finalizacion)
+            : null;
+
+        if (!is_null($shift_range)) {
+            $ventas_platillos_query->whereBetween('vtas_movimientos.fecha', [$shift_range['opening_date'], $shift_range['closing_date']])
+                ->whereBetween('vtas_movimientos.created_at', [$shift_range['opening_at'], $shift_range['closing_at']]);
+        } else {
+            $ventas_platillos_query->where('vtas_movimientos.fecha', $doc_inv_fisico->fecha);
         }
 
         $ventas_platillos = $ventas_platillos_query

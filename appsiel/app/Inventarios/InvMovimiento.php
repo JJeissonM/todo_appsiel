@@ -5,6 +5,7 @@ namespace App\Inventarios;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Inventarios\InvMotivo;
+use App\Inventarios\Services\InventoryPhysicalShiftService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -107,6 +108,68 @@ class InvMovimiento extends Model
                 $query->where('inv_movimientos.fecha', '=', $fechaFinal);
                 self::aplicarHorasAlQuery($query, null, $horaFinalizacion);
             });
+        });
+    }
+
+    /**
+     * Movimientos que ocurrieron durante la apertura y cierre de un Inventario
+     * Fisico. Replica el criterio del arqueo de caja usando created_at.
+     */
+    public function scopeDuranteTurnoInventarioFisico($query, $fecha, $horaInicio = null, $horaFinalizacion = null)
+    {
+        $shiftService = new InventoryPhysicalShiftService();
+        $range = $shiftService->isEnabled()
+            ? $shiftService->getRange($fecha, $horaInicio, $horaFinalizacion)
+            : null;
+
+        if (is_null($range)) {
+            return $query->entreFechasHoras($fecha, $fecha, null, null);
+        }
+
+        return $query->whereBetween('inv_movimientos.fecha', [$range['opening_date'], $range['closing_date']])
+            ->whereBetween('inv_movimientos.created_at', [$range['opening_at'], $range['closing_at']]);
+    }
+
+    /** Saldo existente inmediatamente antes de abrir el turno. */
+    public function scopeAntesTurnoInventarioFisico($query, $fecha, $horaInicio = null, $horaFinalizacion = null)
+    {
+        $shiftService = new InventoryPhysicalShiftService();
+        $range = $shiftService->isEnabled()
+            ? $shiftService->getRange($fecha, $horaInicio, $horaFinalizacion)
+            : null;
+
+        if (is_null($range)) {
+            $fecha = \Carbon\Carbon::parse($fecha)->format('Y-m-d');
+            return $query->where('inv_movimientos.fecha', '<', $fecha);
+        }
+
+        return $query->where(function ($query) use ($range) {
+            $query->where('inv_movimientos.fecha', '<', $range['opening_date'])
+                ->orWhere(function ($query) use ($range) {
+                    $query->where('inv_movimientos.fecha', '=', $range['opening_date'])
+                        ->where('inv_movimientos.created_at', '<', $range['opening_at']);
+                });
+        });
+    }
+
+    /** Existencia acumulada hasta el cierre del turno. */
+    public function scopeHastaCierreTurnoInventarioFisico($query, $fecha, $horaInicio = null, $horaFinalizacion = null)
+    {
+        $shiftService = new InventoryPhysicalShiftService();
+        $range = $shiftService->isEnabled()
+            ? $shiftService->getRange($fecha, $horaInicio, $horaFinalizacion)
+            : null;
+
+        if (is_null($range)) {
+            return $query->hastaFechaHora($fecha, null, null);
+        }
+
+        return $query->where(function ($query) use ($range) {
+            $query->where('inv_movimientos.fecha', '<', $range['opening_date'])
+                ->orWhere(function ($query) use ($range) {
+                    $query->whereBetween('inv_movimientos.fecha', [$range['opening_date'], $range['closing_date']])
+                        ->where('inv_movimientos.created_at', '<=', $range['closing_at']);
+                });
         });
     }
 
@@ -540,7 +603,7 @@ class InvMovimiento extends Model
                             ->get();
     }
 
-    public static function get_existencia_producto($producto_id, $bodega_id, $fecha_corte, $hora_inicio = null, $hora_finalizacion = null)
+    public static function get_existencia_producto($producto_id, $bodega_id, $fecha_corte, $hora_inicio = null, $hora_finalizacion = null, $usarCierreTurnoInventarioFisico = false)
     {
         $fecha_corte = \Carbon\Carbon::parse( $fecha_corte )->format('Y-m-d');
 
@@ -556,9 +619,15 @@ class InvMovimiento extends Model
             ]);
         }
 
-        return InvMovimiento::where( $array_wheres )
-                    ->hastaFechaHora($fecha_corte, $hora_inicio, $hora_finalizacion)
-                    ->select( 
+        $query = InvMovimiento::where( $array_wheres );
+
+        if ($usarCierreTurnoInventarioFisico) {
+            $query->hastaCierreTurnoInventarioFisico($fecha_corte, $hora_inicio, $hora_finalizacion);
+        } else {
+            $query->hastaFechaHora($fecha_corte, $hora_inicio, $hora_finalizacion);
+        }
+
+        return $query->select(
                             DB::raw('sum(inv_movimientos.cantidad) as Cantidad'),
                             DB::raw('sum(inv_movimientos.costo_total) as Costo')
                         )
