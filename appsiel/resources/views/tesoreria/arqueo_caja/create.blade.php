@@ -64,7 +64,7 @@
 
         <br><br>
 
-        @if( !$user->hasPermissionTo('vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja') )
+        @if( !\App\Tesoreria\ArqueoCaja::usuario_tiene_bloqueo_movimientos_sistema($user) )
             @include('tesoreria.arqueo_caja.seccion_movimientos_del_sistema')
         @endif
 
