@@ -40,7 +40,9 @@ class TesoMovimiento extends Model
             $pdv_id = PdvResolver::resolveFromArray($model->getAttributes());
             $model->pdv_id = $pdv_id;
 
-            self::asignarCreatedAtDelUltimoCierre($model);
+            if ( !$model->isDirty('created_at') ) {
+                $model->sincronizarCreatedAtConUltimoCierre();
+            }
         });
 
         static::updating(function ($model) {
@@ -48,7 +50,7 @@ class TesoMovimiento extends Model
                 return;
             }
 
-            self::asignarCreatedAtDelUltimoCierre($model);
+            $model->sincronizarCreatedAtConUltimoCierre();
         });
     }
 
@@ -56,13 +58,13 @@ class TesoMovimiento extends Model
      * Ubica el movimiento dentro del ultimo cierre del PDV para su fecha contable.
      * Si no existe un cierre, Eloquent conserva el created_at normal del movimiento.
      */
-    protected static function asignarCreatedAtDelUltimoCierre($model)
+    public function sincronizarCreatedAtConUltimoCierre()
     {
-        $pdv_id = PdvResolver::normalize($model->pdv_id);
-        $fecha = substr(trim((string)$model->fecha), 0, 10);
+        $pdv_id = PdvResolver::normalize($this->pdv_id);
+        $fecha = substr(trim((string)$this->fecha), 0, 10);
 
         if ( is_null($pdv_id) || $fecha == '' ) {
-            return;
+            return $this;
         }
 
         $created_at_cierre = CierreEncabezado::where('pdv_id', $pdv_id)
@@ -72,8 +74,10 @@ class TesoMovimiento extends Model
             ->value('created_at');
 
         if ( !is_null($created_at_cierre) ) {
-            $model->created_at = $created_at_cierre;
+            $this->created_at = $created_at_cierre;
         }
+
+        return $this;
     }
     
     public function tipo_transaccion()
