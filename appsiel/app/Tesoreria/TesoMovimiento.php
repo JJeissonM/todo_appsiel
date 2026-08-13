@@ -24,7 +24,7 @@ class TesoMovimiento extends Model
 
     protected $fillable = ['fecha', 'core_empresa_id', 'core_tercero_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'teso_medio_recaudo_id', 'teso_motivo_id', 'teso_caja_id', 'teso_cuenta_bancaria_id', 'pdv_id', 'valor_movimiento', 'documento_soporte', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'codigo_referencia_tercero'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Caja/Banco', 'Tercero', 'Motivo', 'Valor movimiento', 'Detalle'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Caja/Banco', 'Tercero', 'Motivo', 'Valor movimiento', 'Detalle','F. creación'];
 
     public $vistas = '{"index":"layouts.index3"}';
 
@@ -238,7 +238,8 @@ class TesoMovimiento extends Model
                 'teso_motivos.descripcion AS campo5',
                 'teso_movimientos.valor_movimiento AS campo6',
                 'teso_movimientos.descripcion AS campo7',
-                'teso_movimientos.id AS campo8'
+                'teso_movimientos.created_at AS campo8',
+                'teso_movimientos.id AS campo9'
             )
             ->where("teso_movimientos.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo)'), "LIKE", "%$search%")
@@ -308,7 +309,8 @@ class TesoMovimiento extends Model
                 'teso_motivos.descripcion AS campo5',
                 'teso_movimientos.valor_movimiento AS campo6',
                 'teso_movimientos.descripcion AS campo7',
-                'teso_movimientos.id AS campo8'
+                'teso_movimientos.created_at AS campo8',
+                'teso_movimientos.id AS campo9'
             )
             ->where("teso_movimientos.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo)'), "LIKE", "%$search%")

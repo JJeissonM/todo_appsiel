@@ -6,14 +6,12 @@ use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Traits\FiltraRegistrosPorUsuario;
-use App\VentasPos\Pdv;
 
 use App\Contabilidad\ContabMovimiento;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class TesoDocEncabezadoTraslado extends TesoDocEncabezado
 {
@@ -28,28 +26,32 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
 
     public $vistas = '{"create":"tesoreria.traslados_efectivo.create"}';
 
-    protected static function boot()
+    /**
+     * Valida el PDV antes de crear el traslado mediante el CRUD genérico.
+     * Compatible con el mecanismo de validación de Laravel 5.2.
+     */
+    public function validar_datos_creacion($request, $controller)
     {
-        parent::boot();
+        if (!self::punto_venta_es_requerido($request)) {
+            return;
+        }
 
-        static::creating(function () {
-            if (!self::punto_venta_es_requerido()) {
-                return;
-            }
-
-            $pdv_id = (int) request('pdv_id', 0);
-
-            if ($pdv_id <= 0 || !Pdv::where('id', $pdv_id)->exists()) {
-                throw ValidationException::withMessages([
-                    'pdv_id' => 'El campo Punto de Ventas es obligatorio.'
-                ]);
-            }
-        });
+        $controller->validate($request, [
+            'pdv_id' => 'required|integer|min:1|exists:vtas_pos_puntos_de_ventas,id'
+        ], [
+            'pdv_id.required' => 'El campo Punto de Ventas es obligatorio.',
+            'pdv_id.integer' => 'El Punto de Ventas seleccionado no es válido.',
+            'pdv_id.min' => 'El Punto de Ventas seleccionado no es válido.',
+            'pdv_id.exists' => 'El Punto de Ventas seleccionado no existe.'
+        ]);
     }
 
-    protected static function punto_venta_es_requerido()
+    protected static function punto_venta_es_requerido($request)
     {
-        $modelo_id = (int) request('url_id_modelo', request('id_modelo', 0));
+        $modelo_id = (int)$request->input(
+            'url_id_modelo',
+            $request->input('id_modelo', 0)
+        );
 
         if ($modelo_id <= 0) {
             return false;
