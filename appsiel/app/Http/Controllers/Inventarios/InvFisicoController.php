@@ -344,9 +344,11 @@ class InvFisicoController extends TransaccionController
         $items = InvProducto::whereIn('id', $item_ids)->get()->keyBy('id');
         $bodega = DB::table('inv_bodegas')->where('id', $inv_bodega_id)->first();
 
+        // El kardex tiene como fuente de verdad a inv_movimientos. No se debe
+        // condicionar el saldo a que la cabecera siga existiendo: un movimiento
+        // historico huerfano continua afectando la existencia de la bodega.
         $saldos_items = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
-                            ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
-                            ->where('inv_doc_encabezados.fecha', '<', $fecha)
+                            ->where('inv_movimientos.fecha', '<', $fecha)
                             ->where('inv_movimientos.inv_bodega_id', $inv_bodega_id)
                             ->where('inv_movimientos.core_empresa_id', $core_empresa_id)
                             ->whereIn('inv_movimientos.inv_producto_id', $item_ids)

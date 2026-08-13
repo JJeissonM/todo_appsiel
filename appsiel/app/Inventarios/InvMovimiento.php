@@ -364,8 +364,8 @@ class InvMovimiento extends Model
 
     public static function get_saldos_iniciales_items( $grupo_inventario_id, $inv_bodega_id, $fecha_inicial )
     {
-        $array_wheres = [ 
-                            [ 'inv_doc_encabezados.fecha' ,'<', $fecha_inicial]
+        $array_wheres = [
+                            [ 'inv_movimientos.fecha' ,'<', $fecha_inicial]
                         ];
 
         if ( $grupo_inventario_id != '')
@@ -379,7 +379,6 @@ class InvMovimiento extends Model
         }
         
         return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
-                            ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                             ->where( $array_wheres )
                             ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                             ->select(
