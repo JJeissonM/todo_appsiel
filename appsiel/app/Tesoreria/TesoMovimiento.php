@@ -525,13 +525,89 @@ class TesoMovimiento extends Model
         return (int)$teso_caja_id == 0 || (int)$teso_caja_id == (int)$pdv->caja_default_id;
     }
 
-    public static function get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres, $user_id = 0, $pdv_id = 0, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0 )
+    public static function aplicarFiltroEntreFechasHoras($query, $fecha_desde, $fecha_hasta, $hora_desde = null, $hora_hasta = null)
+    {
+        $hora_desde = self::normalizarHora($hora_desde);
+        $hora_hasta = self::normalizarHora($hora_hasta, true);
+
+        if (is_null($hora_desde) && is_null($hora_hasta)) {
+            return $query->whereBetween('teso_movimientos.fecha', [$fecha_desde, $fecha_hasta]);
+        }
+
+        return $query->where(function ($query) use ($fecha_desde, $fecha_hasta, $hora_desde, $hora_hasta) {
+            if ($fecha_desde == $fecha_hasta) {
+                $query->where('teso_movimientos.fecha', $fecha_desde);
+                self::aplicarHorasCreatedAt($query, $hora_desde, $hora_hasta);
+                return;
+            }
+
+            $query->where(function ($query) use ($fecha_desde, $hora_desde) {
+                $query->where('teso_movimientos.fecha', $fecha_desde);
+                self::aplicarHorasCreatedAt($query, $hora_desde, null);
+            })->orWhere(function ($query) use ($fecha_desde, $fecha_hasta) {
+                $query->where('teso_movimientos.fecha', '>', $fecha_desde)
+                    ->where('teso_movimientos.fecha', '<', $fecha_hasta);
+            })->orWhere(function ($query) use ($fecha_hasta, $hora_hasta) {
+                $query->where('teso_movimientos.fecha', $fecha_hasta);
+                self::aplicarHorasCreatedAt($query, null, $hora_hasta);
+            });
+        });
+    }
+
+    public static function aplicarFiltroAntesDeFechaHora($query, $fecha_desde, $hora_desde = null)
+    {
+        $hora_desde = self::normalizarHora($hora_desde);
+
+        if (is_null($hora_desde)) {
+            return $query->where('teso_movimientos.fecha', '<', $fecha_desde);
+        }
+
+        return $query->where(function ($query) use ($fecha_desde, $hora_desde) {
+            $query->where('teso_movimientos.fecha', '<', $fecha_desde)
+                ->orWhere(function ($query) use ($fecha_desde, $hora_desde) {
+                    $query->where('teso_movimientos.fecha', $fecha_desde)
+                        ->whereTime('teso_movimientos.created_at', '<', $hora_desde);
+                });
+        });
+    }
+
+    protected static function aplicarHorasCreatedAt($query, $hora_desde, $hora_hasta)
+    {
+        if (!is_null($hora_desde)) {
+            $query->whereTime('teso_movimientos.created_at', '>=', $hora_desde);
+        }
+
+        if (!is_null($hora_hasta)) {
+            $query->whereTime('teso_movimientos.created_at', '<=', $hora_hasta);
+        }
+    }
+
+    public static function normalizarHora($hora, $es_hora_hasta = false)
+    {
+        if (is_null($hora) || trim((string)$hora) == '') {
+            return null;
+        }
+
+        $hora = trim((string)$hora);
+        if (preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $hora)) {
+            return $hora . ($es_hora_hasta ? ':59' : ':00');
+        }
+
+        if (preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/', $hora)) {
+            return $hora;
+        }
+
+        return null;
+    }
+
+    public static function get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres, $user_id = 0, $pdv_id = 0, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0, $hora_desde = null, $hora_hasta = null )
     {
         $query = TesoMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_movimientos.core_tipo_doc_app_id')
                                 ->leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
                                 ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_movimientos.core_tercero_id')
-                                ->whereBetween('teso_movimientos.fecha', [$fecha_desde, $fecha_hasta])
                                 ->where( $array_wheres );
+
+        self::aplicarFiltroEntreFechasHoras($query, $fecha_desde, $fecha_hasta, $hora_desde, $hora_hasta);
 
         self::aplicarFiltroPdv($query, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id);
 
@@ -581,10 +657,11 @@ class TesoMovimiento extends Model
         return !self::usuarioTieneRolPrivilegiado($user, self::rolesSinFiltro());
     }
 
-    public static function get_saldo_inicial2( $fecha_desde, $array_wheres, $user_id = 0, $pdv_id = 0, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0 )
+    public static function get_saldo_inicial2( $fecha_desde, $array_wheres, $user_id = 0, $pdv_id = 0, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0, $hora_desde = null )
     {
-        $query = TesoMovimiento::where( $array_wheres )
-                            ->where( 'teso_movimientos.fecha', '<', $fecha_desde );
+        $query = TesoMovimiento::where( $array_wheres );
+
+        self::aplicarFiltroAntesDeFechaHora($query, $fecha_desde, $hora_desde);
 
         self::aplicarFiltroPdv($query, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id);
 

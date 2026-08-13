@@ -875,3 +875,5 @@ WHERE `roles`.`name` IN ('SuperAdmin', 'Administrador')
 
 
 ALTER TABLE `nom_conceptos` CHANGE `cpto_dian_id` `cpto_dian_id` INT(10) UNSIGNED NULL DEFAULT NULL;
+
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES (NULL, 'Hora desde', 'time', 'hora_desde', '', 'null', '', '', '0', '1', '0', '2026-08-13 04:34:27', NULL), (NULL, 'Hora hasta', 'time', 'hora_hasta', '', 'null', '', '', '0', '1', '0', '2026-08-13 04:34:27', NULL);
