@@ -4,6 +4,8 @@
     <?php 
         $valor_base = $registro->base;
         $pdv_id_arqueo = isset($registro->pdv_id) ? (int)$registro->pdv_id : 0;
+        $pdv_arqueo = $pdv_id_arqueo > 0 ? \App\VentasPos\Pdv::find($pdv_id_arqueo) : null;
+        $pdv_descripcion_arqueo = is_null($pdv_arqueo) ? '' : $pdv_arqueo->descripcion;
         $fecha_hora_apertura_arqueo = isset($registro->fecha_hora_apertura) ? $registro->fecha_hora_apertura : '';
         $fecha_hora_cierre_arqueo = isset($registro->fecha_hora_cierre) ? $registro->fecha_hora_cierre : '';
 
@@ -20,8 +22,28 @@
     <div class="container-fluid">
         <input type="hidden" id="creado_por_arqueo" value="{{ $registro->creado_por }}">
         <input type="hidden" id="pdv_id" name="pdv_id" value="{{ $pdv_id_arqueo }}">
-        <input type="hidden" id="fecha_hora_apertura" name="fecha_hora_apertura" value="{{ $fecha_hora_apertura_arqueo }}">
-        <input type="hidden" id="fecha_hora_cierre" name="fecha_hora_cierre" value="{{ $fecha_hora_cierre_arqueo }}">
+
+        <div class="form-group" style="margin-top: 20px;">
+            <label>PDV:</label>
+            <div id="pdv_descripcion" class="form-control" style="background-color: #f5f5f5;">{{ $pdv_descripcion_arqueo }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label for="fecha_hora_apertura">Fecha y hora de apertura:</label>
+                <input type="datetime-local" id="fecha_hora_apertura" name="fecha_hora_apertura" class="form-control" step="1"
+                       value="{{ $fecha_hora_apertura_arqueo == '' ? '' : str_replace(' ', 'T', substr($fecha_hora_apertura_arqueo, 0, 19)) }}">
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="fecha_hora_cierre">Fecha y hora de cierre:</label>
+                <input type="datetime-local" id="fecha_hora_cierre" name="fecha_hora_cierre" class="form-control" step="1"
+                       value="{{ $fecha_hora_cierre_arqueo == '' ? '' : str_replace(' ', 'T', substr($fecha_hora_cierre_arqueo, 0, 19)) }}">
+            </div>
+        </div>
+
+        <div id="rango_pdv_mensaje" class="alert alert-warning" style="{{ $fecha_hora_apertura_arqueo != '' && $fecha_hora_cierre_arqueo != '' ? 'display: none;' : '' }}">
+            Complete el rango de apertura y cierre, o déjelo vacío para consultar el día completo.
+        </div>
         
         <h4><i class="fa fa-money"></i> Saldo inicial:</h4>
         <input type="number" id="base" min="0" autocomplete="off" class="form-control" name="base" placeholder="$" value="{{$valor_base}}" required="required" style="width: 200px; text-align: right;">
@@ -189,8 +211,18 @@
 
             $('#teso_caja_id').on('change', function () {
                 $('#pdv_id').val('');
+                $('#pdv_descripcion').text('');
                 $('#fecha_hora_apertura').val('');
                 $('#fecha_hora_cierre').val('');
+                actualizarMensajeRango();
+            });
+
+            $('#fecha_hora_apertura, #fecha_hora_cierre').on('change', function () {
+                actualizarMensajeRango();
+            });
+
+            $('form').on('submit', function () {
+                return validarRangoFechaHora();
             });
 
             // PARA BILLETES
@@ -278,6 +310,34 @@
                 }
 
                 return valor;
+            }
+
+            function actualizarMensajeRango() {
+                var apertura = valorFechaHoraArqueo('#fecha_hora_apertura');
+                var cierre = valorFechaHoraArqueo('#fecha_hora_cierre');
+                $('#rango_pdv_mensaje').toggle(apertura === '' || cierre === '');
+            }
+
+            function validarRangoFechaHora() {
+                var apertura = valorFechaHoraArqueo('#fecha_hora_apertura');
+                var cierre = valorFechaHoraArqueo('#fecha_hora_cierre');
+
+                if ((apertura === '') !== (cierre === '')) {
+                    alert('Debe ingresar tanto la fecha y hora de apertura como la de cierre.');
+                    return false;
+                }
+
+                if (apertura !== '' && apertura.substring(0, 10) !== $('#fecha').val()) {
+                    alert('La apertura debe pertenecer a la fecha seleccionada para el arqueo.');
+                    return false;
+                }
+
+                if (apertura !== '' && cierre < apertura) {
+                    alert('La fecha y hora de cierre no puede ser anterior a la apertura.');
+                    return false;
+                }
+
+                return true;
             }
 
             function obtenerMensajeErrorAjax(xhr, fallback) {
