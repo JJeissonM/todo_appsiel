@@ -5,7 +5,7 @@ namespace App\Sistema;
 use Illuminate\Database\Eloquent\Model;
 
 use DB;
-use Input;
+use View;
 
 class Reporte extends Model
 {
@@ -66,41 +66,32 @@ class Reporte extends Model
     */
     public static function get_tabla($registro_modelo_padre, $registros_asignados)
     {
-        $tabla = '<div class="table-responsive">
-                <table class="table table-bordered table-striped" id="myTable">
-                    <thead>';
         $encabezado_tabla = ['Orden', 'ID', 'Tipo', 'Name', 'Descripción', 'Opciones', 'Valor', 'Atributos', 'Requerido', 'Editable', 'Único', 'Acción'];
-        for ($i = 0; $i < count($encabezado_tabla); $i++) {
-            $tabla .= '<th>' . $encabezado_tabla[$i] . '</th>';
-        }
-        $tabla .= '</thead>
-                    <tbody>';
+
+        $registros = [];
+        $i = 0;
         foreach ($registros_asignados as $fila) {
             $orden = DB::table('sys_reporte_tiene_campos')->where('core_campo_id', '=', $fila['id'])
                 ->where('core_reporte_id', '=', $registro_modelo_padre->id)
                 ->value('orden');
 
-            $tabla .= '<tr>';
-            $tabla .= '<td>' . $orden . '</td>';
-            $tabla .= '<td>' . $fila['id'] . '</td>';
-            $tabla .= '<td>' . $fila['tipo'] . '</td>';
-            $tabla .= '<td>' . $fila['name'] . '</td>';
-            $tabla .= '<td>' . $fila['descripcion'] . '</td>';
-            $tabla .= '<td>' . $fila['opciones'] . '</td>';
-            $tabla .= '<td>' . $fila['value'] . '</td>';
-            $tabla .= '<td>' . $fila['atributos'] . '</td>';
-            $tabla .= '<td>' . $fila['requerido'] . '</td>';
-            $tabla .= '<td>' . $fila['editable'] . '</td>';
-            $tabla .= '<td>' . $fila['unico'] . '</td>';
-            $tabla .= '<td>
-                                        <a class="btn btn-danger btn-sm" href="' . url('web/eliminar_asignacion/registro_modelo_hijo_id/' . $fila['id'] . '/registro_modelo_padre_id/' . $registro_modelo_padre->id . '/id_app/' . Input::get('id') . '/id_modelo_padre/' . Input::get('id_modelo')) . '"><i class="fa fa-btn fa-trash"></i> </a>
-                                        </td>
-                            </tr>';
+            $registros[$i] = collect([
+                $orden,
+                $fila['id'],
+                $fila['tipo'],
+                $fila['name'],
+                $fila['descripcion'],
+                $fila['opciones'],
+                $fila['value'],
+                $fila['atributos'],
+                $fila['requerido'],
+                $fila['editable'],
+                $fila['unico']
+            ]);
+            $i++;
         }
-        $tabla .= '</tbody>
-                </table>
-            </div>';
-        return $tabla;
+
+        return View::make('core.modelos.tabla_modelo_relacionado', compact('encabezado_tabla', 'registros', 'registro_modelo_padre'))->render();
     }
 
     public static function get_opciones_modelo_relacionado($core_reporte_id)
