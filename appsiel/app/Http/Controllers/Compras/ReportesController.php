@@ -59,8 +59,6 @@ class ReportesController extends Controller
             $collection = null;
             $collection = collect($collection);
             foreach ($group as $key => $item) {
-                $aux = $item->pluck('saldo_pendiente');
-                
                 // Filtrar clase de proveedor
                 if ($clase_proveedor_id != '') {
                     $proveedor = Proveedor::where([
@@ -76,8 +74,17 @@ class ReportesController extends Controller
                 }
                 
                 $sum = 0;
+                $cantidad_movimientos_visibles = 0;
                 foreach ($item as $value)
                 {
+                    if ( $value['saldo_pendiente'] > -0.1 && $value['saldo_pendiente'] < 0.1 ) {
+                        continue;
+                    }
+
+                    if ( $value['estado'] == 'Pagado' ) {
+                        continue;
+                    }
+
                     if ( $movimiento_a_mostrar == 'cartera' && $value['valor_documento'] < 0 ) {
                         continue;
                     }
@@ -87,9 +94,15 @@ class ReportesController extends Controller
                     }
 
                     $sum += $value['saldo_pendiente'];
+                    $cantidad_movimientos_visibles++;
 
                     $collection[] = $value;
 
+                }
+
+                // No agregar subtotales para proveedores sin movimientos visibles.
+                if ( $cantidad_movimientos_visibles == 0 ) {
+                    continue;
                 }
 
                 $obj = ["id" => 0,
