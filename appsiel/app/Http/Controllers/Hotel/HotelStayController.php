@@ -51,7 +51,7 @@ class HotelStayController extends Controller
         $hotelService = new HotelService();
         $cancelBlockMessage = $hotelService->getCancelInvoiceBlockMessage($stay);
         $editBlockMessage = $hotelService->getEditDatesBlockMessage($stay);
-        $checkOutBlockMessage = $hotelService->getCheckOutOpenOrdersBlockMessage($stay);
+        $checkOutBlockMessage = $hotelService->getCheckOutBlockMessage($stay);
         $canCancelHotelOrder = $this->canCancelHotelOrder();
         $miga_pan = $this->breadcrumb('Estadia #' . $stay->id);
         return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'facturasCredito', 'saldoPedidos', 'saldoFacturasCredito', 'saldoAnticipos', 'saldoPendienteNeto', 'cancelBlockMessage', 'editBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'miga_pan'));

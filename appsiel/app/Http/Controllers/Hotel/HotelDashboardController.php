@@ -51,6 +51,15 @@ class HotelDashboardController extends Controller
         }
 
         $rooms = $dashboardEnabled ? $query->get() : collect();
+        if ($dashboardEnabled) {
+            $hotelService = new HotelService();
+            foreach ($rooms as $room) {
+                $activeStay = $room->activeStay->first();
+                if (!is_null($activeStay)) {
+                    $activeStay->check_out_block_message = $hotelService->getCheckOutBlockMessage($activeStay);
+                }
+            }
+        }
 
         $floors = $dashboardEnabled ? HotelRoom::where('empresa_id', $empresaId)
             ->whereNotNull('floor')
