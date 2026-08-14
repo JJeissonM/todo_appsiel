@@ -155,16 +155,20 @@ class CxpMovimiento extends Model
     return $movimiento_cxc;
   }
 
-  public static function get_documentos_tercero($core_tercero_id, $fecha)
+  public static function get_documentos_tercero($core_tercero_id, $fecha, $incluir_prestaciones_nomina = true)
   {
     $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",cxp_movimientos.consecutivo) AS documento';
 
-    return CxpMovimiento::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxp_movimientos.core_tercero_id')
+    $query = CxpMovimiento::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxp_movimientos.core_tercero_id')
       ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_movimientos.core_tipo_doc_app_id')
       ->where('cxp_movimientos.core_empresa_id', Auth::user()->empresa_id)
       ->where('cxp_movimientos.core_tercero_id', '=', $core_tercero_id)
       ->where('cxp_movimientos.saldo_pendiente', '<>', 0)
-      ->where('cxp_movimientos.fecha', '<=', $fecha)
+      ->where('cxp_movimientos.fecha', '<=', $fecha);
+
+    static::aplicarFiltroPrestacionesNomina($query, $incluir_prestaciones_nomina);
+
+    return $query
       ->select(
         'cxp_movimientos.id',
         'cxp_movimientos.core_tipo_transaccion_id',

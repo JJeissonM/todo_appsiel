@@ -529,8 +529,14 @@ class DocCruceController extends TransaccionController
     // AJAX Se obtiene la cartera positiva y negativa del tercero
     public function get_cartera_tercero($tercero_id, $fecha_doc)
     {
+      $incluir_prestaciones_nomina = (string)Input::get('incluir_prestaciones_nomina', '1') !== '0';
+
       // 1ro. Buscar documentos de cartera
-      $movimiento = CxpMovimiento::get_documentos_tercero($tercero_id, $fecha_doc);
+      $movimiento = CxpMovimiento::get_documentos_tercero(
+        $tercero_id,
+        $fecha_doc,
+        $incluir_prestaciones_nomina
+      );
 
       $view_1 = View::make('cxp.incluir.docs_cruce_cartera', compact('movimiento') );
 

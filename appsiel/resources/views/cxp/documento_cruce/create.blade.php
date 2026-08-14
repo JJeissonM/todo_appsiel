@@ -18,6 +18,21 @@
 
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsSelect(
+								'incluir_prestaciones_nomina',
+								'1',
+								'Incluir prestaciones de nómina',
+								['1' => 'Sí', '0' => 'No'],
+								[]
+							) }}
+						</div>
+					</div>
+					<div class="col-md-6"></div>
+				</div>
+
 				{{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
 				{{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
 				{{ Form::hidden( 'url_id_transaccion', Input::get( 'id_transaccion' ) ) }}
@@ -116,7 +131,8 @@
 						
 						$('#div_cargando').show();
 								
-						var url = '../cxp/get_cartera_tercero/' + $('#core_tercero_id').val() + '/' + $('#fecha').val();
+						var url = '../cxp/get_cartera_tercero/' + $('#core_tercero_id').val() + '/' + $('#fecha').val()
+							+ '?incluir_prestaciones_nomina=' + encodeURIComponent($('#incluir_prestaciones_nomina').val());
 						$.get( url, function( datos ) {
 					        $('#div_cargando').hide();
 							
@@ -258,6 +274,8 @@
 
 					// Enviar formulario
 					habilitar_campos_form_create();
+					// Este selector solo controla la consulta AJAX; no hace parte del documento.
+					$('#incluir_prestaciones_nomina').attr('disabled','disabled');
 					$('#form_create').submit();			
 				}
 					
@@ -316,12 +334,14 @@
 			function deshabilitar_campos_form_create()
 			{
 				$('#fecha').attr('disabled','disabled');
+				$('#incluir_prestaciones_nomina').attr('disabled','disabled');
 				$('.custom-combobox-input').attr('disabled','disabled');
 			}
 
 			function habilitar_campos_form_create()
 			{
 				$('#fecha').removeAttr('disabled');
+				$('#incluir_prestaciones_nomina').removeAttr('disabled');
 				$('.custom-combobox-input').removeAttr('disabled');
 			}
 
