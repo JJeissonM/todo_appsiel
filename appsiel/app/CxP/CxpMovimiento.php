@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Input;
 
 class CxpMovimiento extends Model
 {
+  const DETALLES_PRESTACIONES_NOMINA = [
+    'vacaciones',
+    'prima_legal',
+    'cesantias',
+    'intereses_cesantias'
+  ];
+
   //protected $table = '';
 
   protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'core_empresa_id', 'core_tercero_id', 'modelo_referencia_tercero_index', 'referencia_tercero_id', 'doc_proveedor_prefijo', 'doc_proveedor_consecutivo', 'fecha', 'fecha_vencimiento', 'valor_documento', 'valor_pagado', 'saldo_pendiente', 'creado_por', 'modificado_por', 'estado', 'detalle'];
@@ -198,15 +205,19 @@ class CxpMovimiento extends Model
     }
   }
 
-  public static function get_documentos_referencia_tercero( $operador, $cadena)
+  public static function get_documentos_referencia_tercero($operador, $cadena, $incluir_prestaciones_nomina = true)
   {
     $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",cxp_movimientos.consecutivo) AS documento';
 
-    return DocumentosPendientes::leftJoin('core_terceros','core_terceros.id','=','cxp_movimientos.core_tercero_id')
+    $query = DocumentosPendientes::leftJoin('core_terceros','core_terceros.id','=','cxp_movimientos.core_tercero_id')
                   ->leftJoin('core_tipos_docs_apps','core_tipos_docs_apps.id','=','cxp_movimientos.core_tipo_doc_app_id')
                   ->where('cxp_movimientos.core_empresa_id',Auth::user()->empresa_id)
                   ->where('cxp_movimientos.core_tercero_id', $operador, $cadena)
-                              ->where('cxp_movimientos.saldo_pendiente', '<>', 0)
+                  ->where('cxp_movimientos.saldo_pendiente', '<>', 0);
+
+    static::aplicarFiltroPrestacionesNomina($query, $incluir_prestaciones_nomina);
+
+    return $query
                   ->select(
                                           'cxp_movimientos.id',
                                           'cxp_movimientos.core_tipo_transaccion_id',
@@ -227,5 +238,17 @@ class CxpMovimiento extends Model
                                           'cxp_movimientos.estado')
                               ->orderBy('cxp_movimientos.fecha')
                   ->get()->toArray(); 
+  }
+
+  public static function aplicarFiltroPrestacionesNomina($query, $incluir_prestaciones_nomina)
+  {
+    if (!$incluir_prestaciones_nomina) {
+      $query->where(function ($query) {
+        $query->whereNotIn('cxp_movimientos.detalle', static::DETALLES_PRESTACIONES_NOMINA)
+              ->orWhereNull('cxp_movimientos.detalle');
+      });
+    }
+
+    return $query;
   }
 }

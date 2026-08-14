@@ -37,6 +37,7 @@ class ReportesController extends Controller
         $cadena = $request->core_tercero_id;
         $clase_proveedor_id = (int)$request->clase_proveedor_id;
         $movimiento_a_mostrar = $request->movimiento_a_mostrar;
+        $incluir_prestaciones_nomina = (string)$request->input('incluir_prestaciones_nomina', '1') !== '0';
 
         if ( $request->core_tercero_id == '' )
         {
@@ -46,7 +47,11 @@ class ReportesController extends Controller
 
         
     
-        $movimiento = CxpMovimiento::get_documentos_referencia_tercero( $operador, $cadena );
+        $movimiento = CxpMovimiento::get_documentos_referencia_tercero(
+            $operador,
+            $cadena,
+            $incluir_prestaciones_nomina
+        );
 
         if (count($movimiento) > 0) {
             $movimiento = collect($movimiento);
