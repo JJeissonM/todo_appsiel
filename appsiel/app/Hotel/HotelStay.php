@@ -675,11 +675,7 @@ class HotelStay extends Model
 
     public function anticiposCliente()
     {
-        if (is_null($this->mainGuest) || empty($this->mainGuest->core_tercero_id)) {
-            return array();
-        }
-
-        $rows = CxcMovimiento::get_documentos_tercero($this->mainGuest->core_tercero_id, date('Y-m-d'));
+        $rows = $this->movimientosCxCPendientesCliente();
         $anticipos = array();
         foreach ($rows as $row) {
             if ((float)$row['saldo_pendiente'] < -0.1) {
@@ -688,6 +684,27 @@ class HotelStay extends Model
         }
 
         return $anticipos;
+    }
+
+    public function facturasCreditoPendientesCliente()
+    {
+        $facturas = array();
+        foreach ($this->movimientosCxCPendientesCliente() as $row) {
+            if ((float)$row['saldo_pendiente'] > 0.1) {
+                $facturas[] = $row;
+            }
+        }
+
+        return $facturas;
+    }
+
+    private function movimientosCxCPendientesCliente()
+    {
+        if (is_null($this->mainGuest) || empty($this->mainGuest->core_tercero_id)) {
+            return array();
+        }
+
+        return CxcMovimiento::get_documentos_tercero($this->mainGuest->core_tercero_id, date('Y-m-d'));
     }
 
     public function getSaldoPendienteNeto()
@@ -701,18 +718,18 @@ class HotelStay extends Model
             }
         }
 
-        $anticipos = $this->anticiposCliente();
+        $saldoFacturasCredito = 0;
         $saldoAnticiposDisponibles = 0;
-        if (isset($anticipos) && is_array($anticipos)) {
-            foreach ($anticipos as $anticipo) {
-                $saldoAnticipo = isset($anticipo['saldo_pendiente']) ? (float)$anticipo['saldo_pendiente'] : 0;
-                if ($saldoAnticipo < 0) {
-                    $saldoAnticiposDisponibles += abs($saldoAnticipo);
-                }
+        foreach ($this->movimientosCxCPendientesCliente() as $movimiento) {
+            $saldo = isset($movimiento['saldo_pendiente']) ? (float)$movimiento['saldo_pendiente'] : 0;
+            if ($saldo > 0.1) {
+                $saldoFacturasCredito += $saldo;
+            } elseif ($saldo < -0.1) {
+                $saldoAnticiposDisponibles += abs($saldo);
             }
         }
 
-        $saldoPendienteNeto = max(0, $saldoPendientePedidosAbiertos - $saldoAnticiposDisponibles);
+        $saldoPendienteNeto = max(0, $saldoPendientePedidosAbiertos + $saldoFacturasCredito - $saldoAnticiposDisponibles);
 
         return $saldoPendienteNeto;
     }
