@@ -15,13 +15,11 @@ use App\VentasPos\FacturaPos;
 
 use App\Ventas\VtasPedido;
 
-use App\Ventas\VtasDocEncabezado;
-
 use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
-use App\FacturacionElectronica\Services\InvoiceTotalsService;
 use App\VentasPos\Services\CxCService;
+use App\VentasPos\Services\ElectronicInvoiceSendingService;
 use App\VentasPos\Services\InvoicingService;
 use App\VentasPos\Services\TreasuryService;
 
@@ -157,14 +155,11 @@ class FacturaElectronicaController extends TransaccionController
             ], 422);
         }
 
-        $mensaje = $this->enviar_con_validacion_previa($vtas_document_header);
+        $sendingService = new ElectronicInvoiceSendingService();
+        $mensaje = $sendingService->send($vtas_document_header, 2, 250);
 
         if ($mensaje->tipo != 'mensaje_error') {
-            $factura_pos_encabezado->estado = 'Enviada';
-            $factura_pos_encabezado->save();
-
-            $vtas_document_header->estado = 'Enviada';
-            $vtas_document_header->save();
+            $sendingService->markAsSent($vtas_document_header, $factura_pos_encabezado);
         }
 
         if ($crear_cruce_con_anticipos) {
@@ -231,118 +226,65 @@ class FacturaElectronicaController extends TransaccionController
     {
         $factura_pos_encabezado = FacturaPos::find($factura_pos_encabezado_id);
         if (is_null($factura_pos_encabezado)) {
-            return '';
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Factura POS no encontrada para convertir y enviar.',
+            ], 404);
         }
 
         if ($factura_pos_encabezado->cliente->tercero->tipo == 'Interno') {
-            return $this->build_url_print_fe((int)$factura_pos_encabezado_id);
+            return response()->json([
+                'status' => 'skipped',
+                'message' => 'La factura corresponde a un cliente interno y no se envia electronicamente.',
+            ], 200);
         }
 
         $doc_header_serv = new DocumentHeaderService();
         $result = $doc_header_serv->convert_to_electronic_invoice($factura_pos_encabezado->id);
         if ($result->status == 'mensaje_error' || empty($result->new_document_header_id)) {
-            return url('/') . '/pos_factura/' . $factura_pos_encabezado->id . '?id=20&id_modelo=230&id_transaccion=47';
+            return response()->json([
+                'status' => 'error',
+                'message' => $result->message,
+                'factura_pos_id' => (int)$factura_pos_encabezado->id,
+            ], 422);
         }
 
         $factura_electronica = Factura::find((int)$result->new_document_header_id);
         if (is_null($factura_electronica)) {
-            return url('/') . '/pos_factura/' . $factura_pos_encabezado->id . '?id=20&id_modelo=230&id_transaccion=47';
+            return response()->json([
+                'status' => 'error',
+                'message' => 'La factura fue convertida, pero no se encontro el encabezado electronico para enviarlo.',
+                'factura_pos_id' => (int)$factura_pos_encabezado->id,
+            ], 422);
         }
 
-        $mensaje = $this->enviar_con_validacion_previa($factura_electronica);
+        $sendingService = new ElectronicInvoiceSendingService();
+        $maxAttempts = (int)config('ventas_pos.envio_fe_acumulacion_max_intentos', 3);
+        $retryDelayMs = (int)config('ventas_pos.envio_fe_acumulacion_espera_ms', 750);
+        $mensaje = $sendingService->send($factura_electronica, $maxAttempts, $retryDelayMs);
 
         if ($mensaje->tipo != 'mensaje_error') {
-            $factura_pos_encabezado->estado = 'Enviada';
-            $factura_pos_encabezado->save();
+            $sendingService->markAsSent($factura_electronica, $factura_pos_encabezado);
 
-            $vtas_document_header = VtasDocEncabezado::find((int)$result->new_document_header_id);
-            if (!is_null($vtas_document_header)) {
-                $vtas_document_header->estado = 'Enviada';
-                $vtas_document_header->save();
-            }
+            return response()->json([
+                'status' => 'success',
+                'message' => (string)$mensaje->contenido,
+                'intentos' => (int)$mensaje->intentos,
+                'factura_pos_id' => (int)$factura_pos_encabezado->id,
+                'factura_electronica_id' => (int)$factura_electronica->id,
+                'url_print' => $this->build_url_print_fe((int)$factura_electronica->id),
+            ], 200);
         }
 
-        $url_print = $this->build_url_print_fe((int)$result->new_document_header_id);
-
-        return $url_print;
-    }
-
-    protected function enviar_con_validacion_previa(Factura $vtas_document_header)
-    {
-        try {
-            (new InvoiceTotalsService())->validateBeforeSend($vtas_document_header);
-        } catch (\UnexpectedValueException $e) {
-            Log::warning('POS_FE_TOTALS_MISMATCH', [
-                'factura_id' => (int)$vtas_document_header->id,
-                'contenido' => $e->getMessage()
-            ]);
-
-            return (object)[
-                'tipo' => 'mensaje_error',
-                'contenido' => $e->getMessage()
-            ];
-        }
-
-        // 1) El proveedor valida si ya existe el documento.
-        $mensaje_validacion = $this->normalizar_mensaje($vtas_document_header->enviar_al_proveedor_tecnologico());
-
-        // 2) Si no está enviado, intenta el envío definitivo.
-        $mensaje_envio = $this->normalizar_mensaje($vtas_document_header->enviar_al_proveedor_tecnologico());
-
-        // Si alguno fue exitoso, preferir éxito para mantener el flujo actual.
-        if ($mensaje_validacion->tipo != 'mensaje_error') {
-            return $mensaje_validacion;
-        }
-
-        if ($mensaje_envio->tipo != 'mensaje_error') {
-            return $mensaje_envio;
-        }
-
-        // Ambos fallaron: prioriza el mensaje con más detalle.
-        $contenido_validacion = trim((string)$mensaje_validacion->contenido);
-        $contenido_envio = trim((string)$mensaje_envio->contenido);
-
-        if (strlen($contenido_envio) > strlen($contenido_validacion)) {
-            return $mensaje_envio;
-        }
-
-        return $mensaje_validacion;
-    }
-
-    protected function normalizar_mensaje($mensaje)
-    {
-        if (is_array($mensaje)) {
-            $mensaje = (object)$mensaje;
-        }
-
-        if (!is_object($mensaje)) {
-            return (object)[
-                'tipo' => 'mensaje_error',
-                'contenido' => 'Respuesta no válida del proveedor tecnológico.'
-            ];
-        }
-
-        if (!property_exists($mensaje, 'tipo')) {
-            $mensaje->tipo = 'mensaje_error';
-        }
-
-        if (!property_exists($mensaje, 'contenido')) {
-            $mensaje->contenido = '';
-        }
-
-        $contenido = trim((string)$mensaje->contenido);
-        if ($mensaje->tipo == 'mensaje_error' && ($contenido == '' || $contenido == 'Error de Empresa:' || $contenido == 'Error de Empresa')) {
-            $mensaje->contenido = 'Error de Empresa: no fue posible enviar la factura electronica. Revise configuracion FE de la empresa (NIT, software, resolucion y proveedor).';
-        }
-
-        if ($mensaje->tipo == 'mensaje_error') {
-            Log::warning('POS_FE_SEND_ERROR', [
-                'factura_id' => isset($mensaje->factura_id) ? $mensaje->factura_id : null,
-                'contenido' => (string)$mensaje->contenido
-            ]);
-        }
-
-        return $mensaje;
+        return response()->json([
+            'status' => 'error',
+            'message' => 'La factura electronica quedo contabilizada, pero no fue enviada: ' . strip_tags((string)$mensaje->contenido),
+            'intentos' => (int)$mensaje->intentos,
+            'reintentable' => (bool)$mensaje->reintentable,
+            'factura_pos_id' => (int)$factura_pos_encabezado->id,
+            'factura_electronica_id' => (int)$factura_electronica->id,
+            'url_print' => $this->build_url_print_fe((int)$factura_electronica->id),
+        ], 502);
     }
 
     protected function es_error_uniqid_duplicado(\Throwable $e)

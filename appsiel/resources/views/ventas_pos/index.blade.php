@@ -91,6 +91,7 @@
 	var arr_ids_facturas;
 	var restantes;
 	var facturas_con_error = [];
+	var facturas_para_reintentar_envio = [];
 	var facturas_acumuladas = 0;
 
 	$(document).ready(function(){
@@ -112,6 +113,7 @@
 
 			btn_acumular = $(this);
 			facturas_con_error = [];
+			facturas_para_reintentar_envio = [];
 			facturas_acumuladas = 0;
 
 			$("#ids_facturas").val($(this).attr('data-ids_facturas'));
@@ -198,6 +200,50 @@
 			getShelfRecursive();
 		}
 
+		function procesar_conversion_electronica(factura_id, es_reintento)
+		{
+			$.ajax({
+				type: 'GET',
+				url: "{{url('pos_acumulacion_convertir_en_factura_electronica')}}" + "/" + factura_id,
+				success: function() {
+					if (es_reintento) {
+						reintentar_envio_electronico_recursivo();
+						return;
+					}
+
+					continuar_acumulacion();
+				},
+				error: function(respuesta) {
+					var reintentable = respuesta.responseJSON && respuesta.responseJSON.reintentable;
+					if (!es_reintento && reintentable) {
+						facturas_para_reintentar_envio.push(factura_id);
+						continuar_acumulacion();
+						return;
+					}
+
+					registrar_error_factura(factura_id, 'conversión/envío electrónico', respuesta);
+					if (es_reintento) {
+						reintentar_envio_electronico_recursivo();
+						return;
+					}
+
+					continuar_acumulacion();
+				}
+			});
+		}
+
+		function reintentar_envio_electronico_recursivo()
+		{
+			if (facturas_para_reintentar_envio.length === 0) {
+				finalizar_acumulacion();
+				return;
+			}
+
+			document.getElementById('contador_facturas').innerHTML = facturas_para_reintentar_envio.length;
+			var factura_id = facturas_para_reintentar_envio.shift();
+			procesar_conversion_electronica(factura_id, true);
+		}
+
 		function finalizar_acumulacion()
 		{
 			$('#div_spin').hide();
@@ -211,7 +257,7 @@
 				return error.etapa === 'acumulación';
 			});
 			var errores_conversion = facturas_con_error.filter(function(error) {
-				return error.etapa === 'conversión electrónica';
+				return error.etapa === 'conversión/envío electrónico';
 			});
 
 			var listado_errores = '<ul style="text-align:left; max-height:260px; overflow:auto;">';
@@ -228,7 +274,7 @@
 			}
 			if (errores_conversion.length > 0) {
 				resumen_errores += '<br><strong style="color:#d32f2f;">' + errores_conversion.length +
-					'</strong> facturas presentaron error en la conversión electrónica.';
+					'</strong> facturas se convirtieron o enviaron con error y quedaron identificadas para reintento.';
 			}
 
 			$('#contenido_modal').html(
@@ -249,6 +295,12 @@
 			// terminate if array exhausted 
 			if (arr_ids_facturas.length === 0) 
 			{
+				if (facturas_para_reintentar_envio.length > 0) {
+					$('#contenido_modal h1').html('<small>Por favor espere</small><br>Reintentando envíos electrónicos pendientes... <span id="contador_facturas" style="color:#9c27b0">' + facturas_para_reintentar_envio.length + '</span> facturas restantes.');
+					reintentar_envio_electronico_recursivo();
+					return;
+				}
+
 				finalizar_acumulacion();
 				return; 
 			}
@@ -268,15 +320,7 @@
 						return;
 					}
 
-					$.ajax({
-						type: 'GET',
-						url: "{{url('pos_acumulacion_convertir_en_factura_electronica')}}" + "/" + factura_id,
-						success: continuar_acumulacion,
-						error: function(respuesta) {
-							registrar_error_factura(factura_id, 'conversión electrónica', respuesta);
-							continuar_acumulacion();
-						}
-					});
+					procesar_conversion_electronica(factura_id, false);
 				},
 				error: function(respuesta) {
 					registrar_error_factura(factura_id, 'acumulación', respuesta);

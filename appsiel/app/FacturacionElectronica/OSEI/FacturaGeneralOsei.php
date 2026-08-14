@@ -372,8 +372,16 @@ class FacturaGeneralOsei
 
         $zip_key = $array_respuesta['zip_key'];
         $company_nit = $array_respuesta['CompanyNIT'];
+        $mensaje = (object)[
+            'tipo' => 'mensaje_error',
+            'contenido' => 'Documento recibido por OSEI; el batch continua en proceso de validacion por la DIAN.'
+        ];
 
-        if ($json_doc_electronico_enviado['invoice']['env'] == 'PRUEBAS' ?? $json_doc_electronico_enviado['support_doc']['env'] == 'PRUEBAS') {
+        $document_env = isset($json_doc_electronico_enviado['invoice']['env'])
+            ? $json_doc_electronico_enviado['invoice']['env']
+            : (isset($json_doc_electronico_enviado['support_doc']['env']) ? $json_doc_electronico_enviado['support_doc']['env'] : '');
+
+        if ($document_env == 'PRUEBAS') {
             $env = 'testing';
             $endpointGetStatusZip = "https://osei.com.co/api/v1/invoices/get_status_zip/{$zip_key}/{$company_nit}/{$env}";
             try {
