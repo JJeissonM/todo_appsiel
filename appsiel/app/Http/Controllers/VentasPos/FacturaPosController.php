@@ -233,7 +233,7 @@ class FacturaPosController extends TransaccionController
 
         $medios_pago = null;
 
-        $resolucion_facturacion_electronica = $factura_pos_service->get_resolucion_facturacion_electronica();
+        $resolucion_facturacion_electronica = $factura_pos_service->get_resolucion_facturacion_electronica($pdv);
 
         $precio_bolsa = $factura_pos_service->get_precio_bolsa($pdv->cliente->lista_precios_id);
 
@@ -786,7 +786,7 @@ class FacturaPosController extends TransaccionController
 
         $medios_pago = null;
 
-        $resolucion_facturacion_electronica = $factura_pos_service->get_resolucion_facturacion_electronica();
+        $resolucion_facturacion_electronica = $factura_pos_service->get_resolucion_facturacion_electronica($pdv);
 
         $precio_bolsa = $factura_pos_service->get_precio_bolsa($pdv->cliente->lista_precios_id);
 
