@@ -5,6 +5,7 @@ namespace App\Hotel\Services;
 use App\Contabilidad\Impuesto;
 use App\Core\Services\ResolucionFacturacionService;
 use App\Core\TipoDocApp;
+use App\CxC\CxcMovimiento;
 use App\Http\Controllers\VentasPos\FacturaElectronicaController;
 use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelOrderLine;
@@ -236,9 +237,9 @@ class HotelService
                 throw new \Exception('La fecha y hora de check-out no puede ser menor que el check-in.');
             }
 
-            $openOrdersMessage = $service->getCheckOutOpenOrdersBlockMessage($stay);
-            if ($openOrdersMessage != '') {
-                throw new \Exception($openOrdersMessage);
+            $checkOutBlockMessage = $service->getCheckOutBlockMessage($stay);
+            if ($checkOutBlockMessage != '') {
+                throw new \Exception($checkOutBlockMessage);
             }
 
             $stay->check_out_at = $normalizedCheckOutAt;
@@ -258,13 +259,36 @@ class HotelService
 
     public function getCheckOutOpenOrdersBlockMessage(HotelStay $stay)
     {
+        return $this->getCheckOutBlockMessage($stay);
+    }
+
+    public function getCheckOutBlockMessage(HotelStay $stay)
+    {
         $openOrders = HotelOrderHeader::where('empresa_id', $stay->empresa_id)
             ->where('stay_id', $stay->id)
             ->where('status', HotelOrderHeader::STATUS_ABIERTO)
             ->count();
 
+        $pendingCreditInvoices = 0;
+        $mainGuest = $stay->mainGuest;
+        if (!is_null($mainGuest) && !empty($mainGuest->core_tercero_id)) {
+            $pendingCreditInvoices = CxcMovimiento::where('core_empresa_id', $stay->empresa_id)
+                ->where('core_tercero_id', $mainGuest->core_tercero_id)
+                ->where('fecha', '<=', date('Y-m-d'))
+                ->where('saldo_pendiente', '>', 0.1)
+                ->count();
+        }
+
+        if ($openOrders > 0 && $pendingCreditInvoices > 0) {
+            return 'No se puede registrar check-out porque la estadia tiene pedidos hoteleros pendientes por facturar y facturas credito pendientes por cobrar.';
+        }
+
         if ($openOrders > 0) {
             return 'No se puede registrar check-out porque la estadia tiene pedidos hoteleros abiertos pendientes por facturar.';
+        }
+
+        if ($pendingCreditInvoices > 0) {
+            return 'No se puede registrar check-out porque el huesped tiene facturas credito pendientes por cobrar. Registre el pago antes de realizar el check-out.';
         }
 
         return '';

@@ -991,6 +991,11 @@ class ReporteController extends TesoreriaController
         $fecha_hora_apertura = $this->normalizarFechaHoraArqueo(Input::get('fecha_hora_apertura'));
         $fecha_hora_cierre = $this->normalizarFechaHoraArqueo(Input::get('fecha_hora_cierre'));
 
+        if ( !TesoMovimiento::usarMovimientosTesoreriaPorHora() ) {
+            $fecha_hora_apertura = null;
+            $fecha_hora_cierre = null;
+        }
+
         if ( !TesoMovimiento::usuario_tiene_restriccion_movimientos() && $pdv_id == 0 ) {
             $creado_por = null;
         }
@@ -1000,7 +1005,7 @@ class ReporteController extends TesoreriaController
         }
 
         // Nunca aplicar a una fecha histórica el turno que quedó cargado al abrir la pantalla.
-        if ($pdv_id > 0 && $fecha_desde == $fecha_hasta) {
+        if (TesoMovimiento::usarMovimientosTesoreriaPorHora() && $pdv_id > 0 && $fecha_desde == $fecha_hasta) {
             $pdv = Pdv::where('id', $pdv_id)
                 ->where('core_empresa_id', Auth::user()->empresa_id)
                 ->first();
@@ -1213,6 +1218,20 @@ class ReporteController extends TesoreriaController
     {
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
+        $hora_desde = TesoMovimiento::normalizarHora($request->hora_desde);
+        $hora_hasta = TesoMovimiento::normalizarHora($request->hora_hasta, true);
+
+        if (!empty($request->hora_desde) && is_null($hora_desde)) {
+            return '<div class="alert alert-danger">La Hora desde no tiene un formato válido.</div>';
+        }
+
+        if (!empty($request->hora_hasta) && is_null($hora_hasta)) {
+            return '<div class="alert alert-danger">La Hora hasta no tiene un formato válido.</div>';
+        }
+
+        if ($fecha_desde == $fecha_hasta && !is_null($hora_desde) && !is_null($hora_hasta) && $hora_desde > $hora_hasta) {
+            return '<div class="alert alert-danger">La Hora desde no puede ser posterior a la Hora hasta para una misma fecha.</div>';
+        }
 
         $teso_caja_id = $this->get_numeric_id_from_select($request->teso_caja_id);
         $teso_cuenta_bancaria_id = $this->get_numeric_id_from_select($request->teso_cuenta_bancaria_id);
@@ -1250,8 +1269,11 @@ class ReporteController extends TesoreriaController
         $array_wheres_saldo = $this->preparar_wheres_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $teso_medio_recaudo_id, $teso_medio_recaudo_comportamiento );
 
         if ( (int)$request->debug_trace === 1 ) {
-            $qSaldo = TesoMovimiento::query()->where($array_wheres_saldo)->where('teso_movimientos.fecha', '<', $fecha_desde);
-            $qDetalle = TesoMovimiento::query()->where($array_wheres)->whereBetween('teso_movimientos.fecha', [$fecha_desde, $fecha_hasta]);
+            $qSaldo = TesoMovimiento::query()->where($array_wheres_saldo);
+            $qDetalle = TesoMovimiento::query()->where($array_wheres);
+
+            TesoMovimiento::aplicarFiltroAntesDeFechaHora($qSaldo, $fecha_desde, $hora_desde);
+            TesoMovimiento::aplicarFiltroEntreFechasHoras($qDetalle, $fecha_desde, $fecha_hasta, $hora_desde, $hora_hasta);
 
             TesoMovimiento::aplicarFiltroPdv($qSaldo, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id);
             TesoMovimiento::aplicarFiltroPdv($qDetalle, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id);
@@ -1270,6 +1292,8 @@ class ReporteController extends TesoreriaController
             dd([
                 'fecha_desde' => $fecha_desde,
                 'fecha_hasta' => $fecha_hasta,
+                'hora_desde' => $hora_desde,
+                'hora_hasta' => $hora_hasta,
                 'teso_caja_id' => $teso_caja_id,
                 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id,
                 'pdv_id' => $pdv_id,
@@ -1303,13 +1327,13 @@ class ReporteController extends TesoreriaController
         $usuario_filtro = User::find( $user_id );
         $empresa = Auth::user()->empresa;
 
-        $saldo_inicial = TesoMovimiento::get_saldo_inicial2( $fecha_desde, $array_wheres_saldo, 0, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id );
+        $saldo_inicial = TesoMovimiento::get_saldo_inicial2( $fecha_desde, $array_wheres_saldo, 0, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id, $hora_desde );
 
-        $movimiento = TesoMovimiento::get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres, $user_id, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id );
+        $movimiento = TesoMovimiento::get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres, $user_id, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id, $hora_desde, $hora_hasta );
 
         $usuario_tiene_restriccion_movimientos = TesoMovimiento::usuario_tiene_restriccion_movimientos();
         
-        $vista = View::make( 'tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'movimiento','caja', 'cuenta_bancaria', 'pdv', 'motivo', 'tercero', 'medio_recaudo', 'usuario_filtro', 'empresa', 'usuario_tiene_restriccion_movimientos') )->render();
+        $vista = View::make( 'tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'fecha_hasta', 'hora_desde', 'hora_hasta', 'saldo_inicial', 'movimiento','caja', 'cuenta_bancaria', 'pdv', 'motivo', 'tercero', 'medio_recaudo', 'usuario_filtro', 'empresa', 'usuario_tiene_restriccion_movimientos') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

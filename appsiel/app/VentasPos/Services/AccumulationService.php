@@ -17,6 +17,7 @@ use App\CxC\DocumentosPendientes;
 
 use App\Inventarios\Services\InvDocumentsService;
 use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\TesoMotivo;
 use Illuminate\Support\Facades\DB;
 
 class AccumulationService
@@ -157,6 +158,13 @@ class AccumulationService
             return 1;
         }
 
+        // Solo se autocorrigen documentos pendientes. Los documentos ya
+        // acumulados/contabilizados requieren conciliacion de tesoreria y no
+        // deben alterarse automaticamente.
+        $this->normalizar_lineas_datafono($invoice);
+        $this->normalizar_ajuste_recargos($invoice);
+        $this->normalizar_cambio_en_medios_recaudo($invoice);
+
         if ( $invoice->core_tercero_id == 0 )
         {
             $invoice->core_tercero_id = $invoice->pdv->cliente->tercero->core_tercero_id;
@@ -242,6 +250,106 @@ class AccumulationService
         //}
 
         return 1;
+    }
+
+    /**
+     * Compatibilidad para facturas pendientes antiguas que guardaron como
+     * recaudo el efectivo recibido sin descontar el cambio entregado.
+     */
+    protected function normalizar_cambio_en_medios_recaudo(FacturaPos $invoice)
+    {
+        if ($invoice->forma_pago != 'contado' || (float)$invoice->valor_total_cambio <= 0) {
+            return false;
+        }
+
+        $total_documento = (float)$invoice->valor_total
+                            + (float)$invoice->valor_ajuste_al_peso
+                            + (float)$invoice->valor_total_bolsas
+                            + (new TipService())->get_tip_amount($invoice)
+                            + (new DatafonoService())->get_datafono_amount($invoice);
+
+        $resultado = (new PaymentReconciliationService())->normalizar_cambio_en_efectivo(
+            $invoice->lineas_registros_medios_recaudos,
+            $total_documento,
+            $invoice->valor_total_cambio
+        );
+
+        if (!$resultado['normalizado']) {
+            return false;
+        }
+
+        $invoice->lineas_registros_medios_recaudos = $resultado['lineas_json'];
+        $invoice->save();
+
+        return true;
+    }
+
+    protected function normalizar_ajuste_recargos(FacturaPos $invoice)
+    {
+        if ($invoice->forma_pago != 'contado') {
+            return false;
+        }
+
+        $resultado = (new PaymentReconciliationService())->normalizar_ajuste_recargos(
+            $invoice->lineas_registros_medios_recaudos,
+            $invoice->valor_total,
+            $invoice->valor_total_bolsas,
+            $invoice->valor_ajuste_al_peso,
+            [config('ventas_pos.motivo_tesoreria_propinas'), config('ventas_pos.motivo_tesoreria_datafono')],
+            (int)config('ventas_pos.redondear_centena') === 1
+        );
+
+        if (!$resultado['normalizado']) {
+            return false;
+        }
+
+        $invoice->valor_ajuste_al_peso = $resultado['ajuste'];
+        $invoice->save();
+
+        return true;
+    }
+
+    /**
+     * Corrige facturas pendientes con una o varias lineas donde el pago
+     * completo fue marcado como "Comision datafono".
+     */
+    protected function normalizar_lineas_datafono(FacturaPos $invoice)
+    {
+        if ($invoice->forma_pago != 'contado' || !(int)config('ventas_pos.manejar_datafono')) {
+            return false;
+        }
+
+        $motivo_datafono_id = (int)config('ventas_pos.motivo_tesoreria_datafono');
+        $motivo_default_id = (int)config('tesoreria.motivo_tesoreria_ventas_contado');
+        $motivo_datafono = TesoMotivo::find($motivo_datafono_id);
+        $motivo_default = TesoMotivo::find($motivo_default_id);
+        if (is_null($motivo_datafono) || is_null($motivo_default)) {
+            return false;
+        }
+
+        $valor_datafono = round(
+            (float)$invoice->valor_total * (float)config('ventas_pos.porcentaje_datafono') / 100,
+            0
+        );
+
+        $resultado = (new PaymentReconciliationService())->normalizar_lineas_recargo(
+            $invoice->lineas_registros_medios_recaudos,
+            $valor_datafono,
+            $motivo_datafono_id,
+            $motivo_datafono->descripcion,
+            $motivo_default_id,
+            $motivo_default->descripcion
+        );
+
+        if (!$resultado['normalizado']) {
+            return false;
+        }
+
+        $invoice->lineas_registros_medios_recaudos = $resultado['lineas_json'];
+        $invoice->total_efectivo_recibido = $resultado['total_recaudos'];
+        $invoice->save();
+
+        return true;
     }
 
     public function is_pending_mov_ventas($array_wheres)

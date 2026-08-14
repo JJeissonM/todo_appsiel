@@ -11,9 +11,13 @@ use App\VentasPos\Services\CashRegisterShiftService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Schema;
+use Spatie\Permission\Models\Permission;
 
 class ArqueoCaja extends Model
 {
+    const PERMISO_BLOQUEO_MOVIMIENTOS_SISTEMA = 'vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja';
+
     use FiltraRegistrosPorUsuario;
 
     protected $table = 'teso_arqueos_caja';
@@ -29,6 +33,19 @@ class ArqueoCaja extends Model
     public function caja()
     {
         return $this->belongsTo('App\Tesoreria\TesoCaja','teso_caja_id');
+    }
+
+    public static function usuario_tiene_bloqueo_movimientos_sistema($user = null)
+    {
+        $user = is_null($user) ? Auth::user() : $user;
+
+        if (is_null($user) || !Schema::hasTable('permissions')) {
+            return false;
+        }
+
+        $permission = Permission::where('name', self::PERMISO_BLOQUEO_MOVIMIENTOS_SISTEMA)->first();
+
+        return !is_null($permission) && $user->hasPermissionTo($permission);
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -123,7 +140,7 @@ class ArqueoCaja extends Model
     {
         $datos = $this->applyStoredShiftData($datos, $arqueocaja);
 
-        if ( Auth::user()->hasPermission('vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja') ) {
+        if ( self::usuario_tiene_bloqueo_movimientos_sistema() ) {
             $datos = $this->get_datos_adicionales( $datos );
             $arqueocaja->total_mov_entradas = $datos['total_mov_entradas'];
             $arqueocaja->total_mov_salidas = $datos['total_mov_salidas'];
@@ -156,6 +173,14 @@ class ArqueoCaja extends Model
 
     protected function validateAndNormalizeShift($request, $controller)
     {
+        if ( !TesoMovimiento::usarMovimientosTesoreriaPorHora() ) {
+            $request->merge([
+                'fecha_hora_apertura' => null,
+                'fecha_hora_cierre' => null
+            ]);
+            return;
+        }
+
         $pdv = Pdv::where('id', (int)$request->pdv_id)
             ->where('core_empresa_id', Auth::user()->empresa_id)
             ->first();
@@ -256,6 +281,11 @@ class ArqueoCaja extends Model
 
     public function get_movimientos_caja( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null )
     {
+        if ( !TesoMovimiento::usarMovimientosTesoreriaPorHora() ) {
+            $fecha_hora_apertura = null;
+            $fecha_hora_cierre = null;
+        }
+
         if (!is_null($fecha_hora_apertura) && $fecha_hora_apertura != '' && substr($fecha_hora_apertura, 0, 10) != $fecha_desde) {
             $fecha_hora_apertura = null;
             $fecha_hora_cierre = null;
@@ -277,7 +307,7 @@ class ArqueoCaja extends Model
         $arqueocaja = ArqueoCaja::find($doc_encabezado_id);
         $datos = $this->applyStoredShiftData($datos, $arqueocaja);
 
-        if ( Auth::user()->hasPermission('vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja') ) {
+        if ( self::usuario_tiene_bloqueo_movimientos_sistema() ) {
             $datos = $this->get_datos_adicionales( $datos );
             $arqueocaja->total_mov_entradas = $datos['total_mov_entradas'];
             $arqueocaja->total_mov_salidas = $datos['total_mov_salidas'];

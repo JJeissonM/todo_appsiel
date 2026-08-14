@@ -90,6 +90,8 @@
 	var continuar = true;
 	var arr_ids_facturas;
 	var restantes;
+	var facturas_con_error = [];
+	var facturas_acumuladas = 0;
 
 	$(document).ready(function(){
 
@@ -109,6 +111,8 @@
 			$(".btn_save_modal").hide();
 
 			btn_acumular = $(this);
+			facturas_con_error = [];
+			facturas_acumuladas = 0;
 
 			$("#ids_facturas").val($(this).attr('data-ids_facturas'));
 			
@@ -153,15 +157,99 @@
 			return continuar;
 		}
 		
-		// the recursive function 
-		function getShelfRecursive() { 
+		function escapar_html(texto)
+		{
+			return $('<div>').text(texto == null ? '' : texto).html();
+		}
+
+		function mensaje_error_ajax(respuesta)
+		{
+			if (respuesta.responseJSON && respuesta.responseJSON.message) {
+				return respuesta.responseJSON.message;
+			}
+
+			if (respuesta.responseText) {
+				try {
+					var contenido = JSON.parse(respuesta.responseText);
+					if (contenido.message) {
+						return contenido.message;
+					}
+				} catch (e) {
+					// Las respuestas HTML no se muestran completas en el resumen.
+				}
+			}
+
+			return 'Error HTTP ' + respuesta.status + '. Consulte el log para conocer el detalle.';
+		}
+
+		function registrar_error_factura(factura_id, etapa, respuesta)
+		{
+			facturas_con_error.push({
+				id: factura_id,
+				etapa: etapa,
+				mensaje: mensaje_error_ajax(respuesta)
+			});
+		}
+
+		function continuar_acumulacion()
+		{
+			restantes--;
+			document.getElementById('contador_facturas').innerHTML = restantes;
+			getShelfRecursive();
+		}
+
+		function finalizar_acumulacion()
+		{
+			$('#div_spin').hide();
+
+			if (facturas_con_error.length === 0) {
+				location.reload();
+				return;
+			}
+
+			var errores_acumulacion = facturas_con_error.filter(function(error) {
+				return error.etapa === 'acumulación';
+			});
+			var errores_conversion = facturas_con_error.filter(function(error) {
+				return error.etapa === 'conversión electrónica';
+			});
+
+			var listado_errores = '<ul style="text-align:left; max-height:260px; overflow:auto;">';
+			facturas_con_error.forEach(function(error) {
+				listado_errores += '<li><strong>Factura ID ' + escapar_html(error.id) + '</strong> (' +
+					escapar_html(error.etapa) + '): ' + escapar_html(error.mensaje) + '</li>';
+			});
+			listado_errores += '</ul>';
+
+			var resumen_errores = '';
+			if (errores_acumulacion.length > 0) {
+				resumen_errores += '<br><strong style="color:#d32f2f;">' + errores_acumulacion.length +
+					'</strong> facturas no se acumularon y permanecen pendientes.';
+			}
+			if (errores_conversion.length > 0) {
+				resumen_errores += '<br><strong style="color:#d32f2f;">' + errores_conversion.length +
+					'</strong> facturas presentaron error en la conversión electrónica.';
+			}
+
+			$('#contenido_modal').html(
+				'<h2 style="text-align:center;">Acumulación finalizada</h2>' +
+				'<p style="text-align:center;"><strong>' + facturas_acumuladas + '</strong> facturas acumuladas correctamente.' +
+				resumen_errores + '</p>' +
+				listado_errores +
+				'<p style="text-align:center;"><button type="button" class="btn btn-primary" onclick="location.reload();">Actualizar pantalla</button></p>'
+			);
+			$('.btn_close_modal').show();
+			$('#myModal .close').show();
+		}
+
+		// Procesa una factura a la vez para no sobrecargar el servidor. Un error
+		// individual se registra y no detiene las facturas restantes.
+		function getShelfRecursive() {
 			
 			// terminate if array exhausted 
 			if (arr_ids_facturas.length === 0) 
 			{
-				$("#div_spin").hide();
-				location.reload();
-
+				finalizar_acumulacion();
 				return; 
 			}
 
@@ -169,24 +257,32 @@
 			var factura_id = arr_ids_facturas[0]; 
 			arr_ids_facturas.shift(); 
 			
-			// ajax request 
-			$.get("{{url('pos_acumular_una_factura')}}" + "/" + factura_id, function(){
+			$.ajax({
+				type: 'GET',
+				url: "{{url('pos_acumular_una_factura')}}" + "/" + factura_id,
+				success: function() {
+					facturas_acumuladas++;
 
-				if ( $('#convertir_facturas_pos_a_electronicas_en_acumulacion').val() == 0) {
-					// call completed - so start next request 
-					restantes--;
-					document.getElementById('contador_facturas').innerHTML = restantes;
-					getShelfRecursive();	
-				}else{
-					$.get("{{url('pos_acumulacion_convertir_en_factura_electronica')}}" + "/" + factura_id, function(){
-						restantes--;
-						document.getElementById('contador_facturas').innerHTML = restantes;
-						getShelfRecursive();
+					if ($('#convertir_facturas_pos_a_electronicas_en_acumulacion').val() == 0) {
+						continuar_acumulacion();
+						return;
+					}
+
+					$.ajax({
+						type: 'GET',
+						url: "{{url('pos_acumulacion_convertir_en_factura_electronica')}}" + "/" + factura_id,
+						success: continuar_acumulacion,
+						error: function(respuesta) {
+							registrar_error_factura(factura_id, 'conversión electrónica', respuesta);
+							continuar_acumulacion();
+						}
 					});
+				},
+				error: function(respuesta) {
+					registrar_error_factura(factura_id, 'acumulación', respuesta);
+					continuar_acumulacion();
 				}
-
-				
-			}); 
+			});
 		}
 
 		$(document).on('click',".btn_consultar_facturas",function(event){

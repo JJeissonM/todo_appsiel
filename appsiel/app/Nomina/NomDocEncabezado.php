@@ -76,8 +76,8 @@ class NomDocEncabezado extends Model
 
     public function actualizar_totales()
     {
-        $this->total_devengos = NomDocRegistro::where('nom_doc_encabezado_id',$this->id)->sum('valor_devengo');
-        $this->total_deducciones = NomDocRegistro::where('nom_doc_encabezado_id',$this->id)->sum('valor_deduccion');
+        $this->total_devengos = (float) NomDocRegistro::where('nom_doc_encabezado_id',$this->id)->sum('valor_devengo');
+        $this->total_deducciones = (float) NomDocRegistro::where('nom_doc_encabezado_id',$this->id)->sum('valor_deduccion');
         $this->save();
     }
 
@@ -88,64 +88,41 @@ class NomDocEncabezado extends Model
 
     public function horas_liquidadas_empleado($core_tercero_id)
     {
-        $registros_documento = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)->all();
-
-        $horas_liquidadas = 0;
-        foreach ($registros_documento as $registro)
-        {
-            if (!is_null($registro->concepto))
-            {
-                // 7: Tiempo NO Laborado, 1: tiempo laborado
-                if ( in_array($registro->concepto->modo_liquidacion_id, [1, 7]) )
-                {
-                    $horas_liquidadas += $registro->cantidad_horas;
-                }
-            }
-        }
-
-        return $horas_liquidadas;
+        return (float) $this->registros_liquidacion()
+            ->join('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
+            ->where('nom_doc_registros.core_tercero_id', $core_tercero_id)
+            ->whereIn('nom_conceptos.modo_liquidacion_id', [1, 7])
+            ->sum('nom_doc_registros.cantidad_horas');
     }
 
     public function get_valor_neto_empleado_concepto($core_tercero_id, $nom_concepto_id)
     {
-        $registros_documento = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)
+        $query = $this->registros_liquidacion()
             ->where('core_tercero_id', $core_tercero_id)
-            ->get()
-            ->first();
+            ->where('nom_concepto_id', $nom_concepto_id);
 
-        if (is_null($registros_documento)) {
-            return 0;
-        }
-
-        return ($registros_documento->valor_devengo - $registros_documento->valor_deduccion);
+        return (float) (clone $query)->sum('valor_devengo') - (float) (clone $query)->sum('valor_deduccion');
     }
 
     public function horas_liquidadas_tiempo_laborado_empleado($core_tercero_id)
     {
-        $registros_documento = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)->all();
-
-        $horas_liquidadas = 0;
-        foreach ($registros_documento as $registro) {
-            if (!is_null($registro->concepto)) {
-                // 1: tiempo laborado
-                if (in_array($registro->concepto->modo_liquidacion_id, [1]))
-                {
-                    $horas_liquidadas += $registro->cantidad_horas;
-                }
-            }
-        }
-
-        return $horas_liquidadas;
+        return (float) $this->registros_liquidacion()
+            ->join('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
+            ->where('nom_doc_registros.core_tercero_id', $core_tercero_id)
+            ->where('nom_conceptos.modo_liquidacion_id', 1)
+            ->sum('nom_doc_registros.cantidad_horas');
     }
 
     public function get_valor_neto_empleado_segun_grupo_conceptos(array $conceptos, $core_tercero_id)
     {
-        $total_devengos = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)
-            ->whereIn('nom_concepto_id', $conceptos)
+        $query = $this->registros_liquidacion()
+            ->where('core_tercero_id', $core_tercero_id)
+            ->whereIn('nom_concepto_id', $conceptos);
+
+        $total_devengos = (clone $query)
             ->sum('valor_devengo');
 
-        $total_deducciones = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)
-            ->whereIn('nom_concepto_id', $conceptos)
+        $total_deducciones = (clone $query)
             ->sum('valor_deduccion');
 
         return ($total_devengos - $total_deducciones);
@@ -170,8 +147,11 @@ class NomDocEncabezado extends Model
             }
         }
 
-        // Liquidación un mes
-        if ( $this->tiempo_a_liquidar == 240 )
+        // Liquidación de un mes. Las horas legales cambian segun la fecha
+        // (por ejemplo, 210 horas desde julio de 2026), por lo que no se debe
+        // comparar unicamente contra el valor historico de 240 horas.
+        $horas_mes = ParametroLegal::horas_laborales_para_fecha($this->fecha);
+        if ( abs((float)$this->tiempo_a_liquidar - (float)$horas_mes) < 0.001 )
         {
             $dia_inicio = '01';
             $dia_fin = '30';
@@ -436,25 +416,52 @@ class NomDocEncabezado extends Model
     public static function get_opciones_modelo_relacionado($nom_doc_encabezado_id)
     {
         $vec[''] = '';
-        $asignados = DB::table('nom_empleados_del_documento')
-                        ->where('nom_doc_encabezado_id', $nom_doc_encabezado_id)
-                        ->pluck('nom_contrato_id');
-        if ($asignados instanceof \Illuminate\Support\Collection) {
-            $asignados = $asignados->toArray();
-        } else {
-            $asignados = (array)$asignados;
+        $documento = self::find((int)$nom_doc_encabezado_id);
+        if (is_null($documento)) {
+            return $vec;
         }
 
-        $opciones = NomContrato::where('estado', 'Activo')
-                                ->whereNotIn('id', $asignados)
-                                ->with('tercero')
-                                ->get();
+        $opciones = $documento->query_contratos_disponibles_para_asignar()
+            ->with('tercero')
+            ->orderBy('core_terceros.descripcion')
+            ->get();
 
         foreach ($opciones as $opcion) {
             $vec[$opcion->id] = $opcion->tercero->numero_identificacion . ' ' . $opcion->tercero->descripcion;
         }
 
         return $vec;
+    }
+
+    /**
+     * Contratos activos, de la empresa del documento, cuya vigencia se cruza
+     * con el lapso liquidado y que todavia no estan asignados.
+     */
+    public function query_contratos_disponibles_para_asignar()
+    {
+        $lapso = $this->lapso();
+        $asignados = DB::table('nom_empleados_del_documento')
+            ->where('nom_doc_encabezado_id', $this->id)
+            ->pluck('nom_contrato_id');
+
+        if ($asignados instanceof \Illuminate\Support\Collection) {
+            $asignados = $asignados->toArray();
+        } else {
+            $asignados = (array)$asignados;
+        }
+
+        return NomContrato::join('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
+            ->where('core_terceros.core_empresa_id', $this->core_empresa_id)
+            ->where('nom_contratos.estado', 'Activo')
+            ->where('nom_contratos.fecha_ingreso', '<=', $lapso->fecha_final)
+            ->where(function ($query) use ($lapso) {
+                $query->whereNull('nom_contratos.contrato_hasta')
+                    ->orWhere('nom_contratos.contrato_hasta', '')
+                    ->orWhere('nom_contratos.contrato_hasta', '0000-00-00')
+                    ->orWhere('nom_contratos.contrato_hasta', '>=', $lapso->fecha_inicial);
+            })
+            ->whereNotIn('nom_contratos.id', $asignados)
+            ->select('nom_contratos.*');
     }
 
     public static function get_datos_asignacion()

@@ -110,35 +110,14 @@
 
             <hr>
 
-            <?php
-                $saldoPendientePedidosAbiertos = 0;
-                foreach ($stay->orders as $order) {
-                    if ($order->status == App\Hotel\HotelOrderHeader::STATUS_ABIERTO) {
-                        foreach ($order->lines as $line) {
-                            $saldoPendientePedidosAbiertos += (float)$line->line_total;
-                        }
-                    }
-                }
-
-                $saldoAnticiposDisponibles = 0;
-                if (isset($anticipos) && is_array($anticipos)) {
-                    foreach ($anticipos as $anticipo) {
-                        $saldoAnticipo = isset($anticipo['saldo_pendiente']) ? (float)$anticipo['saldo_pendiente'] : 0;
-                        if ($saldoAnticipo < 0) {
-                            $saldoAnticiposDisponibles += abs($saldoAnticipo);
-                        }
-                    }
-                }
-
-                $saldoPendienteNeto = max(0, $saldoPendientePedidosAbiertos - $saldoAnticiposDisponibles);
-            ?>
             <div class="alert alert-info" style="font-size:18px; font-weight:bold;">
                 Saldo x Cobrar:
                 <span class="pull-right">$ {{ number_format($saldoPendienteNeto, 2, ',', '.') }}</span>
                 <div class="clearfix"></div>
                 <small style="font-weight:normal;">
-                    Pedidos: $ {{ number_format($saldoPendientePedidosAbiertos, 2, ',', '.') }}
-                    | Anticipos/Abonos: $ {{ number_format($saldoAnticiposDisponibles, 2, ',', '.') }}
+                    Pedidos: $ {{ number_format($saldoPedidos, 2, ',', '.') }}
+                    | Facturas crédito: $ {{ number_format($saldoFacturasCredito, 2, ',', '.') }}
+                    | Anticipos/Abonos: $ {{ number_format($saldoAnticipos, 2, ',', '.') }}
                 </small>
             </div>
 
@@ -196,17 +175,77 @@
                         @endif
                         <tr>
                             <td colspan="4" class="text-right"><strong>Pedidos</strong></td>
-                            <td class="text-right"><strong>{{ number_format($saldoPendientePedidosAbiertos, 2, ',', '.') }}</strong></td>
+                            <td class="text-right"><strong>{{ number_format($saldoPedidos, 2, ',', '.') }}</strong></td>
+                            <td colspan="2"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Facturas crédito</strong></td>
+                            <td class="text-right"><strong>{{ number_format($saldoFacturasCredito, 2, ',', '.') }}</strong></td>
                             <td colspan="2"></td>
                         </tr>
                         <tr>
                             <td colspan="4" class="text-right"><strong>Anticipos/Abonos</strong></td>
-                            <td class="text-right"><strong>- {{ number_format($saldoAnticiposDisponibles, 2, ',', '.') }}</strong></td>
+                            <td class="text-right"><strong>- {{ number_format($saldoAnticipos, 2, ',', '.') }}</strong></td>
                             <td colspan="2"></td>
                         </tr>
                         <tr>
                             <td colspan="4" class="text-right"><strong>Saldo x Cobrar</strong></td>
                             <td class="text-right"><strong>{{ number_format($saldoPendienteNeto, 2, ',', '.') }}</strong></td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row" style="margin-top:25px;">
+                <div class="col-sm-8"><h4>Facturas crédito pendientes por cobrar</h4></div>
+                <div class="col-sm-4 text-right">
+                    @if(count($facturasCredito) > 0)
+                        <a href="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/receivables/payment')) }}" class="btn btn-success">
+                            <i class="fa fa-money"></i> Registrar pago
+                        </a>
+                    @endif
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Fecha</th>
+                            <th>Vencimiento</th>
+                            <th>Detalle</th>
+                            <th class="text-right">Valor documento</th>
+                            <th class="text-right">Valor pagado</th>
+                            <th class="text-right">Saldo pendiente</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($facturasCredito as $facturaCredito)
+                            <tr>
+                                <td>{{ $facturaCredito['documento'] }}</td>
+                                <td>{{ $facturaCredito['fecha'] }}</td>
+                                <td>{{ $facturaCredito['fecha_vencimiento'] }}</td>
+                                <td>{{ $facturaCredito['detalle'] }}</td>
+                                <td class="text-right">{{ number_format($facturaCredito['valor_documento'], 2, ',', '.') }}</td>
+                                <td class="text-right">{{ number_format($facturaCredito['valor_pagado'], 2, ',', '.') }}</td>
+                                <td class="text-right"><strong>{{ number_format($facturaCredito['saldo_pendiente'], 2, ',', '.') }}</strong></td>
+                                <td>{{ $facturaCredito['estado'] }}</td>
+                                <td>
+                                    <a href="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/receivables/payment')) }}" class="btn btn-success btn-xs">
+                                        <i class="fa fa-money"></i> Pagar
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                        @if(count($facturasCredito) == 0)
+                            <tr><td colspan="9">El huésped no tiene facturas crédito pendientes por cobrar.</td></tr>
+                        @endif
+                        <tr>
+                            <td colspan="6" class="text-right"><strong>Total facturas crédito</strong></td>
+                            <td class="text-right"><strong>{{ number_format($saldoFacturasCredito, 2, ',', '.') }}</strong></td>
                             <td colspan="2"></td>
                         </tr>
                     </tbody>

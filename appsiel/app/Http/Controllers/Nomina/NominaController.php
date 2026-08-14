@@ -19,13 +19,17 @@ use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
+use App\Nomina\Exceptions\RetiroPersonalizadoException;
 use App\Nomina\Services\Cotizante51Service;
 use App\Nomina\Services\LiquidacionPorTurnosService;
 use App\Nomina\Services\ParametroLegalService;
+use App\Nomina\Services\RetiroPersonalizadoNominaService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 use Maatwebsite\Excel\Facades\Excel as Excel;
 
@@ -99,6 +103,8 @@ class NominaController extends TransaccionController
 
         (new ParametroLegalService())->aplicarParametrosEnConfig($documento->fecha);
 
+        $cantidad_registros_antes = NomDocRegistro::where('nom_doc_encabezado_id', $documento->id)->count();
+
         // Se obtienen los Empleados del documento
         $empleados_documento = $documento->empleados;
 
@@ -124,7 +130,8 @@ class NominaController extends TransaccionController
 
         $this->actualizar_totales_documento($id);
 
-        $message = $this->get_message( $this->registros_procesados );
+        $cantidad_registros_despues = NomDocRegistro::where('nom_doc_encabezado_id', $documento->id)->count();
+        $message = $this->get_message(max(0, $cantidad_registros_despues - $cantidad_registros_antes));
 
         return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message', $message );
     }
@@ -133,10 +140,10 @@ class NominaController extends TransaccionController
     {
         if ( $registros_procesados > 0 )
         {
-            return 'Liquidación realizada. Se procesaron '.$this->registros_procesados.' registros. Debe ejecutar NUEVAMENTE hasta llegar a cero (0).';
+            return 'Liquidación automática finalizada correctamente. Se generaron '.$registros_procesados.' registros en una sola ejecución.';
         }
 
-        return 'Liquidación Finalizada correctamente. No hay más registros por procesar.';
+        return 'Liquidación automática finalizada correctamente. No se encontraron registros nuevos por generar.';
         
     }
     
@@ -208,6 +215,8 @@ class NominaController extends TransaccionController
 
         $documento = NomDocEncabezado::find($id);
 
+        $cantidad_registros_antes = NomDocRegistro::where('nom_doc_encabezado_id', $documento->id)->count();
+
         // Se obtienen los Empleados del documento
         $empleados_documento = $documento->empleados;
 
@@ -231,7 +240,8 @@ class NominaController extends TransaccionController
 
         $this->actualizar_totales_documento($id);
 
-        $message = $this->get_message( $this->registros_procesados );
+        $cantidad_registros_despues = NomDocRegistro::where('nom_doc_encabezado_id', $documento->id)->count();
+        $message = $this->get_message(max(0, $cantidad_registros_despues - $cantidad_registros_antes));
 
         return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message', $message );
     }
@@ -263,8 +273,14 @@ class NominaController extends TransaccionController
         $reg_siguiente = NomDocEncabezado::where('id', '>', $encabezado_doc_id)->min('id');
         
         $encabezado_doc =  NomDocEncabezado::get_un_registro( $encabezado_doc_id );
+        $lapso_documento = $encabezado_doc->lapso();
 
-        $empleados = $encabezado_doc->empleados()->with('tercero')->get();
+        $empleados = $encabezado_doc->empleados()
+            ->join('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
+            ->with('tercero')
+            ->select('nom_contratos.*')
+            ->orderBy('core_terceros.descripcion', 'ASC')
+            ->get();
 
         $conceptos = $encabezado_doc->conceptos_liquidados();
 
@@ -295,7 +311,11 @@ class NominaController extends TransaccionController
 
         $registros_contabilidad = $encabezado_doc->get_movimiento_contable();
 
-        return view( 'nomina.show', compact( 'reg_anterior', 'reg_siguiente', 'miga_pan', 'empleados', 'conceptos', 'encabezado_doc', 'encabezado_doc_id', 'tabla', 'opciones', 'registro_modelo_padre_id', 'titulo_tab', 'empresa', 'ciudad', 'descripcion_transaccion', 'registros_contabilidad', 'totales_por_empleado_concepto', 'totales_por_empleado', 'totales_por_concepto' ) ); 
+        $opciones_retiro_personalizado = $encabezado_doc->esta_activo_para_transacciones()
+            ? (new RetiroPersonalizadoNominaService())->opciones($encabezado_doc)
+            : [];
+
+        return view( 'nomina.show', compact( 'reg_anterior', 'reg_siguiente', 'miga_pan', 'empleados', 'conceptos', 'encabezado_doc', 'encabezado_doc_id', 'lapso_documento', 'tabla', 'opciones', 'registro_modelo_padre_id', 'titulo_tab', 'empresa', 'ciudad', 'descripcion_transaccion', 'registros_contabilidad', 'totales_por_empleado_concepto', 'totales_por_empleado', 'totales_por_concepto', 'opciones_retiro_personalizado' ) );
 
     }
 
@@ -408,6 +428,19 @@ class NominaController extends TransaccionController
                 continue;
             }
 
+            // El apoyo de sostenimiento de los pasantes se crea desde la estrategia
+            // TiempoLaborado (modo 1), aunque el concepto configurado sea manual.
+            // Por eso debe retirarse como un registro automático de tiempo laborado.
+            if (
+                $registro->concepto != null &&
+                $registro->contrato->es_pasante_sena &&
+                (int)$registro->nom_concepto_id === (int)config('nomina.concepto_a_pagar_pasante_sena')
+            ) {
+                $liquidacion = new LiquidacionConcepto($registro->concepto->id, $registro->contrato, $documento_nomina);
+                $liquidacion->retirar(1, $registro);
+                continue;
+            }
+
             if ( $registro->concepto != null )
             {
                 if ( in_array( $registro->concepto->modo_liquidacion_id, $this->array_ids_modos_liquidacion_automaticos) )
@@ -421,7 +454,94 @@ class NominaController extends TransaccionController
 
         $this->actualizar_totales_documento($id);
 
-        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'mensaje_error','Registros automáticos retirados correctamente.' );
+        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message','Registros automáticos retirados correctamente.' );
+    }
+
+    public function retirar_personalizado(Request $request, $nom_doc_encabezado_id)
+    {
+        $reglas = [
+            'cantidad_esperada' => 'required|integer|min:1',
+            'confirmar_retiro' => 'required|accepted',
+        ];
+
+        if ($request->grupo_empleado_id !== null && $request->grupo_empleado_id !== '') {
+            $reglas['grupo_empleado_id'] = 'integer|min:0';
+        }
+        if ($request->nom_contrato_id !== null && $request->nom_contrato_id !== '') {
+            $reglas['nom_contrato_id'] = 'integer|min:1';
+        }
+        if ($request->nom_concepto_id !== null && $request->nom_concepto_id !== '') {
+            $reglas['nom_concepto_id'] = 'integer|min:1';
+        }
+
+        $validator = Validator::make($request->all(), $reglas, [
+            'confirmar_retiro.accepted' => 'Debe confirmar el retiro.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'ok' => false,
+                'mensaje_error' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        if (
+            ($request->grupo_empleado_id === null || $request->grupo_empleado_id === '') &&
+            ($request->nom_contrato_id === null || $request->nom_contrato_id === '') &&
+            ($request->nom_concepto_id === null || $request->nom_concepto_id === '')
+        ) {
+            return response()->json([
+                'ok' => false,
+                'mensaje_error' => 'Debe seleccionar al menos un grupo, empleado o concepto.',
+            ], 422);
+        }
+
+        $documento = NomDocEncabezado::find((int) $nom_doc_encabezado_id);
+        if (is_null($documento)) {
+            return response()->json(['ok' => false, 'mensaje_error' => 'El documento de nómina no existe.'], 404);
+        }
+
+        if (Auth::check() && (int) $documento->core_empresa_id !== (int) Auth::user()->empresa_id) {
+            return response()->json(['ok' => false, 'mensaje_error' => 'No está autorizado para modificar este documento.'], 403);
+        }
+
+        if (!$documento->esta_activo_para_transacciones()) {
+            return response()->json([
+                'ok' => false,
+                'mensaje_error' => 'El documento de nómina no puede modificarse porque no está en estado Activo.',
+            ], 422);
+        }
+
+        (new ParametroLegalService())->aplicarParametrosEnConfig($documento->fecha);
+
+        try {
+            $resultado = (new RetiroPersonalizadoNominaService())->retirar(
+                $documento,
+                $request->grupo_empleado_id,
+                $request->nom_contrato_id,
+                $request->nom_concepto_id,
+                $request->cantidad_esperada
+            );
+
+            return response()->json(['ok' => true] + $resultado + [
+                'mensaje' => $resultado['cantidad_retirada'] . ' registro(s) retirado(s) correctamente.',
+            ]);
+        } catch (RetiroPersonalizadoException $e) {
+            return response()->json(['ok' => false, 'mensaje_error' => $e->getMessage()], 422);
+        } catch (\Throwable $e) {
+            Log::error('Nómina: error en retiro personalizado.', [
+                'documento_id' => $documento->id,
+                'grupo_empleado_id' => $request->grupo_empleado_id,
+                'nom_contrato_id' => $request->nom_contrato_id,
+                'nom_concepto_id' => $request->nom_concepto_id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'ok' => false,
+                'mensaje_error' => 'No fue posible completar el retiro. No se modificó ningún registro.',
+            ], 500);
+        }
     }
 
     function actualizar_totales_documento($nom_doc_encabezado_id)
@@ -549,12 +669,27 @@ class NominaController extends TransaccionController
     // ASIGNACIÓN DE EMPLEADO A UN DOCUMENTO DE LIQUIDACION
     public function guardar_asignacion(Request $request)
     {
+        if ($request->accion_masiva === 'agregar_empleados') {
+            return $this->agregar_empleados_documento($request, $request->nom_doc_encabezado_id);
+        }
+
+        if ($request->accion_masiva === 'retirar_empleados') {
+            return $this->retirar_empleados_documento($request, $request->nom_doc_encabezado_id);
+        }
+
         // Se obtiene el modelo "Padre"
         $modelo = Modelo::find($request->url_id_modelo);
 
         $datos = app($modelo->name_space)->get_datos_asignacion();
 
         $documento_nomina = NomDocEncabezado::find( (int)$request->registro_modelo_padre_id );
+        if (is_null($documento_nomina)) {
+            return response()->json([
+                'ok' => false,
+                'mensaje_error' => 'El documento de nómina no existe.'
+            ], 404);
+        }
+
         if ( !$documento_nomina->esta_activo_para_transacciones() ) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
@@ -577,12 +712,26 @@ class NominaController extends TransaccionController
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'ok' => false,
-                    'mensaje_error' => 'El empleado ya estÃ¡ asignado a este documento.'
+                    'mensaje_error' => 'El empleado ya está asignado a este documento.'
                 ], 422);
             }
 
             return redirect( 'nomina/' . $request->registro_modelo_padre_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion )
                 ->with('mensaje_error', 'El empleado ya está asignado a este documento.');
+        }
+
+        $contrato = $documento_nomina->query_contratos_disponibles_para_asignar()
+            ->where('nom_contratos.id', (int)$request->registro_modelo_hijo_id)
+            ->first();
+
+        if (is_null($contrato)) {
+            $mensaje = 'El contrato no se puede agregar. Verifique que esté activo, pertenezca a la empresa y que sus fechas coincidan con el lapso del documento.';
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['ok' => false, 'mensaje_error' => $mensaje], 422);
+            }
+
+            return redirect( 'nomina/' . $request->registro_modelo_padre_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion )
+                ->with('mensaje_error', $mensaje);
         }
 
         $orden = $request->nombre_columna1;
@@ -619,6 +768,164 @@ class NominaController extends TransaccionController
         }
 
         return redirect( 'nomina/' . $request->registro_modelo_padre_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion )->with('flash_message', 'Empleado AGREGADO correctamente al documento.');
+    }
+
+    /**
+     * Agrega en bloque todos los contratos vigentes que aun no pertenecen al documento.
+     */
+    public function agregar_empleados_documento(Request $request, $nom_doc_encabezado_id)
+    {
+        $documento = NomDocEncabezado::find((int)$nom_doc_encabezado_id);
+        $error = $this->validar_documento_para_gestion_empleados($documento);
+        if (!is_null($error)) {
+            return $error;
+        }
+
+        $contratos = $documento->query_contratos_disponibles_para_asignar()
+            ->with('tercero')
+            ->orderBy('core_terceros.descripcion')
+            ->get();
+
+        if ($contratos->isEmpty()) {
+            return $this->respuesta_tabla_empleados(
+                $documento->id,
+                $request->url_id_modelo,
+                $request->url_id,
+                $request->url_id_transaccion,
+                'No hay contratos pendientes que cumplan las fechas del documento.',
+                ['contratos_agregados' => [], 'cantidad_agregados' => 0]
+            );
+        }
+
+        $contratos_agregados = [];
+        DB::transaction(function () use ($documento, $contratos, &$contratos_agregados) {
+            $ultimo_orden = DB::table('nom_empleados_del_documento')
+                ->where('nom_doc_encabezado_id', $documento->id)
+                ->max('orden');
+            $orden = is_null($ultimo_orden) ? 1 : ((int)$ultimo_orden + 1);
+
+            $filas = [];
+            $ids = [];
+            foreach ($contratos as $contrato) {
+                $filas[] = [
+                    'orden' => $orden++,
+                    'nom_doc_encabezado_id' => $documento->id,
+                    'nom_contrato_id' => $contrato->id
+                ];
+                $ids[] = $contrato->id;
+                $contratos_agregados[] = [
+                    'id' => $contrato->id,
+                    'identificacion' => $contrato->tercero->numero_identificacion,
+                    'nombre' => $contrato->tercero->descripcion
+                ];
+            }
+
+            DB::table('nom_empleados_del_documento')->insert($filas);
+
+            if ($documento->tipo_liquidacion == 'terminacion_contrato') {
+                NomContrato::whereIn('id', $ids)->update([
+                    'estado' => 'Retirado',
+                    'contrato_hasta' => $documento->fecha
+                ]);
+            }
+        });
+
+        return $this->respuesta_tabla_empleados(
+            $documento->id,
+            $request->url_id_modelo,
+            $request->url_id,
+            $request->url_id_transaccion,
+            count($contratos_agregados) . ' empleado(s) agregado(s) correctamente.',
+            [
+                'contratos_agregados' => $contratos_agregados,
+                'cantidad_agregados' => count($contratos_agregados)
+            ]
+        );
+    }
+
+    /**
+     * Retira en bloque solo empleados que no tengan conceptos liquidados.
+     */
+    public function retirar_empleados_documento(Request $request, $nom_doc_encabezado_id)
+    {
+        $documento = NomDocEncabezado::find((int)$nom_doc_encabezado_id);
+        $error = $this->validar_documento_para_gestion_empleados($documento);
+        if (!is_null($error)) {
+            return $error;
+        }
+
+        $asignados = DB::table('nom_empleados_del_documento')
+            ->where('nom_doc_encabezado_id', $documento->id)
+            ->pluck('nom_contrato_id');
+        $asignados = $asignados instanceof \Illuminate\Support\Collection ? $asignados->toArray() : (array)$asignados;
+
+        $protegidos = [];
+        if (!empty($asignados)) {
+            $protegidos = NomDocRegistro::where('nom_doc_encabezado_id', $documento->id)
+                ->whereIn('nom_contrato_id', $asignados)
+                ->distinct()
+                ->pluck('nom_contrato_id');
+            $protegidos = $protegidos instanceof \Illuminate\Support\Collection ? $protegidos->toArray() : (array)$protegidos;
+        }
+
+        $removibles = array_values(array_diff($asignados, $protegidos));
+
+        DB::transaction(function () use ($documento, $removibles) {
+            if (empty($removibles)) {
+                return;
+            }
+
+            DB::table('nom_empleados_del_documento')
+                ->where('nom_doc_encabezado_id', $documento->id)
+                ->whereIn('nom_contrato_id', $removibles)
+                ->delete();
+
+            if ($documento->tipo_liquidacion == 'terminacion_contrato') {
+                NomContrato::whereIn('id', $removibles)->update(['estado' => 'Activo']);
+            }
+        });
+
+        $mensaje = count($removibles) . ' empleado(s) retirado(s).';
+        if (!empty($protegidos)) {
+            $mensaje .= ' ' . count($protegidos) . ' empleado(s) se conservaron porque tienen conceptos liquidados.';
+        }
+        if (empty($asignados)) {
+            $mensaje = 'El documento no tiene empleados asignados.';
+        }
+
+        return $this->respuesta_tabla_empleados(
+            $documento->id,
+            $request->url_id_modelo,
+            $request->url_id,
+            $request->url_id_transaccion,
+            $mensaje,
+            [
+                'contratos_retirados' => $removibles,
+                'cantidad_retirados' => count($removibles),
+                'cantidad_protegidos' => count($protegidos),
+                'tipo_mensaje' => empty($protegidos) ? 'success' : 'warning'
+            ]
+        );
+    }
+
+    protected function validar_documento_para_gestion_empleados($documento)
+    {
+        if (is_null($documento)) {
+            return response()->json(['ok' => false, 'mensaje_error' => 'El documento de nómina no existe.'], 404);
+        }
+
+        if (Auth::check() && (int)$documento->core_empresa_id !== (int)Auth::user()->empresa_id) {
+            return response()->json(['ok' => false, 'mensaje_error' => 'No está autorizado para modificar este documento.'], 403);
+        }
+
+        if (!$documento->esta_activo_para_transacciones()) {
+            return response()->json([
+                'ok' => false,
+                'mensaje_error' => 'El documento de nómina no puede modificarse porque no está en estado Activo.'
+            ], 422);
+        }
+
+        return null;
     }
 
     // ELIMINACIÓN DE EMPLEADO DE UN DOCUMENTO DE LIQUIDACION
@@ -677,7 +984,7 @@ class NominaController extends TransaccionController
         return redirect( 'nomina/' . $nom_doc_encabezado_id . '?id=' . $id_app . '&id_modelo=' . $id_modelo_padre)->with('flash_message', 'Empleado RETIRADO correctamente del documento.');
     }
 
-    protected function respuesta_tabla_empleados($nom_doc_encabezado_id, $id_modelo_padre, $id_app, $id_transaccion, $mensaje)
+    protected function respuesta_tabla_empleados($nom_doc_encabezado_id, $id_modelo_padre, $id_app, $id_transaccion, $mensaje, array $datos_adicionales = [])
     {
         request()->merge([
             'id' => $id_app,
@@ -691,12 +998,12 @@ class NominaController extends TransaccionController
         $modelo_crud = new ModeloController;
         $respuesta = $modelo_crud->get_tabla_relacionada($modelo, $documento_nomina);
 
-        return response()->json([
+        return response()->json(array_merge([
             'ok' => true,
             'mensaje' => $mensaje,
             'tabla' => $respuesta['tabla'],
             'opciones' => $respuesta['opciones']
-        ]);
+        ], $datos_adicionales));
     }
 
     public function export_registros_xlsx($encabezado_doc_id)

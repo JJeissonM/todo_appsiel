@@ -10,8 +10,12 @@ use App\Nomina\NomDocRegistro;
 use App\Nomina\ParametroLegal;
 use App\Nomina\CambioSalario;
 use App\Nomina\ParametrosRetefuenteEmpleado;
-use Illuminate\Pagination\LengthAwarePaginator;
+use App\Compras\ProveedorCuentaBancaria;
+use App\Core\Ciudad;
+use App\Tesoreria\TesoEntidadFinanciera;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class NomContrato extends Model
 {
@@ -29,6 +33,7 @@ class NomContrato extends Model
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila","otros_enlaces":"[{\"url\":\"nomina/duplicar_contrato_retirado/id_fila?id=17&id_modelo=83\",\"title\":\"Duplicar contrato retirado\",\"color_bootstrap\":\"\",\"faicon\":\"copy\",\"size\":\"\",\"tag_html\":\"a\"}]"}';
     public $archivo_js = 'js/nomina/nom_contratos.js';
+    public $vistas = '{"show":"nomina.contratos.show"}';
 
     public function tercero()
     {
@@ -87,7 +92,37 @@ class NomContrato extends Model
 
     public function registros_documentos_nomina()
     {
-        return $this->hasMany(NomDocRegistro::class, 'core_tercero_id', 'core_tercero_id');
+        return $this->hasMany(NomDocRegistro::class, 'nom_contrato_id', 'id');
+    }
+
+    public function cuentas_bancarias()
+    {
+        return $this->hasMany(ProveedorCuentaBancaria::class, 'tercero_id', 'core_tercero_id');
+    }
+
+    public function get_datos_adicionales_show($contrato)
+    {
+        $cuentas_bancarias = $contrato->cuentas_bancarias()
+            ->with('entidad_financiera', 'ciudad')
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        $entidades_financieras = TesoEntidadFinanciera::where('estado', 'Activo')
+            ->orderBy('descripcion')
+            ->get();
+
+        $ciudades = Ciudad::leftJoin('core_departamentos', 'core_departamentos.id', '=', 'core_ciudades.core_departamento_id')
+            ->select(
+                'core_ciudades.id',
+                'core_ciudades.descripcion as ciudad',
+                'core_departamentos.descripcion as departamento'
+            )
+            ->orderBy('core_ciudades.descripcion')
+            ->get();
+
+        return compact('cuentas_bancarias', 'entidades_financieras', 'ciudades') + [
+            'url_base_cuentas_bancarias' => 'nom_contratos/' . $contrato->id . '/cuentas_bancarias'
+        ];
     }
 
     public function prestaciones_consolidadas()
@@ -210,9 +245,7 @@ class NomContrato extends Model
 
     public static function consultar_registros($nro_registros, $search)
     {
-        $collection =  NomContrato::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
-            ->leftJoin('nom_cargos', 'nom_cargos.id', '=', 'nom_contratos.cargo_id')
-            ->leftJoin('nom_grupos_empleados', 'nom_grupos_empleados.id', '=', 'nom_contratos.grupo_empleado_id')
+        return self::aplicar_filtros_index(self::query_listado()
             ->select(
                 'core_terceros.numero_identificacion AS campo1',
                 'core_terceros.descripcion AS campo2',
@@ -223,48 +256,9 @@ class NomContrato extends Model
                 'nom_contratos.contrato_hasta AS campo7',
                 'nom_contratos.estado AS campo8',
                 'nom_contratos.id AS campo9'
-            )
-            ->where("nom_contratos.clase_contrato", "<>", "por_turnos")
+            ), $search)
             ->orderBy('nom_contratos.created_at', 'DESC')
-            ->get();
-
-        //hacemos el filtro de $search si $search tiene contenido
-        $nuevaColeccion = [];
-        if (count($collection) > 0) {
-            if (strlen($search) > 0) {
-                $nuevaColeccion = $collection->filter(function ($c) use ($search) {
-                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8, $c->campo9], $search)) {
-                        return $c;
-                    }
-                });
-            } else {
-                $nuevaColeccion = $collection;
-            }
-        }
-
-        $request = request(); //obtenemos el Request para obtener la url y la query builder
-
-        if (empty($nuevaColeccion)) {
-            return $array = new LengthAwarePaginator([], 1, 1, 1, [
-                'path' => $request->url(),
-                'query' => $request->query(),
-            ]);
-        }
-
-        //obtenemos el numero de la página actual, por defecto 1
-        $page = 1;
-        if (isset($_GET['page'])) {
-            $page = $_GET['page'];
-        }
-        $total = count($nuevaColeccion); //Total para contar los registros mostrados
-        $starting_point = ($page * $nro_registros) - $nro_registros; // punto de inicio para mostrar registros
-        $array = $nuevaColeccion->slice($starting_point, $nro_registros); //indicamos desde donde y cuantos registros mostrar
-        $array = new LengthAwarePaginator($array, $total, $nro_registros, $page, [
-            'path' => $request->url(),
-            'query' => $request->query(),
-        ]); //finalmente se pagina y organiza la coleccion a devolver con todos los datos
-
-        return $array;
+            ->paginate($nro_registros);
     }
 
     /**
@@ -290,12 +284,7 @@ class NomContrato extends Model
 
     public static function sqlString($search)
     {
-        $string = NomContrato::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
-            ->leftJoin('nom_cargos', 'nom_cargos.id', '=', 'nom_contratos.cargo_id')
-            ->leftJoin('nom_grupos_empleados', 'nom_grupos_empleados.id', '=', 'nom_contratos.grupo_empleado_id')
-            ->leftJoin('nom_entidades as entidad_salud', 'entidad_salud.id', '=', 'nom_contratos.entidad_salud_id')
-            ->leftJoin('nom_entidades as entidad_pension', 'entidad_pension.id', '=', 'nom_contratos.entidad_pension_id')
-            ->leftJoin('nom_entidades as entidad_cesantias', 'entidad_cesantias.id', '=', 'nom_contratos.entidad_cesantias_id')
+        $query = self::aplicar_filtros_index(self::query_listado()
             ->select(
                 'core_terceros.numero_identificacion AS NUM_IDENTIFICACIÓN',
                 'core_terceros.descripcion AS EMPLEADO',
@@ -309,18 +298,141 @@ class NomContrato extends Model
                 'entidad_cesantias.descripcion AS FONDO_CESANTIAS',
                 'nom_contratos.id AS ID',
                 'nom_contratos.estado AS ESTADO'
+            ), $search)
+            ->orderBy('nom_contratos.created_at', 'DESC');
+
+        return self::sql_con_bindings($query);
+    }
+
+    /**
+     * Configuracion del formulario de filtros que se muestra en el index generico.
+     */
+    public static function get_filtros_avanzados_index()
+    {
+        $contratos = self::opciones_contrato_filtro();
+        $grupos = self::opciones_filtro('nom_grupos_empleados.id', 'nom_grupos_empleados.descripcion');
+        $cargos = self::opciones_filtro('nom_cargos.id', 'nom_cargos.descripcion');
+        $estados = self::opciones_filtro('nom_contratos.estado', 'nom_contratos.estado');
+
+        return [
+            'filtro_empleado' => ['label' => 'Empleado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $contratos],
+            'filtro_grupo_empleado' => ['label' => 'Grupo empleado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $grupos],
+            'filtro_cargo' => ['label' => 'Cargo', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $cargos],
+            'filtro_estado' => ['label' => 'Estado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $estados],
+            'filtro_fecha_ingreso' => ['label' => 'Fecha ingreso', 'type' => 'date'],
+            'filtro_contrato_hasta' => ['label' => 'Contrato hasta', 'type' => 'date']
+        ];
+    }
+
+    protected static function query_listado()
+    {
+        $query = NomContrato::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
+            ->leftJoin('nom_cargos', 'nom_cargos.id', '=', 'nom_contratos.cargo_id')
+            ->leftJoin('nom_grupos_empleados', 'nom_grupos_empleados.id', '=', 'nom_contratos.grupo_empleado_id')
+            ->leftJoin('nom_entidades as entidad_salud', 'entidad_salud.id', '=', 'nom_contratos.entidad_salud_id')
+            ->leftJoin('nom_entidades as entidad_pension', 'entidad_pension.id', '=', 'nom_contratos.entidad_pension_id')
+            ->leftJoin('nom_entidades as entidad_cesantias', 'entidad_cesantias.id', '=', 'nom_contratos.entidad_cesantias_id')
+            ->where('nom_contratos.clase_contrato', '<>', 'por_turnos');
+
+        if (Auth::check()) {
+            $query->where('core_terceros.core_empresa_id', Auth::user()->empresa_id);
+        }
+
+        return $query;
+    }
+
+    protected static function aplicar_filtros_index($query, $search)
+    {
+        if ($search !== '') {
+            $query->where(function ($subquery) use ($search) {
+                $like = '%' . $search . '%';
+                $subquery->where('core_terceros.numero_identificacion', 'LIKE', $like)
+                    ->orWhere('core_terceros.descripcion', 'LIKE', $like)
+                    ->orWhere('nom_grupos_empleados.descripcion', 'LIKE', $like)
+                    ->orWhere('nom_cargos.descripcion', 'LIKE', $like)
+                    ->orWhere('nom_contratos.sueldo', 'LIKE', $like)
+                    ->orWhere('nom_contratos.fecha_ingreso', 'LIKE', $like)
+                    ->orWhere('nom_contratos.contrato_hasta', 'LIKE', $like)
+                    ->orWhere('nom_contratos.estado', 'LIKE', $like)
+                    ->orWhere('nom_contratos.id', 'LIKE', $like);
+            });
+        }
+
+        $filtros = [
+            'filtro_empleado' => 'nom_contratos.id',
+            'filtro_grupo_empleado' => 'nom_contratos.grupo_empleado_id',
+            'filtro_cargo' => 'nom_contratos.cargo_id',
+            'filtro_estado' => 'nom_contratos.estado',
+            'filtro_fecha_ingreso' => 'nom_contratos.fecha_ingreso',
+            'filtro_contrato_hasta' => 'nom_contratos.contrato_hasta'
+        ];
+
+        foreach ($filtros as $parametro => $columna) {
+            $valor = trim((string) Input::get($parametro, ''));
+            if ($valor !== '') {
+                $query->where($columna, $valor);
+            }
+        }
+
+        return $query;
+    }
+
+    protected static function opciones_contrato_filtro()
+    {
+        $opciones = self::query_listado()
+            ->select(
+                'nom_contratos.id',
+                'core_terceros.id AS tercero_id',
+                'core_terceros.descripcion',
+                'core_terceros.numero_identificacion',
+                'nom_contratos.sueldo',
+                'nom_contratos.estado'
             )
-            ->where("core_terceros.numero_identificacion", "LIKE", "%$search%")
-            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_grupos_empleados.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_cargos.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.sueldo", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.fecha_ingreso", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.contrato_hasta", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.estado", "LIKE", "%$search%")
-            ->orderBy('nom_contratos.created_at', 'DESC')
-            ->toSql();
-        return str_replace('?', '"%' . $search . '%"', $string);
+            ->orderBy('core_terceros.descripcion')
+            ->orderByRaw("CASE WHEN nom_contratos.estado = 'Activo' THEN 0 ELSE 1 END")
+            ->orderBy('nom_contratos.id', 'DESC')
+            ->get();
+
+        $contratos = [];
+        $terceros_agregados = [];
+        foreach ($opciones as $opcion) {
+            if (isset($terceros_agregados[$opcion->tercero_id])) {
+                continue;
+            }
+
+            $terceros_agregados[$opcion->tercero_id] = true;
+            $contratos[$opcion->id] = $opcion->descripcion
+                . ' (' . $opcion->numero_identificacion . ')'
+                . ' - $' . number_format($opcion->sueldo, 0, ',', '.')
+                . ' - ' . $opcion->estado
+                . ' [Contrato #' . $opcion->id . ']';
+        }
+
+        return $contratos;
+    }
+
+    protected static function opciones_filtro($id, $descripcion)
+    {
+        return self::query_listado()
+            ->whereNotNull($id)
+            ->select($id, $descripcion)
+            ->distinct()
+            ->orderBy($descripcion)
+            ->lists($descripcion, $id)
+            ->all();
+    }
+
+    protected static function sql_con_bindings($query)
+    {
+        $sql = $query->toSql();
+        $pdo = DB::connection()->getPdo();
+
+        foreach ($query->getBindings() as $binding) {
+            $valor = is_numeric($binding) ? $binding : $pdo->quote($binding);
+            $sql = preg_replace('/\?/', $valor, $sql, 1);
+        }
+
+        return $sql;
     }
 
     //Titulo para la exportación en PDF y EXCEL

@@ -367,11 +367,11 @@
                                     @if($dashboardOrder)
                                         <a href="{{ url($hotelUrl::url('hotel/orders/'.$dashboardOrder->id, array('id_modelo' => $orderModelId))) }}" class="btn btn-primary btn-xs"><i class="fa fa-file-invoice"></i> Facturar</a>
                                     @endif
-                                    @if($dashboardOpenOrdersCount > 0)
+                                    @if($stay->check_out_block_message != '')
                                         <button type="button"
                                                 class="btn btn-success btn-xs"
                                                 disabled
-                                                title="No se puede registrar check-out porque la estadia tiene pedidos hoteleros abiertos pendientes por facturar.">
+                                                title="{{ $stay->check_out_block_message }}">
                                             <i class="fa fa-sign-out"></i> Check-out
                                         </button>
                                     @else

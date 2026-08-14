@@ -4,7 +4,6 @@ namespace App\VentasPos\Services;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Core\Services\ResolucionFacturacionService;
-use App\Core\TipoDocApp;
 use App\CxC\CxcAbono;
 use App\CxC\CxcMovimiento;
 use App\Inventarios\InvDocEncabezado;
@@ -33,7 +32,7 @@ class FacturaPosService
         $tipo_doc_app = $pdv->tipo_doc_app;
         if( (int)config('ventas_pos.modulo_fe_activo') )
         {
-            $tipo_doc_app = TipoDocApp::find( (int)config('facturacion_electronica.document_type_id_default') );
+            $tipo_doc_app = (new ElectronicDocumentTypeService())->resolve($pdv);
         }
 
         $obj_resolucion_facturacion = $this->get_obj_resolucion_facturacion( $tipo_doc_app, $pdv->core_empresa_id );
@@ -275,17 +274,12 @@ class FacturaPosService
         ];
     }
 
-    public function get_resolucion_facturacion_electronica()
+    public function get_resolucion_facturacion_electronica($pdv = null)
     {
         $resolucion_facturacion_electronica = null;
         if ( (int)config('ventas_pos.modulo_fe_activo') )
         {
-            $resolucion_facturacion_electronica = ResolucionFacturacion::where([
-                    ['tipo_doc_app_id', '=', config('facturacion_electronica.document_type_id_default')],
-                    ['estado', '=', 'Activo']
-                ])
-                                    ->get()
-                                    ->last();
+            $resolucion_facturacion_electronica = (new ElectronicDocumentTypeService())->getActiveResolution($pdv);
         }
 
         return $resolucion_facturacion_electronica;

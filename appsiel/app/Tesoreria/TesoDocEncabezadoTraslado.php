@@ -5,17 +5,18 @@ namespace App\Tesoreria;
 use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
-use App\VentasPos\Pdv;
+use App\Traits\FiltraRegistrosPorUsuario;
 
 use App\Contabilidad\ContabMovimiento;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class TesoDocEncabezadoTraslado extends TesoDocEncabezado
 {
+    use FiltraRegistrosPorUsuario;
+
     // Apunta a la misma tabla del modelo de Recaudos
     protected $table = 'teso_doc_encabezados';
 
@@ -25,28 +26,32 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
 
     public $vistas = '{"create":"tesoreria.traslados_efectivo.create"}';
 
-    protected static function boot()
+    /**
+     * Valida el PDV antes de crear el traslado mediante el CRUD genérico.
+     * Compatible con el mecanismo de validación de Laravel 5.2.
+     */
+    public function validar_datos_creacion($request, $controller)
     {
-        parent::boot();
+        if (!self::punto_venta_es_requerido($request)) {
+            return;
+        }
 
-        static::creating(function () {
-            if (!self::punto_venta_es_requerido()) {
-                return;
-            }
-
-            $pdv_id = (int) request('pdv_id', 0);
-
-            if ($pdv_id <= 0 || !Pdv::where('id', $pdv_id)->exists()) {
-                throw ValidationException::withMessages([
-                    'pdv_id' => 'El campo Punto de Ventas es obligatorio.'
-                ]);
-            }
-        });
+        $controller->validate($request, [
+            'pdv_id' => 'required|integer|min:1|exists:vtas_pos_puntos_de_ventas,id'
+        ], [
+            'pdv_id.required' => 'El campo Punto de Ventas es obligatorio.',
+            'pdv_id.integer' => 'El Punto de Ventas seleccionado no es válido.',
+            'pdv_id.min' => 'El Punto de Ventas seleccionado no es válido.',
+            'pdv_id.exists' => 'El Punto de Ventas seleccionado no existe.'
+        ]);
     }
 
-    protected static function punto_venta_es_requerido()
+    protected static function punto_venta_es_requerido($request)
     {
-        $modelo_id = (int) request('url_id_modelo', request('id_modelo', 0));
+        $modelo_id = (int)$request->input(
+            'url_id_modelo',
+            $request->input('id_modelo', 0)
+        );
 
         if ($modelo_id <= 0) {
             return false;
@@ -132,11 +137,14 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
     {
         $core_tipo_transaccion_id = 43;
 
-        $collection = TesoDocEncabezadoPago::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+        $query = TesoDocEncabezadoPago::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
                                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
                                     ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-                                    ->where('teso_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
-                                    ->select(
+                                    ->where('teso_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id);
+
+        $query = self::aplicarFiltroCreadoPor($query, 'teso_doc_encabezados.creado_por');
+
+        $collection = $query->select(
                                         'teso_doc_encabezados.fecha AS campo1',
                                         DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo2'),
                                         DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS campo3'),
@@ -153,7 +161,7 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
         if (count($collection) > 0) {
             if (strlen($search) > 0) {
                 $nuevaColeccion = $collection->filter(function ($c) use ($search) {
-                    if ( self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                    if ( self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7], $search)) {
                         return $c;
                     }
                 });
@@ -214,11 +222,14 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
     public static function sqlString($search)
     {
         $core_tipo_transaccion_id = 43;
-        $string = TesoDocEncabezadoPago::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+        $query = TesoDocEncabezadoPago::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
             ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-            ->where('teso_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
-            ->select(
+            ->where('teso_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id);
+
+        $query = self::aplicarFiltroCreadoPor($query, 'teso_doc_encabezados.creado_por');
+
+        $query->select(
                 'teso_doc_encabezados.fecha AS FECHA',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS DOCUMENTO'),
                 DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS TERCERO'),
@@ -226,15 +237,30 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
                 'teso_doc_encabezados.valor_total AS VALOR_TOTAL',
                 'teso_doc_encabezados.estado AS ESTADO'
             )
-            ->where("teso_doc_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")")'), "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('teso_doc_encabezados.created_at', 'DESC')
-            ->toSql();
-        return str_replace('?', '"%' . $search . '%"', $string);
+            ->where(function ($query) use ($search) {
+                $query->where("teso_doc_encabezados.fecha", "LIKE", "%$search%")
+                    ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+                    ->orWhere(DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")")'), "LIKE", "%$search%")
+                    ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
+                    ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
+                    ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%");
+            })
+            ->orderBy('teso_doc_encabezados.created_at', 'DESC');
+
+        return self::reemplazarBindingsSql($query->toSql(), $query->getBindings());
+    }
+
+    protected static function reemplazarBindingsSql($sql, $bindings)
+    {
+        foreach ($bindings as $binding) {
+            $value = is_numeric($binding)
+                ? $binding
+                : "'" . str_replace("'", "''", $binding) . "'";
+
+            $sql = preg_replace('/\?/', $value, $sql, 1);
+        }
+
+        return $sql;
     }
 
     //Titulo para la exportación en PDF y EXCEL

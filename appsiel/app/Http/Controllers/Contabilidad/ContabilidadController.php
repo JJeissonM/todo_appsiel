@@ -478,76 +478,87 @@ class ContabilidadController extends TransaccionController
         $ids_registros_cxc_eliminar = [];
         $ids_registros_cxp_eliminar = [];
 
+        $tiene_lineas_cxc = false;
+        $tiene_lineas_cxp = false;
+
         foreach ($doc_registros as $linea)
         {
-            $tipo_transaccion_linea = 'causacion';
+            // El tipo de transaccion pertenece a la linea del documento. Se usa el
+            // movimiento contable solo como respaldo para documentos historicos.
+            $tipo_transaccion_linea = $linea->tipo_transaccion;
+
+            if ( empty($tipo_transaccion_linea) )
+            {
+                $tipo_transaccion_linea = 'causacion';
+            }
 
             $mov_contab_linea_registro_doc = ContabMovimiento::where( 'id_registro_doc_tipo_transaccion', $linea->id )->get()->first();
             
-            if ( !is_null( $mov_contab_linea_registro_doc ) )
+            if ( $tipo_transaccion_linea == 'causacion' && !is_null( $mov_contab_linea_registro_doc ) )
             {
                 $tipo_transaccion_linea = $mov_contab_linea_registro_doc->tipo_transaccion;
             }
 
-            if ( $tipo_transaccion_linea != 'causacion' )
+            if ( $tipo_transaccion_linea == 'crear_cxc' )
             {
-                switch ( $tipo_transaccion_linea ) {
-                    case 'crear_cxc':
-                        // Verificar si la linea tiene abonos, si tiene no se puede eliminar
-                        $abono_cxc = CxcAbono::where('doc_cxc_transacc_id',$doc_encabezado->core_tipo_transaccion_id)
-                                            ->where('doc_cxc_tipo_doc_id',$doc_encabezado->core_tipo_doc_app_id)
-                                            ->where('doc_cxc_consecutivo',$doc_encabezado->consecutivo)
-                                            ->get()
-                                            ->first();
-
-                        if( is_null( $abono_cxc ) )
-                        {
-                            $linea_movimiento = CxcMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
-                                                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
-                                                            ->where('consecutivo',$doc_encabezado->consecutivo)
-                                                            ->get()
-                                                            ->first();
-                            if ( !is_null( $linea_movimiento ) )
-                            {
-                                $ids_registros_cxc_eliminar[] = $linea_movimiento->id;
-                            }
-                        }else{
-                            $permitir_eliminar = false;
-                        }
-
-                        break;
-                    case 'crear_cxp':
-                        // Verificar si la linea tiene abonos, si tiene no se puede eliminar
-                        $abono_cxp = CxpAbono::where('doc_cxp_transacc_id',$doc_encabezado->core_tipo_transaccion_id)
-                                            ->where('doc_cxp_tipo_doc_id',$doc_encabezado->core_tipo_doc_app_id)
-                                            ->where('doc_cxp_consecutivo',$doc_encabezado->consecutivo)
-                                            ->get()
-                                            ->first();
-
-                        if( is_null( $abono_cxp ) )
-                        {
-                            $linea_movimiento = CxpMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
-                                                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
-                                                            ->where('consecutivo',$doc_encabezado->consecutivo)
-                                                            ->get()
-                                                            ->first();
-                            if ( !is_null( $linea_movimiento ) )
-                            {
-                                $ids_registros_cxp_eliminar[] = $linea_movimiento->id;
-                            }
-                            
-                        }else{
-                            $permitir_eliminar = false;
-                        }
-
-                        break;
-                    
-                    default:
-                        # code...
-                        break;
-                }
+                $tiene_lineas_cxc = true;
             }
 
+            if ( $tipo_transaccion_linea == 'crear_cxp' )
+            {
+                $tiene_lineas_cxp = true;
+            }
+        }
+
+        $wheres_documento = [
+            'core_empresa_id' => $doc_encabezado->core_empresa_id,
+            'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
+            'consecutivo' => $doc_encabezado->consecutivo
+        ];
+
+        if ( $tiene_lineas_cxc )
+        {
+            // Si hay un abono aplicado no se puede anular el documento.
+            $tiene_abonos_cxc = CxcAbono::where('core_empresa_id', $doc_encabezado->core_empresa_id)
+                                        ->where('doc_cxc_transacc_id', $doc_encabezado->core_tipo_transaccion_id)
+                                        ->where('doc_cxc_tipo_doc_id', $doc_encabezado->core_tipo_doc_app_id)
+                                        ->where('doc_cxc_consecutivo', $doc_encabezado->consecutivo)
+                                        ->exists();
+
+            if ( $tiene_abonos_cxc )
+            {
+                $permitir_eliminar = false;
+            } else {
+                // Una nota puede generar varias lineas de CxC. Deben eliminarse
+                // todas, no solamente el primer movimiento encontrado.
+                foreach ( CxcMovimiento::where($wheres_documento)->get(['id']) as $movimiento )
+                {
+                    $ids_registros_cxc_eliminar[] = $movimiento->id;
+                }
+            }
+        }
+
+        if ( $tiene_lineas_cxp )
+        {
+            // Si hay un pago aplicado no se puede anular el documento.
+            $tiene_abonos_cxp = CxpAbono::where('core_empresa_id', $doc_encabezado->core_empresa_id)
+                                        ->where('doc_cxp_transacc_id', $doc_encabezado->core_tipo_transaccion_id)
+                                        ->where('doc_cxp_tipo_doc_id', $doc_encabezado->core_tipo_doc_app_id)
+                                        ->where('doc_cxp_consecutivo', $doc_encabezado->consecutivo)
+                                        ->exists();
+
+            if ( $tiene_abonos_cxp )
+            {
+                $permitir_eliminar = false;
+            } else {
+                // Una nota puede generar varias lineas de CxP. Deben eliminarse
+                // todas, no solamente el primer movimiento encontrado.
+                foreach ( CxpMovimiento::where($wheres_documento)->get(['id']) as $movimiento )
+                {
+                    $ids_registros_cxp_eliminar[] = $movimiento->id;
+                }
+            }
         }
 
         return [ 'permitir_eliminar' => $permitir_eliminar, 'ids_registros_cxc_eliminar' => $ids_registros_cxc_eliminar, 'ids_registros_cxp_eliminar' => $ids_registros_cxp_eliminar];

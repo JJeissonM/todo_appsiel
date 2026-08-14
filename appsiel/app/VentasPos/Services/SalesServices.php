@@ -83,9 +83,18 @@ class SalesServices
 
                     $obj_accou_serv->contabilizar_registro($datos, $contab_cuenta_id, $detalle_operacion, $valor_linea, 0, $teso_caja_id, $teso_cuenta_bancaria_id);
 
-                    if ((int)config('ventas_pos.aplicar_redondeo_adicional_transferencia')) {
-                        $teso_motivo_id = (int)explode("-", $linea->teso_motivo_id)[0];
-                        $motivo = TesoMotivo::find($teso_motivo_id);
+                    $teso_motivo_id = (int)explode("-", $linea->teso_motivo_id)[0];
+                    $motivo = TesoMotivo::find($teso_motivo_id);
+                    $es_recargo_pos = $this->contabilizar_contrapartida_recargo_pos(
+                        $obj_accou_serv,
+                        $datos,
+                        $motivo,
+                        $teso_motivo_id,
+                        $valor_linea,
+                        $detalle_operacion
+                    );
+
+                    if (!$es_recargo_pos && (int)config('ventas_pos.aplicar_redondeo_adicional_transferencia')) {
                         if (!is_null($motivo) && $motivo->teso_tipo_motivo == 'otros-recaudos' && $motivo->movimiento == 'entrada') {
                             $obj_accou_serv->contabilizar_registro($datos, $motivo->contab_cuenta_id, $detalle_operacion . ' - Otros recaudos', 0, $valor_linea);
                         }
@@ -99,7 +108,13 @@ class SalesServices
     {        
         $obj_accou_serv = new AccountingServices();
 
-        $nuevo_valor_total_factura = $encabezado_factura->valor_total;
+        $valor_propina = (new TipService())->get_tip_amount($encabezado_factura);
+        $valor_datafono = (new DatafonoService())->get_datafono_amount($encabezado_factura);
+        $nuevo_valor_total_factura = (float)$encabezado_factura->valor_total
+                                    + (float)$encabezado_factura->valor_ajuste_al_peso
+                                    + (float)$encabezado_factura->valor_total_bolsas
+                                    + $valor_propina
+                                    + $valor_datafono;
 
         $datos = $encabezado_factura->toArray();
 
@@ -158,12 +173,58 @@ class SalesServices
 
                     $obj_accou_serv->contabilizar_registro($datos, $contab_cuenta_id, 'Recontabilizado.', $nuevo_valor_linea, 0, $linea->teso_caja_id, $linea->teso_cuenta_bancaria_id);
 
+                    $teso_motivo_id = (int)$linea->teso_motivo_id;
+                    $motivo = TesoMotivo::find($teso_motivo_id);
+                    $this->contabilizar_contrapartida_recargo_pos(
+                        $obj_accou_serv,
+                        $datos,
+                        $motivo,
+                        $teso_motivo_id,
+                        $nuevo_valor_linea,
+                        'Recontabilizado.'
+                    );
+
                     // Actualizo registro de movimiento tesoreria
                     $linea->valor_movimiento = $nuevo_valor_linea;
                     $linea->save();
                 }
             }
         }
+    }
+
+    protected function contabilizar_contrapartida_recargo_pos($obj_accou_serv, array $datos, $motivo, $teso_motivo_id, $valor_linea, $detalle_operacion)
+    {
+        $labels = [];
+        $motivo_datafono_id = (int)config('ventas_pos.motivo_tesoreria_datafono');
+        $motivo_propina_id = (int)config('ventas_pos.motivo_tesoreria_propinas');
+        if ($motivo_datafono_id > 0) {
+            $labels[$motivo_datafono_id] = 'Comision datafono';
+        }
+        if ($motivo_propina_id > 0) {
+            $labels[$motivo_propina_id] = 'Propina';
+        }
+
+        $teso_motivo_id = (int)$teso_motivo_id;
+        if ($teso_motivo_id <= 0 || !isset($labels[$teso_motivo_id])) {
+            return false;
+        }
+
+        if (is_null($motivo) || $motivo->movimiento != 'entrada' || (int)$motivo->contab_cuenta_id <= 0) {
+            throw new \UnexpectedValueException(
+                'No se pudo contabilizar el recargo POS. Verifique el motivo de Tesoreria para ' .
+                strtolower($labels[$teso_motivo_id]) . ' y su cuenta contrapartida.'
+            );
+        }
+
+        $obj_accou_serv->contabilizar_registro(
+            $datos,
+            $motivo->contab_cuenta_id,
+            $detalle_operacion . ' - ' . $labels[$teso_motivo_id],
+            0,
+            $valor_linea
+        );
+
+        return true;
     }
         
 }

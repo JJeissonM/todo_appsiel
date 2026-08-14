@@ -19,6 +19,15 @@ class NomContratoPorTurno extends NomContrato
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
 
+    /**
+     * Este listado mantiene su consulta especializada y no usa los filtros
+     * avanzados del index de contratos convencionales.
+     */
+    public static function get_filtros_avanzados_index()
+    {
+        return [];
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $collection =  NomContrato::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')

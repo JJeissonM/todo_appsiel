@@ -10,6 +10,7 @@ use App\Sistema\Services\AppDocType;
 use App\Sistema\TipoTransaccion;
 
 use App\Nomina\NomContrato;
+use App\Nomina\NovedadTnl;
 use App\Nomina\ParametroLegal;
 use App\Nomina\ValueObjects\LapsoNomina;
 use Illuminate\Support\Facades\Auth;
@@ -208,6 +209,10 @@ class DocumentoSoporte extends Model
          }
 
          $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / $horas_dia_laboral , 0 );
+
+         if ($one_line['code'] === 'BASICO') {
+            $one_line['days'] = min(30, $one_line['days']);
+         }
       }
       
       if ($concepto->cpto_dian->liquida_horas) {
@@ -303,7 +308,7 @@ class DocumentoSoporte extends Model
          'final-settlement-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
          'issue-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
          'payment-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
-         'accruals' => $this->normalize_accruals_to_send(json_decode($document_header['accruals_json'],true)),
+         'accruals' => $this->normalize_accruals_to_send(json_decode($document_header['accruals_json'],true), $lapso),
          'employee' => json_decode($document_header['employee_json'],true),
          'software' => [
             'pin' => config('nomina.pin_software'),
@@ -322,13 +327,67 @@ class DocumentoSoporte extends Model
 	   
 	   }
 
-      protected function normalize_accruals_to_send($accruals)
+      protected function normalize_accruals_to_send($accruals, LapsoNomina $lapso)
       {
          if (!is_array($accruals)) {
             return [];
          }
 
+         $medical_leave_types = $this->get_medical_leave_types_for_period($lapso);
+
          foreach ($accruals as $key => $line) {
+            if (isset($line['code']) && $line['code'] === 'BASICO' && isset($line['days'])) {
+               $accruals[$key]['days'] = min(30, (float)$line['days']);
+               $line = $accruals[$key];
+            }
+
+            if (isset($line['code']) && $line['code'] === 'VACACION'
+               && isset($line['amount']) && (float)$line['amount'] > 0
+               && (!isset($line['days']) || (float)$line['days'] <= 0)) {
+               $accruals[$key]['code'] = 'VACACION_COMPENSADA';
+               $accruals[$key]['days'] = 15;
+               $accruals[$key]['amount-ns'] = (float)$line['amount'];
+               unset($accruals[$key]['amount']);
+               $line = $accruals[$key];
+            }
+
+            if (isset($line['code']) && $line['code'] === 'VACACION_COMPENSADA') {
+               if (!isset($line['amount-ns']) && isset($line['amount'])) {
+                  $accruals[$key]['amount-ns'] = (float)$line['amount'];
+               }
+
+               unset($accruals[$key]['amount']);
+               $line = $accruals[$key];
+            }
+
+            if (isset($line['code']) && $line['code'] === 'INCAPACIDAD') {
+               $tipo_calculado = empty($medical_leave_types) ? null : array_shift($medical_leave_types);
+
+               if ($tipo_calculado === 'LICENCIA_PATERNIDAD') {
+                  $accruals[$key]['code'] = 'LICENCIA_PATERNIDAD';
+                  unset($accruals[$key]['medical-leave'], $accruals[$key]['medical-leave-type']);
+                  continue;
+               }
+
+               $tipo_almacenado = null;
+
+               if (isset($line['medical-leave']['medical-leave-type'])) {
+                  $tipo_almacenado = NovedadTnl::normalizar_medical_leave_type($line['medical-leave']['medical-leave-type']);
+               } elseif (isset($line['medical-leave-type'])) {
+                  // Compatibilidad con documentos generados antes de usar la estructura medical-leave.
+                  $tipo_almacenado = NovedadTnl::normalizar_medical_leave_type($line['medical-leave-type']);
+               }
+
+               $medical_leave_type = is_null($tipo_almacenado) ? $tipo_calculado : $tipo_almacenado;
+
+               if (is_null($medical_leave_type)) {
+                  throw new \UnexpectedValueException('El concepto de incapacidad requiere una novedad con Origen de incapacidad COMUN o LABORAL.');
+               }
+
+               unset($accruals[$key]['medical-leave']);
+               $accruals[$key]['medical-leave-type'] = $medical_leave_type;
+            }
+
             if (!isset($line['code']) || $line['code'] != 'OTRO_CONCEPTO') {
                continue;
             }
@@ -341,7 +400,104 @@ class DocumentoSoporte extends Model
             }
          }
 
+         return $this->append_missing_compensated_vacations($accruals, $lapso);
+      }
+
+      protected function append_missing_compensated_vacations($accruals, LapsoNomina $lapso)
+      {
+         if (is_null($this->empleado)) {
+            return $accruals;
+         }
+
+         $registros = $this->empleado
+            ->get_registros_documentos_nomina_entre_fechas($lapso->fecha_inicial, $lapso->fecha_final)
+            ->filter(function ($registro) {
+               if (is_null($registro->concepto)) {
+                  return false;
+               }
+
+               return strpos($this->normalize_text($registro->concepto->descripcion), 'VACACIONES PAGADAS') !== false
+                  && (float)$registro->valor_devengo > 0;
+            });
+
+         $amount = (float)$registros->sum('valor_devengo');
+         if ($amount <= 0) {
+            return $accruals;
+         }
+
+         foreach ($accruals as $line) {
+            if (isset($line['code']) && $line['code'] === 'VACACION_COMPENSADA') {
+               $line_amount = isset($line['amount-ns']) ? $line['amount-ns'] : (isset($line['amount']) ? $line['amount'] : null);
+
+               if (!is_null($line_amount) && abs((float)$line_amount - $amount) < 0.01) {
+                  return $accruals;
+               }
+            }
+         }
+
+         $accruals[] = [
+            'code' => 'VACACION_COMPENSADA',
+            'amount-ns' => $amount,
+            'days' => 15
+         ];
+
          return $accruals;
+      }
+
+      protected function get_medical_leave_types_for_period(LapsoNomina $lapso)
+      {
+         if (is_null($this->empleado)) {
+            return [];
+         }
+
+         $registros = $this->empleado
+            ->get_registros_documentos_nomina_entre_fechas($lapso->fecha_inicial, $lapso->fecha_final)
+            ->groupBy('nom_concepto_id');
+         $tipos = [];
+
+         foreach ($registros as $registro_concepto) {
+            $primer_registro = $registro_concepto->first();
+            $concepto = is_null($primer_registro) ? null : $primer_registro->concepto;
+
+            if (is_null($concepto) || is_null($concepto->cpto_dian) || $concepto->cpto_dian->codigo !== 'INCAPACIDAD') {
+               continue;
+            }
+
+            $tipo = null;
+
+            $descripcion_concepto = $this->normalize_text($concepto->descripcion);
+            if (strpos($descripcion_concepto, 'MATERNIDAD') !== false
+               || strpos($descripcion_concepto, 'PATERNIDAD') !== false) {
+               $tipos[] = 'LICENCIA_PATERNIDAD';
+               continue;
+            }
+
+            foreach ($registro_concepto as $registro) {
+               if (!is_null($registro->novedad_tnl)) {
+                  $tipo = $registro->novedad_tnl->get_medical_leave_type();
+               }
+
+               if (!is_null($tipo)) {
+                  break;
+               }
+            }
+
+            if (is_null($tipo)) {
+               $tipo = NovedadTnl::inferir_medical_leave_type_desde_concepto($concepto->descripcion);
+            }
+
+            $tipos[] = $tipo;
+         }
+
+         $tipos_conocidos = array_values(array_unique(array_filter($tipos)));
+         if (count($tipos_conocidos) === 1) {
+            $tipo_del_periodo = $tipos_conocidos[0];
+            $tipos = array_map(function ($tipo) use ($tipo_del_periodo) {
+               return is_null($tipo) ? $tipo_del_periodo : $tipo;
+            }, $tipos);
+         }
+
+         return $tipos;
       }
 
       protected function get_head_data_stored()

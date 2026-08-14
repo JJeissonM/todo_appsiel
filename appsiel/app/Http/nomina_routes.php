@@ -8,6 +8,10 @@ Route::post('nomina/crear_registros2', 'Nomina\RegistrosDocumentosController@cre
 
 Route::resource('nom_registros_documentos', 'Nomina\RegistrosDocumentosController');
 
+Route::post('nom_contratos/{contrato_id}/cuentas_bancarias', 'Nomina\ContratoCuentaBancariaController@store');
+Route::put('nom_contratos/{contrato_id}/cuentas_bancarias/{cuenta_id}', 'Nomina\ContratoCuentaBancariaController@update');
+Route::delete('nom_contratos/{contrato_id}/cuentas_bancarias/{cuenta_id}', 'Nomina\ContratoCuentaBancariaController@destroy');
+
 
 //  NOMINA ELECTRONICA
 Route::resource('nom_electronica', 'Nomina\NominaElectronicaController');
@@ -29,6 +33,7 @@ Route::post('nom_guardar_asignacion', 'Nomina\NominaController@guardar_asignacio
 Route::get('nomina/liquidacion/{id}', 'Nomina\NominaController@liquidacion');
 Route::get('nomina/liquidacion_sp/{id}', 'Nomina\NominaController@liquidacion_sp');
 Route::get('nomina/retirar_liquidacion/{id}', 'Nomina\NominaController@retirar_liquidacion');
+Route::post('nomina/retirar_personalizado/{nom_doc_encabezado_id}', 'Nomina\NominaController@retirar_personalizado');
 Route::get('nomina_print/{id}', 'Nomina\NominaController@nomina_print');
 Route::get('nomina_export_registros_xlsx/{id}', 'Nomina\NominaController@export_registros_xlsx');
 

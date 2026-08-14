@@ -1,17 +1,12 @@
 
 function calcular_totales_propina() {
-
-    var valor_total_factura = redondear_a_centena( parseFloat( $('#valor_total_factura').val()) + parseFloat( $('#valor_propina').val()) );
-
-    var valor_propina = redondear_a_centena( $('#valor_propina').val() ) 
+    var valor_propina = parseFloat($('#valor_propina').val()) || 0;
 
     $('#lbl_propina').text('$ ' + new Intl.NumberFormat("de-DE").format( valor_propina ));
-    
-    $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( valor_total_factura ));
 
     // input hidden
     $('#aux_propina').val( valor_propina );
-    $('#valor_total_factura').val( valor_total_factura );
+    pos_recalcular_total_con_recargos();
 }
 
 function calcular_valor_a_pagar_propina (total_factura) {
@@ -116,25 +111,13 @@ function existe_motivo_tesoreria_propinas() {
     return true;
 }
 
-function separar_json_linea_medios_recaudo(json_table2){
-
-    if ($('#valor_propina').val() == 0) {
-        return json_table2;
-    }
-
-    var new_json = JSON.parse(json_table2);
-    if ( new_json.length > 1 ) {
-        return json_table2;
-    }
-
-    var linea = new_json[0];
-
-    var new_value =  Math.abs( parseFloat( linea.valor.substring(1) ) - $('#valor_propina').val() ) ;
-
-    let teso_motivo_default_id = $( "#teso_motivo_default_id" ).val();
-    let texto_motivo = get_text_from_select_for_value( teso_motivo_default_id );
-
-    return '[{"teso_medio_recaudo_id":"' + linea.teso_medio_recaudo_id + '","teso_motivo_id":"' + teso_motivo_default_id + '-' + texto_motivo + '","teso_caja_id":"' + linea.teso_caja_id + '","teso_cuenta_bancaria_id":"' + linea.teso_cuenta_bancaria_id + '","valor":"$' + new_value + '"},{"teso_medio_recaudo_id":"' + linea.teso_medio_recaudo_id + '","teso_motivo_id":"' + $('#motivo_tesoreria_propinas').val() + '-' + $('#motivo_tesoreria_propinas_label').val() + '","teso_caja_id":"' + linea.teso_caja_id + '","teso_cuenta_bancaria_id":"' + linea.teso_cuenta_bancaria_id + '","valor":"$' + $('#valor_propina').val() + '"}]';
+function separar_json_linea_medios_recaudo_propina(json_table2){
+    return pos_separar_recargo_medio_recaudo(
+        json_table2,
+        $('#valor_propina').val(),
+        $('#motivo_tesoreria_propinas').val(),
+        $('#motivo_tesoreria_propinas_label').val()
+    );
 }
 
 $(document).ready(function () {
@@ -183,11 +166,6 @@ $(document).ready(function () {
 				break;
 		}
         
-        var valor_sub_total_factura = redondear_a_centena( $('#valor_sub_total_factura').val() )
-
-        $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( valor_sub_total_factura ));
-        $('#valor_total_factura').val( valor_sub_total_factura );
-
         calcular_totales_propina();
         $('#total_valor_total').actualizar_medio_recaudo();
 	});

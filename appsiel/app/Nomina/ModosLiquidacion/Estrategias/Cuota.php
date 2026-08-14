@@ -80,6 +80,11 @@ class Cuota implements Estrategia
     {
         $cuota = $registro->cuota;
 
+        if ( is_null($cuota) )
+        {
+            throw new \RuntimeException('El registro de nómina no tiene una cuota válida asociada.');
+        }
+
         switch( $registro->concepto->naturaleza )
         {
             case 'devengo':

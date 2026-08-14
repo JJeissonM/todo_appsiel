@@ -113,6 +113,11 @@
 				@if(isset($asignatura))
 				<input type="hidden" name="asignatura_id" value="{{$asignatura->id}}" />
 				@endif
+				@if(!empty($filtros_avanzados))
+					@foreach($filtros_avanzados as $nombre => $filtro)
+						<input type="hidden" name="{{ $nombre }}" value="{{ Input::get($nombre) }}" />
+					@endforeach
+				@endif
 				<input type="text" value="{{$search}}" name="search" style="color: #000 !important; font-size: 16px;" class="form-control input-sm" placeholder="Escriba aquí para buscar..." />
 				<button style="position: absolute; height: 30px; right: 0; top: 5px; border-radius:2px;" class="btn btn-primary btn-xl" title="Consultar" type="submit"><i class="fa fa-search"></i></button>
 			</form>
@@ -134,7 +139,7 @@
 	
 	<span class="text-info">Mostrando {{ $registros->count() }} de {{ $registros->total() }} registros</span>
 	<br>
-	{{ $registros->appends(['id' => $id_app,'id_modelo'=>$id_modelo,'nro_registros'=>$nro_registros,'search'=>$search,'curso_id'=> (isset($curso)) ? $curso->id : '','asignatura_id'=>(isset($asignatura)) ? $asignatura->id : ''])->links() }}
+	{{ $registros->appends(array_merge(['id' => $id_app,'id_modelo'=>$id_modelo,'nro_registros'=>$nro_registros,'search'=>$search,'curso_id'=> (isset($curso)) ? $curso->id : '','asignatura_id'=>(isset($asignatura)) ? $asignatura->id : ''], !empty($filtros_avanzados) ? Input::only(array_keys($filtros_avanzados)) : []))->links() }}
 </div>
 @endsection
 
@@ -152,6 +157,12 @@
 	function mostrar() {
 		var nro = $("#mostrar").val();
 		var source = "{{$source}}";
+		if (source == 'INDEX1') {
+			var parametros = new URLSearchParams(window.location.search);
+			parametros.set('nro_registros', nro);
+			location.href = "{{url('')}}/web?" + parametros.toString();
+			return;
+		}
 		if (source == 'INDEX2') {
 			location.href = "{{url('')}}/calificaciones/index2?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro + "&search={{$search}}";
 		} else if (source == 'BOLETIN') {
@@ -166,9 +177,6 @@
 			location.href = "{{url('')}}/academico_docente/revisar_logros/{{$curso->id}}/{{$asignatura->id}}?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro + "&search={{$search}}";
 		} else if (source == 'INDEX7') {
 			location.href = "{{url('')}}/academico_docente/revisar_metas/{{$curso->id}}/{{$asignatura->id}}?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro + "&search={{$search}}";
-		} else {
-			//INDEX1
-			location.href = "{{url('')}}/web?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro + "&search={{$search}}";
 		}
 	}
 

@@ -74,6 +74,21 @@ class AccountingServices
 
         $obj_sales_serv->contabilizar_movimiento_debito_para_recontabilizacion( $documento );
 
+        $datos = $documento->toArray();
+        $datos['estado'] = 'Activo';
+        if ((float)$documento->valor_ajuste_al_peso != 0) {
+            if ((float)$documento->valor_ajuste_al_peso > 0) {
+                $this->contabilizar_registro($datos, (int)config('ventas_pos.cta_ingresos_redondeo'), 'Recontabilizado. Redondeo factura', 0, abs($documento->valor_ajuste_al_peso));
+            } else {
+                $this->contabilizar_registro($datos, (int)config('ventas_pos.cta_gastos_redondeo'), 'Recontabilizado. Redondeo factura', abs($documento->valor_ajuste_al_peso), 0);
+            }
+        }
+
+        $cta_bolsas_id = (int)config('ventas_pos.cta_ingresos_facturacion_bolsas');
+        if ((float)$documento->valor_total_bolsas != 0 && $cta_bolsas_id > 0) {
+            $this->contabilizar_registro($datos, $cta_bolsas_id, 'Recontabilizado. Cobro de bolsas', 0, abs($documento->valor_total_bolsas));
+        }
+
         $this->validar_asiento_cuadrado($documento);
 
         return true;

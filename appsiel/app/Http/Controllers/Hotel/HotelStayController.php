@@ -43,13 +43,18 @@ class HotelStayController extends Controller
         $stay = $this->findStay($id);
         $clients = $this->clientsList();
         $anticipos = $stay->anticiposCliente();
+        $facturasCredito = $stay->facturasCreditoPendientesCliente();
+        $saldoPedidos = $this->openOrdersBalance($stay);
+        $saldoFacturasCredito = $this->receivablesBalance($facturasCredito);
+        $saldoAnticipos = abs(min(0, $this->receivablesBalance($anticipos)));
+        $saldoPendienteNeto = max(0, $saldoPedidos + $saldoFacturasCredito - $saldoAnticipos);
         $hotelService = new HotelService();
         $cancelBlockMessage = $hotelService->getCancelInvoiceBlockMessage($stay);
         $editBlockMessage = $hotelService->getEditDatesBlockMessage($stay);
-        $checkOutBlockMessage = $hotelService->getCheckOutOpenOrdersBlockMessage($stay);
+        $checkOutBlockMessage = $hotelService->getCheckOutBlockMessage($stay);
         $canCancelHotelOrder = $this->canCancelHotelOrder();
         $miga_pan = $this->breadcrumb('Estadia #' . $stay->id);
-        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'cancelBlockMessage', 'editBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'miga_pan'));
+        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'facturasCredito', 'saldoPedidos', 'saldoFacturasCredito', 'saldoAnticipos', 'saldoPendienteNeto', 'cancelBlockMessage', 'editBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'miga_pan'));
     }
 
     public function createCheckIn()
@@ -176,6 +181,32 @@ class HotelStayController extends Controller
         }
 
         return false;
+    }
+
+    private function openOrdersBalance(HotelStay $stay)
+    {
+        $total = 0;
+        foreach ($stay->orders as $order) {
+            if ($order->status != HotelOrderHeader::STATUS_ABIERTO) {
+                continue;
+            }
+
+            foreach ($order->lines as $line) {
+                $total += (float)$line->line_total;
+            }
+        }
+
+        return $total;
+    }
+
+    private function receivablesBalance($rows)
+    {
+        $total = 0;
+        foreach ($rows as $row) {
+            $total += isset($row['saldo_pendiente']) ? (float)$row['saldo_pendiente'] : 0;
+        }
+
+        return $total;
     }
 
     private function breadcrumb($label)

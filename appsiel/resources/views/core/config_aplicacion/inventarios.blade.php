@@ -74,7 +74,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php
+								$usar_inventario_fisico_por_horas = 0;
+								if ( isset($parametros['usar_inventario_fisico_por_horas']) )
+								{
+									$usar_inventario_fisico_por_horas = $parametros['usar_inventario_fisico_por_horas'];
+								}
+							?>
+							{{ Form::bsSelect('usar_inventario_fisico_por_horas', $usar_inventario_fisico_por_horas, 'Usar Inventario Físico por horas', ['0' => 'No, usar solo la fecha', '1' => 'Sí, usar apertura y cierre del turno'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

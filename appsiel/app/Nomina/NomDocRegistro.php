@@ -5,13 +5,14 @@ namespace App\Nomina;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class NomDocRegistro extends Model
 {
     //protected $table = 'nom_doc_registros';
     protected $fillable = [ 'nom_doc_encabezado_id', 'core_tercero_id', 'nom_contrato_id', 'fecha', 'core_empresa_id', 'porcentaje', 'detalle', 'nom_concepto_id', 'nom_cuota_id', 'nom_prestamo_id', 'novedad_tnl_id', 'orden_trabajo_id', 'cantidad_horas', 'valor_devengo', 'valor_deduccion', 'estado', 'creado_por', 'modificado_por' ];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Empleado', 'Fecha', 'Detalle', 'Concepto', 'Horas', 'Devengo', 'Deducción', 'Estado', 'ID'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Empleado', 'Fecha', 'Detalle', 'Concepto', 'Cod. DIAN', 'Horas', 'Devengo', 'Deducción', 'Estado', 'ID'];
 
     public $rutas = [
         'create' => 'web',
@@ -57,64 +58,134 @@ class NomDocRegistro extends Model
 
     public static function consultar_registros($nro_registros, $search)
     {
-        return NomDocRegistro::leftJoin('nom_doc_encabezados', 'nom_doc_encabezados.id', '=', 'nom_doc_registros.nom_doc_encabezado_id')
-            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_doc_registros.core_tercero_id')
-            ->leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
+        return self::aplicar_filtros_index(self::query_listado()
             ->select(
                 'nom_doc_encabezados.descripcion AS campo1',
                 'core_terceros.descripcion AS campo2',
                 'nom_doc_registros.fecha AS campo3',
                 'nom_doc_registros.detalle AS campo4',
                 'nom_conceptos.descripcion AS campo5',
-                'nom_doc_registros.cantidad_horas AS campo6',
-                'nom_doc_registros.valor_devengo AS campo7',
-                'nom_doc_registros.valor_deduccion AS campo8',
-                'nom_doc_registros.estado AS campo9',
-                'nom_doc_registros.id AS campo10',
-                'nom_doc_registros.id AS campo11'
-            )
-            ->where("nom_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_doc_registros.fecha", "LIKE", "%$search%")
-            ->orWhere("nom_doc_registros.detalle", "LIKE", "%$search%")
-            ->orWhere("nom_conceptos.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_doc_registros.valor_devengo", "LIKE", "%$search%")
-            ->orWhere("nom_doc_registros.valor_deduccion", "LIKE", "%$search%")
-            ->orWhere("nom_doc_registros.estado", "LIKE", "%$search%")
-            ->orWhere("nom_doc_registros.id", "LIKE", "%$search%")
+                'nom_elect_cat_cptos_dian.codigo AS campo6',
+                'nom_doc_registros.cantidad_horas AS campo7',
+                'nom_doc_registros.valor_devengo AS campo8',
+                'nom_doc_registros.valor_deduccion AS campo9',
+                'nom_doc_registros.estado AS campo10',
+                'nom_doc_registros.id AS campo11',
+                'nom_doc_registros.id AS campo12'
+            ), $search)
             ->orderBy('nom_doc_registros.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
     public static function sqlString($search)
     {
-        $string = NomDocRegistro::leftJoin('nom_doc_encabezados', 'nom_doc_encabezados.id', '=', 'nom_doc_registros.nom_doc_encabezado_id')
-            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_doc_registros.core_tercero_id')
-            ->leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
+        $query = self::aplicar_filtros_index(self::query_listado()
             ->select(
                 'nom_doc_encabezados.descripcion AS DOCUMENTO',
                 'core_terceros.descripcion AS EMPLEADO',
                 'nom_doc_registros.fecha AS FECHA',
                 'nom_doc_registros.detalle AS DETALLE',
                 'nom_conceptos.descripcion AS CONCEPTO',
+                'nom_elect_cat_cptos_dian.codigo AS CODIGO_DIAN',
                 'nom_doc_registros.cantidad_horas AS HORAS',
                 'nom_doc_registros.valor_devengo AS DEVENGO',
                 'nom_doc_registros.valor_deduccion AS DEDUCCIÓN',
                 'nom_doc_registros.estado AS ESTADO',
                 'nom_doc_registros.id AS ID'
-            )
-            ->where("nom_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_doc_registros.fecha", "LIKE", "%$search%")
-            ->orWhere("nom_doc_registros.detalle", "LIKE", "%$search%")
-            ->orWhere("nom_conceptos.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_doc_registros.valor_devengo", "LIKE", "%$search%")
-            ->orWhere("nom_doc_registros.valor_deduccion", "LIKE", "%$search%")
-            ->orWhere("nom_doc_registros.estado", "LIKE", "%$search%")
-            ->orWhere("nom_doc_registros.id", "LIKE", "%$search%")
-            ->orderBy('nom_doc_registros.created_at', 'DESC')
-            ->toSql();
-        return str_replace('?', '"%' . $search . '%"', $string);
+            ), $search)
+            ->orderBy('nom_doc_registros.created_at', 'DESC');
+
+        return self::sql_con_bindings($query);
+    }
+
+    /**
+     * Configuracion del formulario de filtros que se muestra en el index generico.
+     */
+    public static function get_filtros_avanzados_index()
+    {
+        $documentos = self::opciones_filtro('nom_doc_encabezados.id', 'nom_doc_encabezados.descripcion');
+        $empleados = self::opciones_filtro('core_terceros.id', 'core_terceros.descripcion');
+        $conceptos = self::opciones_filtro('nom_conceptos.id', 'nom_conceptos.descripcion');
+
+        return [
+            'filtro_documento' => ['label' => 'Documento', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $documentos],
+            'filtro_empleado' => ['label' => 'Empleado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $empleados],
+            'filtro_fecha' => ['label' => 'Fecha', 'type' => 'date'],
+            'filtro_concepto' => ['label' => 'Concepto', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $conceptos]
+        ];
+    }
+
+    protected static function query_listado()
+    {
+        $query = NomDocRegistro::leftJoin('nom_doc_encabezados', 'nom_doc_encabezados.id', '=', 'nom_doc_registros.nom_doc_encabezado_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_doc_registros.core_tercero_id')
+            ->leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
+            ->leftJoin('nom_elect_cat_cptos_dian', 'nom_elect_cat_cptos_dian.id', '=', 'nom_conceptos.cpto_dian_id');
+
+        if (Auth::check()) {
+            $query->where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id);
+        }
+
+        return $query;
+    }
+
+    protected static function aplicar_filtros_index($query, $search)
+    {
+        if ($search !== '') {
+            $query->where(function ($subquery) use ($search) {
+                $like = '%' . $search . '%';
+                $subquery->where('nom_doc_encabezados.descripcion', 'LIKE', $like)
+                    ->orWhere('core_terceros.descripcion', 'LIKE', $like)
+                    ->orWhere('nom_doc_registros.fecha', 'LIKE', $like)
+                    ->orWhere('nom_doc_registros.detalle', 'LIKE', $like)
+                    ->orWhere('nom_conceptos.descripcion', 'LIKE', $like)
+                    ->orWhere('nom_elect_cat_cptos_dian.codigo', 'LIKE', $like)
+                    ->orWhere('nom_doc_registros.valor_devengo', 'LIKE', $like)
+                    ->orWhere('nom_doc_registros.valor_deduccion', 'LIKE', $like)
+                    ->orWhere('nom_doc_registros.estado', 'LIKE', $like)
+                    ->orWhere('nom_doc_registros.id', 'LIKE', $like);
+            });
+        }
+
+        $filtros = [
+            'filtro_documento' => 'nom_doc_registros.nom_doc_encabezado_id',
+            'filtro_empleado' => 'nom_doc_registros.core_tercero_id',
+            'filtro_fecha' => 'nom_doc_registros.fecha',
+            'filtro_concepto' => 'nom_doc_registros.nom_concepto_id'
+        ];
+
+        foreach ($filtros as $parametro => $columna) {
+            $valor = trim((string) Input::get($parametro, ''));
+            if ($valor !== '') {
+                $query->where($columna, $valor);
+            }
+        }
+
+        return $query;
+    }
+
+    protected static function opciones_filtro($id, $descripcion)
+    {
+        return self::query_listado()
+            ->whereNotNull($id)
+            ->select($id, $descripcion)
+            ->distinct()
+            ->orderBy($descripcion)
+            ->lists($descripcion, $id)
+            ->all();
+    }
+
+    protected static function sql_con_bindings($query)
+    {
+        $sql = $query->toSql();
+        $pdo = DB::connection()->getPdo();
+
+        foreach ($query->getBindings() as $binding) {
+            $valor = is_numeric($binding) ? $binding : $pdo->quote($binding);
+            $sql = preg_replace('/\?/', $valor, $sql, 1);
+        }
+
+        return $sql;
     }
 
     //Titulo para la exportación en PDF y EXCEL

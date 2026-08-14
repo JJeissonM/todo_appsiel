@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tesoreria;
 
 use App\Core\Empresa;
+use App\Hotel\Support\HotelCreatorLabel;
 use App\Sistema\Html\Boton;
 use App\Sistema\TipoTransaccion;
 use App\Tesoreria\ArqueoCaja;
@@ -75,6 +76,7 @@ class ArqueoCajaController extends ModeloController
         $empresa = Empresa::find($registro->core_empresa_id);
         $doc_encabezado = [ 'documento' => 'ACTA DE ARQUEO DE CAJA', 'fecha' => $registro->fecha, 'titulo' => 'ARQUEO DE CAJA No. ' . $registro->id ];
         $user = User::where('email', $registro->creado_por)->first();
+        $responsable = $this->get_responsable_label($registro, $user);
         $registro->billetes_contados = json_decode($registro->billetes_contados);
         $registro->monedas_contadas = json_decode($registro->monedas_contadas);
         $registro->detalles_mov_entradas = json_decode($registro->detalles_mov_entradas);
@@ -103,7 +105,7 @@ class ArqueoCajaController extends ModeloController
         $registro = $this->recalcular_movimientos_sistema_si_estan_vacios($registro);
         
         // Crear vista
-        $view = View::make('tesoreria.arqueo_caja.formatos_impresion.' . $formato_impresion, compact('registro', 'empresa', 'doc_encabezado', 'user'))->render();
+        $view = View::make('tesoreria.arqueo_caja.formatos_impresion.' . $formato_impresion, compact('registro', 'empresa', 'doc_encabezado', 'user', 'responsable'))->render();
 
         return $view;
     }
@@ -127,6 +129,7 @@ class ArqueoCajaController extends ModeloController
         ];
         
         $user = User::where('email', $registro->creado_por)->first();
+        $responsable = $this->get_responsable_label($registro, $user);
         $reg_anterior = app($this->modelo->name_space)->where('id', '<', $registro->id)->max('id');
         $reg_siguiente = app($this->modelo->name_space)->where('id', '>', $registro->id)->min('id');
         $miga_pan = $this->get_miga_pan($this->modelo, 'Ver');
@@ -179,7 +182,16 @@ class ArqueoCajaController extends ModeloController
 
         $registro = $this->recalcular_movimientos_sistema_si_estan_vacios($registro);
 
-        return view('tesoreria.arqueo_caja.show', compact('miga_pan', 'registro', 'url_crear', 'url_edit', 'reg_anterior', 'reg_siguiente', 'botones', 'empresa', 'doc_encabezado', 'user'));
+        return view('tesoreria.arqueo_caja.show', compact('miga_pan', 'registro', 'url_crear', 'url_edit', 'reg_anterior', 'reg_siguiente', 'botones', 'empresa', 'doc_encabezado', 'user', 'responsable'));
+    }
+
+    protected function get_responsable_label($registro, $user)
+    {
+        $fecha_hora = !empty($registro->fecha_hora_apertura)
+            ? $registro->fecha_hora_apertura
+            : $registro->created_at;
+
+        return HotelCreatorLabel::userLabel($user ?: $registro->creado_por, $fecha_hora, $registro->pdv_id);
     }
 
     /**

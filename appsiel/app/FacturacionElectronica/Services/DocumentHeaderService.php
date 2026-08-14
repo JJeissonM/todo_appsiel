@@ -20,6 +20,7 @@ use App\Ventas\VtasDocRegistro;
 use App\Ventas\VtasMovimiento;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\Services\AccountingServices;
+use App\VentasPos\Services\ElectronicDocumentTypeService;
 use App\VentasPos\Movimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,11 +32,10 @@ class DocumentHeaderService
     public function convert_to_electronic_invoice( $document_header_id )
     {
         $modificado_por = Auth::user()->email;
-        $fe_document_type_id_default = (int)config('facturacion_electronica.document_type_id_default');
         $fe_transaction_type_id_default = (int)config('facturacion_electronica.transaction_type_id_default');
 
         try {
-            return DB::transaction(function () use ($document_header_id, $modificado_por, $fe_document_type_id_default, $fe_transaction_type_id_default) {
+            return DB::transaction(function () use ($document_header_id, $modificado_por, $fe_transaction_type_id_default) {
                 $original_document_header = FacturaPos::where('id', $document_header_id)->lockForUpdate()->first();
 
                 if (is_null($original_document_header)) {
@@ -44,6 +44,9 @@ class DocumentHeaderService
                         'message' => 'Documento POS no encontrado para convertir a Factura ElectrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³nica.'
                     ];
                 }
+
+                $fe_document_type_id_default = (new ElectronicDocumentTypeService())
+                    ->resolveId($original_document_header->pdv);
 
                 (new InvoiceTotalsService())->validatePosBeforeConversion($original_document_header);
                 (new AccountingServices())->validar_asiento_cuadrado($original_document_header);

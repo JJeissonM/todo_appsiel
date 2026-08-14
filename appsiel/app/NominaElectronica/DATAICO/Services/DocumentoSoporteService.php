@@ -7,6 +7,7 @@ use App\Sistema\Services\AppDocType;
 use App\Sistema\TipoTransaccion;
 
 use App\Nomina\NomContrato;
+use App\Nomina\NovedadTnl;
 use App\Nomina\ParametroLegal;
 use App\Nomina\ValueObjects\LapsoNomina;
 use App\NominaElectronica\DATAICO\DocumentoSoporte;
@@ -215,6 +216,7 @@ class DocumentoSoporteService
       $horas_dia_laboral = $this->get_horas_dia_laboral($lapso->fecha_final);
 
       $registros_agrupados_por_concepto = $registros->groupBy('nom_concepto_id');
+      $medical_leave_type_periodo = $this->get_medical_leave_type_for_period($registros_agrupados_por_concepto);
       
       $line_accruals = [];
       $line_deductions = [];
@@ -225,13 +227,13 @@ class DocumentoSoporteService
 
          if ($concepto->naturaleza == 'devengo') {
 
-            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_devengo'),$registros,$horas_dia_laboral);
+            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_devengo'),$registros,$horas_dia_laboral,$medical_leave_type_periodo);
             if (!empty($value_json)) {
                $line_accruals[] = $value_json;
             }
             
          }else{
-            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_deduccion'),$registros,$horas_dia_laboral);
+            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_deduccion'),$registros,$horas_dia_laboral,$medical_leave_type_periodo);
             if (!empty($value_json)) {
                $line_deductions[] = $value_json;
             }
@@ -267,7 +269,7 @@ class DocumentoSoporteService
       return $data;
    }
 
-   public function get_linea_empleado($registro_concepto, $concepto, $amount, $registros, $horas_dia_laboral)
+   public function get_linea_empleado($registro_concepto, $concepto, $amount, $registros, $horas_dia_laboral, $medical_leave_type_periodo = null)
    {
       $one_line = [];
 
@@ -298,7 +300,6 @@ class DocumentoSoporteService
          // Solo se pagan Intereses
          $one_line['percentage'] = 12;
          $one_line['cesantias-interest'] = $amount;
-         $amount = 0;
          $codigo_cpto_dian = 'CESANTIAS';
       }
       
@@ -315,6 +316,23 @@ class DocumentoSoporteService
          }
 
          $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / $horas_dia_laboral , 0 );
+
+         if ($codigo_cpto_dian === 'BASICO') {
+            $one_line['days'] = min(30, $one_line['days']);
+         }
+      }
+
+      if ($codigo_cpto_dian === 'LICENCIA_PATERNIDAD') {
+         if ($horas_dia_laboral <= 0) {
+            return $this->get_error_line('No hay parámetro legal activo con Horas por día laboral mayor a cero para el periodo del documento. Revise nom_parametros_legales.');
+         }
+
+         $one_line['days'] = min(30, round($registro_concepto->sum('cantidad_horas') / $horas_dia_laboral, 0));
+      }
+
+      if ($codigo_cpto_dian === 'VACACION_COMPENSADA'
+         && (!isset($one_line['days']) || (float)$one_line['days'] <= 0)) {
+         $one_line['days'] = 15;
       }
       
       if ($concepto->cpto_dian->liquida_horas) {
@@ -345,16 +363,23 @@ class DocumentoSoporteService
          }
       }
       
-      if($concepto->cpto_dian->id == 32) // INCAPACIDAD
-      {
+      if ($codigo_cpto_dian === 'INCAPACIDAD') {
          if ($horas_dia_laboral <= 0) {
             return $this->get_error_line('No hay parámetro legal activo con Horas por día laboral mayor a cero para el periodo del documento. Revise nom_parametros_legales.');
          }
 
          $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / $horas_dia_laboral , 0 );
-         if ($registro_concepto->first()->novedad_tnl != null) {
-            $one_line['medical-leave-type'] = strtoupper($registro_concepto->first()->novedad_tnl->origen_incapacidad);
+
+         $medical_leave_type = $this->get_medical_leave_type($registro_concepto);
+         if (is_null($medical_leave_type)) {
+            $medical_leave_type = $medical_leave_type_periodo;
          }
+
+         if (is_null($medical_leave_type)) {
+            return $this->get_error_line('El concepto de incapacidad requiere una novedad con Origen de incapacidad COMUN o LABORAL.');
+         }
+
+         $one_line['medical-leave-type'] = $medical_leave_type;
       }
       
       $one_line['amount'] = $amount;
@@ -363,16 +388,74 @@ class DocumentoSoporteService
          unset($one_line['amount']);
       }
 
+      if ($codigo_cpto_dian === 'VACACION_COMPENSADA') {
+         $one_line['amount-ns'] = $amount;
+         unset($one_line['amount']);
+      }
+
       return $one_line;
+   }
+
+   protected function get_medical_leave_type($registro_concepto)
+   {
+      foreach ($registro_concepto as $registro) {
+         if (!is_null($registro->novedad_tnl)) {
+            $tipo = $registro->novedad_tnl->get_medical_leave_type();
+            if (!is_null($tipo)) {
+               return $tipo;
+            }
+         }
+
+         $descripcion_concepto = is_null($registro->concepto) ? '' : $registro->concepto->descripcion;
+         $tipo = NovedadTnl::inferir_medical_leave_type_desde_concepto($descripcion_concepto);
+         if (!is_null($tipo)) {
+            return $tipo;
+         }
+      }
+
+      return null;
+   }
+
+   protected function get_medical_leave_type_for_period($registros_agrupados_por_concepto)
+   {
+      $tipos = [];
+
+      foreach ($registros_agrupados_por_concepto as $registro_concepto) {
+         $primer_registro = $registro_concepto->first();
+         $concepto = is_null($primer_registro) ? null : $primer_registro->concepto;
+
+         if (is_null($concepto) || is_null($concepto->cpto_dian) || $concepto->cpto_dian->codigo !== 'INCAPACIDAD') {
+            continue;
+         }
+
+         $tipo = $this->get_medical_leave_type($registro_concepto);
+         if (!is_null($tipo)) {
+            $tipos[] = $tipo;
+         }
+      }
+
+      $tipos = array_values(array_unique($tipos));
+
+      return count($tipos) === 1 ? $tipos[0] : null;
    }
 
    protected function normalize_dian_code($codigo_cpto_dian, $descripcion_concepto)
    {
+      $descripcion = $this->normalize_text($descripcion_concepto);
+
+      if ($codigo_cpto_dian === 'INCAPACIDAD'
+         && (strpos($descripcion, 'MATERNIDAD') !== false || strpos($descripcion, 'PATERNIDAD') !== false)) {
+         return 'LICENCIA_PATERNIDAD';
+      }
+
+      if ($codigo_cpto_dian === 'VACACION' && strpos($descripcion, 'VACACIONES PAGADAS') !== false) {
+         return 'VACACION_COMPENSADA';
+      }
+
       if ($codigo_cpto_dian != 'OTRO_CONCEPTO') {
          return $codigo_cpto_dian;
       }
 
-      $descripcion = $this->normalize_text($descripcion_concepto);
       if (strpos($descripcion, 'AUXILIO') !== false || strpos($descripcion, 'ALIMENT') !== false || strpos($descripcion, 'ALMUERZO') !== false || strpos($descripcion, 'REEMBOLSO') !== false || strpos($descripcion, 'REMBOLSO') !== false) {
          return 'AUXILIO';
       }
@@ -628,7 +711,12 @@ class DocumentoSoporteService
       //$url_emision2 = 'https://api.dataico.com/direct/payroll-api/payroll-entries/NE/51?include-pdf=true';
          
       try {
-         $client = new Client(['base_uri' => $url_emision]);
+         $client = new Client([
+            'base_uri' => $url_emision,
+            'timeout' => 45,
+            'connect_timeout' => 15,
+            'http_errors' => false
+         ]);
 
          $response = $client->get( $url_emision . '/' . $doc_encabezado->tipo_documento_app->prefijo . '/' .$doc_encabezado->consecutivo . '?include-pdf=true', [
              // un array con la data de los headers como tipo de peticion, etc.
@@ -637,8 +725,12 @@ class DocumentoSoporteService
 	                           'auth-token' => config('nomina.tokenPassword')
 	                        ]
 	         ]);
-	      } catch (\GuzzleHttp\Exception\RequestException $e) {
-	          $response = $e->getResponse();
+	      } catch (\Throwable $e) {
+	          $response = null;
+	          \Log::warning('DATAICO: error consultando la representación gráfica.', [
+	             'documento_id' => $doc_encabezado->id,
+	             'error' => $e->getMessage()
+	          ]);
 	      }
 
 	      if ( is_null($response) ) {

@@ -125,6 +125,11 @@ class ModeloController extends Controller
             $tituloExport = app($this->modelo->name_space)->tituloExport();
         }
 
+        $filtros_avanzados = [];
+        if (method_exists(app($this->modelo->name_space), 'get_filtros_avanzados_index')) {
+            $filtros_avanzados = app($this->modelo->name_space)->get_filtros_avanzados_index();
+        }
+
         $vista = 'layouts.index';
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
         if (!is_null($vistas)) {
@@ -142,7 +147,7 @@ class ModeloController extends Controller
 
         // ¿Cómo saber qué métodos estan llamando a la vista layouts.index?
         // Si modifico esa vista, cómo se qué partes del software se verán afectadas???
-        return view($vista, compact('id_app', 'asignatura', 'curso', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_modelo', 'id_transaccion', 'registros', 'miga_pan', 'url_crear', 'encabezado_tabla', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar', 'archivo_js', 'botones'));
+        return view($vista, compact('id_app', 'asignatura', 'curso', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_modelo', 'id_transaccion', 'registros', 'miga_pan', 'url_crear', 'encabezado_tabla', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar', 'archivo_js', 'botones', 'filtros_avanzados'));
     }
 
     /*
@@ -592,7 +597,16 @@ class ModeloController extends Controller
         $registro_modelo_padre_id = $respuesta['registro_modelo_padre_id'];
         $titulo_tab = $respuesta['titulo_tab'];
 
-        return view($vista, compact('form_create', 'miga_pan', 'registro', 'url_crear', 'url_edit', 'tabla', 'opciones', 'registro_modelo_padre_id', 'reg_anterior', 'reg_siguiente', 'titulo_tab', 'botones'));
+        $datos_vista = compact('form_create', 'miga_pan', 'registro', 'url_crear', 'url_edit', 'tabla', 'opciones', 'registro_modelo_padre_id', 'reg_anterior', 'reg_siguiente', 'titulo_tab', 'botones');
+
+        if (method_exists(app($this->modelo->name_space), 'get_datos_adicionales_show')) {
+            $datos_adicionales = app($this->modelo->name_space)->get_datos_adicionales_show($registro);
+            if (is_array($datos_adicionales)) {
+                $datos_vista = array_merge($datos_vista, $datos_adicionales);
+            }
+        }
+
+        return view($vista, $datos_vista);
     }
 
 

@@ -19,7 +19,7 @@ class Pdv extends Model
 
     // usar_complemento_JSPrintManager = Impresion directa en cocina (Comanda)
     // imprimir_factura_automaticamente = Impresion directa en Caja (Factura)
-	protected $fillable = ['core_empresa_id', 'descripcion', 'bodega_default_id', 'caja_default_id', 'cajero_default_id', 'cliente_default_id', 'tipo_doc_app_default_id', 'detalle', 'plantilla_factura_pos_default', 'direccion', 'telefono', 'email', 'usar_complemento_JSPrintManager', 'enviar_impresion_directamente_a_la_impresora', 'impresora_cocina_por_defecto', 'imprimir_factura_automaticamente', 'impresora_principal_por_defecto', 'serial_maquina', 'creado_por', 'modificado_por', 'estado', 'maneja_impoconsumo', 'crear_ensamble_de_recetas'];
+	protected $fillable = ['core_empresa_id', 'descripcion', 'bodega_default_id', 'caja_default_id', 'cajero_default_id', 'cliente_default_id', 'tipo_doc_app_default_id', 'document_type_id_default', 'detalle', 'plantilla_factura_pos_default', 'direccion', 'telefono', 'email', 'usar_complemento_JSPrintManager', 'enviar_impresion_directamente_a_la_impresora', 'impresora_cocina_por_defecto', 'imprimir_factura_automaticamente', 'impresora_principal_por_defecto', 'serial_maquina', 'creado_por', 'modificado_por', 'estado', 'maneja_impoconsumo', 'crear_ensamble_de_recetas'];
 
     public function empresa()
     {
@@ -49,6 +49,18 @@ class Pdv extends Model
     public function tipo_doc_app()
     {
         return $this->belongsTo( TipoDocApp::class,'tipo_doc_app_default_id');
+    }
+
+    public function tipo_doc_facturacion_electronica()
+    {
+        return $this->belongsTo(TipoDocApp::class, 'document_type_id_default');
+    }
+
+    public function setDocumentTypeIdDefaultAttribute($value)
+    {
+        $this->attributes['document_type_id_default'] = ($value === '' || $value === 'null' || is_null($value))
+            ? null
+            : (int)$value;
     }
 
     public function ultima_fecha_apertura($validar_acumulacion_tiempo_real = true)

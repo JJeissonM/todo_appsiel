@@ -76,6 +76,29 @@
 					</div>
 
 				</div>
+
+				<h4> Parámetros para arqueos de caja </h4>
+				<hr>
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$usar_movimientos_tesoreria_por_hora = 0;
+								if ( isset($parametros['usar_movimientos_tesoreria_por_hora']) )
+								{
+									$usar_movimientos_tesoreria_por_hora = $parametros['usar_movimientos_tesoreria_por_hora'];
+								}
+							?>
+							{{ Form::bsSelect('usar_movimientos_tesoreria_por_hora', $usar_movimientos_tesoreria_por_hora, 'Usar movimientos de Tesorería por hora', ['0' => 'No, usar solo la fecha', '1' => 'Sí, usar apertura y cierre'], ['class'=>'form-control']) }}
+							<small class="help-block">Al seleccionar No, los arqueos incluyen todos los movimientos de la fecha sin filtrar por la hora de apertura o cierre.</small>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						&nbsp;
+					</div>
+				</div>
 				
 				<div class="row">
 
@@ -450,4 +473,3 @@
 		<script src="{{ asset( $archivo_js ) }}"></script>
 	@endif
 @endsection
-

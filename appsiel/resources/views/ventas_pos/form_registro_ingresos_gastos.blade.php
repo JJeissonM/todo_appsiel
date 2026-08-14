@@ -61,6 +61,7 @@
 	<input type="hidden" name="teso_medio_recaudo_id" value="{{ $campos->teso_medio_recaudo_id }}">
 	<input type="hidden" name="teso_caja_id" value="{{ $campos->teso_caja_id }}">
 	<input type="hidden" name="teso_cuenta_bancaria_id" value="{{ $campos->teso_cuenta_bancaria_id }}">
+	<input type="hidden" name="pdv_id" value="{{ $pdv->id }}">
 	<input type="hidden" name="estado" value="{{ $campos->estado }}">
 	<input type="hidden" name="creado_por" value="{{ $campos->creado_por }}">
 	<input type="hidden" name="id_modelo" value="{{ $campos->id_modelo }}">

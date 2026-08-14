@@ -38,12 +38,12 @@ $(document).ready(function () {
 
         if ($("#manejar_propinas").val() == 1) {
             // Si hay propina, siempre va a venir una sola linea de medio de pago
-            json_table2 = separar_json_linea_medios_recaudo(json_table2);
+            json_table2 = separar_json_linea_medios_recaudo_propina(json_table2);
         }
 
         if ($("#manejar_datafono").val() == 1) {
             // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
-            json_table2 = separar_json_linea_medios_recaudo(json_table2);
+            json_table2 = separar_json_linea_medios_recaudo_datafono(json_table2);
         }
 
         // Se asigna el objeto JSON a un campo oculto del formulario

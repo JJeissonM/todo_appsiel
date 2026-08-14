@@ -33,9 +33,13 @@
                         <br/>
                         <b>Observaciones:</b> {{$registro->observaciones}}
                         <br/>
-                        <b>Responsable:</b> {{$user->name}}
+                        <b>Responsable:</b> {{$responsable}}
                         <br/>
-                        <b>Fecha/Hora: &nbsp;&nbsp;</b> {{$registro->created_at}}
+                        <b>Apertura:</b> {{ !empty($registro->fecha_hora_apertura) && substr($registro->fecha_hora_apertura, 0, 10) != '0000-00-00' ? $registro->fecha_hora_apertura : 'No registrada' }}
+                        <br/>
+                        <b>Cierre:</b> {{ !empty($registro->fecha_hora_cierre) && substr($registro->fecha_hora_cierre, 0, 10) != '0000-00-00' ? $registro->fecha_hora_cierre : 'No registrado' }}
+                        <br/>
+                        <b>Realización: &nbsp;&nbsp;</b> {{$registro->created_at}}
                         <br/>
                     </td>                                               
                 </tr>

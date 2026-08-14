@@ -203,6 +203,8 @@
 
 @php
     $fecha_hasta = isset($fecha_hasta) ? $fecha_hasta : $fecha_desde;
+    $hora_desde = isset($hora_desde) ? $hora_desde : null;
+    $hora_hasta = isset($hora_hasta) ? $hora_hasta : null;
     $caja = isset($caja) ? $caja : null;
     $cuenta_bancaria = isset($cuenta_bancaria) ? $cuenta_bancaria : null;
     $pdv = isset($pdv) ? $pdv : null;
@@ -282,7 +284,17 @@
         </tr>
         <tr>
             <td class="meta-label">Medio</td>
-            <td colspan="5">{{ !is_null($medio_recaudo) ? $medio_recaudo->descripcion : 'Todos' }}</td>
+            <td>{{ !is_null($medio_recaudo) ? $medio_recaudo->descripcion : 'Todos' }}</td>
+            <td class="meta-label">Horario</td>
+            <td colspan="3">
+                @if(!is_null($hora_desde) || !is_null($hora_hasta))
+                    {{ !is_null($hora_desde) ? substr($hora_desde, 0, 5) : 'Inicio del día' }}
+                    hasta
+                    {{ !is_null($hora_hasta) ? substr($hora_hasta, 0, 5) : 'Fin del día' }}
+                @else
+                    Todo el día
+                @endif
+            </td>
         </tr>
     </table>
 </div>

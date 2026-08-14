@@ -17,7 +17,7 @@
 				<label class="control-label col-sm-4" > <b> *Documento de liquidación: </b> </label>
 
 				<div class="col-sm-8">
-					{{ Form::select( 'nom_doc_encabezado_id', App\Nomina\NomDocEncabezado::opciones_campo_select_contabilizacion(),null, [ 'class' => 'form-control', 'id' => 'nom_doc_encabezado_id', 'required' => 'required' ]) }}
+					{{ Form::select( 'nom_doc_encabezado_id', App\Nomina\NomDocEncabezado::opciones_campo_select_contabilizacion(),null, [ 'class' => 'combobox', 'id' => 'nom_doc_encabezado_id', 'required' => 'required' ]) }}
 				</div>					 
 			</div>
 							

@@ -21,7 +21,7 @@ class HotelGuest extends Cliente
 
     protected $table = 'vtas_clientes';
 
-    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificacion', 'Huesped', 'Fecha nacimiento', 'Nacionalidad', 'Procedencia', 'Destino', 'Ocupación', 'Estado');
+    public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificacion', 'Huesped', 'Fecha nacimiento', 'Nacionalidad', 'Procedencia', 'Destino', 'Ocupación', 'Creado por');
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
 
@@ -293,6 +293,44 @@ class HotelGuest extends Cliente
             $fields[] = $campo;
         }
 
+        $fields[] = [
+            "id" => 7752,
+            "descripcion" => "Creado por",
+            "tipo" => "bsText",
+            "name" => "creado_por",
+            "opciones" => " ",
+            "value" => $registro->tercero->creado_por,
+            "atributos" => "{'class':'form-control'}",
+            "definicion" => "",
+            "requerido" => 1,
+            "editable" => 1,
+            "unico" => 0,
+            "created_at" => "2020-10-06 23:46:22",
+            "updated_at" => "2026-08-03 06:34:25",
+            "pivot" =>  [],
+            "show_value" => $registro->tercero->creado_por,
+        ];
+
+        $fields[] = [
+            "id" => 7753,
+            "descripcion" => "Estado",
+            "tipo" => "bsText",
+            "name" => "estado",
+            "opciones" => " ",
+            "value" => $registro->estado,
+            "atributos" => "{'class':'form-control'}",
+            "definicion" => "",
+            "requerido" => 1,
+            "editable" => 1,
+            "unico" => 0,
+            "created_at" => "2020-10-06 23:46:22",
+            "updated_at" => "2026-08-03 06:34:25",
+            "pivot" =>  [],
+            "show_value" => $registro->estado,
+        ];
+
+        //dd($fields);
+
         return $fields;
     }
 
@@ -549,7 +587,7 @@ class HotelGuest extends Cliente
                 \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), NULLIF(pais_procedencia.descripcion, ''), NULLIF(CONCAT(COALESCE(ciudad_tercero.descripcion,''), IF(depto_tercero.descripcion IS NULL OR depto_tercero.descripcion = '', '', CONCAT(', ', depto_tercero.descripcion))), ''), procedencia.valor, '') AS campo5"),
                 \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_destino.descripcion,''), IF(depto_destino.descripcion IS NULL OR depto_destino.descripcion = '', '', CONCAT(', ', depto_destino.descripcion))), ''), pais_destino.descripcion, '') AS campo6"),
                 \DB::raw("COALESCE(NULLIF(ocupacion.valor, ''), NULLIF(ocupacion_legacy.valor, ''), '') AS campo7"),
-                'vtas_clientes.estado AS campo8',
+                'core_terceros.creado_por AS campo8',
                 'vtas_clientes.id AS campo9'
             );
 
@@ -572,7 +610,7 @@ class HotelGuest extends Cliente
                 \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), NULLIF(pais_procedencia.descripcion, ''), NULLIF(CONCAT(COALESCE(ciudad_tercero.descripcion,''), IF(depto_tercero.descripcion IS NULL OR depto_tercero.descripcion = '', '', CONCAT(', ', depto_tercero.descripcion))), ''), procedencia.valor, '') AS PROCEDENCIA"),
                 \DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_destino.descripcion,''), IF(depto_destino.descripcion IS NULL OR depto_destino.descripcion = '', '', CONCAT(', ', depto_destino.descripcion))), ''), pais_destino.descripcion, '') AS DESTINO"),
                 \DB::raw("COALESCE(NULLIF(ocupacion.valor, ''), NULLIF(ocupacion_legacy.valor, ''), '') AS OCUPACION"),
-                'vtas_clientes.estado AS ESTADO'
+                'core_terceros.creado_por AS CREADO_POR'
             );
 
         self::applySearch($query, $search);
@@ -655,7 +693,7 @@ class HotelGuest extends Cliente
                 ->orWhere('ocupacion_legacy.valor', 'LIKE', "%$search%")
                 ->orWhere('ciudad_tercero.descripcion', 'LIKE', "%$search%")
                 ->orWhere('depto_tercero.descripcion', 'LIKE', "%$search%")
-                ->orWhere('vtas_clientes.estado', 'LIKE', "%$search%");
+                ->orWhere('core_terceros.creado_por', 'LIKE', "%$search%");
         });
     }
 }

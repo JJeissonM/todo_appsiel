@@ -74,6 +74,11 @@ class Prestamo implements Estrategia
     public function retirar(NomDocRegistro $registro)
     {
         $prestamo = $registro->prestamo;
+
+        if ( is_null($prestamo) )
+        {
+            throw new \RuntimeException('El registro de nómina no tiene un préstamo válido asociado.');
+        }
         
         switch( $registro->concepto->naturaleza )
         {

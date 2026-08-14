@@ -33,6 +33,7 @@ use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoDocRegistro;
 use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\Services\PdvResolver;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Http\Controllers\Sistema\EmailController;
@@ -123,6 +124,10 @@ class RecaudoController extends TransaccionController
                                         'documento_cartera_id' => $doc_encabezado->id
                                     ] );
 
+        // El PDV debe quedar normalizado antes de buscar el cierre correspondiente
+        // a la fecha contable del recaudo.
+        $this->datos['pdv_id'] = PdvResolver::normalize($request->input('pdv_id'));
+
         $lineas_registros = json_decode( $request->lineas_registros_medios_recaudo );
 
         // NOTA: Se registra el movimiento contable, sin importar que la empresa no tenga la APP de Contabilidad
@@ -172,13 +177,18 @@ class RecaudoController extends TransaccionController
 
 
             // 1.1. Para cada registro del documento de recaudo, se va actualizando el movimiento de tesorería (teso_movimientos)
-            TesoMovimiento::create( $this->datos + 
+            $movimiento = new TesoMovimiento( $this->datos +
                             [ 'teso_motivo_id' => $teso_motivo_id] + 
                             [ 'teso_caja_id' => $teso_caja_id] + 
                             [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id] + 
                             [ 'teso_medio_recaudo_id' => $teso_medio_recaudo_id] + 
                             [ 'valor_movimiento' => $valor]
                         );
+
+            // Se hace explícito en el recaudo general: si existe un cierre para el
+            // PDV y la fecha del recaudo, el movimiento pertenece a ese cierre.
+            $movimiento->sincronizarCreatedAtConUltimoCierre();
+            $movimiento->save();
 
             $total_recaudo += $valor;
 

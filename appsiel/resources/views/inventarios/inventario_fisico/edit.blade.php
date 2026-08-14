@@ -32,8 +32,22 @@
 				{{ Form::hidden('url_id_modelo', Input::get('id_modelo'), ['id'=>'url_id_modelo']) }}
 				{{ Form::hidden('url_id_transaccion',Input::get('id_transaccion'), ['id'=>'url_id_transaccion'])}}
 
-				{{ Form::hidden('hora_inicio', null, ['id'=>'hora_inicio']) }}
-				{{ Form::hidden('hora_finalizacion', null, ['id'=>'hora_finalizacion']) }}
+				@if( (int)config('inventarios.usar_inventario_fisico_por_horas', 0) )
+					<div class="row" style="margin: 5px;">
+						<div class="col-md-6">
+							{{ Form::label('hora_inicio', 'Hora de apertura del turno') }}
+							{{ Form::input('time', 'hora_inicio', null, ['id'=>'hora_inicio', 'class'=>'form-control', 'step'=>'1', 'required'=>'required']) }}
+						</div>
+						<div class="col-md-6">
+							{{ Form::label('hora_finalizacion', 'Hora de cierre del turno') }}
+							{{ Form::input('time', 'hora_finalizacion', null, ['id'=>'hora_finalizacion', 'class'=>'form-control', 'step'=>'1', 'required'=>'required']) }}
+							<small>Si el cierre es menor que la apertura, se tomará como cierre del día siguiente.</small>
+						</div>
+					</div>
+				@else
+					{{ Form::hidden('hora_inicio', null, ['id'=>'hora_inicio']) }}
+					{{ Form::hidden('hora_finalizacion', null, ['id'=>'hora_finalizacion']) }}
+				@endif
 				
 			{{ Form::close() }}
 
@@ -104,7 +118,9 @@
 			$('#total_cantidad').text( {{ $cantidad_total }} );
 			$('#total_costo_total').text( {{ $costo_total }} );
 
-			$('#hora_inicio').val( get_hora_actual() );
+			if ( $('#hora_inicio').val() == '' ) {
+				$('#hora_inicio').val( get_hora_actual() );
+			}
 
 			$('#movimiento').removeAttr('required');
 
@@ -290,7 +306,9 @@
 					// Desactivar el click del botón
 					$( this ).off( event );
 
-					$('#hora_finalizacion').val( get_hora_actual() );
+					if ( $('#hora_finalizacion').val() == '' ) {
+						$('#hora_finalizacion').val( get_hora_actual() );
+					}
 					
 					var table = $('#ingreso_productos').tableToJSON();
 					
