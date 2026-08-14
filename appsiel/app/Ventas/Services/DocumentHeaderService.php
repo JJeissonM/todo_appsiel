@@ -19,6 +19,7 @@ use App\Ventas\Cliente;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\Ventas\VtasMovimiento;
+use App\VentasPos\FacturaPos;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 
@@ -124,12 +125,36 @@ class DocumentHeaderService
             'modificado_por' => $modificado_por
         ]);
 
+        $this->cancel_related_pos_document($document_header, $modificado_por);
+
         HotelOrderHeader::reopenOrdersForCancelledSalesInvoice($document_header->id, $hotel_related_pos_doc_id);
 
         return (object)[
             'status'=>'flash_message',
             'message'=>'Factura de ventas ' . $document_header->get_label_documento()  . ' ANULADA correctamente.'
         ];
+    }
+
+    /**
+     * Las facturas electronicas creadas desde POS mantienen un encabezado
+     * equivalente en vtas_pos_doc_encabezados. Al anular la factura de ventas
+     * se sincroniza el estado del encabezado POS, sin repetir la anulacion de
+     * movimientos, inventarios o contabilidad ya realizada en este servicio.
+     */
+    protected function cancel_related_pos_document(VtasDocEncabezado $document_header, $modificado_por)
+    {
+        if ((int)$document_header->core_tipo_transaccion_id !== 52) {
+            return;
+        }
+
+        FacturaPos::where('core_empresa_id', $document_header->core_empresa_id)
+            ->where('core_tipo_transaccion_id', $document_header->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $document_header->core_tipo_doc_app_id)
+            ->where('consecutivo', $document_header->consecutivo)
+            ->update([
+                'estado' => 'Anulado',
+                'modificado_por' => $modificado_por
+            ]);
     }
     
     public function actions_buttos_to_show_view( $doc_encabezado, $docs_relacionados )
