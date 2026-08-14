@@ -172,7 +172,7 @@ class OseiPayrollService
                 'municipalityCode' => $codigoMunicipio,
                 'departmentCode' => $codigoDepartamento,
                 'countryCode' => 'CO',
-                'address' => $this->empresa->direccion1 ?? '',
+                'address' => $this->construirDireccionFisica($this->empresa),
             ],
 
             'employee' => [
@@ -188,7 +188,7 @@ class OseiPayrollService
                 'municipalityCode' => $codMunEmpleado,
                 'departmentCode' => $codDeptoEmpleado,
                 'countryCode' => 'CO',
-                'address' => $tercero->direccion1 ?? '',
+                'address' => $this->construirDireccionFisica($tercero),
                 'highRiskPension' => false,
                 'integralSalary' => (bool)$empleado->salario_integral,
             ],
@@ -205,6 +205,50 @@ class OseiPayrollService
                 'netPay' => $netPay,
             ],
         ];
+    }
+
+    /**
+     * Compone la dirección física completa del empleador/trabajador (NIE053).
+     *
+     * Une direccion1 + direccion2 + barrio + ciudad, omitiendo las partes vacías,
+     * para que la DIAN reciba una dirección real (ej: "Calle 5 # 4-23, Barrio X, Ciudad").
+     * Si no hay datos, devuelve '' (la DIAN lo rechazaría, indicando que falta cargar
+     * la dirección del tercero en Appsiel).
+     *
+     * @param  object|null  $owner  Instancia de \App\Core\Empresa o \App\Core\Tercero
+     */
+    protected function construirDireccionFisica($owner): string
+    {
+        if (!$owner) {
+            return '';
+        }
+
+        $partes = [];
+
+        $dir1 = trim((string) ($owner->direccion1 ?? ''));
+        $dir2 = trim((string) ($owner->direccion2 ?? ''));
+        $barrio = trim((string) ($owner->barrio ?? ''));
+
+        if ($dir1 !== '') {
+            $partes[] = $dir1;
+        }
+        if ($dir2 !== '') {
+            $partes[] = $dir2;
+        }
+        if ($barrio !== '') {
+            $partes[] = $barrio;
+        }
+
+        // Nombre de la ciudad (campo "descripcion" del modelo Ciudad)
+        if (!is_null($owner->ciudad)) {
+            $ciudad = trim((string) $owner->ciudad->descripcion);
+            if ($ciudad !== '') {
+                $partes[] = $ciudad;
+            }
+        }
+
+        // Colapsar espacios múltiples (por si los campos traen espacios repetidos)
+        return trim(preg_replace('/\s+/', ' ', implode(' ', $partes)));
     }
 
     /**
