@@ -139,7 +139,11 @@ class HotelReceivableService
         }
 
         if (abs($total - $required) > self::TOLERANCE) {
-            throw new \InvalidArgumentException('Los medios de pago deben sumar exactamente $ ' . number_format($required, 2, ',', '.') . '.');
+            if ($total < $required) {
+                throw new \InvalidArgumentException('El recaudo está incompleto. Falta registrar $ ' . number_format($required - $total, 2, ',', '.') . ' en medios de pago. Los anticipos son opcionales.');
+            }
+
+            throw new \InvalidArgumentException('Los medios de pago superan en $ ' . number_format($total - $required, 2, ',', '.') . ' el valor pendiente del recaudo. Ajuste el valor para continuar.');
         }
 
         return $total;

@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            <div id="hotel-payment-error" class="alert alert-danger hotel-payment-error"></div>
+            <div id="hotel-payment-error" class="alert alert-warning hotel-payment-error" role="alert"></div>
 
             <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/receivables/payment')) }}" id="hotel-receivables-payment-form">
                 {{ csrf_field() }}
@@ -46,9 +46,9 @@
                                 <tr>
                                     <th style="width:45px;"><input type="checkbox" id="hotel-select-all-invoices" title="Seleccionar todas"></th>
                                     <th>Documento</th>
+                                    <th>Creado por</th>
                                     <th>Fecha</th>
-                                    <th>Vencimiento</th>
-                                    <th>Detalle</th>
+                                    <th>Estado</th>
                                     <th class="hotel-money">Valor</th>
                                     <th class="hotel-money">Pagado</th>
                                     <th class="hotel-money">Saldo</th>
@@ -58,10 +58,14 @@
                                 @foreach($invoices as $invoice)
                                     <tr>
                                         <td><input type="checkbox" class="hotel-invoice-check" name="invoice_ids[]" value="{{ $invoice->id }}" data-balance="{{ (float)$invoice->saldo_pendiente }}" {{ is_array(old('invoice_ids')) && in_array($invoice->id, old('invoice_ids')) ? 'checked' : '' }}></td>
-                                        <td>{{ $invoice->documento }}</td>
+                                        <td>
+                                            <a href="{{ url('enlace_show_documento/'.$hotelUrl::appId().'/'.$invoice->core_tipo_transaccion_id.'/'.$invoice->core_tipo_doc_app_id.'/'.$invoice->consecutivo) }}" target="_blank" rel="noopener noreferrer">
+                                                {{ $invoice->documento }}
+                                            </a>
+                                        </td>
+                                        <td>{{ $invoice->creatorLabel() }}</td>
                                         <td>{{ $invoice->fecha }}</td>
-                                        <td>{{ $invoice->fecha_vencimiento }}</td>
-                                        <td>{{ $invoice->detalle }}</td>
+                                        <td>{{ $invoice->estado }}</td>
                                         <td class="hotel-money">{{ number_format($invoice->valor_documento, 2, ',', '.') }}</td>
                                         <td class="hotel-money">{{ number_format($invoice->valor_pagado, 2, ',', '.') }}</td>
                                         <td class="hotel-money"><strong>{{ number_format($invoice->saldo_pendiente, 2, ',', '.') }}</strong></td>
@@ -98,7 +102,9 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <p class="help-block">Los anticipos seleccionados se aplicarán primero, hasta cubrir las facturas escogidas.</p>
+                            <p class="help-block">
+                                <strong>Opcional:</strong> puede pagar sin seleccionar anticipos. Si selecciona alguno, se aplicará primero y el valor restante se cubrirá con los medios de pago.
+                            </p>
                         </div>
                     </div>
 
@@ -203,7 +209,9 @@
             $('#hotel-advance-total').text('- ' + money(advances));
             $('#hotel-required-total').text(money(Math.max(0, required - payments)));
             updatePendingModalLabel(required, payments);
-            return { invoices: invoices, advances: advances, required: required, payments: payments };
+            var summary = { invoices: invoices, advances: advances, required: required, payments: payments };
+            clearResolvedWarning(summary);
+            return summary;
         }
 
         function updatePendingModalLabel(required, payments) {
@@ -211,8 +219,18 @@
             $('#lbl_hotel_vlr_pendiente_ingresar').text(money(pending));
         }
 
-        function showError(message) {
-            $('#hotel-payment-error').text(message).show();
+        function clearResolvedWarning(summary) {
+            var warningType = $('#hotel-payment-error').data('validation-type');
+            var resolved = warningType === 'invoice-selection' && summary.invoices > tolerance;
+            resolved = resolved || (warningType === 'payment-total' && summary.invoices > tolerance && Math.abs(summary.payments - summary.required) <= tolerance);
+
+            if (resolved) {
+                $('#hotel-payment-error').hide().text('').removeData('validation-type');
+            }
+        }
+
+        function showWarning(message, validationType) {
+            $('#hotel-payment-error').text(message).data('validation-type', validationType).show();
             $('html, body').animate({ scrollTop: $('#hotel-payment-error').offset().top - 80 }, 250);
         }
 
@@ -236,12 +254,17 @@
 
         $('#hotel-receivables-payment-form').on('submit', function (event) {
             event.preventDefault();
-            $('#hotel-payment-error').hide();
+            $('#hotel-payment-error').hide().text('').removeData('validation-type');
             var summary = totals();
-            if (summary.invoices <= tolerance) return showError('Seleccione al menos una factura pendiente por cobrar.');
+            if (summary.invoices <= tolerance) return showWarning('Seleccione al menos una factura pendiente por cobrar.', 'invoice-selection');
 
             var methods = paymentMethods();
-            if (Math.abs(summary.payments - summary.required) > tolerance) return showError('Los medios de pago deben sumar exactamente ' + money(summary.required) + '.');
+            if (summary.payments < summary.required - tolerance) {
+                return showWarning('Aún falta registrar ' + money(summary.required - summary.payments) + ' en medios de pago. Los anticipos son opcionales.', 'payment-total');
+            }
+            if (summary.payments > summary.required + tolerance) {
+                return showWarning('Los medios de pago superan en ' + money(summary.payments - summary.required) + ' el valor pendiente del recaudo. Ajuste el valor para continuar.', 'payment-total');
+            }
             if (!window.confirm('¿Confirma el pago de las facturas seleccionadas por ' + money(summary.invoices) + '? Esta operación generará los movimientos de tesorería y CxC.')) return;
 
             $('#hotel-payment-methods-json').val(JSON.stringify(methods));

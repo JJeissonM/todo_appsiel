@@ -212,27 +212,29 @@
                     <thead>
                         <tr>
                             <th>Documento</th>
+                            <th>Creado por</th>
                             <th>Fecha</th>
-                            <th>Vencimiento</th>
-                            <th>Detalle</th>
-                            <th class="text-right">Valor documento</th>
-                            <th class="text-right">Valor pagado</th>
-                            <th class="text-right">Saldo pendiente</th>
                             <th>Estado</th>
+                            <th class="text-right">Valor</th>
+                            <th class="text-right">Pagado</th>
+                            <th class="text-right">Saldo</th>
                             <th>Acción</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($facturasCredito as $facturaCredito)
                             <tr>
-                                <td>{{ $facturaCredito['documento'] }}</td>
-                                <td>{{ $facturaCredito['fecha'] }}</td>
-                                <td>{{ $facturaCredito['fecha_vencimiento'] }}</td>
-                                <td>{{ $facturaCredito['detalle'] }}</td>
-                                <td class="text-right">{{ number_format($facturaCredito['valor_documento'], 2, ',', '.') }}</td>
-                                <td class="text-right">{{ number_format($facturaCredito['valor_pagado'], 2, ',', '.') }}</td>
-                                <td class="text-right"><strong>{{ number_format($facturaCredito['saldo_pendiente'], 2, ',', '.') }}</strong></td>
-                                <td>{{ $facturaCredito['estado'] }}</td>
+                                <td>
+                                    <a href="{{ url('enlace_show_documento/'.$hotelUrl::appId().'/'.$facturaCredito->core_tipo_transaccion_id.'/'.$facturaCredito->core_tipo_doc_app_id.'/'.$facturaCredito->consecutivo) }}" target="_blank" rel="noopener noreferrer">
+                                        {{ $facturaCredito->documento }}
+                                    </a>
+                                </td>
+                                <td>{{ $facturaCredito->creatorLabel() }}</td>
+                                <td>{{ $facturaCredito->fecha }}</td>
+                                <td>{{ $facturaCredito->estado }}</td>
+                                <td class="text-right">{{ number_format($facturaCredito->valor_documento, 2, ',', '.') }}</td>
+                                <td class="text-right">{{ number_format($facturaCredito->valor_pagado, 2, ',', '.') }}</td>
+                                <td class="text-right"><strong>{{ number_format($facturaCredito->saldo_pendiente, 2, ',', '.') }}</strong></td>
                                 <td>
                                     <a href="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/receivables/payment')) }}" class="btn btn-success btn-xs">
                                         <i class="fa fa-money"></i> Pagar
@@ -241,12 +243,12 @@
                             </tr>
                         @endforeach
                         @if(count($facturasCredito) == 0)
-                            <tr><td colspan="9">El huésped no tiene facturas crédito pendientes por cobrar.</td></tr>
+                            <tr><td colspan="8">El huésped no tiene facturas crédito pendientes por cobrar.</td></tr>
                         @endif
                         <tr>
                             <td colspan="6" class="text-right"><strong>Total facturas crédito</strong></td>
                             <td class="text-right"><strong>{{ number_format($saldoFacturasCredito, 2, ',', '.') }}</strong></td>
-                            <td colspan="2"></td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>

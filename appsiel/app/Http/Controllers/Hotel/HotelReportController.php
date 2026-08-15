@@ -90,6 +90,8 @@ class HotelReportController extends Controller
                     ->where('hotel_guest_ocupacion.core_campo_id', '=', isset($hotelGuestFieldIds[HotelGuest::FIELD_OCUPACION]) ? $hotelGuestFieldIds[HotelGuest::FIELD_OCUPACION] : 0);
             })
             ->leftJoin('core_paises as pais_nacionalidad', 'pais_nacionalidad.id', '=', 'hotel_guest_nacionalidad.valor')
+            ->leftJoin('core_ciudades as ciudad_tercero', 'ciudad_tercero.id', '=', 'core_terceros.codigo_ciudad')
+            ->leftJoin('core_departamentos as depto_tercero', 'depto_tercero.id', '=', 'ciudad_tercero.core_departamento_id')
             ->leftJoin('core_ciudades as ciudad_procedencia', 'ciudad_procedencia.id', '=', 'hotel_guest_procedencia.valor')
             ->leftJoin('core_departamentos as depto_procedencia', 'depto_procedencia.id', '=', 'ciudad_procedencia.core_departamento_id')
             ->leftJoin('core_paises as pais_procedencia', 'pais_procedencia.id', '=', 'hotel_guest_procedencia.valor')
@@ -115,7 +117,7 @@ class HotelReportController extends Controller
                 DB::raw('COALESCE(NULLIF(pais_nacionalidad.gentilicio, ""), pais_nacionalidad.descripcion, hotel_guest_nacionalidad.valor, "") AS nacionalidad'),
                 'hotel_guest_fecha_nacimiento.valor AS fecha_nacimiento',
                 'hotel_guest_ocupacion.valor AS ocupacion',
-                DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), pais_procedencia.descripcion, hotel_guest_procedencia.valor, '') AS hotel_procedencia"),
+                DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_procedencia.descripcion,''), IF(depto_procedencia.descripcion IS NULL OR depto_procedencia.descripcion = '', '', CONCAT(', ', depto_procedencia.descripcion))), ''), NULLIF(pais_procedencia.descripcion, ''), NULLIF(CONCAT(COALESCE(ciudad_tercero.descripcion,''), IF(depto_tercero.descripcion IS NULL OR depto_tercero.descripcion = '', '', CONCAT(', ', depto_tercero.descripcion))), ''), hotel_guest_procedencia.valor, '') AS hotel_procedencia"),
                 DB::raw("COALESCE(NULLIF(CONCAT(COALESCE(ciudad_destino.descripcion,''), IF(depto_destino.descripcion IS NULL OR depto_destino.descripcion = '', '', CONCAT(', ', depto_destino.descripcion))), ''), pais_destino.descripcion, hotel_guest_destino.valor, '') AS hotel_destino")
             )
             ->orderBy('hotel_stays.check_in_at', 'DESC');

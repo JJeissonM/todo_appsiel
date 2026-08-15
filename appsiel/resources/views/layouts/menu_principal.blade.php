@@ -23,32 +23,37 @@
             }
         }
 
-        $permiso_bloquear_reportes = 'core_bloquear_menu_reportes';
-        $existe_permiso = Permission::where('name', $permiso_bloquear_reportes)->exists();
+        $reportes = App\Sistema\Reporte::where( ['core_app_id' => Input::get('id'), 'estado' => 'Activo'] )->get();
+        $reportes_autorizados = array();
 
-        if ( $usuario_administrador_reportes || !$existe_permiso || !$user->hasPermissionTo($permiso_bloquear_reportes) )
-        {
-            $reportes = App\Sistema\Reporte::where( ['core_app_id' => Input::get('id'), 'estado' => 'Activo'] )->get();
-            
-            if ( !$reportes->isEmpty() ) {
+        foreach ($reportes as $un_reporte) {
+            $permiso_reporte = trim((string)$un_reporte->url_form_action);
+            $puede_ver_reporte = $usuario_administrador_reportes || (
+                $permiso_reporte != '' &&
+                in_array($permiso_reporte, $menu_permission_names) &&
+                $user->hasPermissionTo($permiso_reporte)
+            );
+
+            if ($puede_ver_reporte) {
+                $reportes_autorizados[] = $un_reporte;
+            }
+        }
+
+        // Los permisos específicos de cada reporte prevalecen sobre el antiguo
+        // permiso global core_bloquear_menu_reportes.
+        if ( count($reportes_autorizados) > 0 ) {
 
                     $item_reporte = '<li class="dropdown">
                                         <a href="#" style="color: #FFFFFF !important;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Reportes <span class="caret"></span></a>
                                         <ul class="dropdown-menu sub-menu" style="background-color: #42A3DC !important;">';
-                                            foreach($reportes as $un_reporte)
+                                            foreach($reportes_autorizados as $un_reporte)
                                             {
-
-                                                if( !$usuario_administrador_reportes && (trim((string)$un_reporte->url_form_action) == '' || !in_array($un_reporte->url_form_action, $menu_permission_names) || !$user->hasPermissionTo($un_reporte->url_form_action)) ){
-                                                    continue;
-                                                }
-
                                                 $item_reporte .= '<li> <a href="'.url('vista_reporte?id='.$un_reporte->core_app_id.'&reporte_id='.$un_reporte->id).'" style="color: #FFFFFF !important;">'.$un_reporte->descripcion.'</a>
                                                                 </li>';
                                             }
 
                     $item_reporte .= '   </ul>
                                     </li>';
-            }
         }
     }
 

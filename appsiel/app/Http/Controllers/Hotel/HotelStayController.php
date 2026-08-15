@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Hotel;
 use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelRoom;
 use App\Hotel\HotelStay;
+use App\Hotel\Services\HotelReceivableService;
 use App\Hotel\Services\HotelService;
 use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
@@ -43,7 +44,7 @@ class HotelStayController extends Controller
         $stay = $this->findStay($id);
         $clients = $this->clientsList();
         $anticipos = $stay->anticiposCliente();
-        $facturasCredito = $stay->facturasCreditoPendientesCliente();
+        $facturasCredito = (new HotelReceivableService())->pendingInvoices($stay);
         $saldoPedidos = $this->openOrdersBalance($stay);
         $saldoFacturasCredito = $this->receivablesBalance($facturasCredito);
         $saldoAnticipos = abs(min(0, $this->receivablesBalance($anticipos)));

@@ -3,7 +3,9 @@
 namespace App\CxC;
 
 use App\Core\Tercero;
+use App\Hotel\Support\HotelCreatorLabel;
 use App\Sistema\TipoTransaccion;
+use App\VentasPos\FacturaPos;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +33,25 @@ class CxcMovimiento extends Model
   public function tercero()
   {
     return $this->belongsTo(Tercero::class,'core_tercero_id');
+  }
+
+  public function creatorLabel()
+  {
+    $transactionAt = !empty($this->created_at) ? $this->created_at : $this->fecha;
+    $pdvId = null;
+
+    $sourceInvoice = FacturaPos::where('core_empresa_id', $this->core_empresa_id)
+      ->where('core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
+      ->where('core_tipo_doc_app_id', $this->core_tipo_doc_app_id)
+      ->where('consecutivo', $this->consecutivo)
+      ->first(array('pdv_id', 'fecha', 'created_at'));
+
+    if (!is_null($sourceInvoice)) {
+      $pdvId = $sourceInvoice->pdv_id;
+      $transactionAt = !empty($sourceInvoice->created_at) ? $sourceInvoice->created_at : $sourceInvoice->fecha;
+    }
+
+    return HotelCreatorLabel::userLabel($this->creado_por, $transactionAt, $pdvId);
   }
 
   public function actualizar_saldos($abono)
