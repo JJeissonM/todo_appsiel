@@ -8,9 +8,11 @@ use App\Hotel\HotelStay;
 use App\Hotel\Services\HotelReceivableService;
 use App\Hotel\Services\HotelService;
 use App\Hotel\Support\HotelBreadcrumb;
+use App\Hotel\Support\HotelCreatorLabel;
 use App\Http\Controllers\Controller;
 use App\CxC\CxcMovimiento;
 use App\Ventas\Cliente;
+use App\VentasPos\FacturaPos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,6 +47,7 @@ class HotelStayController extends Controller
         $clients = $this->clientsList();
         $anticipos = $stay->anticiposCliente();
         $facturasCredito = (new HotelReceivableService())->pendingInvoices($stay);
+        $facturasPosIndependientes = $this->independentPosInvoices($stay);
         $saldoPedidos = $this->openOrdersBalance($stay);
         $saldoFacturasCredito = $this->receivablesBalance($facturasCredito);
         $saldoAnticipos = abs(min(0, $this->receivablesBalance($anticipos)));
@@ -55,7 +58,7 @@ class HotelStayController extends Controller
         $checkOutBlockMessage = $hotelService->getCheckOutBlockMessage($stay);
         $canCancelHotelOrder = $this->canCancelHotelOrder();
         $miga_pan = $this->breadcrumb('Estadia #' . $stay->id);
-        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'facturasCredito', 'saldoPedidos', 'saldoFacturasCredito', 'saldoAnticipos', 'saldoPendienteNeto', 'cancelBlockMessage', 'editBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'miga_pan'));
+        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'facturasCredito', 'facturasPosIndependientes', 'saldoPedidos', 'saldoFacturasCredito', 'saldoAnticipos', 'saldoPendienteNeto', 'cancelBlockMessage', 'editBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'miga_pan'));
     }
 
     public function createCheckIn()
@@ -208,6 +211,70 @@ class HotelStayController extends Controller
         }
 
         return $total;
+    }
+
+    private function independentPosInvoices(HotelStay $stay)
+    {
+        $clientIds = array((int)$stay->main_cliente_id);
+        $terceroIds = array();
+
+        if (!is_null($stay->mainGuest) && !empty($stay->mainGuest->core_tercero_id)) {
+            $terceroIds[] = (int)$stay->mainGuest->core_tercero_id;
+        }
+
+        foreach ($stay->guests as $guest) {
+            if (!empty($guest->cliente_id)) {
+                $clientIds[] = (int)$guest->cliente_id;
+            }
+
+            if (!is_null($guest->cliente) && !empty($guest->cliente->core_tercero_id)) {
+                $terceroIds[] = (int)$guest->cliente->core_tercero_id;
+            }
+        }
+
+        $clientIds = array_values(array_unique(array_filter($clientIds)));
+        $terceroIds = array_values(array_unique(array_filter($terceroIds)));
+        $associatedPosInvoiceIds = HotelOrderHeader::where('empresa_id', $stay->empresa_id)
+            ->whereNotNull('pos_doc_id')
+            ->where('pos_doc_id', '>', 0)
+            ->lists('pos_doc_id')
+            ->toArray();
+
+        $dateFrom = substr((string)$stay->check_in_at, 0, 10);
+        $dateTo = !empty($stay->check_out_at) ? substr((string)$stay->check_out_at, 0, 10) : date('Y-m-d');
+
+        $query = FacturaPos::where('core_empresa_id', $stay->empresa_id)
+            ->where('fecha', '>=', $dateFrom)
+            ->where('fecha', '<=', $dateTo)
+            ->where(function ($query) use ($clientIds, $terceroIds) {
+                if (count($clientIds) > 0) {
+                    $query->whereIn('cliente_id', $clientIds);
+                }
+
+                if (count($terceroIds) > 0) {
+                    $method = count($clientIds) > 0 ? 'orWhereIn' : 'whereIn';
+                    $query->{$method}('core_tercero_id', $terceroIds);
+                }
+            })
+            ->with('tipo_documento_app', 'cliente.tercero')
+            ->orderBy('fecha', 'DESC')
+            ->orderBy('id', 'DESC');
+
+        if (count($associatedPosInvoiceIds) > 0) {
+            $query->whereNotIn('id', $associatedPosInvoiceIds);
+        }
+
+        $invoices = $query->get();
+        foreach ($invoices as $invoice) {
+            $invoice->hotel_creator_label = HotelCreatorLabel::userLabel(
+                $invoice->creado_por,
+                !empty($invoice->created_at) ? $invoice->created_at : $invoice->fecha,
+                $invoice->pdv_id
+            );
+            $invoice->hotel_total = (float)$invoice->valor_total + (float)$invoice->valor_ajuste_al_peso + (float)$invoice->valor_total_bolsas;
+        }
+
+        return $invoices;
     }
 
     private function breadcrumb($label)

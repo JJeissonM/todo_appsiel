@@ -198,6 +198,58 @@
             </div>
 
             <div class="row" style="margin-top:25px;">
+                <div class="col-sm-12">
+                    <h4>Facturas POS Directas</h4>
+                    <p class="help-block">
+                        Facturas realizadas directamente en Ventas POS a los huéspedes durante la estadía y que no están asociadas a un pedido hotelero.
+                    </p>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Huésped / Cliente</th>
+                            <th>Creado por</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th class="text-right">Total</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($facturasPosIndependientes as $facturaPos)
+                            <?php
+                                $facturaPosDocumento = $facturaPos->tipo_documento_app
+                                    ? trim($facturaPos->tipo_documento_app->prefijo . ' ' . $facturaPos->consecutivo)
+                                    : 'POS ' . $facturaPos->consecutivo;
+                                $facturaPosUrl = url('enlace_show_documento/'.$hotelUrl::appId().'/'.$facturaPos->core_tipo_transaccion_id.'/'.$facturaPos->core_tipo_doc_app_id.'/'.$facturaPos->consecutivo);
+                            ?>
+                            <tr>
+                                <td>
+                                    <a href="{{ $facturaPosUrl }}" target="_blank" rel="noopener noreferrer">{{ $facturaPosDocumento }}</a>
+                                </td>
+                                <td>{{ $facturaPos->cliente && $facturaPos->cliente->tercero ? $facturaPos->cliente->tercero->descripcion : $facturaPos->core_tercero_id }}</td>
+                                <td>{{ $facturaPos->hotel_creator_label }}</td>
+                                <td>{{ $facturaPos->fecha }}</td>
+                                <td>{{ $facturaPos->estado }}</td>
+                                <td class="text-right">{{ number_format($facturaPos->hotel_total, 2, ',', '.') }}</td>
+                                <td>
+                                    <a href="{{ $facturaPosUrl }}" class="btn btn-primary btn-xs" target="_blank" rel="noopener noreferrer">
+                                        <i class="fa fa-eye"></i> Ver factura
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                        @if(count($facturasPosIndependientes) == 0)
+                            <tr><td colspan="7">No hay facturas POS independientes asociables a esta estadía.</td></tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row" style="margin-top:25px;">
                 <div class="col-sm-8"><h4>Facturas crédito pendientes por cobrar</h4></div>
                 <div class="col-sm-4 text-right">
                     @if(count($facturasCredito) > 0)
@@ -214,7 +266,7 @@
                             <th>Documento</th>
                             <th>Creado por</th>
                             <th>Fecha</th>
-                            <th>Estado</th>
+                            <th>Estado cartera</th>
                             <th class="text-right">Valor</th>
                             <th class="text-right">Pagado</th>
                             <th class="text-right">Saldo</th>
