@@ -42,6 +42,18 @@
 @endsection
 
 @section('datos_adicionales_encabezado')
+    @if(isset($documentos_cruce) && $documentos_cruce->count() > 0)
+        <br/>
+        <b>{{ $documentos_cruce->count() > 1 ? 'Documentos de cruce:' : 'Documento de cruce:' }}</b>
+        @foreach($documentos_cruce as $documento_cruce)
+            <a class="label label-info"
+               href="{{ url($documento_cruce->url_form_create.'/'.$documento_cruce->id.'?id='.$documento_cruce->core_app_id.'&id_modelo='.$documento_cruce->core_modelo_id.'&id_transaccion='.$documento_cruce->core_tipo_transaccion_id) }}"
+               title="Ver documento de cruce {{ $documento_cruce->prefijo }} {{ $documento_cruce->consecutivo }}">
+                <i class="fa fa-exchange"></i>
+                {{ $documento_cruce->prefijo }} {{ $documento_cruce->consecutivo }}
+            </a>
+        @endforeach
+    @endif
 @endsection
 
 @section('filas_adicionales_encabezado')

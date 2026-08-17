@@ -316,6 +316,7 @@ class RecaudoController extends TransaccionController
         $doc_registros = TesoDocRegistro::get_registros_impresion( $doc_encabezado->id );
         $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
         $pdv = $this->get_pdv_documento($doc_encabezado);
+        $documentos_cruce = $this->get_documentos_cruce($doc_encabezado);
 
         //dd($doc_registros);
 
@@ -329,7 +330,45 @@ class RecaudoController extends TransaccionController
                 ['url'=>'NO','etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo ]
             ];
 
-        return view( 'tesoreria.recaudos.show',compact('empresa','botones_anterior_siguiente','doc_encabezado','doc_registros','registros_contabilidad','miga_pan','id','id_transaccion','documento_vista','pdv') );
+        return view( 'tesoreria.recaudos.show',compact('empresa','botones_anterior_siguiente','doc_encabezado','doc_registros','registros_contabilidad','miga_pan','id','id_transaccion','documento_vista','pdv','documentos_cruce') );
+    }
+
+    /**
+     * Obtiene los documentos de cruce de CxC donde fue aplicado el recaudo.
+     * El encabezado del cruce es la fuente del enlace; si ya no existe, no se
+     * muestra una referencia incompleta.
+     */
+    protected function get_documentos_cruce($doc_encabezado)
+    {
+        return CxcAbono::join('cxc_doc_encabezados AS documento_cruce', function ($join) {
+                $join->on('documento_cruce.core_empresa_id', '=', 'cxc_abonos.core_empresa_id')
+                    ->on('documento_cruce.core_tipo_transaccion_id', '=', 'cxc_abonos.doc_cruce_transacc_id')
+                    ->on('documento_cruce.core_tipo_doc_app_id', '=', 'cxc_abonos.doc_cruce_tipo_doc_id')
+                    ->on('documento_cruce.consecutivo', '=', 'cxc_abonos.doc_cruce_consecutivo')
+                    ->on('documento_cruce.core_tercero_id', '=', 'cxc_abonos.core_tercero_id');
+            })
+            ->join('core_tipos_docs_apps AS tipo_documento_cruce', 'tipo_documento_cruce.id', '=', 'documento_cruce.core_tipo_doc_app_id')
+            ->join('sys_tipos_transacciones AS transaccion_cruce', 'transaccion_cruce.id', '=', 'documento_cruce.core_tipo_transaccion_id')
+            ->join('sys_modelos AS modelo_cruce', 'modelo_cruce.id', '=', 'transaccion_cruce.core_modelo_id')
+            ->where('cxc_abonos.core_empresa_id', $doc_encabezado->core_empresa_id)
+            ->where('cxc_abonos.core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+            ->where('cxc_abonos.core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+            ->where('cxc_abonos.consecutivo', $doc_encabezado->consecutivo)
+            ->where('cxc_abonos.core_tercero_id', $doc_encabezado->core_tercero_id)
+            ->where('cxc_abonos.doc_cruce_transacc_id', '<>', 0)
+            ->select(
+                'documento_cruce.id',
+                'documento_cruce.consecutivo',
+                'tipo_documento_cruce.prefijo',
+                'transaccion_cruce.core_app_id',
+                'transaccion_cruce.core_modelo_id',
+                'transaccion_cruce.id AS core_tipo_transaccion_id',
+                'modelo_cruce.url_form_create'
+            )
+            ->distinct()
+            ->orderBy('documento_cruce.fecha')
+            ->orderBy('documento_cruce.consecutivo')
+            ->get();
     }
 
     protected function get_pdv_documento($doc_encabezado)

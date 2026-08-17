@@ -334,17 +334,19 @@ class DocCruceController extends TransaccionController
       {
         $array_wheres_cartera = array_merge($array_wheres_cartera, ['core_tercero_id' => $registro->core_tercero_id]);
       }
-      $transaccion = TipoTransaccion::find($registro->doc_cxc_transacc_id);
-      $doc_cartera = app($transaccion->modelo_encabezados_documentos)
+      $transaccion_cartera = TipoTransaccion::find($registro->doc_cxc_transacc_id);
+      $doc_cartera = app($transaccion_cartera->modelo_encabezados_documentos)
         ->where($array_wheres_cartera)
         ->get()
         ->first();
 
       $doc_app_cartera = 'nulo';
       $fecha_doc_app_cartera = '';
+      $url_doc_app_cartera = null;
       if ($doc_cartera != null) {
         $doc_app_cartera = TipoDocApp::where('id', $doc_cartera->core_tipo_doc_app_id)->value('prefijo') . ' ' . $doc_cartera->consecutivo;
         $fecha_doc_app_cartera = $doc_cartera->fecha;
+        $url_doc_app_cartera = url('enlace_show_documento/' . $transaccion_cartera->core_app_id . '/' . $doc_cartera->core_tipo_transaccion_id . '/' . $doc_cartera->core_tipo_doc_app_id . '/' . $doc_cartera->consecutivo);
       }
 
       // DOC RECAUDO
@@ -359,15 +361,23 @@ class DocCruceController extends TransaccionController
         $array_wheres_recaudos = array_merge($array_wheres_recaudos, ['core_tercero_id' => $registro->core_tercero_id]);
       }
 
-      $transaccion = TipoTransaccion::find($registro->core_tipo_transaccion_id);
-      $doc_recaudo = app($transaccion->modelo_encabezados_documentos)
+      $transaccion_recaudo = TipoTransaccion::find($registro->core_tipo_transaccion_id);
+      $doc_recaudo = app($transaccion_recaudo->modelo_encabezados_documentos)
         ->where($array_wheres_recaudos)
         ->get()
         ->first();
-      $doc_app_recaudo = TipoDocApp::where('id', $doc_recaudo->core_tipo_doc_app_id)->value('prefijo') . ' ' . $doc_recaudo->consecutivo;
 
-      $registros[$i]['cartera'] = [$doc_app_cartera, $fecha_doc_app_cartera];
-      $registros[$i]['recaudo'] = [$doc_app_recaudo, $doc_recaudo->fecha];
+      $doc_app_recaudo = 'nulo';
+      $fecha_doc_app_recaudo = '';
+      $url_doc_app_recaudo = null;
+      if ($doc_recaudo != null) {
+        $doc_app_recaudo = TipoDocApp::where('id', $doc_recaudo->core_tipo_doc_app_id)->value('prefijo') . ' ' . $doc_recaudo->consecutivo;
+        $fecha_doc_app_recaudo = $doc_recaudo->fecha;
+        $url_doc_app_recaudo = url('enlace_show_documento/' . $transaccion_recaudo->core_app_id . '/' . $doc_recaudo->core_tipo_transaccion_id . '/' . $doc_recaudo->core_tipo_doc_app_id . '/' . $doc_recaudo->consecutivo);
+      }
+
+      $registros[$i]['cartera'] = [$doc_app_cartera, $fecha_doc_app_cartera, $url_doc_app_cartera];
+      $registros[$i]['recaudo'] = [$doc_app_recaudo, $fecha_doc_app_recaudo, $url_doc_app_recaudo];
       $registros[$i]['valor_pagado'] = $registro->abono;
       $i++;
     }

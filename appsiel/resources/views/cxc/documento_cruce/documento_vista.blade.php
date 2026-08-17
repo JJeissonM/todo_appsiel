@@ -8,11 +8,23 @@
         @foreach($registros as $key => $value )
             <tr>
                 <td>
-                 Documento: {{ $value['cartera'][0] }} <br/>
+                 Documento:
+                 @if(!empty($value['cartera'][2]))
+                    <a href="{{ $value['cartera'][2] }}" target="_blank" rel="noopener noreferrer" title="Abrir documento en una nueva pestaña">{{ $value['cartera'][0] }}</a>
+                 @else
+                    {{ $value['cartera'][0] }}
+                 @endif
+                 <br/>
                  Fecha: {{ $value['cartera'][1] }} <br/>
                 </td>
                 <td>
-                 Documento: {{ $value['recaudo'][0] }} <br/>
+                 Documento:
+                 @if(!empty($value['recaudo'][2]))
+                    <a href="{{ $value['recaudo'][2] }}" target="_blank" rel="noopener noreferrer" title="Abrir documento en una nueva pestaña">{{ $value['recaudo'][0] }}</a>
+                 @else
+                    {{ $value['recaudo'][0] }}
+                 @endif
+                 <br/>
                  Fecha: {{ $value['recaudo'][1] }} <br/>
                 </td>
                 <td class="text-right">
