@@ -90,7 +90,7 @@
 		@else
 			<div align="center" style="font-size: 1.1em;">
 				<b>{{ $colegio->descripcion }}</b><br/>
-				{{ $colegio->resolucion }}. <br> Expedida por Secretaria de Educación Municipal <br/>
+				{{ $colegio->resolucion }}. <br>
 				{{ $colegio->ciudad }}<br/><hr>
 			</div>
 		@endif
