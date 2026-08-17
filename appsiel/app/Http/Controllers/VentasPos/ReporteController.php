@@ -341,7 +341,7 @@ class ReporteController extends Controller
             }
         }
 
-        $estado_facturas = 'Todos'; //$request->estado_facturas;
+        $estado_facturas = $this->normalizarEstadoFacturas($request->estado_facturas);
 
         $movimiento_pos = Movimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por, $estado_facturas, null, $pdv_id);
 
@@ -360,9 +360,14 @@ class ReporteController extends Controller
          * 54 = Nota Débito Electrónica de Ventas
          * 55 = Factura Electrónica de Contingencia de Ventas
          */
-        $movimiento_vtas_no_pos = VtasMovimiento::get_movimiento_ventas_por_transaccion($fecha_desde, $fecha_hasta, $agrupar_por, [23, 38, 41, 44, 49, 50, 52, 53, 54, 55]);
+        // Los movimientos de ventas estándar/electrónica representan
+        // documentos ya emitidos. No deben aparecer al solicitar solamente
+        // facturas POS pendientes.
+        if ($estado_facturas != 'Pendiente') {
+            $movimiento_vtas_no_pos = VtasMovimiento::get_movimiento_ventas_por_transaccion($fecha_desde, $fecha_hasta, $agrupar_por, [23, 38, 41, 44, 49, 50, 52, 53, 54, 55]);
 
-        $array_lista = $this->get_array_lista_registros($array_lista, $movimiento_vtas_no_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'Estandar_FE', $user_cajero_pdv);
+            $array_lista = $this->get_array_lista_registros($array_lista, $movimiento_vtas_no_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'Estandar_FE', $user_cajero_pdv);
+        }
 
         // En el movimiento se trae el precio_total con IVA incluido
         $mensaje = 'IVA Incluido en precio';
@@ -375,6 +380,28 @@ class ReporteController extends Controller
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
         return $vista;
+    }
+
+    /**
+     * Normaliza estados funcionales del reporte. Los encabezados POS usan
+     * Contabilizado/Pendiente, mientras los documentos estándar y
+     * electrónicos emitidos pueden usar Activo o Enviada.
+     */
+    private function normalizarEstadoFacturas($estado)
+    {
+        $equivalencias = [
+            'Activo' => 'Contabilizado',
+            'Enviada' => 'Contabilizado',
+            'Emitidas' => 'Contabilizado',
+            'Emitidas/contabilizadas' => 'Contabilizado',
+            'Contabilizado' => 'Contabilizado',
+            'Pendientes' => 'Pendiente',
+            'Pendiente' => 'Pendiente',
+            'Todas vigentes' => 'Todos',
+            'Todos' => 'Todos',
+        ];
+
+        return isset($equivalencias[$estado]) ? $equivalencias[$estado] : 'Todos';
     }
 
     public function get_array_lista_registros($array_lista, $movimiento, $agrupar_por, $detalla_productos, $iva_incluido, $app_movimiento, $user_cajero_pdv)
@@ -399,11 +426,11 @@ class ReporteController extends Controller
                 $label = 'Ventas Estándar/Electrónica/Notas';
             } else {
                 if ($agrupar_por == 'pdv_id') {
-                    $label = $coleccion_movimiento->first()->pdv->descripcion;
+                    $label = $coleccion_movimiento->first()->pdv_descripcion;
                 }
                 if ($agrupar_por == 'inv_grupo_id') {
-                    if ($coleccion_movimiento->first()->categoria_item() != null) {
-                        $label = $coleccion_movimiento->first()->categoria_item()->descripcion;
+                    if ($coleccion_movimiento->first()->grupo_descripcion != null) {
+                        $label = $coleccion_movimiento->first()->grupo_descripcion;
                     }
                 }
             }

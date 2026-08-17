@@ -123,9 +123,19 @@ class ReportesController extends Controller
         $agrupar_por = $request->agrupar_por;
         $detalla_productos  = (int)$request->detalla_productos;
         $detalla_clientes  = (int)$request->detalla_clientes;
-        $iva_incluido  = (int)$request->iva_incluido;
+        // El reporte simplificado de Ventas POS (reporte 47) no muestra el
+        // filtro de IVA. En ese caso se debe presentar el valor facturado,
+        // igual que el Resumen de ventas, y no asumir cero por un campo que
+        // no fue enviado en la solicitud.
+        $iva_incluido = $request->has('iva_incluido') ? (int)$request->iva_incluido : 1;
 
-        $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por, null, $request->cliente_id);
+        $movimiento = $this->getMovimientoVentasParaReporte(
+            $request,
+            $fecha_desde,
+            $fecha_hasta,
+            $agrupar_por,
+            $request->cliente_id
+        );
 
         // En el movimiento se trae el precio_total con IVA incluido
         $mensaje = 'IVA Incluido en precio';
@@ -139,6 +149,56 @@ class ReportesController extends Controller
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
         return $vista;
+    }
+
+    /**
+     * Los reportes 47 y 49 pertenecen a Ventas POS. Para ellos se toman las
+     * facturas POS desde sus documentos y se agregan las ventas estándar y
+     * electrónicas. Los reportes equivalentes del módulo Ventas conservan su
+     * fuente habitual en vtas_movimientos.
+     */
+    private function getMovimientoVentasParaReporte(Request $request, $fecha_desde, $fecha_hasta, $agrupar_por, $cliente_id = null)
+    {
+        $reporte_instancia = json_decode($request->reporte_instancia);
+        $reporte_id = is_object($reporte_instancia) && isset($reporte_instancia->id)
+            ? (int)$reporte_instancia->id
+            : 0;
+
+        if (!in_array($reporte_id, [47, 49])) {
+            return VtasMovimiento::get_movimiento_ventas(
+                $fecha_desde,
+                $fecha_hasta,
+                $agrupar_por,
+                null,
+                $cliente_id
+            );
+        }
+
+        $movimiento = Movimiento::get_movimiento_ventas(
+            $fecha_desde,
+            $fecha_hasta,
+            $agrupar_por,
+            'Todos',
+            null,
+            0
+        );
+
+        $movimiento_estandar = VtasMovimiento::get_movimiento_ventas_por_transaccion(
+            $fecha_desde,
+            $fecha_hasta,
+            $agrupar_por,
+            [23, 38, 41, 44, 49, 50, 52, 53, 54, 55]
+        );
+
+        foreach ($movimiento_estandar as $campo_agrupado => $registros) {
+            $registros_pos = $movimiento->get($campo_agrupado, collect([]));
+            $movimiento->put(
+                $campo_agrupado,
+                collect(array_merge($registros_pos->all(), $registros->all()))
+            );
+        }
+
+        return $movimiento;
     }
 
     public function vtas_reporte_rentabilidad(Request $request)
@@ -421,7 +481,12 @@ class ReportesController extends Controller
         $detalla_productos  = (int)$request->detalla_productos;
         $iva_incluido  = (int)$request->iva_incluido;
 
-        $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por, null, null);
+        $movimiento = $this->getMovimientoVentasParaReporte(
+            $request,
+            $fecha_desde,
+            $fecha_hasta,
+            $agrupar_por
+        );
 
         // En el movimiento se trae el precio_total con IVA incluido
         $mensaje = 'IVA Incluido en precio';

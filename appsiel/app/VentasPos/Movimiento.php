@@ -256,22 +256,28 @@ class Movimiento extends Model
                 break;
         }
         
+        // Los movimientos POS no siempre se generan (por ejemplo, algunas
+        // facturas creadas desde Gestión Hotelera). El encabezado y sus
+        // registros sí son el documento fuente y contienen todas las ventas
+        // POS, por lo que el resumen debe construirse desde ellos.
         $array_wheres = [
-            ['vtas_pos_movimientos.core_empresa_id','=', Auth::user()->empresa_id]
+            ['vtas_pos_doc_encabezados.core_empresa_id','=', Auth::user()->empresa_id]
         ];
         
-        $array_wheres = array_merge($array_wheres,[['vtas_pos_movimientos.core_tipo_transaccion_id','<>', 52]]);
+        $array_wheres = array_merge($array_wheres,[['vtas_pos_doc_encabezados.core_tipo_transaccion_id','<>', 52]]);
 
-        if ($estado!='Todos') {
-            $array_wheres = array_merge($array_wheres,[['vtas_pos_movimientos.estado','=', $estado]]);
+        if ($estado == 'Todos') {
+            $array_wheres = array_merge($array_wheres,[['vtas_pos_doc_encabezados.estado','<>', 'Anulado']]);
+        } else {
+            $array_wheres = array_merge($array_wheres,[['vtas_pos_doc_encabezados.estado','=', $estado]]);
         }
 
         if ($core_tipo_transaccion_id != null ) {
-            $array_wheres = array_merge($array_wheres,[['vtas_pos_movimientos.core_tipo_transaccion_id','=', $core_tipo_transaccion_id]]);
+            $array_wheres = array_merge($array_wheres,[['vtas_pos_doc_encabezados.core_tipo_transaccion_id','=', $core_tipo_transaccion_id]]);
         }
 
         if ($pdv_id != null && $pdv_id != 0 ) {
-            $array_wheres = array_merge($array_wheres,[['vtas_pos_movimientos.pdv_id','=', $pdv_id]]);
+            $array_wheres = array_merge($array_wheres,[['vtas_pos_doc_encabezados.pdv_id','=', $pdv_id]]);
         }
 
         if(config('inventarios.codigo_principal_manejo_productos') != 'referencia')
@@ -284,36 +290,42 @@ class Movimiento extends Model
             $raw_producto = 'CONCAT( inv_productos.referencia, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto';
         }
 
-        $movimiento = Movimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_movimientos.inv_producto_id')
+        $movimiento = DocRegistro::join('vtas_pos_doc_encabezados', 'vtas_pos_doc_encabezados.id', '=', 'vtas_pos_doc_registros.vtas_pos_doc_encabezado_id')
+                            ->leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_doc_registros.inv_producto_id')
                             ->leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
-                            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_movimientos.core_tercero_id')
-                            ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_pos_movimientos.clase_cliente_id')
-                            ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_pos_movimientos.core_tipo_transaccion_id')
+                            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_doc_encabezados.core_tercero_id')
+                            ->leftJoin('vtas_clientes', 'vtas_clientes.id', '=', 'vtas_pos_doc_encabezados.cliente_id')
+                            ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_clientes.clase_cliente_id')
+                            ->leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_doc_encabezados.pdv_id')
+                            ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_pos_doc_encabezados.core_tipo_transaccion_id')
                             ->where($array_wheres)
-                            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->whereBetween('vtas_pos_doc_encabezados.fecha', [$fecha_desde, $fecha_hasta])
                             ->select(
-                                        'vtas_pos_movimientos.inv_producto_id',
+                                        'vtas_pos_doc_registros.inv_producto_id',
                                         DB::raw($raw_producto),
                                         DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'),
                                         'inv_productos.inv_grupo_id',
-                                        'vtas_pos_movimientos.core_tipo_transaccion_id',
-                                        'vtas_pos_movimientos.core_tipo_doc_app_id',
-                                        'vtas_pos_movimientos.consecutivo',
-                                        'vtas_pos_movimientos.cliente_id',
-                                        'vtas_pos_movimientos.core_tercero_id',
+                                        'inv_productos.prefijo_referencia_id AS item_prefijo_id',
+                                        'inv_grupos.descripcion AS grupo_descripcion',
+                                        'vtas_pos_doc_encabezados.core_tipo_transaccion_id',
+                                        'vtas_pos_doc_encabezados.core_tipo_doc_app_id',
+                                        'vtas_pos_doc_encabezados.consecutivo',
+                                        'vtas_pos_doc_encabezados.cliente_id',
+                                        'vtas_pos_doc_encabezados.core_tercero_id',
                                         'vtas_clases_clientes.descripcion AS clase_cliente',
-                                        'vtas_pos_movimientos.tasa_impuesto AS tasa_impuesto',
+                                        'vtas_pos_doc_registros.tasa_impuesto AS tasa_impuesto',
                                         'sys_tipos_transacciones.descripcion AS descripcion_tipo_transaccion',
-                                        'vtas_pos_movimientos.pdv_id',
-                                        'vtas_pos_movimientos.impuesto_id',
-                                        'vtas_pos_movimientos.forma_pago',
-                                        'vtas_pos_movimientos.vendedor_id',
-                                        'vtas_pos_movimientos.cantidad',
-                                        'vtas_pos_movimientos.precio_total',
-                                        'vtas_pos_movimientos.base_impuesto_total',// AS base_imp_tot
-                                        'vtas_pos_movimientos.tasa_descuento',
-                                        'vtas_pos_movimientos.valor_total_descuento',
-                                        'vtas_pos_movimientos.creado_por')
+                                        'vtas_pos_doc_encabezados.pdv_id',
+                                        'vtas_pos_puntos_de_ventas.descripcion AS pdv_descripcion',
+                                        'vtas_pos_doc_registros.impuesto_id',
+                                        'vtas_pos_doc_encabezados.forma_pago',
+                                        'vtas_pos_doc_encabezados.vendedor_id',
+                                        'vtas_pos_doc_registros.cantidad',
+                                        'vtas_pos_doc_registros.precio_total',
+                                        'vtas_pos_doc_registros.base_impuesto_total',// AS base_imp_tot
+                                        'vtas_pos_doc_registros.tasa_descuento',
+                                        'vtas_pos_doc_registros.valor_total_descuento',
+                                        'vtas_pos_doc_encabezados.creado_por')
                             ->get();
 
         foreach ($movimiento as $fila)
@@ -393,7 +405,8 @@ class Movimiento extends Model
 
     public static function get_documentos_ventas_por_transaccion_arr_estados( $fecha_desde, $fecha_hasta, array $arr_tipo_transaccion_id, array $arr_estado, $cliente_id = null )
     {
-        $query = FacturaPos::whereIn('core_tipo_transaccion_id',$arr_tipo_transaccion_id)
+        $query = FacturaPos::where('core_empresa_id', Auth::user()->empresa_id)
+                        ->whereIn('core_tipo_transaccion_id',$arr_tipo_transaccion_id)
                         ->whereIn('estado', $arr_estado)
                         ->whereBetween('fecha', [$fecha_desde, $fecha_hasta]);
 

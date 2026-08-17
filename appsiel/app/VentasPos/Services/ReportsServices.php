@@ -24,21 +24,14 @@ class ReportsServices
             return $vista;
         }
 
-        $array_wheres = [
-            ['vtas_pos_movimientos.fecha', '>=', $fecha_desde],
-            ['vtas_pos_movimientos.fecha', '<=', $fecha_hasta],
-            ['vtas_pos_movimientos.pdv_id', '=', $pdv_id]
-        ];
-
-        $movimientos = Movimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_movimientos.inv_producto_id')
-            ->leftJoin('inv_indum_prefijos_referencias', 'inv_indum_prefijos_referencias.id', '=', 'inv_productos.prefijo_referencia_id')
-            ->where($array_wheres)
-            ->select(
-                'vtas_pos_movimientos.*',
-                'inv_indum_prefijos_referencias.id AS item_prefijo_id'
-            )
-            ->orderBy('inv_indum_prefijos_referencias.descripcion','DESC')
-            ->get();
+        $movimientos = Movimiento::get_movimiento_ventas(
+            $fecha_desde,
+            $fecha_hasta,
+            null,
+            'Todos',
+            null,
+            $pdv_id
+        );
         
         $movin_por_grupos = $movimientos->groupBy('item_prefijo_id');
 
@@ -275,7 +268,14 @@ class ReportsServices
      */
     public function get_ventas_credito_pdv($pdv_id, $fecha_desde, $fecha_hasta)
     {        
-        $movimientos_pdv = Movimiento::get_movimiento_ventas_no_anulado( $pdv_id, $fecha_desde, $fecha_hasta);
+        $movimientos_pdv = Movimiento::get_movimiento_ventas(
+            $fecha_desde,
+            $fecha_hasta,
+            null,
+            'Todos',
+            null,
+            $pdv_id
+        );
 
         return $movimientos_pdv->where( 'forma_pago', 'credito');
     }
