@@ -46,6 +46,7 @@
                                 <tr>
                                     <th style="width:45px;"><input type="checkbox" id="hotel-select-all-invoices" title="Seleccionar todas"></th>
                                     <th>Documento</th>
+                                    <th>Huésped</th>
                                     <th>Creado por</th>
                                     <th>Fecha</th>
                                     <th>Estado</th>
@@ -57,12 +58,13 @@
                             <tbody>
                                 @foreach($invoices as $invoice)
                                     <tr>
-                                        <td><input type="checkbox" class="hotel-invoice-check" name="invoice_ids[]" value="{{ $invoice->id }}" data-balance="{{ (float)$invoice->saldo_pendiente }}" {{ is_array(old('invoice_ids')) && in_array($invoice->id, old('invoice_ids')) ? 'checked' : '' }}></td>
+                                        <td><input type="checkbox" class="hotel-invoice-check" name="invoice_ids[]" value="{{ $invoice->id }}" data-balance="{{ (float)$invoice->saldo_pendiente }}" data-tercero-id="{{ (int)$invoice->core_tercero_id }}" {{ is_array(old('invoice_ids')) && in_array($invoice->id, old('invoice_ids')) ? 'checked' : '' }}></td>
                                         <td>
                                             <a href="{{ url('enlace_show_documento/'.$hotelUrl::appId().'/'.$invoice->core_tipo_transaccion_id.'/'.$invoice->core_tipo_doc_app_id.'/'.$invoice->consecutivo) }}" target="_blank" rel="noopener noreferrer">
                                                 {{ $invoice->documento }}
                                             </a>
                                         </td>
+                                        <td>{{ $invoice->guest_name }}</td>
                                         <td>{{ $invoice->creatorLabel() }}</td>
                                         <td>{{ $invoice->fecha }}</td>
                                         <td>{{ $invoice->estado }}</td>
@@ -72,7 +74,7 @@
                                     </tr>
                                 @endforeach
                                 @if($invoices->count() == 0)
-                                    <tr><td colspan="8">El huésped no tiene facturas crédito pendientes por cobrar.</td></tr>
+                                    <tr><td colspan="9">Los huéspedes de la estadía no tienen facturas crédito pendientes por cobrar.</td></tr>
                                 @endif
                             </tbody>
                         </table>
@@ -85,11 +87,12 @@
                             <h4>Anticipos / saldos a favor</h4>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
-                                    <thead><tr><th></th><th>Documento</th><th>Fecha</th><th>Detalle</th><th class="hotel-money">Disponible</th></tr></thead>
+                                    <thead><tr><th></th><th>Huésped</th><th>Documento</th><th>Fecha</th><th>Detalle</th><th class="hotel-money">Disponible</th></tr></thead>
                                     <tbody>
                                         @foreach($advances as $advance)
                                             <tr>
-                                                <td><input type="checkbox" class="hotel-advance-check" name="advance_ids[]" value="{{ $advance->id }}" data-balance="{{ abs((float)$advance->saldo_pendiente) }}" {{ is_array(old('advance_ids')) && in_array($advance->id, old('advance_ids')) ? 'checked' : '' }}></td>
+                                                <td><input type="checkbox" class="hotel-advance-check" name="advance_ids[]" value="{{ $advance->id }}" data-balance="{{ abs((float)$advance->saldo_pendiente) }}" data-tercero-id="{{ (int)$advance->core_tercero_id }}" {{ is_array(old('advance_ids')) && in_array($advance->id, old('advance_ids')) ? 'checked' : '' }}></td>
+                                                <td>{{ $advance->guest_name }}</td>
                                                 <td>{{ $advance->documento }}</td>
                                                 <td>{{ $advance->fecha }}</td>
                                                 <td>{{ $advance->detalle }}</td>
@@ -97,13 +100,14 @@
                                             </tr>
                                         @endforeach
                                         @if($advances->count() == 0)
-                                            <tr><td colspan="5">El huésped no tiene anticipos disponibles.</td></tr>
+                                            <tr><td colspan="6">Los huéspedes de la estadía no tienen anticipos disponibles.</td></tr>
                                         @endif
                                     </tbody>
                                 </table>
                             </div>
                             <p class="help-block">
                                 <strong>Opcional:</strong> puede pagar sin seleccionar anticipos. Si selecciona alguno, se aplicará primero y el valor restante se cubrirá con los medios de pago.
+                                Cada recaudo debe contener documentos de un solo huésped.
                             </p>
                         </div>
                     </div>
@@ -199,6 +203,14 @@
             return total;
         }
 
+        function selectedTerceroIds(selector) {
+            var ids = {};
+            $(selector + ':checked').each(function () {
+                ids[String($(this).data('tercero-id'))] = true;
+            });
+            return Object.keys(ids);
+        }
+
         function totals() {
             var invoices = sumChecked('.hotel-invoice-check');
             var advances = Math.min(invoices, sumChecked('.hotel-advance-check'));
@@ -257,6 +269,13 @@
             $('#hotel-payment-error').hide().text('').removeData('validation-type');
             var summary = totals();
             if (summary.invoices <= tolerance) return showWarning('Seleccione al menos una factura pendiente por cobrar.', 'invoice-selection');
+
+            var invoiceTerceros = selectedTerceroIds('.hotel-invoice-check');
+            var advanceTerceros = selectedTerceroIds('.hotel-advance-check');
+            if (invoiceTerceros.length != 1) return showWarning('Seleccione facturas de un solo huésped por recaudo.', 'guest-selection');
+            if (advanceTerceros.length > 1 || (advanceTerceros.length == 1 && advanceTerceros[0] != invoiceTerceros[0])) {
+                return showWarning('Los anticipos seleccionados deben pertenecer al mismo huésped de las facturas.', 'guest-selection');
+            }
 
             var methods = paymentMethods();
             if (summary.payments < summary.required - tolerance) {

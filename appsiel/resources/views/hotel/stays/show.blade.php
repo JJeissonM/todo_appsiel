@@ -80,12 +80,21 @@
                                     <td>{{ $isMainGuest ? 'Si' : 'No' }}</td>
                                     <td>
                                         @if(!$isMainGuest && $stay->status == App\Hotel\HotelStay::STATUS_ACTIVA)
-                                            <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/guests/'.$guest->id.'/delete')) }}">
-                                                {{ csrf_field() }}
-                                                <button class="btn btn-danger btn-xs" title="Eliminar acompañante">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            <?php $removal = isset($guestRemoval[$guest->id]) ? $guestRemoval[$guest->id] : array('can_delete' => true, 'message' => ''); ?>
+                                            @if($removal['can_delete'])
+                                                <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/guests/'.$guest->id.'/delete')) }}">
+                                                    {{ csrf_field() }}
+                                                    <button class="btn btn-danger btn-xs hotel-confirm-submit" data-message="¿Confirma retirar este acompañante de la estadía?" title="Eliminar acompañante">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span title="{{ $removal['message'] }}">
+                                                    <button type="button" class="btn btn-default btn-xs" disabled aria-label="Eliminación bloqueada">
+                                                        <i class="fa fa-lock"></i>
+                                                    </button>
+                                                </span>
+                                            @endif
                                         @endif
                                     </td>
                                 </tr>
@@ -270,6 +279,7 @@
                     <thead>
                         <tr>
                             <th>Documento</th>
+                            <th>Huésped</th>
                             <th>Creado por</th>
                             <th>Fecha</th>
                             <th>Estado cartera</th>
@@ -287,6 +297,7 @@
                                         {{ $facturaCredito->documento }}
                                     </a>
                                 </td>
+                                <td>{{ $facturaCredito->guest_name }}</td>
                                 <td>{{ $facturaCredito->creatorLabel() }}</td>
                                 <td>{{ $facturaCredito->fecha }}</td>
                                 <td>{{ $facturaCredito->estado }}</td>
@@ -301,10 +312,10 @@
                             </tr>
                         @endforeach
                         @if(count($facturasCredito) == 0)
-                            <tr><td colspan="8">El huésped no tiene facturas crédito pendientes por cobrar.</td></tr>
+                            <tr><td colspan="9">Los huéspedes de la estadía no tienen facturas crédito pendientes por cobrar.</td></tr>
                         @endif
                         <tr>
-                            <td colspan="6" class="text-right"><strong>Total facturas crédito</strong></td>
+                            <td colspan="7" class="text-right"><strong>Total facturas crédito</strong></td>
                             <td class="text-right"><strong>{{ number_format($saldoFacturasCredito, 2, ',', '.') }}</strong></td>
                             <td></td>
                         </tr>

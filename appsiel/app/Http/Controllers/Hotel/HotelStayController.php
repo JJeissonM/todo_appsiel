@@ -6,6 +6,7 @@ use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelRoom;
 use App\Hotel\HotelStay;
 use App\Hotel\Services\HotelReceivableService;
+use App\Hotel\Services\HotelGuestBillingService;
 use App\Hotel\Services\HotelService;
 use App\Hotel\Support\HotelBreadcrumb;
 use App\Hotel\Support\HotelCreatorLabel;
@@ -47,8 +48,9 @@ class HotelStayController extends Controller
         $stay->ensureCheckInRecords();
         $stay = $this->findStay($id);
         $clients = $this->clientsList();
-        $anticipos = $stay->anticiposCliente();
-        $facturasCredito = (new HotelReceivableService())->pendingInvoices($stay);
+        $receivableService = new HotelReceivableService();
+        $anticipos = $receivableService->availableAdvances($stay);
+        $facturasCredito = $receivableService->pendingInvoices($stay);
         $facturasPosIndependientes = $this->independentPosInvoices($stay);
         $saldoPedidos = $this->openOrdersBalance($stay);
         $saldoFacturasCredito = $this->receivablesBalance($facturasCredito);
@@ -60,8 +62,9 @@ class HotelStayController extends Controller
         $checkOutBlockMessage = $hotelService->getCheckOutBlockMessage($stay);
         $canCancelHotelOrder = $this->canCancelHotelOrder();
         $canCancelIndependentPosInvoice = $this->canCancelIndependentPosInvoice();
+        $guestRemoval = $this->guestRemovalStatus($stay);
         $miga_pan = $this->breadcrumb('Estadia #' . $stay->id);
-        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'facturasCredito', 'facturasPosIndependientes', 'saldoPedidos', 'saldoFacturasCredito', 'saldoAnticipos', 'saldoPendienteNeto', 'cancelBlockMessage', 'editBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'canCancelIndependentPosInvoice', 'miga_pan'));
+        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'facturasCredito', 'facturasPosIndependientes', 'saldoPedidos', 'saldoFacturasCredito', 'saldoAnticipos', 'saldoPendienteNeto', 'cancelBlockMessage', 'editBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'canCancelIndependentPosInvoice', 'guestRemoval', 'miga_pan'));
     }
 
     public function createCheckIn()
@@ -244,6 +247,34 @@ class HotelStayController extends Controller
 
         $user = Auth::user();
         return $user->hasRole('SuperAdmin') || $user->hasRole('Administrador') || $user->hasRole('Admin Colegio');
+    }
+
+    private function guestRemovalStatus(HotelStay $stay)
+    {
+        $result = array();
+        $isAdministrator = $this->canCancelIndependentPosInvoice();
+        $billingService = new HotelGuestBillingService();
+
+        foreach ($stay->guests as $guest) {
+            $status = $billingService->invoiceStatus($stay, $guest);
+            $canDelete = !$status['has_invoices'] || ($isAdministrator && !$status['has_active_invoices']);
+            $message = '';
+
+            if ($status['has_active_invoices']) {
+                $message = $isAdministrator
+                    ? 'Anule primero las facturas vigentes que no tengan pagos aplicados. Si una factura ya fue pagada, el acompañante debe conservarse como huésped de origen.'
+                    : 'El acompañante tiene facturas asociadas. Solicite la revisión de un administrador.';
+            } elseif ($status['has_invoices'] && !$isAdministrator) {
+                $message = 'Solo un administrador puede retirar un acompañante con facturas anuladas.';
+            }
+
+            $result[$guest->id] = array(
+                'can_delete' => $canDelete,
+                'message' => $message,
+            );
+        }
+
+        return $result;
     }
 
     private function openOrdersBalance(HotelStay $stay)

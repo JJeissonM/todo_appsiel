@@ -700,11 +700,30 @@ class HotelStay extends Model
 
     private function movimientosCxCPendientesCliente()
     {
-        if (is_null($this->mainGuest) || empty($this->mainGuest->core_tercero_id)) {
+        $terceroIds = array();
+        if (!is_null($this->mainGuest) && !empty($this->mainGuest->core_tercero_id)) {
+            $terceroIds[] = (int)$this->mainGuest->core_tercero_id;
+        }
+
+        foreach ($this->guests as $guest) {
+            if (!is_null($guest->cliente) && !empty($guest->cliente->core_tercero_id)) {
+                $terceroIds[] = (int)$guest->cliente->core_tercero_id;
+            }
+        }
+
+        $terceroIds = array_values(array_unique(array_filter($terceroIds)));
+        if (count($terceroIds) == 0) {
             return array();
         }
 
-        return CxcMovimiento::get_documentos_tercero($this->mainGuest->core_tercero_id, date('Y-m-d'));
+        $rows = array();
+        foreach ($terceroIds as $terceroId) {
+            foreach (CxcMovimiento::get_documentos_tercero($terceroId, date('Y-m-d')) as $row) {
+                $rows[] = $row;
+            }
+        }
+
+        return $rows;
     }
 
     public function getSaldoPendienteNeto()

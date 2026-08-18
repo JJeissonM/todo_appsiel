@@ -1,20 +1,24 @@
 <style>
     .hotel-room-sales-report {
-        color: #333;
-        font-size: 12px;
+        background: #fff !important;
+        color: #000 !important;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 10px;
+        line-height: 1.2;
     }
 
     .hotel-room-sales-title {
-        margin: 0 0 6px;
+        margin: 0 0 4px;
         text-align: center;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: bold;
     }
 
     .hotel-room-sales-filters {
-        margin-bottom: 12px;
+        margin-bottom: 8px;
         text-align: center;
-        color: #666;
+        color: #000 !important;
+        font-size: 9px;
     }
 
     .hotel-room-sales-table {
@@ -25,26 +29,24 @@
 
     .hotel-room-sales-table th,
     .hotel-room-sales-table td {
-        border: 1px solid #bbb;
-        padding: 6px;
+        background: #fff !important;
+        border: 1px solid #000 !important;
+        color: #000 !important;
+        padding: 4px;
         vertical-align: middle;
     }
 
     .hotel-room-sales-table thead th {
-        background: #51b99b;
-        color: #000;
+        background: #fff !important;
+        border-bottom: 2px solid #000 !important;
         text-align: center;
         white-space: nowrap;
     }
 
     .hotel-room-sales-table .hotel-room-summary td {
-        background: #e8f6f1;
+        background: #fff !important;
         font-weight: bold;
-        border-top: 2px solid #51b99b;
-    }
-
-    .hotel-room-sales-table .hotel-stay-detail td:first-child {
-        border-left: 3px solid #51b99b;
+        border-top: 2px solid #000 !important;
     }
 
     .hotel-room-sales-table .hotel-money {
@@ -57,31 +59,36 @@
     }
 
     .hotel-room-sales-table tfoot td {
-        background: #ddd;
-        font-size: 13px;
+        background: #fff !important;
+        font-size: 11px;
         font-weight: bold;
-        border-top: 2px solid #777;
+        border-top: 2px solid #000 !important;
     }
 
     .hotel-room-sales-expected {
         display: block;
-        color: #777;
-        font-size: 9px;
+        color: #000 !important;
+        font-size: 8px;
         font-weight: normal;
     }
 
     @media print {
+        @page {
+            margin: 8mm;
+            size: landscape;
+        }
+
         .hotel-room-sales-report {
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .hotel-room-sales-title {
-            font-size: 15px;
+            font-size: 13px;
         }
 
         .hotel-room-sales-table th,
         .hotel-room-sales-table td {
-            padding: 4px;
+            padding: 3px;
         }
     }
 </style>
@@ -94,7 +101,7 @@
         &nbsp;|&nbsp; IVA incluido: {{ $ivaIncluido ? 'Sí' : 'No' }}
     </div>
 
-    <table id="tbDatos" class="table table-bordered table-striped report-table hotel-room-sales-table">
+    <table id="tbDatos" class="report-table hotel-room-sales-table">
         <thead>
             <tr>
                 <th>Habitación</th>

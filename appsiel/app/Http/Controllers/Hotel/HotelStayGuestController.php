@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Hotel;
 
 use App\Hotel\HotelStay;
 use App\Hotel\HotelStayGuest;
+use App\Hotel\Services\HotelGuestBillingService;
 use App\Hotel\Support\HotelBreadcrumb;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -44,6 +45,19 @@ class HotelStayGuestController extends Controller
             return redirect()->back()->with('mensaje_error', 'No se puede eliminar el huesped principal.');
         }
 
+        $invoiceStatus = (new HotelGuestBillingService())->invoiceStatus($stay, $guest);
+        if ($invoiceStatus['has_active_invoices']) {
+            $message = $this->isAdministrator()
+                ? 'El acompañante tiene facturas vigentes asociadas a la estadía. Anule primero las facturas que no tengan pagos aplicados; las facturas pagadas deben conservar su huésped de origen.'
+                : 'No se puede eliminar el acompañante porque tiene facturas asociadas a la estadía. Solicite la revisión de un administrador.';
+
+            return redirect()->back()->with('mensaje_error', $message);
+        }
+
+        if ($invoiceStatus['has_invoices'] && !$this->isAdministrator()) {
+            return redirect()->back()->with('mensaje_error', 'El acompañante tiene facturas anuladas asociadas. Solo un administrador puede retirarlo conservando la trazabilidad de la operación.');
+        }
+
         $guest->delete();
         return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('flash_message', 'Huesped eliminado correctamente.');
     }
@@ -51,5 +65,16 @@ class HotelStayGuestController extends Controller
     private function findStay($id)
     {
         return HotelStay::where('empresa_id', Auth::user()->empresa_id)->where('id', $id)->firstOrFail();
+    }
+
+    private function isAdministrator()
+    {
+        if (!Auth::check() || !method_exists(Auth::user(), 'hasRole')) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        return $user->hasRole('SuperAdmin') || $user->hasRole('Administrador') || $user->hasRole('Admin Colegio');
     }
 }

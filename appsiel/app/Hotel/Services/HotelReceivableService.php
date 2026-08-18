@@ -47,8 +47,15 @@ class HotelReceivableService
                 throw new \InvalidArgumentException('Debe seleccionar al menos una factura pendiente por cobrar.');
             }
 
+            $invoiceTerceroIds = $invoices->pluck('core_tercero_id')->unique()->values();
+            if ($invoiceTerceroIds->count() != 1) {
+                throw new \InvalidArgumentException('Seleccione facturas de un solo huésped por recaudo.');
+            }
+
+            $terceroId = (int)$invoiceTerceroIds->first();
+
             $invoiceTotal = (float)$invoices->sum('saldo_pendiente');
-            $advances = $service->lockMovements($stay, $advanceIds, false);
+            $advances = $service->lockMovements($stay, $advanceIds, false, $terceroId);
             $advanceAvailable = abs((float)$advances->sum('saldo_pendiente'));
             $advanceApplied = min($invoiceTotal, $advanceAvailable);
             $cashRequired = $invoiceTotal - $advanceApplied;
@@ -56,12 +63,12 @@ class HotelReceivableService
 
             $crossDocumentId = null;
             if ($advanceApplied > self::TOLERANCE) {
-                $crossDocumentId = $service->applyAdvances($stay, $invoices, $advances, $advanceApplied);
+                $crossDocumentId = $service->applyAdvances($stay, $invoices, $advances, $advanceApplied, $terceroId);
             }
 
             $receiptId = null;
             if ($paymentTotal > self::TOLERANCE) {
-                $receiptId = $service->createReceipt($stay, $invoices, $advanceApplied, $paymentMethods);
+                $receiptId = $service->createReceipt($stay, $invoices, $advanceApplied, $paymentMethods, $terceroId);
             }
 
             return array(
@@ -76,19 +83,21 @@ class HotelReceivableService
 
     private function customerMovements(HotelStay $stay)
     {
-        $terceroId = $this->terceroId($stay);
+        $terceroIds = $this->terceroIds($stay);
 
         return CxcMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
             ->where('cxc_movimientos.core_empresa_id', $stay->empresa_id)
-            ->where('cxc_movimientos.core_tercero_id', $terceroId)
+            ->whereIn('cxc_movimientos.core_tercero_id', $terceroIds)
             ->where('cxc_movimientos.fecha', '<=', date('Y-m-d'))
             ->select(
                 'cxc_movimientos.*',
+                'core_terceros.descripcion AS guest_name',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo, " ", cxc_movimientos.consecutivo) AS documento')
             );
     }
 
-    private function lockMovements(HotelStay $stay, array $ids, $positive)
+    private function lockMovements(HotelStay $stay, array $ids, $positive, $terceroId = null)
     {
         $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
         if (count($ids) == 0) {
@@ -96,9 +105,13 @@ class HotelReceivableService
         }
 
         $query = CxcMovimiento::where('core_empresa_id', $stay->empresa_id)
-            ->where('core_tercero_id', $this->terceroId($stay))
+            ->whereIn('core_tercero_id', $this->terceroIds($stay))
             ->whereIn('id', $ids)
             ->lockForUpdate();
+
+        if (!is_null($terceroId)) {
+            $query->where('core_tercero_id', (int)$terceroId);
+        }
 
         if ($positive) {
             $query->where('saldo_pendiente', '>', 0.1);
@@ -149,7 +162,7 @@ class HotelReceivableService
         return $total;
     }
 
-    private function applyAdvances(HotelStay $stay, $invoices, $advances, $amount)
+    private function applyAdvances(HotelStay $stay, $invoices, $advances, $amount, $terceroId)
     {
         $remaining = $amount;
         $rows = array();
@@ -178,7 +191,7 @@ class HotelReceivableService
             'core_empresa_id' => $stay->empresa_id,
             'core_tipo_doc_app_id' => (int)config('ventas.cruces_cxc_tipo_doc_app_id'),
             'core_tipo_transaccion_id' => (int)config('ventas.cruces_cxc_tipo_transaccion_id'),
-            'core_tercero_id' => $this->terceroId($stay),
+            'core_tercero_id' => $terceroId,
             'fecha' => date('Y-m-d'),
             'descripcion' => 'Cruce de anticipos desde estadía #' . $stay->id,
             'documento_soporte' => 'Estadía #' . $stay->id,
@@ -196,19 +209,19 @@ class HotelReceivableService
         return (int)DB::table('cxc_doc_encabezados')
             ->where('core_empresa_id', $stay->empresa_id)
             ->where('core_tipo_transaccion_id', (int)config('ventas.cruces_cxc_tipo_transaccion_id'))
-            ->where('core_tercero_id', $this->terceroId($stay))
+            ->where('core_tercero_id', $terceroId)
             ->orderBy('id', 'DESC')
             ->value('id');
     }
 
-    private function createReceipt(HotelStay $stay, $invoices, $advanceApplied, array $paymentMethods)
+    private function createReceipt(HotelStay $stay, $invoices, $advanceApplied, array $paymentMethods, $terceroId)
     {
         $receiptRequest = new Request(array(
             'core_empresa_id' => $stay->empresa_id,
             'core_tipo_transaccion_id' => (int)config('tesoreria.recaudos_cxc_tipo_transaccion_id'),
             'core_tipo_doc_app_id' => (int)config('tesoreria.recaudos_cxc_tipo_doc_app_id'),
             'fecha' => date('Y-m-d'),
-            'core_tercero_id' => $this->terceroId($stay),
+            'core_tercero_id' => $terceroId,
             'codigo_referencia_tercero' => '',
             'teso_tipo_motivo' => 'recaudo-cartera',
             'documento_soporte' => 'Estadía #' . $stay->id,
@@ -353,12 +366,25 @@ class HotelReceivableService
         return strtolower(trim($medium->comportamiento)) == 'efectivo';
     }
 
-    private function terceroId(HotelStay $stay)
+    private function terceroIds(HotelStay $stay)
     {
-        if (is_null($stay->mainGuest) || empty($stay->mainGuest->core_tercero_id)) {
-            throw new \InvalidArgumentException('La estadía no tiene un huésped principal válido para consultar CxC.');
+        $ids = array();
+
+        if (!is_null($stay->mainGuest) && !empty($stay->mainGuest->core_tercero_id)) {
+            $ids[] = (int)$stay->mainGuest->core_tercero_id;
         }
 
-        return (int)$stay->mainGuest->core_tercero_id;
+        foreach ($stay->guests as $guest) {
+            if (!is_null($guest->cliente) && !empty($guest->cliente->core_tercero_id)) {
+                $ids[] = (int)$guest->cliente->core_tercero_id;
+            }
+        }
+
+        $ids = array_values(array_unique(array_filter($ids)));
+        if (count($ids) == 0) {
+            throw new \InvalidArgumentException('La estadía no tiene huéspedes válidos para consultar CxC.');
+        }
+
+        return $ids;
     }
 }

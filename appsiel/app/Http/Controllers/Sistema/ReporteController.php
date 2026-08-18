@@ -8,6 +8,7 @@ use App\Sistema\Reporte;
 use App\Sistema\Aplicacion;
 use App\Sistema\Services\ModeloService;
 use App\VentasPos\Services\ReportsServices;
+use App\Http\Controllers\Hotel\HotelReportController;
 use App\Nomina\NomDocEncabezado;
 use Illuminate\Support\Facades\Input;
 
@@ -116,6 +117,11 @@ class ReporteController extends Controller
         $reporte_url_form_action = json_decode( $data['reporte_instancia'] )->url_form_action;
 
         switch ($reporte_url_form_action) {
+            case 'hotel/reports/sales-by-room':
+                $content = (new HotelReportController())->salesByRoom(request());
+
+                return view('hotel.reports.sales_by_room_print', compact('content'));
+
             case 'pos_resumen_diario':
                 $fecha_desde = $data['fecha_desde'];
                 $fecha_hasta = $data['fecha_hasta'];

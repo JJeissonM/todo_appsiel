@@ -259,8 +259,15 @@ class HotelReportController extends Controller
 
     private function cacheReport(Request $request, $html)
     {
-        if ($request->reporte_id != '') {
-            Cache::put('pdf_reporte_' . $request->reporte_id, $html, 60);
+        $reportId = (int)$request->input('reporte_id');
+
+        if ($reportId === 0 && $request->input('reporte_instancia') != '') {
+            $report = json_decode($request->input('reporte_instancia'));
+            $reportId = is_object($report) && isset($report->id) ? (int)$report->id : 0;
+        }
+
+        if ($reportId > 0) {
+            Cache::put('pdf_reporte_' . $reportId, $html, 60);
         }
     }
 
