@@ -55,13 +55,13 @@ class RetiroPersonalizadoNominaServiceTest extends TestCase
     }
 
     /** @test */
-    public function revierte_el_acumulado_de_una_cuota_antes_de_eliminar_el_registro()
+    public function una_cuota_inactiva_por_decision_del_usuario_no_se_reactiva_al_retirar()
     {
         DB::table('nom_conceptos')->insert([
             'id' => 30, 'modo_liquidacion_id' => 3, 'naturaleza' => 'deduccion', 'descripcion' => 'CUOTA'
         ]);
         DB::table('nom_cuotas')->insert([
-            'id' => 7, 'valor_acumulado' => 100000, 'estado' => 'Inactivo'
+            'id' => 7, 'tope_maximo' => 200000, 'valor_acumulado' => 100000, 'estado' => 'Inactivo'
         ]);
         $this->insertarRegistroNomina([
             'id' => 101, 'nom_concepto_id' => 30, 'nom_cuota_id' => 7,
@@ -72,8 +72,50 @@ class RetiroPersonalizadoNominaServiceTest extends TestCase
 
         $cuota = DB::table('nom_cuotas')->where('id', 7)->first();
         $this->assertEquals(60000, $cuota->valor_acumulado);
-        $this->assertSame('Activo', $cuota->estado);
+        $this->assertSame('Inactivo', $cuota->estado);
         $this->assertSame(0, DB::table('nom_doc_registros')->count());
+    }
+
+    /** @test */
+    public function reactiva_una_cuota_inactivada_al_alcanzar_el_tope_de_la_liquidacion_retirada()
+    {
+        DB::table('nom_conceptos')->insert([
+            'id' => 31, 'modo_liquidacion_id' => 3, 'naturaleza' => 'deduccion', 'descripcion' => 'CUOTA CON TOPE'
+        ]);
+        DB::table('nom_cuotas')->insert([
+            'id' => 9, 'tope_maximo' => 100000, 'valor_acumulado' => 100000, 'estado' => 'Inactivo'
+        ]);
+        $this->insertarRegistroNomina([
+            'id' => 107, 'nom_concepto_id' => 31, 'nom_cuota_id' => 9,
+            'valor_devengo' => 0, 'valor_deduccion' => 40000
+        ]);
+
+        (new RetiroPersonalizadoNominaService())->retirar(NomDocEncabezado::find(1), 5, 10, 31);
+
+        $cuota = DB::table('nom_cuotas')->where('id', 9)->first();
+        $this->assertEquals(60000, $cuota->valor_acumulado);
+        $this->assertSame('Activo', $cuota->estado);
+    }
+
+    /** @test */
+    public function conserva_activa_una_cuota_que_estaba_activa_antes_del_retiro()
+    {
+        DB::table('nom_conceptos')->insert([
+            'id' => 32, 'modo_liquidacion_id' => 3, 'naturaleza' => 'deduccion', 'descripcion' => 'CUOTA ACTIVA'
+        ]);
+        DB::table('nom_cuotas')->insert([
+            'id' => 11, 'tope_maximo' => 200000, 'valor_acumulado' => 100000, 'estado' => 'Activo'
+        ]);
+        $this->insertarRegistroNomina([
+            'id' => 109, 'nom_concepto_id' => 32, 'nom_cuota_id' => 11,
+            'valor_devengo' => 0, 'valor_deduccion' => 40000
+        ]);
+
+        (new RetiroPersonalizadoNominaService())->retirar(NomDocEncabezado::find(1), 5, 10, 32);
+
+        $cuota = DB::table('nom_cuotas')->where('id', 11)->first();
+        $this->assertEquals(60000, $cuota->valor_acumulado);
+        $this->assertSame('Activo', $cuota->estado);
     }
 
     /** @test */
@@ -97,13 +139,13 @@ class RetiroPersonalizadoNominaServiceTest extends TestCase
     }
 
     /** @test */
-    public function revierte_el_acumulado_de_un_prestamo()
+    public function un_prestamo_inactivo_por_decision_del_usuario_no_se_reactiva_al_retirar()
     {
         DB::table('nom_conceptos')->insert([
             'id' => 40, 'modo_liquidacion_id' => 4, 'naturaleza' => 'deduccion', 'descripcion' => 'PRÉSTAMO'
         ]);
         DB::table('nom_prestamos')->insert([
-            'id' => 8, 'valor_acumulado' => 250000, 'estado' => 'Inactivo'
+            'id' => 8, 'valor_prestamo' => 500000, 'valor_acumulado' => 250000, 'estado' => 'Inactivo'
         ]);
         $this->insertarRegistroNomina([
             'id' => 103, 'nom_concepto_id' => 40, 'nom_prestamo_id' => 8,
@@ -113,6 +155,48 @@ class RetiroPersonalizadoNominaServiceTest extends TestCase
         (new RetiroPersonalizadoNominaService())->retirar(NomDocEncabezado::find(1), 5, 10, 40, 1);
 
         $prestamo = DB::table('nom_prestamos')->where('id', 8)->first();
+        $this->assertEquals(200000, $prestamo->valor_acumulado);
+        $this->assertSame('Inactivo', $prestamo->estado);
+    }
+
+    /** @test */
+    public function reactiva_un_prestamo_inactivado_al_alcanzar_el_valor_total_en_la_liquidacion_retirada()
+    {
+        DB::table('nom_conceptos')->insert([
+            'id' => 41, 'modo_liquidacion_id' => 4, 'naturaleza' => 'deduccion', 'descripcion' => 'PRÉSTAMO COMPLETO'
+        ]);
+        DB::table('nom_prestamos')->insert([
+            'id' => 10, 'valor_prestamo' => 250000, 'valor_acumulado' => 250000, 'estado' => 'Inactivo'
+        ]);
+        $this->insertarRegistroNomina([
+            'id' => 108, 'nom_concepto_id' => 41, 'nom_prestamo_id' => 10,
+            'valor_devengo' => 0, 'valor_deduccion' => 50000
+        ]);
+
+        (new RetiroPersonalizadoNominaService())->retirar(NomDocEncabezado::find(1), 5, 10, 41, 1);
+
+        $prestamo = DB::table('nom_prestamos')->where('id', 10)->first();
+        $this->assertEquals(200000, $prestamo->valor_acumulado);
+        $this->assertSame('Activo', $prestamo->estado);
+    }
+
+    /** @test */
+    public function conserva_activo_un_prestamo_que_estaba_activo_antes_del_retiro()
+    {
+        DB::table('nom_conceptos')->insert([
+            'id' => 42, 'modo_liquidacion_id' => 4, 'naturaleza' => 'deduccion', 'descripcion' => 'PRÉSTAMO ACTIVO'
+        ]);
+        DB::table('nom_prestamos')->insert([
+            'id' => 12, 'valor_prestamo' => 500000, 'valor_acumulado' => 250000, 'estado' => 'Activo'
+        ]);
+        $this->insertarRegistroNomina([
+            'id' => 113, 'nom_concepto_id' => 42, 'nom_prestamo_id' => 12,
+            'valor_devengo' => 0, 'valor_deduccion' => 50000
+        ]);
+
+        (new RetiroPersonalizadoNominaService())->retirar(NomDocEncabezado::find(1), 5, 10, 42, 1);
+
+        $prestamo = DB::table('nom_prestamos')->where('id', 12)->first();
         $this->assertEquals(200000, $prestamo->valor_acumulado);
         $this->assertSame('Activo', $prestamo->estado);
     }
@@ -309,6 +393,7 @@ class RetiroPersonalizadoNominaServiceTest extends TestCase
 
         Schema::create('nom_cuotas', function (Blueprint $table) {
             $table->increments('id');
+            $table->decimal('tope_maximo', 15, 2)->nullable();
             $table->decimal('valor_acumulado', 15, 2)->default(0);
             $table->string('estado');
             $table->timestamps();
@@ -316,6 +401,7 @@ class RetiroPersonalizadoNominaServiceTest extends TestCase
 
         Schema::create('nom_prestamos', function (Blueprint $table) {
             $table->increments('id');
+            $table->decimal('valor_prestamo', 15, 2)->default(0);
             $table->decimal('valor_acumulado', 15, 2)->default(0);
             $table->string('estado');
             $table->timestamps();

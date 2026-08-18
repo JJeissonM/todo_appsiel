@@ -79,6 +79,9 @@ class Prestamo implements Estrategia
         {
             throw new \RuntimeException('El registro de nómina no tiene un préstamo válido asociado.');
         }
+
+        $estado_antes_del_retiro = $prestamo->estado;
+        $valor_acumulado_antes_del_retiro = (float)$prestamo->valor_acumulado;
         
         switch( $registro->concepto->naturaleza )
         {
@@ -92,9 +95,27 @@ class Prestamo implements Estrategia
                 break;
         }
 
-        $prestamo->estado = "Activo";
+        if ( $this->debe_reactivar($prestamo, $estado_antes_del_retiro, $valor_acumulado_antes_del_retiro) )
+        {
+            $prestamo->estado = 'Activo';
+        }
+
         $prestamo->save();
 
         $registro->delete();
+    }
+
+    protected function debe_reactivar($prestamo, $estado_antes_del_retiro, $valor_acumulado_antes_del_retiro)
+    {
+        if ( $estado_antes_del_retiro == 'Activo' )
+        {
+            return true;
+        }
+
+        $valor_prestamo = (float)$prestamo->valor_prestamo;
+
+        return $valor_prestamo > 0
+            && $valor_acumulado_antes_del_retiro >= $valor_prestamo
+            && (float)$prestamo->valor_acumulado < $valor_prestamo;
     }
 }

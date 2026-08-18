@@ -85,6 +85,9 @@ class Cuota implements Estrategia
             throw new \RuntimeException('El registro de nómina no tiene una cuota válida asociada.');
         }
 
+        $estado_antes_del_retiro = $cuota->estado;
+        $valor_acumulado_antes_del_retiro = (float)$cuota->valor_acumulado;
+
         switch( $registro->concepto->naturaleza )
         {
             case 'devengo':
@@ -97,9 +100,32 @@ class Cuota implements Estrategia
                 break;
         }
 
-        $cuota->estado = "Activo";
+        if ( $this->debe_reactivar($cuota, $estado_antes_del_retiro, $valor_acumulado_antes_del_retiro) )
+        {
+            $cuota->estado = 'Activo';
+        }
+
         $cuota->save();
 
         $registro->delete();
+    }
+
+    protected function debe_reactivar($cuota, $estado_antes_del_retiro, $valor_acumulado_antes_del_retiro)
+    {
+        if ( $estado_antes_del_retiro == 'Activo' )
+        {
+            return true;
+        }
+
+        if ( $cuota->tope_maximo === null || $cuota->tope_maximo === '' )
+        {
+            return false;
+        }
+
+        $tope_maximo = (float)$cuota->tope_maximo;
+
+        return $tope_maximo > 0
+            && $valor_acumulado_antes_del_retiro >= $tope_maximo
+            && (float)$cuota->valor_acumulado < $tope_maximo;
     }
 }
