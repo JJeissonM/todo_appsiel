@@ -5,7 +5,6 @@ namespace App\Hotel\Services;
 use App\Contabilidad\Impuesto;
 use App\Core\Services\ResolucionFacturacionService;
 use App\Core\TipoDocApp;
-use App\CxC\CxcMovimiento;
 use App\Http\Controllers\VentasPos\FacturaElectronicaController;
 use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelOrderLine;
@@ -269,18 +268,16 @@ class HotelService
             ->where('status', HotelOrderHeader::STATUS_ABIERTO)
             ->count();
 
-        $pendingCreditInvoices = 0;
-        $mainGuest = $stay->mainGuest;
-        if (!is_null($mainGuest) && !empty($mainGuest->core_tercero_id)) {
-            $pendingCreditInvoices = CxcMovimiento::where('core_empresa_id', $stay->empresa_id)
-                ->where('core_tercero_id', $mainGuest->core_tercero_id)
-                ->where('fecha', '<=', date('Y-m-d'))
-                ->where('saldo_pendiente', '>', 0.1)
-                ->count();
-        }
+        // La validación debe usar el mismo conjunto de facturas que se muestra en
+        // la estadía: huésped principal y acompañantes. Consultar solo al titular
+        // permitía cerrar la estadía dejando cartera pendiente de un acompañante.
+        $pendingCreditRows = (new HotelReceivableService())->pendingInvoices($stay);
+        $pendingCreditInvoices = $pendingCreditRows->count();
+        $pendingCreditBalance = (float)$pendingCreditRows->sum('saldo_pendiente');
+        $formattedPendingCreditBalance = '$ ' . number_format($pendingCreditBalance, 2, ',', '.');
 
         if ($openOrders > 0 && $pendingCreditInvoices > 0) {
-            return 'No se puede registrar check-out porque la estadia tiene pedidos hoteleros pendientes por facturar y facturas credito pendientes por cobrar.';
+            return 'No se puede registrar check-out porque la estadia tiene pedidos hoteleros pendientes por facturar y facturas credito pendientes por cobrar por ' . $formattedPendingCreditBalance . '.';
         }
 
         if ($openOrders > 0) {
@@ -288,7 +285,7 @@ class HotelService
         }
 
         if ($pendingCreditInvoices > 0) {
-            return 'No se puede registrar check-out porque el huesped tiene facturas credito pendientes por cobrar. Registre el pago antes de realizar el check-out.';
+            return 'No se puede registrar check-out porque los huespedes de la estadia tienen facturas credito pendientes por cobrar por ' . $formattedPendingCreditBalance . '. Registre el pago antes de realizar el check-out.';
         }
 
         return '';
