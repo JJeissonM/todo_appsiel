@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Hotel;
 
 use App\Hotel\HotelRoom;
 use App\Hotel\HotelGuest;
+use App\Hotel\HotelOrderHeader;
+use App\Hotel\HotelOrderLine;
 use App\Hotel\HotelStay;
 use App\Hotel\HotelStayGuest;
 use App\Http\Controllers\Controller;
@@ -44,6 +46,119 @@ class HotelReportController extends Controller
         $stays = $query->get();
 
         $html = view('hotel.reports.stays', compact('stays'))->render();
+        $this->cacheReport($request, $html);
+
+        return $html;
+    }
+
+    public function salesByRoom(Request $request)
+    {
+        $fechaDesde = trim((string)$request->fecha_desde);
+        $fechaHasta = trim((string)$request->fecha_hasta);
+
+        if (!$this->isValidReportDate($fechaDesde) || !$this->isValidReportDate($fechaHasta)) {
+            return '<div class="alert alert-danger">Debe ingresar un rango de fechas válido.</div>';
+        }
+
+        if ($fechaDesde > $fechaHasta) {
+            return '<div class="alert alert-danger">La fecha desde no puede ser posterior a la fecha hasta.</div>';
+        }
+
+        $mostrarDetalle = (string)$request->hotel_detalle !== '0';
+        $ivaIncluido = (string)$request->hotel_iva_incluido !== '0';
+
+        $lines = DB::table('hotel_order_lines AS hotel_line')
+            ->join('hotel_order_headers AS hotel_order', 'hotel_order.id', '=', 'hotel_line.hotel_order_id')
+            ->join('hotel_stays AS hotel_stay', 'hotel_stay.id', '=', 'hotel_order.stay_id')
+            ->leftJoin('hotel_rooms AS hotel_room', 'hotel_room.id', '=', 'hotel_stay.room_id')
+            ->leftJoin('vtas_clientes AS client', 'client.id', '=', 'hotel_stay.main_cliente_id')
+            ->leftJoin('core_terceros AS third_party', 'third_party.id', '=', 'client.core_tercero_id')
+            ->leftJoin('inv_productos AS product', 'product.id', '=', 'hotel_line.producto_id')
+            ->leftJoin('inv_grupos AS product_group', 'product_group.id', '=', 'product.inv_grupo_id')
+            ->where('hotel_line.empresa_id', Auth::user()->empresa_id)
+            ->where('hotel_order.status', '<>', HotelOrderHeader::STATUS_ANULADO)
+            ->where('hotel_stay.status', '<>', HotelStay::STATUS_ANULADA)
+            ->where('hotel_order.order_date', '>=', $fechaDesde . ' 00:00:00')
+            ->where('hotel_order.order_date', '<=', $fechaHasta . ' 23:59:59')
+            ->select(
+                'hotel_stay.room_id',
+                'hotel_room.room_number',
+                'hotel_stay.id AS stay_id',
+                'hotel_stay.main_cliente_id',
+                'hotel_stay.check_in_at',
+                'hotel_stay.expected_check_out_at',
+                'hotel_stay.check_out_at',
+                'third_party.descripcion AS guest_name',
+                'hotel_line.id AS line_id',
+                'hotel_line.source_type',
+                'hotel_line.line_total',
+                'hotel_line.tax_value',
+                'product.descripcion AS product_name',
+                'product_group.descripcion AS product_group_name'
+            )
+            ->orderBy('hotel_room.room_number')
+            ->orderBy('hotel_stay.check_in_at')
+            ->orderBy('hotel_stay.id')
+            ->orderBy('hotel_line.id')
+            ->get();
+
+        $rooms = array();
+        $grandTotal = 0;
+
+        foreach ($lines as $line) {
+            $roomKey = !empty($line->room_id) ? (string)$line->room_id : 'room_without_id_' . $line->stay_id;
+            $stayKey = (string)$line->stay_id;
+
+            if (!isset($rooms[$roomKey])) {
+                $rooms[$roomKey] = array(
+                    'room_number' => !empty($line->room_number) ? $line->room_number : $line->room_id,
+                    'stays' => array(),
+                    'room_total' => 0,
+                    'beverages_total' => 0,
+                    'laundry_total' => 0,
+                    'others_total' => 0,
+                    'total' => 0,
+                );
+            }
+
+            if (!isset($rooms[$roomKey]['stays'][$stayKey])) {
+                $rooms[$roomKey]['stays'][$stayKey] = array(
+                    'stay_id' => $line->stay_id,
+                    'guest_name' => !empty($line->guest_name) ? $line->guest_name : 'Cliente #' . $line->main_cliente_id,
+                    'check_in' => $this->formatReportDate($line->check_in_at),
+                    'check_out' => $this->formatReportDate(!empty($line->check_out_at) ? $line->check_out_at : $line->expected_check_out_at),
+                    'check_out_expected' => empty($line->check_out_at),
+                    'days' => HotelStay::calculateStayDays($line->check_in_at, $line->expected_check_out_at),
+                    'room_total' => 0,
+                    'beverages_total' => 0,
+                    'laundry_total' => 0,
+                    'others_total' => 0,
+                    'total' => 0,
+                );
+            }
+
+            $value = (float)$line->line_total;
+            if (!$ivaIncluido) {
+                $value -= (float)$line->tax_value;
+            }
+            $value = max(0, $value);
+
+            $category = $this->hotelSalesCategory($line);
+            $rooms[$roomKey]['stays'][$stayKey][$category] += $value;
+            $rooms[$roomKey]['stays'][$stayKey]['total'] += $value;
+            $rooms[$roomKey][$category] += $value;
+            $rooms[$roomKey]['total'] += $value;
+            $grandTotal += $value;
+        }
+
+        $html = view('hotel.reports.sales_by_room', compact(
+            'rooms',
+            'grandTotal',
+            'fechaDesde',
+            'fechaHasta',
+            'mostrarDetalle',
+            'ivaIncluido'
+        ))->render();
         $this->cacheReport($request, $html);
 
         return $html;
@@ -147,5 +262,44 @@ class HotelReportController extends Controller
         if ($request->reporte_id != '') {
             Cache::put('pdf_reporte_' . $request->reporte_id, $html, 60);
         }
+    }
+
+    private function hotelSalesCategory($line)
+    {
+        $sourceType = strtoupper(trim((string)$line->source_type));
+        $groupName = strtoupper(trim((string)$line->product_group_name));
+        $productName = strtoupper(trim((string)$line->product_name));
+
+        if ($sourceType == HotelOrderLine::SOURCE_ROOM || strpos($groupName, 'SERVICIO HOTELERO') !== false) {
+            return 'room_total';
+        }
+
+        if (strpos($groupName, 'BEBIDA') !== false || strpos($groupName, 'MECATO') !== false ||
+            strpos($productName, 'BEBIDA') !== false || strpos($productName, 'MECATO') !== false) {
+            return 'beverages_total';
+        }
+
+        if (strpos($groupName, 'LAVANDER') !== false || strpos($productName, 'LAVANDER') !== false ||
+            strpos($productName, 'ADICIONAL') !== false) {
+            return 'laundry_total';
+        }
+
+        return 'others_total';
+    }
+
+    private function isValidReportDate($date)
+    {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return false;
+        }
+
+        $parts = explode('-', $date);
+        return checkdate((int)$parts[1], (int)$parts[2], (int)$parts[0]);
+    }
+
+    private function formatReportDate($value)
+    {
+        $timestamp = strtotime($value);
+        return $timestamp === false ? '' : date('d/m/Y', $timestamp);
     }
 }

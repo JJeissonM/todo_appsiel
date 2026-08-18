@@ -38,4 +38,5 @@ Route::group(array('middleware' => array('auth'), 'prefix' => 'hotel'), function
     Route::post('reports/rooms', 'Hotel\HotelReportController@rooms');
     Route::post('reports/stays', 'Hotel\HotelReportController@stays');
     Route::post('reports/migration', 'Hotel\HotelReportController@migration');
+    Route::post('reports/sales-by-room', 'Hotel\HotelReportController@salesByRoom');
 });

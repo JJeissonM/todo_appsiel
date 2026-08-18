@@ -439,6 +439,7 @@ class HotelApplicationSeeder extends Seeder
             array('hotel.invoices.standard', 'Generar factura estandar hotelera', 'hotel/orders/id_fila/generate-standard-invoice', 'orders', $transactionsParentId, 16, 0, 'file-text'),
             array('hotel.invoices.pos', 'Generar factura POS hotelera', 'hotel/orders/id_fila/generate-pos-invoice', 'orders', $transactionsParentId, 17, 0, 'print'),
             array('hotel_pedido_anular', 'Anular pedido hotelero', 'hotel/orders/id_fila/cancel', 'orders', $transactionsParentId, 18, 0, 'ban'),
+            array('hotel/reports/sales-by-room', 'Reporte de ventas por habitación', 'web', 'stays', 0, 99, 0, 'bar-chart'),
         );
 
         $permissionIds = array($parentId, $transactionsParentId, $catalogParentId);
@@ -528,6 +529,7 @@ class HotelApplicationSeeder extends Seeder
         $roomsReportId = $this->upsertReport('Listado de habitaciones hoteleras', 'hotel/reports/rooms');
         $staysReportId = $this->upsertReport('Listado de estadias hoteleras', 'hotel/reports/stays');
         $migrationReportId = $this->upsertReport('Libro de Huéspedes', 'hotel/reports/migration');
+        $salesByRoomReportId = $this->upsertReport('Ventas por habitación', 'hotel/reports/sales-by-room');
 
         if ($staysReportId && Schema::hasTable('sys_campos') && Schema::hasTable('sys_reporte_tiene_campos')) {
             $fechaDesdeId = $this->getOrCreateField('Fecha desde', 'date', 'fecha_desde', '', 'null', '{"class":"form-control"}', 0);
@@ -549,6 +551,19 @@ class HotelApplicationSeeder extends Seeder
             $this->attachReportField($migrationReportId, $tipoMovimientoId, 4);
             $this->attachReportField($migrationReportId, $procedenciaId, 5);
             $this->attachReportField($migrationReportId, $destinoId, 6);
+        }
+
+        if ($salesByRoomReportId && Schema::hasTable('sys_campos') && Schema::hasTable('sys_reporte_tiene_campos')) {
+            $fechaDesdeId = $this->getOrCreateField('Fecha desde', 'date', 'fecha_desde', '', 'null', '{"class":"form-control"}', 1);
+            $fechaHastaId = $this->getOrCreateField('Fecha hasta', 'date', 'fecha_hasta', '', 'null', '{"class":"form-control"}', 1);
+            $agruparPorId = $this->getOrCreateField('Agrupar por', 'select', 'hotel_agrupar_por', '{"habitacion":"Habitación"}', 'habitacion', '{"class":"form-control"}', 1);
+            $detalleId = $this->getOrCreateField('Detalle', 'select', 'hotel_detalle', '{"1":"Sí","0":"No"}', '1', '{"class":"form-control"}', 1);
+            $ivaIncluidoId = $this->getOrCreateField('IVA incluido', 'select', 'hotel_iva_incluido', '{"1":"Sí","0":"No"}', '1', '{"class":"form-control"}', 1);
+            $this->attachReportField($salesByRoomReportId, $fechaDesdeId, 1);
+            $this->attachReportField($salesByRoomReportId, $fechaHastaId, 2);
+            $this->attachReportField($salesByRoomReportId, $agruparPorId, 3);
+            $this->attachReportField($salesByRoomReportId, $detalleId, 4);
+            $this->attachReportField($salesByRoomReportId, $ivaIncluidoId, 5);
         }
 
         if ($roomsReportId) {

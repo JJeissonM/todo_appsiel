@@ -50,6 +50,11 @@
 				$tam_hoja_default = 'folio';
 				$orientacion_default = 'Landscape';
 			}
+			elseif ( $reporte->url_form_action == 'hotel/reports/sales-by-room' )
+			{
+				$tam_hoja_default = 'letter';
+				$orientacion_default = 'Landscape';
+			}
 		?>
 		@if( !in_array(Input::get('reporte_id'), $reports_list) )
 			{{ Form::label( 'tam_hoja', 'Tamaño hoja' ) }}
