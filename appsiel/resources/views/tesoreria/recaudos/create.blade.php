@@ -115,8 +115,12 @@
 @section('scripts')
 
 <script type="text/javascript">
-	function ejecutar_acciones_con_item_sugerencia()
+	function ejecutar_acciones_con_item_sugerencia(item_sugerencia, obj_text_input)
 		{
+			if (obj_text_input.attr('id') == 'core_tercero_id') {
+				obj_text_input.attr('data-registro-id', item_sugerencia.attr('data-registro_id'));
+			}
+
 			return true;
 		}
 
@@ -124,6 +128,7 @@
 
 			$('#fecha').val( get_fecha_hoy() );
 			asignar_datos_desde_reserva_hotel();
+			preparar_validacion_tercero();
 			$('#fecha').focus();
 
 			/*
@@ -131,7 +136,7 @@
 			*/
 			$("#btn_nuevo").click(function(event){
 				event.preventDefault();
-				if ( validar_punto_venta_requerido() && validar_requeridos() )
+				if ( validar_tercero_real() && validar_punto_venta_requerido() && validar_requeridos() )
 				{
 					//$('#div_ingreso_registros_medios_recaudo').show();
 					reset_form_registro();
@@ -307,7 +312,7 @@
 				}
 
 				
-				if ( validar_punto_venta_requerido() && validar_requeridos() )
+				if ( validar_tercero_real() && validar_punto_venta_requerido() && validar_requeridos() )
 				{
 					// Desactivar el click del botón
 					$( this ).off( event );
@@ -340,6 +345,52 @@
 					return false;
 				}
 
+				return true;
+			}
+
+			function preparar_validacion_tercero()
+			{
+				var $terceroTexto = $('#core_tercero_id').filter('input[type="text"]');
+				var $terceroId = $terceroTexto.next('input[type="hidden"][name="core_tercero_id"]');
+
+				if ($terceroTexto.val() != '' && parseInt($terceroId.val(), 10) > 0) {
+					$terceroTexto.attr('data-registro-id', $terceroId.val());
+				}
+
+				$terceroTexto.on('input', function() {
+					$(this).removeAttr('data-registro-id');
+					$(this).next('input[type="hidden"][name="core_tercero_id"]').val('');
+				});
+			}
+
+			function validar_tercero_real()
+			{
+				var $terceroTexto = $('#core_tercero_id').filter('input[type="text"]');
+				var $terceroSelect = $('#core_tercero_id').filter('select');
+
+				if ($terceroTexto.length == 0 && $terceroSelect.length > 0) {
+					var terceroSelectId = parseInt($terceroSelect.val(), 10);
+
+					if (!isNaN(terceroSelectId) && terceroSelectId > 0) {
+						return true;
+					}
+
+					alert('Debe seleccionar un tercero válido de la lista.');
+					$terceroSelect.focus();
+					return false;
+				}
+
+				var $terceroId = $terceroTexto.next('input[type="hidden"][name="core_tercero_id"]');
+				var terceroId = parseInt($terceroId.val(), 10);
+				var seleccionId = parseInt($terceroTexto.attr('data-registro-id'), 10);
+
+				if (isNaN(terceroId) || terceroId <= 0 || terceroId !== seleccionId) {
+					alert('Debe seleccionar un tercero válido de la lista de sugerencias.');
+					$terceroTexto.css('background-color', '#FF8C8C').focus().select();
+					return false;
+				}
+
+				$terceroTexto.css('background-color', 'white');
 				return true;
 			}
 
@@ -409,7 +460,9 @@
 				}
 
 				if (cliente_text !== null && cliente_text !== '') {
-					$('input[name="core_tercero_id_aux"]').val(cliente_text);
+					$('input[name="core_tercero_id_aux"]')
+						.val(cliente_text)
+						.attr('data-registro-id', core_tercero_id);
 				}
 
 				$('input[type="hidden"][name="core_tercero_id"]').val(core_tercero_id);

@@ -199,9 +199,9 @@
 
             <div class="row" style="margin-top:25px;">
                 <div class="col-sm-12">
-                    <h4>Facturas POS Directas</h4>
+                    <h4>Facturación desde Ventas POS</h4>
                     <p class="help-block">
-                        Facturas realizadas directamente en Ventas POS a los huéspedes durante la estadía y que no están asociadas a un pedido hotelero.
+                        Facturas realizadas directamente en Ventas POS a los huéspedes durante la estadía.
                     </p>
                 </div>
             </div>
@@ -233,12 +233,18 @@
                                 <td>{{ $facturaPos->cliente && $facturaPos->cliente->tercero ? $facturaPos->cliente->tercero->descripcion : $facturaPos->core_tercero_id }}</td>
                                 <td>{{ $facturaPos->hotel_creator_label }}</td>
                                 <td>{{ $facturaPos->fecha }}</td>
-                                <td>{{ $facturaPos->estado }}</td>
+                                <td><span class="label {{ $facturaPos->hotel_status_class }}">{{ $facturaPos->hotel_status_label }}</span></td>
                                 <td class="text-right">{{ number_format($facturaPos->hotel_total, 2, ',', '.') }}</td>
                                 <td>
                                     <a href="{{ $facturaPosUrl }}" class="btn btn-primary btn-xs" target="_blank" rel="noopener noreferrer">
-                                        <i class="fa fa-eye"></i> Ver factura
+                                        Ver factura
                                     </a>
+                                    @if(isset($canCancelIndependentPosInvoice) && $canCancelIndependentPosInvoice && $facturaPos->hotel_status_label != 'ANULADO')
+                                        <form method="POST" action="{{ url($hotelUrl::url('hotel/stays/'.$stay->id.'/pos-invoices/'.$facturaPos->id.'/cancel')) }}" style="display:inline-block;">
+                                            {{ csrf_field() }}
+                                            <button type="submit" class="btn btn-danger btn-xs hotel-confirm-submit" data-message="¿Anular {{ $facturaPosDocumento }}? También se anularán sus movimientos y remisiones asociadas.">Anular</button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

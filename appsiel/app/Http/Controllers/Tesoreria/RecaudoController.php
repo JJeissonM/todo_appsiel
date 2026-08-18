@@ -114,6 +114,7 @@ class RecaudoController extends TransaccionController
      */
     public function store(Request $request)
     {
+        $this->validar_tercero($request);
         $this->validar_punto_venta($request);
 
         $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
@@ -285,6 +286,24 @@ class RecaudoController extends TransaccionController
             $request,
             ['pdv_id' => 'required|integer|min:1|exists:vtas_pos_puntos_de_ventas,id'],
             ['pdv_id.required' => 'El campo Punto de Ventas es obligatorio.']
+        );
+    }
+
+    protected function validar_tercero(Request $request)
+    {
+        $empresaId = (int)Auth::user()->empresa_id;
+
+        $this->validate(
+            $request,
+            [
+                'core_tercero_id' => 'required|integer|min:1|exists:core_terceros,id,core_empresa_id,' . $empresaId,
+            ],
+            [
+                'core_tercero_id.required' => 'Debe seleccionar un tercero válido de la lista de sugerencias.',
+                'core_tercero_id.integer' => 'Debe seleccionar un tercero válido de la lista de sugerencias.',
+                'core_tercero_id.min' => 'Debe seleccionar un tercero válido de la lista de sugerencias.',
+                'core_tercero_id.exists' => 'El tercero seleccionado no existe o no pertenece a la empresa.',
+            ]
         );
     }
 

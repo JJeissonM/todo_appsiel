@@ -13,8 +13,10 @@ use App\Http\Controllers\Controller;
 use App\CxC\CxcMovimiento;
 use App\Ventas\Cliente;
 use App\VentasPos\FacturaPos;
+use App\VentasPos\Services\FacturaPosService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HotelStayController extends Controller
 {
@@ -57,8 +59,9 @@ class HotelStayController extends Controller
         $editBlockMessage = $hotelService->getEditDatesBlockMessage($stay);
         $checkOutBlockMessage = $hotelService->getCheckOutBlockMessage($stay);
         $canCancelHotelOrder = $this->canCancelHotelOrder();
+        $canCancelIndependentPosInvoice = $this->canCancelIndependentPosInvoice();
         $miga_pan = $this->breadcrumb('Estadia #' . $stay->id);
-        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'facturasCredito', 'facturasPosIndependientes', 'saldoPedidos', 'saldoFacturasCredito', 'saldoAnticipos', 'saldoPendienteNeto', 'cancelBlockMessage', 'editBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'miga_pan'));
+        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'facturasCredito', 'facturasPosIndependientes', 'saldoPedidos', 'saldoFacturasCredito', 'saldoAnticipos', 'saldoPendienteNeto', 'cancelBlockMessage', 'editBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'canCancelIndependentPosInvoice', 'miga_pan'));
     }
 
     public function createCheckIn()
@@ -140,6 +143,52 @@ class HotelStayController extends Controller
         return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))->with('flash_message', 'Estadia anulada correctamente.');
     }
 
+    public function cancelIndependentPosInvoice($stayId, $invoiceId)
+    {
+        if (!$this->canCancelIndependentPosInvoice()) {
+            return redirect()->back()->with('mensaje_error', 'Solo un usuario administrador puede anular facturas desde la estadía.');
+        }
+
+        $stay = $this->findStay($stayId);
+        $invoice = $this->independentPosInvoices($stay)->first(function ($key, $row) use ($invoiceId) {
+            return (int)$row->id === (int)$invoiceId;
+        });
+
+        if (is_null($invoice)) {
+            return redirect()->back()->with('mensaje_error', 'La factura no pertenece a esta estadía o está asociada a un pedido hotelero.');
+        }
+
+        if (strtolower(trim((string)$invoice->estado)) == 'anulado') {
+            return redirect()->back()->with('mensaje_error', 'La factura ya se encuentra anulada.');
+        }
+
+        $service = new FacturaPosService();
+        $paymentValidation = $service->factura_tiene_abonos_cxc($invoice->id);
+        if ($paymentValidation->status) {
+            return redirect()->back()->with('mensaje_error', $paymentValidation->message);
+        }
+
+        try {
+            DB::transaction(function () use ($service, $invoice, $stay) {
+                $lockedInvoice = FacturaPos::where('id', $invoice->id)
+                    ->where('core_empresa_id', $stay->empresa_id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (is_null($lockedInvoice) || strtolower(trim((string)$lockedInvoice->estado)) == 'anulado') {
+                    throw new \Exception('La factura ya no está disponible para anulación.');
+                }
+
+                $service->anular_factura_contabilizada((int)$lockedInvoice->id, true);
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->with('mensaje_error', $e->getMessage());
+        }
+
+        return redirect(HotelBreadcrumb::url('hotel/stays/' . $stay->id))
+            ->with('flash_message', 'Factura POS anulada correctamente desde la estadía.');
+    }
+
     private function findStay($id)
     {
         return HotelStay::where('empresa_id', Auth::user()->empresa_id)->where('id', $id)->with('room', 'mainGuest.tercero', 'guests.cliente.tercero', 'orders.lines.product', 'orders.posInvoice.tipo_documento_app', 'orders.salesInvoice.tipo_documento_app')->firstOrFail();
@@ -185,6 +234,16 @@ class HotelStayController extends Controller
         }
 
         return false;
+    }
+
+    private function canCancelIndependentPosInvoice()
+    {
+        if (!Auth::check() || !method_exists(Auth::user(), 'hasRole')) {
+            return false;
+        }
+
+        $user = Auth::user();
+        return $user->hasRole('SuperAdmin') || $user->hasRole('Administrador') || $user->hasRole('Admin Colegio');
     }
 
     private function openOrdersBalance(HotelStay $stay)
@@ -265,6 +324,7 @@ class HotelStayController extends Controller
         }
 
         $invoices = $query->get();
+        $movementsByDocument = $this->receivableMovementsByPosInvoice($invoices, $stay->empresa_id);
         foreach ($invoices as $invoice) {
             $invoice->hotel_creator_label = HotelCreatorLabel::userLabel(
                 $invoice->creado_por,
@@ -272,9 +332,80 @@ class HotelStayController extends Controller
                 $invoice->pdv_id
             );
             $invoice->hotel_total = (float)$invoice->valor_total + (float)$invoice->valor_ajuste_al_peso + (float)$invoice->valor_total_bolsas;
+
+            $movementKey = $this->posInvoiceMovementKey($invoice);
+            $movement = isset($movementsByDocument[$movementKey]) ? $movementsByDocument[$movementKey] : null;
+            $this->setIndependentPosInvoiceStatus($invoice, $movement);
         }
 
         return $invoices;
+    }
+
+    private function receivableMovementsByPosInvoice($invoices, $companyId)
+    {
+        if ($invoices->count() == 0) {
+            return array();
+        }
+
+        $movements = CxcMovimiento::where('core_empresa_id', $companyId)
+            ->whereIn('core_tipo_transaccion_id', $invoices->pluck('core_tipo_transaccion_id')->unique()->values()->all())
+            ->whereIn('core_tipo_doc_app_id', $invoices->pluck('core_tipo_doc_app_id')->unique()->values()->all())
+            ->whereIn('consecutivo', $invoices->pluck('consecutivo')->unique()->values()->all())
+            ->whereIn('core_tercero_id', $invoices->pluck('core_tercero_id')->filter()->unique()->values()->all())
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        $indexed = array();
+        foreach ($movements as $movement) {
+            $key = $this->posInvoiceMovementKey($movement);
+            if (!isset($indexed[$key])) {
+                $indexed[$key] = $movement;
+            }
+        }
+
+        return $indexed;
+    }
+
+    private function posInvoiceMovementKey($document)
+    {
+        return implode('|', array(
+            (int)$document->core_tipo_transaccion_id,
+            (int)$document->core_tipo_doc_app_id,
+            (int)$document->consecutivo,
+            (int)$document->core_tercero_id,
+        ));
+    }
+
+    private function setIndependentPosInvoiceStatus(FacturaPos $invoice, $movement)
+    {
+        $invoiceState = strtolower(trim((string)$invoice->estado));
+
+        if ($invoiceState == 'anulado') {
+            $invoice->hotel_status_label = 'ANULADO';
+            $invoice->hotel_status_class = 'label-danger';
+            return;
+        }
+
+        if (!is_null($movement)) {
+            if ((float)$movement->saldo_pendiente > 0.1) {
+                $invoice->hotel_status_label = 'PENDIENTE POR PAGAR';
+                $invoice->hotel_status_class = 'label-warning';
+                return;
+            }
+
+            $invoice->hotel_status_label = 'PAGADO';
+            $invoice->hotel_status_class = 'label-success';
+            return;
+        }
+
+        if (strtolower(trim((string)$invoice->forma_pago)) == 'contado') {
+            $invoice->hotel_status_label = 'PAGADO';
+            $invoice->hotel_status_class = 'label-success';
+            return;
+        }
+
+        $invoice->hotel_status_label = 'FACTURADO';
+        $invoice->hotel_status_class = 'label-info';
     }
 
     private function breadcrumb($label)
