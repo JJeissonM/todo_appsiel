@@ -104,6 +104,10 @@ class HotelReportController extends Controller
 
         $rooms = array();
         $grandTotal = 0;
+        $grandTotalRoom = 0;
+        $grandTotalBeverages = 0;
+        $grandTotalLaundry = 0;
+        $grandTotalOthers = 0;
 
         foreach ($lines as $line) {
             $roomKey = !empty($line->room_id) ? (string)$line->room_id : 'room_without_id_' . $line->stay_id;
@@ -149,11 +153,19 @@ class HotelReportController extends Controller
             $rooms[$roomKey][$category] += $value;
             $rooms[$roomKey]['total'] += $value;
             $grandTotal += $value;
+            $grandTotalRoom += ($category === 'room_total') ? $value : 0;
+            $grandTotalBeverages += ($category === 'beverages_total') ? $value : 0;
+            $grandTotalLaundry += ($category === 'laundry_total') ? $value : 0;
+            $grandTotalOthers += ($category === 'others_total') ? $value : 0;
         }
 
         $html = view('hotel.reports.sales_by_room', compact(
             'rooms',
             'grandTotal',
+            'grandTotalRoom',
+            'grandTotalBeverages',
+            'grandTotalLaundry',
+            'grandTotalOthers',
             'fechaDesde',
             'fechaHasta',
             'mostrarDetalle',

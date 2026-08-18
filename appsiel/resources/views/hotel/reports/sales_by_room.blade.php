@@ -162,7 +162,11 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="10" class="hotel-money">TOTAL</td>
+                <td colspan="6" class="hotel-money">TOTALES</td>
+                <td class="hotel-money">$ {{ number_format($grandTotalRoom, 2, ',', '.') }}</td>
+                <td class="hotel-money">$ {{ number_format($grandTotalBeverages, 2, ',', '.') }}</td>
+                <td class="hotel-money">$ {{ number_format($grandTotalLaundry, 2, ',', '.') }}</td>
+                <td class="hotel-money">$ {{ number_format($grandTotalOthers, 2, ',', '.') }}</td>
                 <td class="hotel-money">$ {{ number_format($grandTotal, 2, ',', '.') }}</td>
             </tr>
         </tfoot>

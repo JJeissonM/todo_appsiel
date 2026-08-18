@@ -262,7 +262,7 @@ class HotelStayController extends Controller
 
             if ($status['has_active_invoices']) {
                 $message = $isAdministrator
-                    ? 'Anule primero las facturas vigentes que no tengan pagos aplicados. Si una factura ya fue pagada, el acompañante debe conservarse como huésped de origen.'
+                    ? 'Anule primero las facturas del huésped. Si alguna ya fue pagada, anule los pagos/cruces aplicados para poder eliminar al huésped.'
                     : 'El acompañante tiene facturas asociadas. Solicite la revisión de un administrador.';
             } elseif ($status['has_invoices'] && !$isAdministrator) {
                 $message = 'Solo un administrador puede retirar un acompañante con facturas anuladas.';
