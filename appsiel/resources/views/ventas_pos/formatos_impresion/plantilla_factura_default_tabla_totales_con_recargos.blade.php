@@ -5,7 +5,9 @@
             $total_factura_mas_recargos = $datos_factura->total_factura_mas_datafono;
         }
         $condicion_pago_impresion = strtolower((string)$datos_factura->lbl_condicion_pago);
-        $mostrar_recibido_cambio = (int)config('ventas_pos.mostrar_efectivo_recibio_y_cambio') && $condicion_pago_impresion == 'contado';
+        $es_plantilla_dinamica = $condicion_pago_impresion == '';
+        $mostrar_recibido_cambio = (int)config('ventas_pos.mostrar_efectivo_recibio_y_cambio')
+            && ($condicion_pago_impresion == 'contado' || $es_plantilla_dinamica);
     ?>
     <tbody>
         <tr style="font-weight: bold;">
