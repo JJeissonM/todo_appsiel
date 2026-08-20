@@ -1,9 +1,9 @@
 <h3 style="width: 100%; text-align: center;"> Movimientos de Cuentas por Pagar (CxP) </h3>
 <h4 style="width: 100%; text-align: center;">Tercero: {{ $tercero->get_label_to_show() }}</h4>
 <div class="alert alert-warning">
-    <strong>Advertencia!</strong> 
+    <strong>Periodo:</strong> {{ $fecha_desde }} a {{ $fecha_hasta }}
     <br>
-    Los movimientos solo reflejan los saldos entre las fechas seleccionadas.
+    El primer registro consolida el saldo anterior; los demás corresponden únicamente al periodo seleccionado.
 </div>
 <hr>
 <div class="table-responsive">
@@ -28,7 +28,7 @@
                     
             @foreach ( $data_ordered as $linea_movim )
                 <?php
-                    $total_saldo_pendiente += ($linea_movim->valor_cartera - $linea_movim->valor_a_favor);
+                    $total_saldo_pendiente = $linea_movim->valor_saldo;
                 ?>    
                 
                 <tr class="fila-{{$j}}">
@@ -37,7 +37,7 @@
                     <td> {{ $linea_movim->estado }} </td>
                     <td style="text-align: right;"> ${{ number_format($linea_movim->valor_cartera, 0, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format($linea_movim->valor_a_favor, 0, ',', '.') }} </td>
-                    <td style="text-align: right;"> ${{ number_format( $total_saldo_pendiente, 0, ',', '.') }} </td>
+                    <td style="text-align: right;"> ${{ number_format($linea_movim->valor_saldo, 0, ',', '.') }} </td>
                 </tr>
                 <?php
                     $j++;
@@ -59,6 +59,6 @@
         </tbody>
     </table>
     <div style="width: 100%; text-align: right; margin-top:20px;">
-        Generado el {{ date('d-m-Y, H:m A')}}
+        Generado el {{ date('d-m-Y, H:i A')}}
     </div>
 </div>

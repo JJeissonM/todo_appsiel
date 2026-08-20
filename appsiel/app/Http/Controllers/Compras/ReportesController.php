@@ -470,55 +470,87 @@ class ReportesController extends Controller
 
     public function movimientos_de_cxp(Request $request)
     {
+        $this->validate($request, [
+            'fecha_desde' => 'required|date_format:Y-m-d',
+            'fecha_hasta' => 'required|date_format:Y-m-d',
+            'core_tercero_id' => 'required|integer|min:1'
+        ]);
+
         $fecha_desde = $request->fecha_desde;
-        $fecha_hasta  = $request->fecha_hasta;
+        $fecha_hasta = $request->fecha_hasta;
         $core_tercero_id = (int)$request->core_tercero_id;
-    
-        $data = $this->get_saldo_anterior( $core_tercero_id, $fecha_desde, $fecha_hasta);
-    
-        $data = $this->get_datos_movimientos_cxc( $data, $core_tercero_id, $fecha_desde, $fecha_hasta);
-    
-        $data = $this->get_datos_abonos_cxc( $data, $core_tercero_id, $fecha_desde, $fecha_hasta);
 
-        $sorted = $data->sortBy('fecha');
- 
-        $data_ordered = $sorted->values()->all();
+        if ($fecha_hasta < $fecha_desde) {
+            abort(422, 'La fecha hasta no puede ser anterior a la fecha desde.');
+        }
 
-        $tercero = Tercero::find($core_tercero_id);
+        $core_empresa_id = (int)Auth::user()->empresa_id;
 
-        $vista = View::make( 'compras.incluir.movimientos_ctas_por_pagar', compact('data_ordered', 'tercero') )->render();
+        // El tercero y todos los movimientos deben pertenecer a la empresa de la sesión.
+        $tercero = Tercero::where('core_empresa_id', $core_empresa_id)
+                          ->where('id', $core_tercero_id)
+                          ->firstOrFail();
+
+        $data = $this->get_saldo_anterior_cxp(
+            $core_empresa_id,
+            $core_tercero_id,
+            $fecha_desde
+        );
+
+        $data = $this->get_datos_movimientos_cxp(
+            $data,
+            $core_empresa_id,
+            $core_tercero_id,
+            $fecha_desde,
+            $fecha_hasta
+        );
+
+        $data = $this->get_datos_abonos_cxp(
+            $data,
+            $core_empresa_id,
+            $core_tercero_id,
+            $fecha_desde,
+            $fecha_hasta
+        );
+
+        $data_ordered = $this->ordenar_y_calcular_saldos_cxp($data)->all();
+
+        $vista = View::make(
+            'compras.incluir.movimientos_ctas_por_pagar',
+            compact('data_ordered', 'tercero', 'fecha_desde', 'fecha_hasta')
+        )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
    
         return $vista;
     }
 
-    public function get_saldo_anterior( $core_tercero_id, $fecha_desde, $fecha_hasta)
+    public function get_saldo_anterior_cxp($core_empresa_id, $core_tercero_id, $fecha_desde)
     {
         $data = collect([]);
 
-        $fecha_anterior = restar_dias_calendario_a_fecha( $fecha_desde, 1 );
+        $fecha_anterior = restar_dias_calendario_a_fecha($fecha_desde, 1);
 
-        $valor_cartera = CxpMovimiento::where([
-                                        ['core_tercero_id', '=', $core_tercero_id],
-                                        ['fecha', '<=', $fecha_anterior],
-                                        ['valor_documento', '>=', 0]
-                                    ])
-                                    ->sum('valor_documento');
+        // Una sola consulta obtiene cartera y anticipos anteriores.
+        $saldos_movimientos = CxpMovimiento::where('core_empresa_id', $core_empresa_id)
+            ->where('core_tercero_id', $core_tercero_id)
+            ->where('fecha', '<=', $fecha_anterior)
+            ->selectRaw(
+                'COALESCE(SUM(CASE WHEN valor_documento >= 0 THEN valor_documento ELSE 0 END), 0) AS valor_cartera, ' .
+                'COALESCE(SUM(CASE WHEN valor_documento < 0 THEN -valor_documento ELSE 0 END), 0) AS valor_a_favor'
+            )
+            ->first();
 
-        $valor_a_favor = CxpMovimiento::where([
-                                        ['core_tercero_id', '=', $core_tercero_id],
-                                        ['fecha', '<=', $fecha_anterior],
-                                        ['valor_documento', '<', 0]
-                                    ])
-                                    ->sum('valor_documento') * -1;
+        $valor_cartera = (float)$saldos_movimientos->valor_cartera;
+        $valor_a_favor = (float)$saldos_movimientos->valor_a_favor;
 
-        $valor_a_favor += CxpAbono::where([
-                                        ['core_tercero_id', '=', $core_tercero_id],
-                                        ['fecha', '<=', $fecha_anterior],
-                                        ['doc_cruce_transacc_id', '=', 0]
-                                    ])
-                                    ->sum('abono');
+        // Los abonos de cruces se excluyen para no descontarlos dos veces: el
+        // documento por pagar y el anticipo ya están incluidos como movimientos.
+        $valor_a_favor += (float)CxpAbono::where('core_empresa_id', $core_empresa_id)
+            ->where('core_tercero_id', $core_tercero_id)
+            ->where('fecha', '<=', $fecha_anterior)
+            ->where('doc_cruce_transacc_id', 0)
+            ->sum('abono');
 
         $valor_saldo = $valor_cartera - $valor_a_favor;
 
@@ -529,7 +561,10 @@ class ReportesController extends Controller
                     'detalle' => '',
                     'valor_cartera' => $valor_cartera,
                     'valor_a_favor' => $valor_a_favor,
-                    'valor_saldo' => $valor_saldo
+                    'valor_saldo' => $valor_saldo,
+                    'orden_momento' => $fecha_anterior . ' 00:00:00',
+                    'orden_tipo' => 0,
+                    'orden_id' => 0
                 ];
 
         $data->push($aux_arr);
@@ -537,13 +572,22 @@ class ReportesController extends Controller
         return $data;
     }
 
-    public function get_datos_movimientos_cxc( $data, $core_tercero_id, $fecha_desde, $fecha_hasta)
+    public function get_datos_movimientos_cxp(
+        $data,
+        $core_empresa_id,
+        $core_tercero_id,
+        $fecha_desde,
+        $fecha_hasta
+    )
     {
-        $movimientos = CxpMovimiento::where('core_tercero_id', $core_tercero_id)
-                                    ->whereBetween( 'fecha', [ $fecha_desde, $fecha_hasta] )
+        $movimientos = CxpMovimiento::where('core_empresa_id', $core_empresa_id)
+                                    ->where('core_tercero_id', $core_tercero_id)
+                                    ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                                    ->orderBy('fecha')
+                                    ->orderBy('created_at')
+                                    ->orderBy('id')
                                     ->get();
 
-        $valor_saldo = 0;
         foreach ($movimientos as $movimiento) {
 
             $valor_cartera = 0;
@@ -554,16 +598,17 @@ class ReportesController extends Controller
                 $valor_a_favor = $movimiento->valor_documento * -1;
             }
 
-            $valor_saldo += $valor_cartera - $valor_a_favor;
-            
             $aux_arr = (object)[
                         'fecha' => $movimiento->fecha,
                         'documento' => $movimiento->enlace_show_documento(),
                         'estado' => $movimiento->estado,
-                        'detalle' => '',
+                        'detalle' => $movimiento->detalle,
                         'valor_cartera' => $valor_cartera,
                         'valor_a_favor' => $valor_a_favor,
-                        'valor_saldo' => $valor_saldo
+                        'valor_saldo' => 0,
+                        'orden_momento' => (string)($movimiento->created_at ?: $movimiento->fecha . ' 00:00:00'),
+                        'orden_tipo' => 1,
+                        'orden_id' => (int)$movimiento->id
                     ];
 
             $data->push($aux_arr);
@@ -572,37 +617,76 @@ class ReportesController extends Controller
         return $data;
     }
 
-    public function get_datos_abonos_cxc( $data, $core_tercero_id, $fecha_desde, $fecha_hasta)
+    public function get_datos_abonos_cxp(
+        $data,
+        $core_empresa_id,
+        $core_tercero_id,
+        $fecha_desde,
+        $fecha_hasta
+    )
     {
-        $movimientos = CxpAbono::where('core_tercero_id', $core_tercero_id)
-                            ->whereBetween( 'fecha', [ $fecha_desde, $fecha_hasta] )
+        $movimientos = CxpAbono::where('core_empresa_id', $core_empresa_id)
+                            ->where('core_tercero_id', $core_tercero_id)
+                            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->where('doc_cruce_transacc_id', 0)
+                            ->orderBy('fecha')
+                            ->orderBy('created_at')
+                            ->orderBy('id')
                             ->get();
 
-        $valor_saldo = 0;
         foreach ($movimientos as $movimiento) {
-
-            if ( $movimiento->doc_cruce_transacc_id != 0) {
-                continue;
-            }
-
             $valor_cartera = 0;
             $valor_a_favor = $movimiento->abono;
-
-            $valor_saldo += $valor_cartera - $valor_a_favor;
 
             $aux_arr = (object)[
                         'fecha' => $movimiento->fecha,
                         'documento' => $movimiento->enlace_show_documento(),
-                        'estado' => $movimiento->estado,
+                        'estado' => '',
                         'detalle' => '',
                         'valor_cartera' => $valor_cartera,
                         'valor_a_favor' => $valor_a_favor,
-                        'valor_saldo' => $valor_saldo
+                        'valor_saldo' => 0,
+                        'orden_momento' => (string)($movimiento->created_at ?: $movimiento->fecha . ' 00:00:00'),
+                        'orden_tipo' => 2,
+                        'orden_id' => (int)$movimiento->id
                     ];
 
             $data->push($aux_arr);
         }
 
         return $data;
+    }
+
+    /**
+     * Ordena todos los orígenes con un criterio estable y calcula el saldo una
+     * sola vez. Esto evita saldos intermedios incoherentes en fechas iguales.
+     */
+    public function ordenar_y_calcular_saldos_cxp($data)
+    {
+        $saldo = 0;
+
+        return $data->sort(function ($a, $b) {
+            $clave_a = sprintf(
+                '%s|%s|%02d|%012d',
+                $a->fecha,
+                $a->orden_momento,
+                $a->orden_tipo,
+                $a->orden_id
+            );
+            $clave_b = sprintf(
+                '%s|%s|%02d|%012d',
+                $b->fecha,
+                $b->orden_momento,
+                $b->orden_tipo,
+                $b->orden_id
+            );
+
+            return strcmp($clave_a, $clave_b);
+        })->values()->map(function ($linea) use (&$saldo) {
+            $saldo += (float)$linea->valor_cartera - (float)$linea->valor_a_favor;
+            $linea->valor_saldo = $saldo;
+
+            return $linea;
+        });
     }
 }

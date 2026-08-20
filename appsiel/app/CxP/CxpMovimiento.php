@@ -46,10 +46,11 @@ class CxpMovimiento extends Model
   public function enlace_show_documento()
   {
       $doc_transaccion = app($this->tipo_transaccion->modelo->name_space)->where([
+          ['core_empresa_id', '=', $this->core_empresa_id],
           ['core_tipo_transaccion_id', '=', $this->core_tipo_transaccion_id ],
           ['core_tipo_doc_app_id', '=', $this->core_tipo_doc_app_id ],
           ['consecutivo', '=', $this->consecutivo ]
-      ])->get()->first();
+      ])->first();
       
       if ( $doc_transaccion == null ) {
           return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
