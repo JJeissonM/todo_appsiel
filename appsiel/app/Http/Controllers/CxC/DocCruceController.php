@@ -23,6 +23,7 @@ use App\CxC\CxcMovimiento;
 use App\CxC\CxcDocEncabezado;
 use App\CxC\CxcAbono;
 use App\CxC\Services\AccountingServices;
+use App\CxC\Services\CxcAccountingAccountResolver;
 
 use App\Tesoreria\TesoRecaudosLibreta;
 use App\Tesoreria\TesoDocEncabezadoRecaudo;
@@ -91,6 +92,7 @@ class DocCruceController extends TransaccionController
    */
   public function store(Request $request)
   {
+    return DB::transaction(function () use ($request) {
     $obj_accou_serv = new AccountingServices();
     $cxc_move_note_id = $obj_accou_serv->create_accounting_note_doc($request->tabla_documentos_a_cancelar, $request->fecha, $request->core_tercero_id);
 
@@ -141,6 +143,7 @@ class DocCruceController extends TransaccionController
 
     // se llama la vista de DocCruceController@show
     return redirect('doc_cruce/' . $doc_encabezado->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+    });
   }
 
 
@@ -249,17 +252,7 @@ class DocCruceController extends TransaccionController
   public function contabilizar_debito($movimiento_afavor, $valor_aplicar, $detalle_operacion)
   {
     // Contabilizar MOVIMIENTO DEBITO (AFAVOR)
-    $array_wheres = [
-      'core_empresa_id' => $movimiento_afavor->core_empresa_id,
-      'core_tipo_transaccion_id' => $movimiento_afavor->core_tipo_transaccion_id,
-      'core_tipo_doc_app_id' => $movimiento_afavor->core_tipo_doc_app_id,
-      'consecutivo' => $movimiento_afavor->consecutivo,
-      'core_tercero_id' => $movimiento_afavor->core_tercero_id
-    ];
-    $contab_cuenta_id = ContabMovimiento::where($array_wheres)->where('valor_debito', 0)->value('contab_cuenta_id');
-    if ($contab_cuenta_id == null) {
-      $contab_cuenta_id = (int)config('contabilidad.cta_anticipo_clientes_default');
-    }
+    $contab_cuenta_id = (new CxcAccountingAccountResolver())->getAdvanceAccountId($movimiento_afavor);
     $valor_debito = $valor_aplicar;
     $valor_credito = 0;
     $this->contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
@@ -268,17 +261,7 @@ class DocCruceController extends TransaccionController
   public function contabilizar_credito($movimiento_cartera, $valor_aplicar, $detalle_operacion)
   {
     // Contabilizar MOVIMIENTO CREDITO (CARTERA)
-    $array_wheres = [
-      'core_empresa_id' => $movimiento_cartera->core_empresa_id,
-      'core_tipo_transaccion_id' => $movimiento_cartera->core_tipo_transaccion_id,
-      'core_tipo_doc_app_id' => $movimiento_cartera->core_tipo_doc_app_id,
-      'consecutivo' => $movimiento_cartera->consecutivo,
-      'core_tercero_id' => $movimiento_cartera->core_tercero_id
-    ];
-    $contab_cuenta_id = ContabMovimiento::where($array_wheres)->where('valor_credito', 0)->value('contab_cuenta_id');
-    if ($contab_cuenta_id == null) {
-      $contab_cuenta_id = (int)config('contabilidad.cta_cartera_default');
-    }
+    $contab_cuenta_id = (new CxcAccountingAccountResolver())->getReceivableAccountId($movimiento_cartera);
     $valor_debito = 0;
     $valor_credito = $valor_aplicar;
     $this->contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
@@ -474,6 +457,10 @@ class DocCruceController extends TransaccionController
    */
   function contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)
   {
+    if ($contab_cuenta_id == null) {
+      throw new \RuntimeException('No se pudo determinar la cuenta contable del documento involucrado en el cruce de CxC.');
+    }
+
     ContabMovimiento::create(
       $this->datos +
         ['contab_cuenta_id' => $contab_cuenta_id] +

@@ -746,7 +746,7 @@ function crear_payload_apm_factura( doc_encabezado )
                 'Total': total_factura,
                 'COPY': 'COPIA # 1'
             },
-            'totals': get_apm_totals_from_dom(),
+            'totals': get_apm_totals_from_dom(doc_encabezado),
             'taxes': get_apm_taxes_from_dom(),
             'payments': get_apm_payments_from_dom(),
             'resolution': doc_encabezado.resolucion || {},
@@ -812,8 +812,21 @@ function crear_meta_apm_factura_pos( doc_encabezado )
         document_label: doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || ('Factura POS ' + consecutivo)
     };
 }
-function get_apm_totals_from_dom()
+function get_apm_totals_from_dom(doc_encabezado)
 {
+    doc_encabezado = doc_encabezado || {};
+
+    var recibido = parseFloat($('#total_efectivo_recibido').val() || 0);
+    var cambio = parseFloat($('#valor_total_cambio').val() || 0);
+
+    if (typeof doc_encabezado.total_efectivo_recibido !== 'undefined') {
+        recibido = parseFloat(doc_encabezado.total_efectivo_recibido) || 0;
+    }
+
+    if (typeof doc_encabezado.valor_total_cambio !== 'undefined') {
+        cambio = parseFloat(doc_encabezado.valor_total_cambio) || 0;
+    }
+
     return {
         'Subtotal': parseFloat( $('#valor_sub_total_factura').val() || 0 ),
         'Impuestos': parseFloat( $('#valor_total_impuestos').val() || 0 ),
@@ -822,8 +835,8 @@ function get_apm_totals_from_dom()
         'Ajuste': parseFloat( $('#valor_ajuste_al_peso').val() || 0 ),
         'Bolsas': parseFloat( $('#valor_total_bolsas').val() || 0 ),
         'Total': parseFloat( $('#valor_total_factura').val() || 0 ),
-        'Recibido': parseFloat( $('#total_efectivo_recibido').val() || 0 ),
-        'Cambio': parseFloat( $('#valor_total_cambio').val() || 0 )
+        'Recibido': recibido,
+        'Cambio': cambio
     };
 }
 

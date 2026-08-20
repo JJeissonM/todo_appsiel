@@ -81,6 +81,7 @@ class DocCruceController extends TransaccionController
      */
     public function store(Request $request)
     {
+      return DB::transaction(function () use ($request) {
       $obj_accou_serv = new AccountingServices();
       $cxp_move_note_id = $obj_accou_serv->create_accounting_note_doc( $request->tabla_documentos_a_cancelar, $request->fecha, $request->core_tercero_id );
         
@@ -132,6 +133,7 @@ class DocCruceController extends TransaccionController
 
       // se llama la vista de DocCruceController@show
       return redirect( 'doc_cruce_cxp/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+      });
     }
 
 
@@ -551,7 +553,7 @@ class DocCruceController extends TransaccionController
     {
         if($contab_cuenta_id == null)
         {
-            return 0;
+            throw new \RuntimeException('No se pudo determinar la cuenta contable del documento involucrado en el cruce de CxP.');
         }
         
         ContabMovimiento::create( $this->datos + 

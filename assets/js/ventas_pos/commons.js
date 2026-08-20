@@ -827,7 +827,7 @@ function add_impuesto_id_to_table_lines(table) {
  * 
  * @param {*} con_medios_recaudos 
  */
-function llenar_tabla_productos_facturados( con_medios_recaudos = true ) 
+function llenar_tabla_productos_facturados( con_medios_recaudos = true, totales_pago_confirmados = null )
 {
   var linea_factura, linea_factura2;
   var lbl_total_factura = 0;
@@ -970,7 +970,10 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true )
   
   var efectivo_recibido = 0;
   if ( con_medios_recaudos ) {
-    efectivo_recibido = parseFloat($("#efectivo_recibido").val());
+    efectivo_recibido = parseFloat($("#efectivo_recibido").val()) || 0;
+    if (totales_pago_confirmados !== null && typeof totales_pago_confirmados.total_efectivo_recibido !== "undefined") {
+      efectivo_recibido = parseFloat(totales_pago_confirmados.total_efectivo_recibido) || 0;
+    }
   }  
   $(".lbl_total_recibido").text(
     "$ " +
@@ -981,6 +984,9 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true )
   var lbl_total_cambio = 0;
   if ( con_medios_recaudos ) {
     lbl_total_cambio = total_cambio;
+    if (totales_pago_confirmados !== null && typeof totales_pago_confirmados.valor_total_cambio !== "undefined") {
+      lbl_total_cambio = parseFloat(totales_pago_confirmados.valor_total_cambio) || 0;
+    }
   }
 
   $(".lbl_total_cambio").text(
@@ -2078,7 +2084,10 @@ $(document).ready(function () {
       $('#lbl_saldo_pendiente_cxc').text( new Intl.NumberFormat("de-DE").format(  doc_encabezado.saldo_pendiente_cxc.toFixed(0) ) );
     }
     
-    llenar_tabla_productos_facturados();
+    // La impresión debe usar los valores ya persistidos por el servidor. El
+    // formulario se limpia al terminar y sus valores pueden cambiar antes de
+    // que el navegador termine de construir la vista previa.
+    llenar_tabla_productos_facturados(true, doc_encabezado);
 
     $('#lbl_creado_por_fecha_y_hora').text('Elaboró: ' + doc_encabezado.lbl_creado_por_fecha_y_hora);
 

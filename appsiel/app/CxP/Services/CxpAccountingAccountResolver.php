@@ -22,10 +22,12 @@ class CxpAccountingAccountResolver
         $linea_contable = $this->getAccountingLineByCxpPosition($movimiento_cxp, $naturaleza);
 
         if (!is_null($linea_contable)) {
-            return $linea_contable->contab_cuenta_id;
+            return (int) $linea_contable->contab_cuenta_id;
         }
 
-        return $this->getAccountIdByDocumentFallback($movimiento_cxp, $naturaleza);
+        $cuenta_id = $this->getAccountIdByDocumentFallback($movimiento_cxp, $naturaleza);
+
+        return is_null($cuenta_id) ? null : (int) $cuenta_id;
     }
 
     protected function getAccountingLineByCxpPosition(CxpMovimiento $movimiento_cxp, $naturaleza)
@@ -92,11 +94,14 @@ class CxpAccountingAccountResolver
         ]);
 
         if ($naturaleza == 'credito') {
-            return $query->where('valor_credito', '<', 0)
-                ->where('tipo_transaccion', 'crear_cxp');
+            // La etiqueta tipo_transaccion no es uniforme entre los distintos
+            // documentos que generan CxP. La naturaleza del movimiento es la
+            // fuente confiable: el pasivo nace en el crédito.
+            return $query->where('valor_credito', '<', 0);
         }
 
-        return $query->where('valor_debito', '>', 0)
-            ->whereIn('tipo_transaccion', ['anticipo_cxp', 'crear_anticipo_cxp']);
+        // Algunos anticipos históricos no tienen tipo_transaccion. La cuenta
+        // de anticipo se identifica por el débito del documento origen.
+        return $query->where('valor_debito', '>', 0);
     }
 }

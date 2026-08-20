@@ -484,6 +484,8 @@ class FacturaPosController extends TransaccionController
             'doc_encabezado_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
             'doc_encabezado_forma_pago' => $doc_encabezado->forma_pago,
             'doc_encabezado_valor_total' => (float)$doc_encabezado->valor_total,
+            'total_efectivo_recibido' => (float)$doc_encabezado->total_efectivo_recibido,
+            'valor_total_cambio' => (float)$doc_encabezado->valor_total_cambio,
             'doc_encabezado_tercero_nombre_completo' => $doc_encabezado->cliente->tercero->descripcion,
             'doc_encabezado_vendedor_descripcion' => $doc_encabezado->vendedor->tercero->descripcion,
             'cantidad_total_productos' => count($doc_encabezado->lineas_registros),
