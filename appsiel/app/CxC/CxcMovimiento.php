@@ -35,6 +35,52 @@ class CxcMovimiento extends Model
     return $this->belongsTo(Tercero::class,'core_tercero_id');
   }
 
+  public function tipo_transaccion()
+  {
+    return $this->belongsTo(TipoTransaccion::class, 'core_tipo_transaccion_id');
+  }
+
+  public function tipo_documento_app()
+  {
+    return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
+  }
+
+  public function enlace_show_documento()
+  {
+    $transaccion = $this->tipo_transaccion;
+    $tipo_documento = $this->tipo_documento_app;
+    $label = is_null($tipo_documento)
+      ? $this->consecutivo
+      : $tipo_documento->prefijo . ' ' . $this->consecutivo;
+
+    if (is_null($transaccion) || empty($transaccion->modelo_encabezados_documentos)) {
+      return $label;
+    }
+
+    $documento = app($transaccion->modelo_encabezados_documentos)
+      ->where('core_empresa_id', $this->core_empresa_id)
+      ->where('core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
+      ->where('core_tipo_doc_app_id', $this->core_tipo_doc_app_id)
+      ->where('consecutivo', $this->consecutivo)
+      ->first();
+
+    if (is_null($documento)) {
+      return $label;
+    }
+
+    if (method_exists($documento, 'enlace_show_documento')) {
+      return $documento->enlace_show_documento();
+    }
+
+    return enlace_show_documento(
+      $transaccion->core_app_id,
+      $this->core_tipo_transaccion_id,
+      $this->core_tipo_doc_app_id,
+      $this->consecutivo,
+      $label
+    );
+  }
+
   public function creatorLabel()
   {
     $transactionAt = !empty($this->created_at) ? $this->created_at : $this->fecha;
@@ -114,6 +160,7 @@ class CxcMovimiento extends Model
     $transaction_type = TipoTransaccion::find($this->core_tipo_transaccion_id);
     
     return app($transaction_type->modelo_encabezados_documentos)->where([
+                                ['core_empresa_id', '=', $this->core_empresa_id ],
                                 ['core_tipo_transaccion_id', '=', $this->core_tipo_transaccion_id ],
                                 ['core_tipo_doc_app_id', '=', $this->core_tipo_doc_app_id ],
                                 ['consecutivo', '=', $this->consecutivo ],

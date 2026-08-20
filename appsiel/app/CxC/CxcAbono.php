@@ -22,37 +22,88 @@ class CxcAbono extends Model
 
     public $urls_acciones = '{"show":"no"}';
 
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo(TipoTransaccion::class, 'core_tipo_transaccion_id');
+    }
+
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
+    }
+
+    public function enlace_show_documento()
+    {
+        $transaccion = $this->tipo_transaccion;
+        $tipo_documento = $this->tipo_documento_app;
+        $label = is_null($tipo_documento)
+            ? $this->consecutivo
+            : $tipo_documento->prefijo . ' ' . $this->consecutivo;
+
+        $documento = $this->payment_document_header();
+        if (is_null($transaccion) || is_null($documento)) {
+            return $label;
+        }
+
+        if (method_exists($documento, 'enlace_show_documento')) {
+            return $documento->enlace_show_documento();
+        }
+
+        return enlace_show_documento(
+            $transaccion->core_app_id,
+            $this->core_tipo_transaccion_id,
+            $this->core_tipo_doc_app_id,
+            $this->consecutivo,
+            $label
+        );
+    }
+
     public function payment_document_header()
     {
         $transaction = TipoTransaccion::find($this->core_tipo_transaccion_id);
+        if (is_null($transaction) || is_null($transaction->model)) {
+            return null;
+        }
+
         return app($transaction->model->name_space)->where([
+            ['core_empresa_id','=',$this->core_empresa_id],
             ['core_tipo_transaccion_id','=',$this->core_tipo_transaccion_id],
             ['core_tipo_doc_app_id','=',$this->core_tipo_doc_app_id],
             ['consecutivo','=',$this->consecutivo],
             ])
-            ->get()->first();
+            ->first();
     }
 
     public function account_receivable_document_header()
     {
         $transaction = TipoTransaccion::find($this->doc_cxc_transacc_id);
+        if (is_null($transaction) || is_null($transaction->model)) {
+            return null;
+        }
+
         return app($transaction->model->name_space)->where([
+            ['core_empresa_id','=',$this->core_empresa_id],
             ['core_tipo_transaccion_id','=',$this->doc_cxc_transacc_id],
             ['core_tipo_doc_app_id','=',$this->doc_cxc_tipo_doc_id],
             ['consecutivo','=',$this->doc_cxc_consecutivo],
             ])
-            ->get()->first();
+            ->first();
     }
 
     public function accross_document_header()
     {
         $transaction = TipoTransaccion::find($this->doc_cruce_transacc_id);
+        if (is_null($transaction) || is_null($transaction->model)) {
+            return null;
+        }
+
         return app($transaction->model->name_space)->where([
+            ['core_empresa_id','=',$this->core_empresa_id],
             ['core_tipo_transaccion_id','=',$this->doc_cruce_transacc_id],
             ['core_tipo_doc_app_id','=',$this->doc_cruce_tipo_doc_id],
             ['consecutivo','=',$this->doc_cruce_consecutivo],
             ])
-            ->get()->first();
+            ->first();
     }
 
     public static function consultar_registros( $nro_registros, $search )

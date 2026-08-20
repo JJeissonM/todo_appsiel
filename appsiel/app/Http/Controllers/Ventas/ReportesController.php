@@ -6,6 +6,8 @@ use App\Compras\Services\TesoreriaService;
 use App\Core\Empresa;
 use App\Core\Tercero;
 use App\Core\TipoDocApp;
+use App\CxC\CxcAbono;
+use App\CxC\CxcMovimiento;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -670,5 +672,205 @@ class ReportesController extends Controller
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
         return $vista;
+    }
+
+    public function movimientos_de_cxc(Request $request)
+    {
+        if (!$this->usuarioTienePermisoReporte('vtas_movimientos_de_cxc')) {
+            return $this->respuestaSinPermiso();
+        }
+
+        $this->validate($request, [
+            'fecha_desde' => 'required|date_format:Y-m-d',
+            'fecha_hasta' => 'required|date_format:Y-m-d',
+            'core_tercero_id' => 'required|integer|min:1'
+        ]);
+
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta = $request->fecha_hasta;
+        $core_tercero_id = (int)$request->core_tercero_id;
+
+        if ($fecha_hasta < $fecha_desde) {
+            abort(422, 'La fecha hasta no puede ser anterior a la fecha desde.');
+        }
+
+        $core_empresa_id = (int)Auth::user()->empresa_id;
+        $tercero = Tercero::where('core_empresa_id', $core_empresa_id)
+            ->where('id', $core_tercero_id)
+            ->firstOrFail();
+
+        $data = $this->get_saldo_anterior_cxc(
+            $core_empresa_id,
+            $core_tercero_id,
+            $fecha_desde
+        );
+        $data = $this->get_datos_movimientos_cxc(
+            $data,
+            $core_empresa_id,
+            $core_tercero_id,
+            $fecha_desde,
+            $fecha_hasta
+        );
+        $data = $this->get_datos_abonos_cxc(
+            $data,
+            $core_empresa_id,
+            $core_tercero_id,
+            $fecha_desde,
+            $fecha_hasta
+        );
+
+        $data_ordered = $this->ordenar_y_calcular_saldos_cxc($data)->all();
+
+        $vista = View::make(
+            'ventas.incluir.movimientos_ctas_por_cobrar',
+            compact('data_ordered', 'tercero', 'fecha_desde', 'fecha_hasta')
+        )->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+    public function get_saldo_anterior_cxc($core_empresa_id, $core_tercero_id, $fecha_desde)
+    {
+        $fecha_anterior = restar_dias_calendario_a_fecha($fecha_desde, 1);
+
+        $saldos_movimientos = CxcMovimiento::where('core_empresa_id', $core_empresa_id)
+            ->where('core_tercero_id', $core_tercero_id)
+            ->where('fecha', '<=', $fecha_anterior)
+            ->selectRaw(
+                'COALESCE(SUM(CASE WHEN valor_documento >= 0 THEN valor_documento ELSE 0 END), 0) AS valor_cartera, ' .
+                'COALESCE(SUM(CASE WHEN valor_documento < 0 THEN -valor_documento ELSE 0 END), 0) AS valor_a_favor'
+            )
+            ->first();
+
+        $valor_cartera = (float)$saldos_movimientos->valor_cartera;
+        $valor_a_favor = (float)$saldos_movimientos->valor_a_favor;
+
+        // Un cruce ya está representado por el documento de cartera y el
+        // anticipo; incluir su abono descontaría el valor una segunda vez.
+        $valor_a_favor += (float)CxcAbono::where('core_empresa_id', $core_empresa_id)
+            ->where('core_tercero_id', $core_tercero_id)
+            ->where('fecha', '<=', $fecha_anterior)
+            ->where('doc_cruce_transacc_id', 0)
+            ->sum('abono');
+
+        return collect([(object)[
+            'fecha' => $fecha_anterior,
+            'documento' => 'Movimientos anteriores',
+            'estado' => '',
+            'detalle' => '',
+            'valor_cartera' => $valor_cartera,
+            'valor_a_favor' => $valor_a_favor,
+            'valor_saldo' => $valor_cartera - $valor_a_favor,
+            'orden_momento' => $fecha_anterior . ' 00:00:00',
+            'orden_tipo' => 0,
+            'orden_id' => 0
+        ]]);
+    }
+
+    public function get_datos_movimientos_cxc(
+        $data,
+        $core_empresa_id,
+        $core_tercero_id,
+        $fecha_desde,
+        $fecha_hasta
+    )
+    {
+        $movimientos = CxcMovimiento::where('core_empresa_id', $core_empresa_id)
+            ->where('core_tercero_id', $core_tercero_id)
+            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+            ->orderBy('fecha')
+            ->orderBy('created_at')
+            ->orderBy('id')
+            ->get();
+
+        foreach ($movimientos as $movimiento) {
+            $valor_cartera = $movimiento->valor_documento >= 0
+                ? (float)$movimiento->valor_documento
+                : 0;
+            $valor_a_favor = $movimiento->valor_documento < 0
+                ? (float)$movimiento->valor_documento * -1
+                : 0;
+
+            $data->push((object)[
+                'fecha' => $movimiento->fecha,
+                'documento' => $movimiento->enlace_show_documento(),
+                'estado' => $movimiento->estado,
+                'detalle' => $movimiento->detalle,
+                'valor_cartera' => $valor_cartera,
+                'valor_a_favor' => $valor_a_favor,
+                'valor_saldo' => 0,
+                'orden_momento' => (string)($movimiento->created_at ?: $movimiento->fecha . ' 00:00:00'),
+                'orden_tipo' => 1,
+                'orden_id' => (int)$movimiento->id
+            ]);
+        }
+
+        return $data;
+    }
+
+    public function get_datos_abonos_cxc(
+        $data,
+        $core_empresa_id,
+        $core_tercero_id,
+        $fecha_desde,
+        $fecha_hasta
+    )
+    {
+        $abonos = CxcAbono::where('core_empresa_id', $core_empresa_id)
+            ->where('core_tercero_id', $core_tercero_id)
+            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+            ->where('doc_cruce_transacc_id', 0)
+            ->orderBy('fecha')
+            ->orderBy('created_at')
+            ->orderBy('id')
+            ->get();
+
+        foreach ($abonos as $abono) {
+            $data->push((object)[
+                'fecha' => $abono->fecha,
+                'documento' => $abono->enlace_show_documento(),
+                'estado' => '',
+                'detalle' => '',
+                'valor_cartera' => 0,
+                'valor_a_favor' => (float)$abono->abono,
+                'valor_saldo' => 0,
+                'orden_momento' => (string)($abono->created_at ?: $abono->fecha . ' 00:00:00'),
+                'orden_tipo' => 2,
+                'orden_id' => (int)$abono->id
+            ]);
+        }
+
+        return $data;
+    }
+
+    public function ordenar_y_calcular_saldos_cxc($data)
+    {
+        $saldo = 0;
+
+        return $data->sort(function ($a, $b) {
+            $clave_a = sprintf(
+                '%s|%s|%02d|%012d',
+                $a->fecha,
+                $a->orden_momento,
+                $a->orden_tipo,
+                $a->orden_id
+            );
+            $clave_b = sprintf(
+                '%s|%s|%02d|%012d',
+                $b->fecha,
+                $b->orden_momento,
+                $b->orden_tipo,
+                $b->orden_id
+            );
+
+            return strcmp($clave_a, $clave_b);
+        })->values()->map(function ($linea) use (&$saldo) {
+            $saldo += (float)$linea->valor_cartera - (float)$linea->valor_a_favor;
+            $linea->valor_saldo = $saldo;
+
+            return $linea;
+        });
     }
 }
