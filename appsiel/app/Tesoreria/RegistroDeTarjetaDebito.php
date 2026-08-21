@@ -14,7 +14,7 @@ use App\Contabilidad\ContabMovimiento;
 
 class RegistroDeTarjetaDebito extends TesoDocEncabezado
 {
-    public function almacenar_registros( $json_lineas_registros, $doc_encabezado )
+    public function almacenar_registros( $json_lineas_registros, $doc_encabezado, $pdv_id = null )
     {
         $lineas_registros = json_decode( $json_lineas_registros );
 
@@ -73,6 +73,7 @@ class RegistroDeTarjetaDebito extends TesoDocEncabezado
             $datos['valor_movimiento'] = $valor_linea;
             $datos['descripcion'] = $tipo_operacion;
             $datos['documento_soporte'] = 'Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_tarjeta_debito;
+            $datos['pdv_id'] = $pdv_id;
             TesoMovimiento::create( $datos );
 
             // Contabilizar

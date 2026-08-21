@@ -43,6 +43,7 @@ use App\Tesoreria\RegistroDeTransferenciaConsignacion;
 use App\Tesoreria\RegistroDeTarjetaDebito;
 use App\Tesoreria\RegistroDeTarjetaCredito;
 use App\Tesoreria\RegistroDeCheque;
+use App\Tesoreria\Services\PdvResolver;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\Retencion;
@@ -132,6 +133,8 @@ class RecaudoCxcController extends Controller
      */
     public function store(Request $request)
     {
+        $pdv_id = PdvResolver::normalize($request->input('pdv_id'));
+
         $request['creado_por'] = Auth::user()->email;
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
         $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
@@ -145,19 +148,19 @@ class RecaudoCxcController extends Controller
         $descuentos_pronto_pago->almacenar_nuevos_registros( $request->lineas_registros_descuento_pronto_pagos, $doc_encabezado, 'concedido' );
 
         $efectivo = new RegistroDeEfectivo();
-        $efectivo->almacenar_registros( $request->lineas_registros_efectivo, $doc_encabezado );
+        $efectivo->almacenar_registros( $request->lineas_registros_efectivo, $doc_encabezado, $pdv_id );
 
         $transferencia_consignacion = new RegistroDeTransferenciaConsignacion();
-        $transferencia_consignacion->almacenar_registros( $request->lineas_registros_transferencia_consignacion, $doc_encabezado );
+        $transferencia_consignacion->almacenar_registros( $request->lineas_registros_transferencia_consignacion, $doc_encabezado, $pdv_id );
 
         $tarjeta_debito = new RegistroDeTarjetaDebito();
-        $tarjeta_debito->almacenar_registros( $request->lineas_registros_tarjeta_debito, $doc_encabezado );
+        $tarjeta_debito->almacenar_registros( $request->lineas_registros_tarjeta_debito, $doc_encabezado, $pdv_id );
 
         $tarjeta_credito = new RegistroDeTarjetaCredito();
-        $tarjeta_credito->almacenar_registros( $request->lineas_registros_tarjeta_credito, $doc_encabezado );
+        $tarjeta_credito->almacenar_registros( $request->lineas_registros_tarjeta_credito, $doc_encabezado, $pdv_id );
 
         $cheques = new RegistroDeCheque();
-        $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 'cheque_tercero', 'Recibido', 'de_tercero' );
+        $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 'cheque_tercero', 'Recibido', 'de_tercero', $pdv_id );
 
         $doc_encabezado->actualizar_valor_total();
 

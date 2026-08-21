@@ -14,7 +14,7 @@ use App\Contabilidad\ContabMovimiento;
 
 class RegistroDeEfectivo extends TesoDocEncabezado
 {
-    public function almacenar_registros( $json_lineas_registros, $doc_encabezado )
+    public function almacenar_registros( $json_lineas_registros, $doc_encabezado, $pdv_id = null )
     {
         $lineas_registros = json_decode( $json_lineas_registros );
 
@@ -72,6 +72,7 @@ class RegistroDeEfectivo extends TesoDocEncabezado
 
             $datos['valor_movimiento'] = $valor_linea;
             $datos['descripcion'] = $tipo_operacion;
+            $datos['pdv_id'] = $pdv_id;
             TesoMovimiento::create( $datos );
 
             // Contabilizar

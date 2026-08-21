@@ -87,6 +87,31 @@
 
 				</div>
 
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$dias_sin_movimiento_producto_bodega = 0;
+								if ( isset($parametros['dias_sin_movimiento_producto_bodega']) )
+								{
+									$dias_sin_movimiento_producto_bodega = $parametros['dias_sin_movimiento_producto_bodega'];
+								}
+							?>
+							<div class="form-group">
+								<label class="control-label col-sm-3 col-md-3" for="dias_sin_movimiento_producto_bodega">Días sin movimiento por producto y bodega:</label>
+								<div class="col-sm-9 col-md-9">
+									{{ Form::number('dias_sin_movimiento_producto_bodega', $dias_sin_movimiento_producto_bodega, ['class'=>'form-control', 'id'=>'dias_sin_movimiento_producto_bodega', 'min'=>'0', 'step'=>'1', 'required'=>'required']) }}
+									<small class="help-block">Use 0 para desactivar. Al cumplir estos días sin movimientos, el producto se ocultará del resumen y de las existencias de esa bodega.</small>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						&nbsp;
+					</div>
+				</div>
+
 				<h4> Parámetros por defecto creación de Productos  </h4>
 				<hr>
 				<div class="row">

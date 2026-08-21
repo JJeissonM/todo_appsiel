@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class RegistroDeCheque extends TesoDocEncabezado
 {
-    public function almacenar_registros( $json_lineas_registros, $doc_encabezado, $teso_medio_recaudo_id, $estado, $fuente )
+    public function almacenar_registros( $json_lineas_registros, $doc_encabezado, $teso_medio_recaudo_id, $estado, $fuente, $pdv_id = null )
     {
         $lineas_registros = json_decode( $json_lineas_registros );
         $chequera_service = new ChequeraService();
@@ -112,6 +112,7 @@ class RegistroDeCheque extends TesoDocEncabezado
             $datos['valor_movimiento'] = $valor_linea;
             $datos['descripcion'] = $tipo_operacion;
             $datos['documento_soporte'] = 'Cheque número ' . $numero_cheque;
+            $datos['pdv_id'] = $pdv_id;
             TesoMovimiento::create( $datos );
 
             // Contabilizar

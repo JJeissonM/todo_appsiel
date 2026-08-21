@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Inventarios\InvMotivo;
 use App\Inventarios\Services\InventoryPhysicalShiftService;
+use App\Inventarios\Services\ProductWarehouseActivityService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -358,7 +359,7 @@ class InvMovimiento extends Model
             $orden = 'inv_bodegas.descripcion';
         }
 
-        return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+        $query = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
                                 ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                                 ->leftJoin('inv_grupos','inv_grupos.id','=','inv_productos.inv_grupo_id')
                                 ->leftJoin('inv_bodegas','inv_bodegas.id','=','inv_doc_encabezados.inv_bodega_id')
@@ -377,8 +378,11 @@ class InvMovimiento extends Model
                                             'inv_bodegas.descripcion AS bodega',
                                             DB::raw('sum(inv_movimientos.cantidad) as Cantidad'),
                                             DB::raw('sum(inv_movimientos.costo_total) as Costo') )
-                                ->groupBy($orden)
-                                ->get();
+                                ->groupBy($orden);
+
+        (new ProductWarehouseActivityService())->applyLastMovementFilter($query, $fecha_corte);
+
+        return $query->get();
     }
 
     public static function get_existencia_corte($array_wheres, $fecha_corte = null, $hora_inicio = null, $hora_finalizacion = null)

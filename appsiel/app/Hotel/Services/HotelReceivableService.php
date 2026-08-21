@@ -68,7 +68,12 @@ class HotelReceivableService
 
             $receiptId = null;
             if ($paymentTotal > self::TOLERANCE) {
-                $receiptId = $service->createReceipt($stay, $invoices, $advanceApplied, $paymentMethods, $terceroId);
+                $pdv = (new HotelService())->currentCashierPdvOrFail();
+                if ((int)$pdv->core_empresa_id != (int)$stay->empresa_id) {
+                    throw new \InvalidArgumentException('El punto de venta asociado al usuario no pertenece a la empresa de la estadía.');
+                }
+
+                $receiptId = $service->createReceipt($stay, $invoices, $advanceApplied, $paymentMethods, $terceroId, $pdv->id);
             }
 
             return array(
@@ -214,7 +219,7 @@ class HotelReceivableService
             ->value('id');
     }
 
-    private function createReceipt(HotelStay $stay, $invoices, $advanceApplied, array $paymentMethods, $terceroId)
+    private function createReceipt(HotelStay $stay, $invoices, $advanceApplied, array $paymentMethods, $terceroId, $pdvId)
     {
         $receiptRequest = new Request(array(
             'core_empresa_id' => $stay->empresa_id,
@@ -230,6 +235,7 @@ class HotelReceivableService
             'estado' => 'Activo',
             'creado_por' => Auth::user()->email,
             'modificado_por' => '0',
+            'pdv_id' => (int)$pdvId,
         ));
 
         $headerFactory = new EncabezadoDocumentoTransaccion((int)config('tesoreria.recaudos_cxc_modelo_id'));
@@ -253,7 +259,7 @@ class HotelReceivableService
         $motivo = $this->receiptReason($stay);
         $total = 0;
         foreach ($paymentMethods as $row) {
-            $total += $this->storePaymentMethod($stay, $receipt, $motivo, $row);
+            $total += $this->storePaymentMethod($stay, $receipt, $motivo, $row, $pdvId);
         }
         $receipt->valor_total = $total;
         $receipt->save();
@@ -261,7 +267,7 @@ class HotelReceivableService
         return $receipt->id;
     }
 
-    private function storePaymentMethod(HotelStay $stay, $receipt, TesoMotivo $motivo, array $row)
+    private function storePaymentMethod(HotelStay $stay, $receipt, TesoMotivo $motivo, array $row, $pdvId)
     {
         $value = (float)$row['value'];
         $medium = TesoMedioRecaudo::find((int)$row['medium_id']);
@@ -303,6 +309,7 @@ class HotelReceivableService
             'valor_movimiento' => $value,
             'descripcion' => $detail,
             'documento_soporte' => isset($row['reference']) ? trim($row['reference']) : '',
+            'pdv_id' => (int)$pdvId,
         ) + $common);
 
         $accountingData = $common + array(

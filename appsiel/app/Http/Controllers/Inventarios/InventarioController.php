@@ -49,6 +49,7 @@ use App\Contabilidad\ContabMovimiento;
 use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\AverageCost;
 use App\Inventarios\Services\InvDocumentsLinesService;
+use App\Inventarios\Services\ProductWarehouseActivityService;
 use App\Inventarios\Services\RecipeServices;
 use App\Nomina\OrdenDeTrabajo;
 use App\Sistema\Aplicacion;
@@ -77,6 +78,17 @@ class InventarioController extends TransaccionController
         ];
 
         $empresa_id = Auth::user()->empresa_id;
+        $activity_service = new ProductWarehouseActivityService();
+        $activity_limit_date = $activity_service->getInactivityLimitDate(date('Y-m-d'));
+        $activity_having = '';
+        $bindings = [$empresa_id];
+
+        if (!is_null($activity_limit_date)) {
+            $activity_having = ' HAVING MAX(inv_movimientos.fecha) > ?';
+            $bindings[] = $activity_limit_date;
+        }
+
+        $bindings[] = $empresa_id;
 
         $resumen_bodegas = DB::select(
             'SELECT
@@ -97,6 +109,7 @@ class InventarioController extends TransaccionController
                     AND inv_productos.tipo = "producto"
                 WHERE inv_movimientos.core_empresa_id = ?
                 GROUP BY inv_movimientos.inv_bodega_id, inv_movimientos.inv_producto_id
+                ' . $activity_having . '
             ) AS saldos ON saldos.inv_bodega_id = inv_bodegas.id
             LEFT JOIN (
                 SELECT
@@ -110,7 +123,7 @@ class InventarioController extends TransaccionController
             WHERE inv_bodegas.core_empresa_id = ?
             GROUP BY inv_bodegas.id, inv_bodegas.descripcion
             ORDER BY inv_bodegas.descripcion',
-            [$empresa_id, $empresa_id]
+            $bindings
         );
 
         return view('inventarios.index', compact('miga_pan', 'select_crear', 'resumen_bodegas'));
