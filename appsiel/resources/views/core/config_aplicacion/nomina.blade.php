@@ -67,6 +67,30 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
+							<?php
+								$entidad_excluyente_aportes_id = '';
+								if ( isset($parametros['entidad_excluyente_aportes_id']) )
+								{
+									$entidad_excluyente_aportes_id = $parametros['entidad_excluyente_aportes_id'];
+								}
+							?>
+							{{ Form::bsSelect('entidad_excluyente_aportes_id', $entidad_excluyente_aportes_id, 'Entidad excluyente de Salud y Pensión obligatoria', App\Nomina\NomEntidad::opciones_campo_select(), ['class'=>'combobox']) }}
+							<small class="help-block">Si el contrato tiene esta entidad como Salud o Pensión, no se liquidará automáticamente el aporte obligatorio correspondiente.</small>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
 							<?php 
 								$concepto_salario_integral = 2;
 								if( isset($parametros['concepto_salario_integral'] ) )

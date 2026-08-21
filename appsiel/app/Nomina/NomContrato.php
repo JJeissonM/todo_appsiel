@@ -95,6 +95,29 @@ class NomContrato extends Model
         return $this->hasMany(NomDocRegistro::class, 'nom_contrato_id', 'id');
     }
 
+    /**
+     * Indica si debe omitirse el aporte obligatorio configurado para este contrato.
+     *
+     * 12: Salud obligatoria; 13: Pensión obligatoria.
+     */
+    public function excluye_aporte_obligatorio($modo_liquidacion_id)
+    {
+        $entidad_excluyente_id = (int) config('nomina.entidad_excluyente_aportes_id', 0);
+        if ($entidad_excluyente_id <= 0) {
+            return false;
+        }
+
+        if ((int) $modo_liquidacion_id === 12) {
+            return (int) $this->entidad_salud_id === $entidad_excluyente_id;
+        }
+
+        if ((int) $modo_liquidacion_id === 13) {
+            return (int) $this->entidad_pension_id === $entidad_excluyente_id;
+        }
+
+        return false;
+    }
+
     public function cuentas_bancarias()
     {
         return $this->hasMany(ProveedorCuentaBancaria::class, 'tercero_id', 'core_tercero_id');

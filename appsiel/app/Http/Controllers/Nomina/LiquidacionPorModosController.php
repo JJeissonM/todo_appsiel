@@ -131,6 +131,10 @@ class LiquidacionPorModosController extends TransaccionController
     */
     public function liquidar_automaticos_empleado( $modo_liquidacion_id, $empleado, $documento_nomina, $usuario )
     {
+        if ($empleado->excluye_aporte_obligatorio($modo_liquidacion_id)) {
+            return;
+        }
+
         $conceptos_automaticos = NomConcepto::where('estado','Activo')->where('modo_liquidacion_id', $modo_liquidacion_id)->get();
 
         foreach ( $conceptos_automaticos as $concepto )

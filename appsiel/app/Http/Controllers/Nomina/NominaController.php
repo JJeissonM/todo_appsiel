@@ -153,6 +153,10 @@ class NominaController extends TransaccionController
     */
     public function liquidar_automaticos_empleado( $modo_liquidacion_id, $empleado, $documento_nomina, $usuario )
     {
+        if ($empleado->excluye_aporte_obligatorio($modo_liquidacion_id)) {
+            return;
+        }
+
         $cotizante51Service = new Cotizante51Service();
         if ( $cotizante51Service->esCotizante51($empleado) && in_array($modo_liquidacion_id, [10, 12]) )
         {
