@@ -1,6 +1,7 @@
 $(document).ready(function(){
 	
 	var direccion = location.href;
+	var solicitud_horas_tnl = 0;
 
 	$('#nom_contrato_id').after( '<div id="fecha_ingreso" style="display:none;"> </div>' );
 	$('#nom_contrato_id').after( '<div id="contrato_hasta" style="display:none;"> </div>' );
@@ -246,18 +247,52 @@ $(document).ready(function(){
 		var diff_in_millisenconds = date_2 - date_1;
 		var diff_in_days = diff_in_millisenconds / day_as_milliseconds + 1;
 
-		$('#cantidad_dias_tnl').val( diff_in_days );
-		$('#cantidad_horas_tnl').val( diff_in_days * 8 );
-
-		$('#cantidad_dias_pendientes_amortizar').val( diff_in_days );
-
 		if ( isNaN(diff_in_days) || diff_in_days < 0 )
-		{ 
-			$('#bs_boton_guardar').hide();
-		}else
 		{
-			$('#bs_boton_guardar').show();
+			$('#cantidad_dias_tnl').val('');
+			$('#cantidad_horas_tnl').val('');
+			$('#cantidad_dias_pendientes_amortizar').val('');
+			$('#bs_boton_guardar').hide();
+			return;
 		}
+
+		$('#cantidad_dias_tnl').val( diff_in_days );
+		$('#cantidad_dias_pendientes_amortizar').val( diff_in_days );
+		actualizar_horas_segun_parametro_legal(diff_in_days, $('#fecha_final_tnl').val());
+	}
+
+	function actualizar_horas_segun_parametro_legal(cantidad_dias, fecha)
+	{
+		var numero_solicitud = ++solicitud_horas_tnl;
+		var url = '../nom_calcular_horas_tnl/' + fecha + '/' + cantidad_dias;
+
+		if ( direccion.search("edit") != -1 )
+		{
+			url = '../../nom_calcular_horas_tnl/' + fecha + '/' + cantidad_dias;
+		}
+
+		$('#cantidad_horas_tnl').val('Calculando...');
+		$('#bs_boton_guardar').hide();
+
+		$.get(url)
+			.done(function(data) {
+				if (numero_solicitud != solicitud_horas_tnl) {
+					return;
+				}
+
+				$('#cantidad_horas_tnl').val(data.cantidad_horas_tnl);
+				$('#cantidad_horas_tnl').attr('title', 'Base legal: ' + data.horas_laborales_mes + ' horas por 30 días de nómina.');
+				$('#bs_boton_guardar').show();
+			})
+			.fail(function() {
+				if (numero_solicitud != solicitud_horas_tnl) {
+					return;
+				}
+
+				$('#cantidad_horas_tnl').val('');
+				$('#bs_boton_guardar').hide();
+				alert('No fue posible obtener las horas laborales configuradas para la fecha seleccionada.');
+			});
 	}
 
 });

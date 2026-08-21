@@ -8,9 +8,24 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Nomina\NovedadTnl;
+use App\Nomina\ParametroLegal;
 
 class NovedadesTnlController extends Controller
 {
+
+    public function calcular_horas($fecha, $cantidad_dias)
+    {
+        try {
+            return response()->json([
+                'horas_laborales_mes' => ParametroLegal::horas_laborales_para_fecha($fecha),
+                'cantidad_horas_tnl' => NovedadTnl::calcular_horas_tnl($cantidad_dias, $fecha)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'mensaje' => 'No fue posible calcular las horas para la fecha y cantidad de días indicadas.'
+            ], 422);
+        }
+    }
 
     public function validar_fecha_otras_novedades( $fecha_inicial_nueva, $fecha_final_nueva, $contrato_id, $novedad_id )
     {

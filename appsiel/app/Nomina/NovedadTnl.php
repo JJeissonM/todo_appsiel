@@ -34,7 +34,33 @@ class NovedadTnl extends Model
 
 	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
-	public $archivo_js = 'assets/js/nomina/novedades_tnl.js';
+	public $archivo_js = 'assets/js/nomina/novedades_tnl.js?v=20260821';
+
+	protected static function boot()
+	{
+		parent::boot();
+
+		static::saving(function ($novedad) {
+			$novedad->cantidad_horas_tnl = self::calcular_horas_tnl(
+				$novedad->cantidad_dias_tnl,
+				$novedad->fecha_final_tnl ?: $novedad->fecha_inicial_tnl
+			);
+		});
+	}
+
+	/**
+	 * Las horas legales configuradas corresponden a 30 días de nómina.
+	 */
+	public static function calcular_horas_tnl($cantidadDias, $fecha)
+	{
+		if (!is_numeric($cantidadDias) || (float) $cantidadDias < 0) {
+			throw new \InvalidArgumentException('La cantidad de días TNL debe ser un número mayor o igual a cero.');
+		}
+
+		$horasMensuales = ParametroLegal::horas_laborales_para_fecha($fecha);
+
+		return round(((float) $cantidadDias * $horasMensuales) / 30, 6);
+	}
 
 	public function concepto()
 	{
