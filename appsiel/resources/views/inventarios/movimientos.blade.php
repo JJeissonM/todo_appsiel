@@ -8,6 +8,12 @@
 		
 		{{ Form::label('fecha_final','*Fecha final') }}
 		{{ Form::date('fecha_final',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_final']) }}
+
+		{{ Form::label('hora_inicio','Hora inicio (opcional)') }}
+		{{ Form::input('time', 'hora_inicio', null, ['class'=>'form-control','id'=>'hora_inicio','step'=>'1']) }}
+
+		{{ Form::label('hora_finalizacion','Hora finalización (opcional)') }}
+		{{ Form::input('time', 'hora_finalizacion', null, ['class'=>'form-control','id'=>'hora_finalizacion','step'=>'1']) }}
 		
 		{{ Form::label('mov_bodega_id','*Bodega') }}
 		{{ Form::select('mov_bodega_id',$bodegas,null,['class'=>'form-control','id'=>'mov_bodega_id']) }}
@@ -97,6 +103,13 @@
 					$('#div_spin').hide();
 					$('#btn_excel').show();
 					$('#resultado_consulta').html(respuesta);
+				}).fail(function(xhr){
+					$('#div_spin').hide();
+					var mensaje = 'No fue posible generar el reporte.';
+					if (xhr.responseJSON && xhr.responseJSON.message) {
+						mensaje = xhr.responseJSON.message;
+					}
+					alert(mensaje);
 				});
 			});
 

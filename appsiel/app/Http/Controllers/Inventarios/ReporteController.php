@@ -31,6 +31,7 @@ use App\Inventarios\Services\MovementService;
 use App\Inventarios\Services\StockAmountService;
 use App\Ventas\ListaPrecioDetalle;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Validator;
 
 class ReporteController extends Controller
 {
@@ -223,15 +224,20 @@ class ReporteController extends Controller
     //  CONSULTA DE MOVIMIENTOS
     public function ajax_movimiento(Request $request)
     {
+        $validation = $this->validarFiltrosHorarioMovimiento($request);
+        if (!is_null($validation)) {
+            return $validation;
+        }
+
         $id_producto = $request->mov_producto_id;
         $bodega_id = $request->mov_bodega_id;
         $fecha_inicial = $request->fecha_inicial;
         $fecha_final = $request->fecha_final;
-        $hora_inicio = $request->hora_inicio;
-        $hora_finalizacion = $request->hora_finalizacion;
+        $hora_inicio = InvMovimiento::normalizarHoraFiltro($request->hora_inicio);
+        $hora_finalizacion = InvMovimiento::normalizarHoraFiltro($request->hora_finalizacion);
         $tercero_id = (int)$request->mov_tercero_id;
 
-        $saldo_inicial = InvMovimiento::get_saldo_inicial($id_producto, $bodega_id, $fecha_inicial, $tercero_id );
+        $saldo_inicial = InvMovimiento::get_saldo_inicial($id_producto, $bodega_id, $fecha_inicial, $tercero_id, $hora_inicio);
 
         $sql_productos = InvMovimiento::get_movimiento2($id_producto, $bodega_id, $fecha_inicial, $fecha_final, $tercero_id, $hora_inicio, $hora_finalizacion);
         
@@ -246,6 +252,7 @@ class ReporteController extends Controller
         }
 
         $productos[0]['fecha'] = $fecha_inicial;
+        $productos[0]['hora'] = '';
         $productos[0]['documento_id'] = '';
         $productos[0]['documento'] = '';
         $productos[0]['tercero'] = '';
@@ -265,6 +272,7 @@ class ReporteController extends Controller
         foreach ($sql_productos as $fila)
         {
             $productos[$i]['fecha'] = $fila->fecha;
+            $productos[$i]['hora'] = $this->formatearRangoHorasMovimiento($fila->hora_inicio, $fila->hora_finalizacion, $fila->created_at);
             $productos[$i]['documento_id'] = $fila->documento_id;
             $productos[$i]['documento'] = $fila->documento;
             $productos[$i]['tercero'] = $fila->tercero;
@@ -324,9 +332,67 @@ class ReporteController extends Controller
             $mensaje_advertencia .= '<br><br><b>Nota: </b> Al seleccionar un TERCERO, los saldos y el costo promedio pueden ser diferentes a las Existencias totales del producto.';
         }
 
-        $view = View::make('inventarios.incluir.movim_productos',compact('productos','bodega','mensaje_advertencia'));
+        $view = View::make('inventarios.incluir.movim_productos',compact('productos','bodega','mensaje_advertencia','fecha_inicial','fecha_final','hora_inicio','hora_finalizacion'));
 
         return $view;
+    }
+
+    private function validarFiltrosHorarioMovimiento(Request $request)
+    {
+        $rules = [
+            'fecha_inicial' => 'required|date_format:Y-m-d',
+            'fecha_final' => 'required|date_format:Y-m-d'
+        ];
+
+        if (trim((string)$request->hora_inicio) !== '') {
+            $rules['hora_inicio'] = ['regex:/^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/'];
+        }
+
+        if (trim((string)$request->hora_finalizacion) !== '') {
+            $rules['hora_finalizacion'] = ['regex:/^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/'];
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+        $validator->after(function ($validator) use ($request) {
+            if ($request->fecha_final < $request->fecha_inicial) {
+                $validator->errors()->add('fecha_final', 'La fecha final no puede ser anterior a la fecha inicial.');
+            }
+
+            if ($request->fecha_inicial === $request->fecha_final
+                && trim((string)$request->hora_inicio) !== ''
+                && trim((string)$request->hora_finalizacion) !== ''
+                && InvMovimiento::normalizarHoraFiltro($request->hora_finalizacion) < InvMovimiento::normalizarHoraFiltro($request->hora_inicio)) {
+                $validator->errors()->add('hora_finalizacion', 'La hora de finalización no puede ser anterior a la hora de inicio para una consulta del mismo día.');
+            }
+        });
+
+        if (!$validator->fails()) {
+            return null;
+        }
+
+        return response()->json([
+            'message' => implode(' ', $validator->errors()->all())
+        ], 422);
+    }
+
+    private function formatearRangoHorasMovimiento($horaInicio, $horaFinalizacion, $createdAt = null)
+    {
+        $horaInicio = InvMovimiento::normalizarHoraFiltro($horaInicio);
+        $horaFinalizacion = InvMovimiento::normalizarHoraFiltro($horaFinalizacion);
+
+        if (is_null($horaInicio) && is_null($horaFinalizacion)) {
+            return is_null($createdAt) ? '' : date('H:i:s', strtotime($createdAt));
+        }
+
+        if ($horaInicio === $horaFinalizacion || is_null($horaFinalizacion)) {
+            return (string)$horaInicio;
+        }
+
+        if (is_null($horaInicio)) {
+            return (string)$horaFinalizacion;
+        }
+
+        return $horaInicio . ' - ' . $horaFinalizacion;
     }
     
 

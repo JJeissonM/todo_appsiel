@@ -95,6 +95,7 @@
 
 			$("#btn_cargar").on('click',function(event){
 		    	event.preventDefault();
+				var $boton = $(this);
 
 		    	if ( !validar_requeridos() )
 		    	{
@@ -103,6 +104,7 @@
 
 		 		$("#div_spin").show();
 		 		$("#div_cargando").show();
+				$boton.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Procesando...');
         		$("#div_resultado").html( '' );
 				
 				var form = $('#formulario_inicial');
@@ -119,11 +121,17 @@
 				    processData: false
 				})
 			    .done(function( respuesta ){
-			        $('#div_cargando').hide();
-        			$("#div_spin").hide();
-
         			$("#div_resultado").html( respuesta );
         			$("#div_resultado").fadeIn( 1000 );
+			    })
+			    .fail(function(xhr){
+					var mensaje = xhr.responseText || 'No fue posible completar la contabilización.';
+					$("#div_resultado").html('<div class="alert alert-danger">' + mensaje + '</div>').show();
+			    })
+			    .always(function(){
+			        $('#div_cargando').hide();
+					$("#div_spin").hide();
+					$boton.prop('disabled', false).html('<i class="fa fa-calculator"></i> Liquidar');
 			    });
 		    });
 

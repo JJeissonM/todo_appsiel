@@ -113,6 +113,74 @@ class InvMovimiento extends Model
     }
 
     /**
+     * Rango horario exclusivo del reporte de movimientos. Los registros
+     * historicos sin horas usan created_at como respaldo; sin filtros horarios
+     * se conserva exactamente el comportamiento por fecha.
+     */
+    public function scopeEntreFechasHorasReporteMovimientos($query, $fechaInicio, $fechaFinal, $horaInicio = null, $horaFinalizacion = null)
+    {
+        $fechaInicio = \Carbon\Carbon::parse($fechaInicio)->format('Y-m-d');
+        $fechaFinal = \Carbon\Carbon::parse($fechaFinal)->format('Y-m-d');
+        $horaInicio = self::normalizarHoraFiltro($horaInicio);
+        $horaFinalizacion = self::normalizarHoraFiltro($horaFinalizacion);
+
+        if (is_null($horaInicio) && is_null($horaFinalizacion)) {
+            return $query->whereBetween('inv_movimientos.fecha', [$fechaInicio, $fechaFinal]);
+        }
+
+        $fechaHoraInicio = $fechaInicio . ' ' . ($horaInicio ?: '00:00:00');
+        $fechaHoraFinal = $fechaFinal . ' ' . ($horaFinalizacion ?: '23:59:59');
+
+        return $query->where(function ($query) use ($fechaHoraInicio, $fechaHoraFinal) {
+            $query->where(function ($query) use ($fechaHoraInicio, $fechaHoraFinal) {
+                $query->whereNull('inv_movimientos.hora_inicio')
+                    ->whereNull('inv_movimientos.hora_finalizacion')
+                    ->whereBetween('inv_movimientos.created_at', [$fechaHoraInicio, $fechaHoraFinal]);
+            })->orWhere(function ($query) use ($fechaHoraInicio, $fechaHoraFinal) {
+                $query->where(function ($query) {
+                    $query->whereNotNull('inv_movimientos.hora_inicio')
+                        ->orWhereNotNull('inv_movimientos.hora_finalizacion');
+                })->whereRaw(
+                    'TIMESTAMP(inv_movimientos.fecha, COALESCE(inv_movimientos.hora_inicio, inv_movimientos.hora_finalizacion)) >= ?',
+                    [$fechaHoraInicio]
+                )->whereRaw(
+                    'TIMESTAMP(inv_movimientos.fecha, COALESCE(inv_movimientos.hora_finalizacion, inv_movimientos.hora_inicio)) <= ?',
+                    [$fechaHoraFinal]
+                );
+            });
+        });
+    }
+
+    /** Saldo inmediatamente anterior al inicio horario del reporte. */
+    public function scopeAntesInicioReporteMovimientos($query, $fechaInicio, $horaInicio = null)
+    {
+        $fechaInicio = \Carbon\Carbon::parse($fechaInicio)->format('Y-m-d');
+        $horaInicio = self::normalizarHoraFiltro($horaInicio);
+
+        if (is_null($horaInicio)) {
+            return $query->where('inv_movimientos.fecha', '<', $fechaInicio);
+        }
+
+        $fechaHoraInicio = $fechaInicio . ' ' . $horaInicio;
+
+        return $query->where(function ($query) use ($fechaHoraInicio) {
+            $query->where(function ($query) use ($fechaHoraInicio) {
+                $query->whereNull('inv_movimientos.hora_inicio')
+                    ->whereNull('inv_movimientos.hora_finalizacion')
+                    ->where('inv_movimientos.created_at', '<', $fechaHoraInicio);
+            })->orWhere(function ($query) use ($fechaHoraInicio) {
+                $query->where(function ($query) {
+                    $query->whereNotNull('inv_movimientos.hora_inicio')
+                        ->orWhereNotNull('inv_movimientos.hora_finalizacion');
+                })->whereRaw(
+                    'TIMESTAMP(inv_movimientos.fecha, COALESCE(inv_movimientos.hora_finalizacion, inv_movimientos.hora_inicio)) < ?',
+                    [$fechaHoraInicio]
+                );
+            });
+        });
+    }
+
+    /**
      * Movimientos que ocurrieron durante la apertura y cierre de un Inventario
      * Fisico. Replica el criterio del arqueo de caja usando created_at.
      */
@@ -409,20 +477,25 @@ class InvMovimiento extends Model
                                 ->get();
     }
 
-    public static function get_saldo_inicial($id_producto, $id_bodega, $fecha_inicial, $tercero_id )
+    public static function get_saldo_inicial($id_producto, $id_bodega, $fecha_inicial, $tercero_id, $hora_inicio = null)
     {
+        $hora_inicio = self::normalizarHoraFiltro($hora_inicio);
+
         $array_wheres = [
             [ 'inv_movimientos.core_empresa_id', '=', Auth::user()->empresa_id ],
             [ 'inv_movimientos.inv_bodega_id', '=', $id_bodega ],
-            [ 'inv_movimientos.inv_producto_id', '=', $id_producto ],
-            [ 'inv_movimientos.fecha','<',$fecha_inicial ]
+            [ 'inv_movimientos.inv_producto_id', '=', $id_producto ]
         ];
 
         if ($tercero_id != 0) {
             $array_wheres = array_merge($array_wheres, [ 'inv_movimientos.core_tercero_id' => $tercero_id ]);
         }
 
-        $sql_saldo_inicial = InvMovimiento::where( $array_wheres )
+        $query = InvMovimiento::where( $array_wheres );
+
+        $query->antesInicioReporteMovimientos($fecha_inicial, $hora_inicio);
+
+        $sql_saldo_inicial = $query
                     ->select(DB::raw('sum(inv_movimientos.cantidad) as mCantidad'),DB::raw('sum(inv_movimientos.costo_total) as mCosto'))
                     ->get()
                     ->toArray();
@@ -571,9 +644,12 @@ class InvMovimiento extends Model
                                 ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'inv_movimientos.core_tipo_transaccion_id')
                                 ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
                                 ->where( $array_wheres )
-                                ->entreFechasHoras($fecha_inicial, $fecha_final, $hora_inicio, $hora_finalizacion)
+                                ->entreFechasHorasReporteMovimientos($fecha_inicial, $fecha_final, $hora_inicio, $hora_finalizacion)
                                 ->select('inv_movimientos.core_tipo_doc_app_id',
                                         'inv_movimientos.fecha',
+                                        'inv_movimientos.hora_inicio',
+                                        'inv_movimientos.hora_finalizacion',
+                                        'inv_movimientos.created_at',
                                         'inv_motivos.movimiento',
                                         'inv_movimientos.inv_doc_encabezado_id',
                                         'inv_movimientos.inv_producto_id',

@@ -5,6 +5,7 @@ namespace App\Nomina\Services;
 use App\Nomina\NomContrato;
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\PilaDatosEmpresa;
+use App\Nomina\EquivalenciaContable;
 
 use App\Core\Tercero;
 use App\Contabilidad\ContabCuenta;
@@ -15,6 +16,7 @@ use App\CxP\CxpAbono;
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ContabilizacionDocumentoNomina
 {
@@ -29,19 +31,61 @@ class ContabilizacionDocumentoNomina
 	public function __construct( $nom_doc_encabezado_id )
 	{
 		$this->encabezado_doc = NomDocEncabezado::find( $nom_doc_encabezado_id );
-		$this->set_operador_pila();
+		if (!is_null($this->encabezado_doc)) {
+			$this->set_operador_pila();
+		}
 	}
 
 	public function set_movimiento_contabilizar()
 	{
-		$registros_liquidacion = $this->encabezado_doc->registros_liquidacion()->orderBy('core_tercero_id')->get();
+		if (is_null($this->encabezado_doc)) {
+			throw new \InvalidArgumentException('El documento de nómina no existe.');
+		}
+
+		$registros_liquidacion = $this->encabezado_doc->registros_liquidacion()
+			->with([
+				'concepto',
+				'tercero',
+				'contrato.tercero',
+				'contrato.entidad_salud.tercero',
+				'contrato.entidad_pension.tercero'
+			])
+			->orderBy('core_tercero_id')
+			->orderBy('id')
+			->get();
+
+		$equivalencias = EquivalenciaContable::with(['cuenta_contable', 'tercero_especifico', 'concepto'])
+			->whereIn('nom_concepto_id', $registros_liquidacion->pluck('nom_concepto_id')->unique()->values()->all())
+			->where('core_empresa_id', $this->encabezado_doc->core_empresa_id)
+			->where('estado', 'Activo')
+			->orderBy('id')
+			->get()
+			->groupBy('nom_concepto_id');
 
 		$this->valor_debito_total = 0;
 		$this->valor_credito_total = 0;
 		$this->movimiento_contabilizar = collect([]);
 		foreach ( $registros_liquidacion as $linea_registro_nomina )
 		{
-			$equ_contab = $linea_registro_nomina->concepto->equivalencia_contable( $linea_registro_nomina->contrato->grupo_empleado_id );
+			$errores_integridad = [];
+			$concepto = $linea_registro_nomina->concepto;
+			$contrato = $linea_registro_nomina->contrato;
+
+			if (is_null($concepto)) {
+				$errores_integridad[] = 'El registro de nómina #' . $linea_registro_nomina->id . ' no tiene un concepto válido asociado.';
+			}
+
+			if (is_null($contrato)) {
+				$empleado = is_null($linea_registro_nomina->tercero)
+					? 'tercero #' . $linea_registro_nomina->core_tercero_id
+					: $linea_registro_nomina->tercero->descripcion;
+				$errores_integridad[] = 'El registro de nómina #' . $linea_registro_nomina->id . ' (' . $empleado . ') no tiene un contrato válido asociado. Contrato #' . $linea_registro_nomina->nom_contrato_id . '.';
+			}
+
+			$grupo_empleado_id = is_null($contrato) ? null : $contrato->grupo_empleado_id;
+			$equ_contab = is_null($concepto)
+				? null
+				: $this->resolver_equivalencia_contable($equivalencias->get($concepto->id, collect([])), $grupo_empleado_id);
 
 			if ( is_null( $equ_contab) )
 			{
@@ -58,14 +102,17 @@ class ContabilizacionDocumentoNomina
 			$valor_debito = $this->get_valor_debito( $equ_contab, $linea_registro_nomina );
 			$valor_credito = $this->get_valor_credito( $equ_contab, $linea_registro_nomina );
 
-			$tercero_mov = $this->get_tercero_movimiento( $equ_contab, $linea_registro_nomina->contrato );
+			$tercero_mov = is_null($contrato)
+				? $this->tercero_inconsistente($linea_registro_nomina)
+				: $this->get_tercero_movimiento( $equ_contab, $contrato );
 			$tercero_mov = $this->get_tercero_movimiento_cxp_aportes($equ_contab, $linea_registro_nomina, $tercero_mov);
 			$detalle_operador_pila = $this->get_detalle_operador_pila($equ_contab, $linea_registro_nomina);
 			$registro_equivalencia_contable = (object)[
 									'es_contrapartida' => 0,
 									'error' => 0,
 									'equivalencia_contable' => $equ_contab,
-									'concepto' => $linea_registro_nomina->concepto,
+									'concepto' => $concepto,
+									'error_integridad' => implode('<br>', $errores_integridad),
 									'core_tipo_transaccion_id' => $this->encabezado_doc->core_tipo_transaccion_id,
 									'core_tipo_doc_app_id' => $this->encabezado_doc->core_tipo_doc_app_id,
 									'consecutivo' => $this->encabezado_doc->consecutivo,
@@ -78,7 +125,7 @@ class ContabilizacionDocumentoNomina
 									'tipo_transaccion' => $equ_contab->tipo_causacion,
 									'detalle_operador_pila' => $detalle_operador_pila,
 									'estado' => 'Activo',
-									'creado_por' => Auth::user()->email,
+									'creado_por' => $this->usuario_actual(),
 									'fecha_vencimiento' => $this->encabezado_doc->fecha
 								];			
 
@@ -89,6 +136,42 @@ class ContabilizacionDocumentoNomina
 		}
 
 		$this->set_movimiento_credito();
+		$this->validar_movimiento_balanceado();
+	}
+
+	protected function usuario_actual()
+	{
+		if (Auth::check()) {
+			return Auth::user()->email;
+		}
+
+		return $this->encabezado_doc->creado_por;
+	}
+
+	protected function resolver_equivalencia_contable($equivalencias, $grupo_empleado_id)
+	{
+		$equivalencia_grupo = null;
+		foreach ($equivalencias as $equivalencia) {
+			if ((string)$equivalencia->nom_grupo_empleado_id === (string)$grupo_empleado_id) {
+				$equivalencia_grupo = $equivalencia;
+				break;
+			}
+		}
+
+		return is_null($equivalencia_grupo) ? $equivalencias->first() : $equivalencia_grupo;
+	}
+
+	protected function tercero_inconsistente($linea_registro_nomina)
+	{
+		if (!is_null($linea_registro_nomina->tercero)) {
+			return $linea_registro_nomina->tercero;
+		}
+
+		return (object)[
+			'id' => 0,
+			'numero_identificacion' => $linea_registro_nomina->core_tercero_id,
+			'descripcion' => 'Tercero no encontrado'
+		];
 	}
 
 	public function set_movimiento_credito()
@@ -99,13 +182,17 @@ class ContabilizacionDocumentoNomina
 		{
 			// Un registro credito por cada empleado
 			
-			$empleados = $this->encabezado_doc->empleados;
+			$empleados = $this->encabezado_doc->empleados()->with('tercero')->get();
 			$registros_liquidacion = $this->encabezado_doc->registros_liquidacion;
 			
 			foreach ( $empleados as $empleado )
 			{
 				$total_devengos = $registros_liquidacion->where('nom_contrato_id',$empleado->id)->sum('valor_devengo');
 				$total_deducciones = $registros_liquidacion->where('nom_contrato_id',$empleado->id)->sum('valor_deduccion');
+
+				if ((float)$total_devengos === 0.0 && (float)$total_deducciones === 0.0) {
+					continue;
+				}
 				
 				if ( $total_devengos >= $total_deducciones )
 				{
@@ -121,6 +208,7 @@ class ContabilizacionDocumentoNomina
 					'error' => 0,
 					'equivalencia_contable' => null,
 					'concepto' => null,
+					'error_integridad' => '',
 					'core_tipo_transaccion_id' => $this->encabezado_doc->core_tipo_transaccion_id,
 					'core_tipo_doc_app_id' => $this->encabezado_doc->core_tipo_doc_app_id,
 					'consecutivo' => $this->encabezado_doc->consecutivo,
@@ -134,7 +222,7 @@ class ContabilizacionDocumentoNomina
 					'detalle_movimiento' => 'Origen: Contrapartida del neto a pagar. Configure la cuenta en Cuenta causación pasivo.',
 					'detalle_operador_pila' => '',
 					'estado' => 'Activo',
-					'creado_por' => Auth::user()->email,
+					'creado_por' => $this->usuario_actual(),
 					'fecha_vencimiento' => $this->encabezado_doc->fecha
 				] );
 			}
@@ -151,28 +239,51 @@ class ContabilizacionDocumentoNomina
 				$valor_credito = 0;
 			}
 			$this->movimiento_contabilizar->push( (object)[
-															'es_contrapartida' => 1,
-															'error' => 0,
-															'equivalencia_contable' => null,
-															'concepto' => null,
-															'core_tipo_transaccion_id' => $this->encabezado_doc->core_tipo_transaccion_id,
-															'core_tipo_doc_app_id' => $this->encabezado_doc->core_tipo_doc_app_id,
-															'consecutivo' => $this->encabezado_doc->consecutivo,
-															'fecha' => $this->encabezado_doc->fecha,
-															'core_empresa_id' => $this->encabezado_doc->core_empresa_id,
-															'tercero' => Tercero::find( $tercero_id ),
-															'cuenta_contable' => $cta_contapartida,
-															'valor_debito' => $valor_debito,
-															'valor_credito' => $valor_credito,
-															'tipo_transaccion' => 'crear_cxp',
-															'detalle_movimiento' => 'Origen: Contrapartida del neto a pagar. Configure la cuenta en Cuenta causación pasivo.',
-															'detalle_operador_pila' => '',
-															'estado' => 'Activo',
-															'creado_por' => Auth::user()->email,
-															'fecha_vencimiento' => $this->encabezado_doc->fecha
-														] );
+				'es_contrapartida' => 1,
+				'error' => 0,
+				'equivalencia_contable' => null,
+				'concepto' => null,
+				'error_integridad' => '',
+				'core_tipo_transaccion_id' => $this->encabezado_doc->core_tipo_transaccion_id,
+				'core_tipo_doc_app_id' => $this->encabezado_doc->core_tipo_doc_app_id,
+				'consecutivo' => $this->encabezado_doc->consecutivo,
+				'fecha' => $this->encabezado_doc->fecha,
+				'core_empresa_id' => $this->encabezado_doc->core_empresa_id,
+				'tercero' => Tercero::find( $tercero_id ),
+				'cuenta_contable' => $cta_contapartida,
+				'valor_debito' => $valor_debito,
+				'valor_credito' => $valor_credito,
+				'tipo_transaccion' => 'crear_cxp',
+				'detalle_movimiento' => 'Origen: Contrapartida del neto a pagar. Configure la cuenta en Cuenta causación pasivo.',
+				'detalle_operador_pila' => '',
+				'estado' => 'Activo',
+				'creado_por' => $this->usuario_actual(),
+				'fecha_vencimiento' => $this->encabezado_doc->fecha
+			] );
+			}
 		}
 
+	protected function validar_movimiento_balanceado()
+	{
+		$total_debitos = (float)$this->movimiento_contabilizar->sum('valor_debito');
+		$total_creditos = (float)$this->movimiento_contabilizar->sum('valor_credito');
+		$diferencia = round($total_debitos - $total_creditos, 2);
+
+		if (abs($diferencia) < 0.01) {
+			return;
+		}
+
+		$linea = $this->movimiento_contabilizar->filter(function ($movimiento) {
+			return (float)$movimiento->valor_debito !== 0.0 || (float)$movimiento->valor_credito !== 0.0;
+		})->last();
+		if (is_null($linea)) {
+			return;
+		}
+
+		$detalle = 'El movimiento contable está descuadrado. Débitos: $' . number_format($total_debitos, 2, ',', '.') .
+			'; créditos: $' . number_format($total_creditos, 2, ',', '.') .
+			'; diferencia: $' . number_format(abs($diferencia), 2, ',', '.') . '.';
+		$linea->error_integridad = trim($linea->error_integridad . '<br>' . $detalle, '<br>');
 	}
 
 	protected function set_operador_pila()
@@ -326,11 +437,13 @@ class ContabilizacionDocumentoNomina
 		$lineas_tabla = [];
 		foreach ( $this->movimiento_contabilizar as $movimiento )
 		{
-            if( $movimiento->concepto == null && ( $movimiento->valor_debito + $movimiento->valor_credito ) == 0 )
-            {
-            	continue;
-            }
-            
+			if ($movimiento->concepto == null
+					&& ($movimiento->valor_debito + $movimiento->valor_credito) == 0
+					&& empty($movimiento->error_integridad))
+			{
+				continue;
+			}
+
 			$observacion = $this->get_observacion( $movimiento );
 
 			$movimiento->error = $observacion->error;
@@ -347,11 +460,16 @@ class ContabilizacionDocumentoNomina
 				$cuenta_contable = $movimiento->cuenta_contable->codigo . ' ' . $movimiento->cuenta_contable->descripcion;
 			}
 
+			$tercero_movimiento = '';
+			if (!is_null($movimiento->tercero)) {
+				$tercero_movimiento = $movimiento->tercero->numero_identificacion . ' ' . $movimiento->tercero->descripcion;
+			}
+
 			$lineas_tabla[] = (object)[
-										'error' => $observacion->error,
-										'tipo_causacion' => $this->get_tipo_causacion( $movimiento ),
-										'cuenta_contable' => $cuenta_contable,
-										'tercero_movimiento' => $movimiento->tercero->numero_identificacion . ' ' . $movimiento->tercero->descripcion,
+											'error' => $observacion->error,
+											'tipo_causacion' => $this->get_tipo_causacion( $movimiento ),
+											'cuenta_contable' => $cuenta_contable,
+											'tercero_movimiento' => $tercero_movimiento,
 										'concepto' => $concepto,
 										'valor_debito' => $movimiento->valor_debito,
 										'valor_credito' => $movimiento->valor_credito,
@@ -417,6 +535,11 @@ class ContabilizacionDocumentoNomina
 		$error = 0;
 		$descripcion = '';
 
+		if (!empty($linea_movimiento_contab->error_integridad)) {
+			$error = 1;
+			$descripcion .= $linea_movimiento_contab->error_integridad;
+		}
+
 		if ( !$linea_movimiento_contab->es_contrapartida )
 		{
 			if( $linea_movimiento_contab->equivalencia_contable->id== 0 )
@@ -460,16 +583,34 @@ class ContabilizacionDocumentoNomina
 
 	public function almacenar_movimiento_contable()
 	{
-		$movimiento_contabilizar = $this->movimiento_contabilizar;
-		
-		foreach ($movimiento_contabilizar as $movimiento )
-		{
-			if ( $movimiento->error )
-			{
-				continue;
+		if (is_null($this->movimiento_contabilizar)) {
+			$this->set_movimiento_contabilizar();
+		}
+
+		if ($this->movimiento_contabilizar->isEmpty()) {
+			throw new \RuntimeException('El documento no tiene movimientos con valores para contabilizar.');
+		}
+
+		DB::transaction(function () {
+			$documento = NomDocEncabezado::where('id', $this->encabezado_doc->id)->lockForUpdate()->first();
+			if (is_null($documento) || $documento->estado != NomDocEncabezado::ESTADO_ACTIVO) {
+				throw new \RuntimeException('El documento de nómina ya no está disponible para contabilizar.');
 			}
 
-        	$datos['core_tipo_transaccion_id'] = $movimiento->core_tipo_transaccion_id;
+			if ($this->existen_movimientos_contables()) {
+				throw new \RuntimeException('El documento de nómina ya tiene movimientos contables registrados.');
+			}
+
+			foreach ($this->movimiento_contabilizar as $movimiento )
+			{
+				$observacion = $this->get_observacion($movimiento);
+				if ($observacion->error)
+				{
+					throw new \RuntimeException('El documento contiene inconsistencias y no puede contabilizarse.');
+				}
+
+				$datos = [];
+				$datos['core_tipo_transaccion_id'] = $movimiento->core_tipo_transaccion_id;
         	$datos['core_tipo_doc_app_id'] = $movimiento->core_tipo_doc_app_id;
         	$datos['consecutivo'] = $movimiento->consecutivo;
         	$datos['core_empresa_id'] = $movimiento->core_empresa_id;
@@ -489,7 +630,7 @@ class ContabilizacionDocumentoNomina
             $datos['creado_por'] = $movimiento->creado_por;
             $datos['estado'] = 'Activo';
 
-			ContabMovimiento::create( $datos );
+				ContabMovimiento::create( $datos );
 
 			// Generar CxP
             if ( $movimiento->tipo_transaccion == 'crear_cxp' )
@@ -556,14 +697,30 @@ class ContabilizacionDocumentoNomina
                 $datos['estado'] = 'Pendiente';
 	            CxcMovimiento::create( $datos );
             }
-		}
+			}
 
-		$this->encabezado_doc->marcar_contabilizado();
+			$documento->marcar_contabilizado();
+			$this->encabezado_doc = $documento;
+		});
+	}
+
+	protected function existen_movimientos_contables()
+	{
+		return ContabMovimiento::where('core_empresa_id', $this->encabezado_doc->core_empresa_id)
+			->where('core_tipo_transaccion_id', $this->encabezado_doc->core_tipo_transaccion_id)
+			->where('core_tipo_doc_app_id', $this->encabezado_doc->core_tipo_doc_app_id)
+			->where('consecutivo', $this->encabezado_doc->consecutivo)
+			->exists();
 	}
 
 	public function get_estado()
 	{
-		$cantidad_registros_contab = ContabMovimiento::where( 'core_tipo_transaccion_id', $this->encabezado_doc->core_tipo_transaccion_id)
+		if (is_null($this->encabezado_doc)) {
+			return 'inexistente';
+		}
+
+		$cantidad_registros_contab = ContabMovimiento::where('core_empresa_id', $this->encabezado_doc->core_empresa_id)
+											->where( 'core_tipo_transaccion_id', $this->encabezado_doc->core_tipo_transaccion_id)
 											->where( 'core_tipo_doc_app_id', $this->encabezado_doc->core_tipo_doc_app_id)
 											->where( 'consecutivo', $this->encabezado_doc->consecutivo)
 											->count();

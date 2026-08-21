@@ -21,6 +21,10 @@
 ?>
 {{ Form::bsBtnExcel('movimiento_inventarios') }}
 <h3>Movimiento de inventarios <small>{{ $bodega->descripcion }}</small></h3>
+<p>
+    <b>Rango:</b> {{ $fecha_inicial }}{{ $hora_inicio ? ' '.$hora_inicio : '' }}
+    a {{ $fecha_final }}{{ $hora_finalizacion ? ' '.$hora_finalizacion : '' }}
+</p>
 @if($mensaje_advertencia != '')
     <div class="alert alert-warning">
         <strong>Advertencia!</strong> {!! $mensaje_advertencia !!}
@@ -31,6 +35,7 @@
         <thead>
             <tr>
                 <th rowspan="2">Fecha</th>
+                <th rowspan="2">Hora</th>
                 <th rowspan="2">Documento</th>
                 <th rowspan="2">Tercero</th>
                 <th colspan="3">Entradas</th>
@@ -68,6 +73,7 @@
             ?>
                 <tr>
                     <td>{{ $productos[$i]['fecha'] }}</td>
+                    <td>{{ $productos[$i]['hora'] }}</td>
                     <td><a href="{{ url( $url ) }}" target="_blank">{{ $productos[$i]['documento'] }}</a></td>
                     <td>{{ $productos[$i]['tercero'] }}</td>
                     <td>{{ formato_numero($productos[$i]['cantidad_in'],'cantidad') }}</td>
@@ -89,7 +95,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="3"></td>
+                <td colspan="4"></td>
                 <td>
                     {{ formato_numero($total_cant_in,'cantidad') }}
                 </td>
