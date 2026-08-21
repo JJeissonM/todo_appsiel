@@ -9,8 +9,10 @@ use App\Http\Controllers\Controller;
 
 use View;
 use Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
-use App\Nomina\TransaccionesViaInterfaz\ArchivoPlano;
+use App\Nomina\TransaccionesViaInterfaz\LibroExcel;
 
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
@@ -23,75 +25,194 @@ class ProcesosController extends Controller
 
     public function procesar_archivo_plano( Request $request )
     {
-    	$nom_doc_encabezado_id = $request->nom_doc_encabezado_id;
-    	$encabezado_documento = NomDocEncabezado::find( $nom_doc_encabezado_id );
+        // Compatibilidad con integraciones que todavía apuntan a la URL anterior.
+        return $this->procesar_libro_excel($request);
+    }
 
-        if ( !$encabezado_documento->esta_activo_para_transacciones() ) {
-            return '<div class="alert alert-warning">El documento de nómina no puede modificarse porque no está en estado Activo.</div>';
+    public function procesar_libro_excel(Request $request)
+    {
+        $nom_doc_encabezado_id = (int) $request->nom_doc_encabezado_id;
+        $encabezado_documento = NomDocEncabezado::find($nom_doc_encabezado_id);
+
+        if (is_null($encabezado_documento)) {
+            return $this->respuestaErrorCarga('Debe seleccionar un documento de liquidación válido.');
         }
 
-    	$archivo = new ArchivoPlano( $encabezado_documento, file( $request->archivo_plano ) );
+        if (!$encabezado_documento->esta_activo_para_transacciones()) {
+            return $this->respuestaErrorCarga('El documento de nómina no puede modificarse porque no está en estado Activo.', 'warning');
+        }
 
-    	$lineas_archivo_plano = $archivo->validar_estructura_archivo();
+        $archivo = $request->file('libro_excel');
+        if (is_null($archivo)) {
+            $archivo = $request->file('archivo_plano');
+        }
 
-    	return View::make( 'nomina.procesos.transacciones_via_interface.lineas_registros_guardar_archivo_plano', compact( 'lineas_archivo_plano', 'nom_doc_encabezado_id' ) )->render();
+        if (is_null($archivo) || !$archivo->isValid()) {
+            return $this->respuestaErrorCarga('Debe seleccionar un libro de Excel válido.');
+        }
+
+        $extension = strtolower($archivo->getClientOriginalExtension());
+        if (!in_array($extension, ['xlsx', 'xls'], true)) {
+            return $this->respuestaErrorCarga('El archivo debe tener extensión .xlsx o .xls.');
+        }
+
+        if ($archivo->getSize() > (5 * 1024 * 1024)) {
+            return $this->respuestaErrorCarga('El libro de Excel no puede superar 5 MB.');
+        }
+
+        try {
+            $libro = new LibroExcel($encabezado_documento, $archivo->getRealPath());
+            $lineas_libro_excel = $libro->validar();
+        } catch (\InvalidArgumentException $e) {
+            return $this->respuestaErrorCarga($e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('Error al procesar libro de transacciones de nómina.', ['exception' => $e]);
+            return $this->respuestaErrorCarga('Ocurrió un error al procesar el libro de Excel. Verifique su estructura e intente nuevamente.');
+        }
+
+        return View::make(
+            'nomina.procesos.transacciones_via_interface.lineas_registros_guardar_libro_excel',
+            compact('lineas_libro_excel', 'nom_doc_encabezado_id')
+        )->render();
+    }
+
+    protected function respuestaErrorCarga($mensaje, $tipo = 'danger')
+    {
+        return '<div class="alert alert-' . $tipo . '">' . e($mensaje) . '</div>';
     }
 
     public function almacenar_registros_via_interface( Request $request )
     {
-        $nom_doc_encabezado_id = $request->documento_encabezado_id;
-        $encabezado_documento = NomDocEncabezado::find( $nom_doc_encabezado_id );
+        $nom_doc_encabezado_id = (int) $request->documento_encabezado_id;
+        $encabezado_documento = NomDocEncabezado::find($nom_doc_encabezado_id);
 
-        if ( !$encabezado_documento->esta_activo_para_transacciones() ) {
+        if (is_null($encabezado_documento) || !$encabezado_documento->esta_activo_para_transacciones()) {
             return redirect( 'index_procesos/nomina.procesos.transacciones_via_interface?id=17' )->with('mensaje_error','El documento de nómina no puede modificarse porque no está en estado Activo.');
         }
 
-        $lineas_registros = json_decode( $request->lineas_registros );
-        $cantidad_registros = 0;
-        foreach ($lineas_registros as $linea )
-        { 
-            if ( !$linea->con_errores)
-            {
-                $registro = new NomDocRegistro;
-
-                $concepto = NomConcepto::find( (int)$linea->nom_concepto_id );
-                $contrato = NomContrato::find( (int)$linea->nom_contrato_id );
-                if ( is_null($contrato) ) {
-                    dd($linea);
-                }
-                
-                // Cuando se indica Cantidad de horas, se descarta el valor ingresado
-                $valor_a_liquidar = (float)$linea->valor;
-                if ( (float)$linea->cantidad_horas != 0 )
-                {
-                    $valor_a_liquidar = $concepto->get_valor_hora_porcentaje_sobre_basico( $contrato->salario_x_hora(), (float)$linea->cantidad_horas );
-                }
-
-                $valores = get_valores_devengo_deduccion( $concepto->naturaleza, $valor_a_liquidar );
-
-                $registro->fill( 
-                                    [ 
-                                        'nom_doc_encabezado_id' => $encabezado_documento->id,
-                                        'core_tercero_id' => (int)$linea->core_tercero_id,
-                                        'nom_contrato_id' => (int)$linea->nom_contrato_id,
-                                        'fecha' => $encabezado_documento->fecha,
-                                        'core_empresa_id' => $encabezado_documento->core_empresa_id,
-                                        'nom_concepto_id' => (int)$linea->nom_concepto_id,
-                                        'cantidad_horas' => (float)$linea->cantidad_horas,
-                                        'valor_devengo' => $valores->devengo,
-                                        'valor_deduccion'  => $valores->deduccion,
-                                        'estado' => 'Activo',
-                                        'creado_por' => Auth::user()->email
-                                    ]
-                                );
-
-                $registro->save();
-
-                $cantidad_registros++;
-            }
+        $lineas_registros = json_decode($request->lineas_registros);
+        if (!is_array($lineas_registros)) {
+            return redirect('index_procesos/nomina.procesos.transacciones_via_interface?id=17')
+                ->with('mensaje_error', 'No se recibieron registros válidos del libro de Excel.');
         }
 
-        return redirect( 'index_procesos/nomina.procesos.transacciones_via_interface?id=17' )->with('flash_message','Se almacenaron <b>' . $cantidad_registros . ' registros </b> correctamente en el documento <b>' . $encabezado_documento->descripcion . '</b>.' );
+        $registrosValidados = [];
+        $errores = [];
+        $combinaciones = [];
+        $lapso = $encabezado_documento->lapso();
+
+        foreach ($lineas_registros as $indice => $linea) {
+            if (!empty($linea->con_errores)) {
+                continue;
+            }
+
+            $numeroRegistro = isset($linea->numero_fila_excel) ? (int) $linea->numero_fila_excel : $indice + 1;
+            $contrato = NomContrato::with('tercero')->find((int) $linea->nom_contrato_id);
+            $concepto = NomConcepto::find((int) $linea->nom_concepto_id);
+            $cantidadHorasValida = isset($linea->cantidad_horas) && is_numeric($linea->cantidad_horas);
+            $valorValido = isset($linea->valor) && is_numeric($linea->valor);
+            $cantidadHoras = $cantidadHorasValida ? (float) $linea->cantidad_horas : 0;
+            $valor = $valorValido ? (float) $linea->valor : 0;
+            $erroresLinea = [];
+
+            if (is_null($contrato) || is_null($contrato->tercero)) {
+                $erroresLinea[] = 'el contrato no existe';
+            } else {
+                if ((int) $contrato->core_tercero_id !== (int) $linea->core_tercero_id) {
+                    $erroresLinea[] = 'el empleado no corresponde al contrato';
+                }
+                if ((int) $contrato->tercero->core_empresa_id !== (int) $encabezado_documento->core_empresa_id) {
+                    $erroresLinea[] = 'el contrato no pertenece a la empresa del documento';
+                }
+                if ($contrato->estado !== 'Activo' || $contrato->fecha_ingreso > $lapso->fecha_final ||
+                    (!empty($contrato->contrato_hasta) && $contrato->contrato_hasta !== '0000-00-00' && $contrato->contrato_hasta < $lapso->fecha_inicial)) {
+                    $erroresLinea[] = 'el contrato no está activo y vigente para el período';
+                }
+            }
+
+            if (is_null($concepto) || $concepto->estado !== 'Activo' || (int) $concepto->modo_liquidacion_id !== 2) {
+                $erroresLinea[] = 'el concepto no existe, no está activo o no es Manual';
+            }
+
+            if (!$cantidadHorasValida || !$valorValido || $cantidadHoras < 0 || $valor < 0 || ($cantidadHoras + $valor) <= 0) {
+                $erroresLinea[] = 'la cantidad de horas o el valor no son válidos';
+            }
+
+            if (!is_null($contrato) && !is_null($concepto)) {
+                $llave = $contrato->id . '|' . $concepto->id;
+                if (isset($combinaciones[$llave])) {
+                    $erroresLinea[] = 'la combinación empleado/concepto está repetida';
+                }
+                $combinaciones[$llave] = true;
+
+                if (NomDocRegistro::where([
+                    'nom_doc_encabezado_id' => $encabezado_documento->id,
+                    'nom_contrato_id' => $contrato->id,
+                    'nom_concepto_id' => $concepto->id
+                ])->exists()) {
+                    $erroresLinea[] = 'el concepto ya fue liquidado para el empleado';
+                }
+            }
+
+            if (!empty($erroresLinea)) {
+                $errores[] = 'Fila de Excel ' . $numeroRegistro . ': ' . implode(', ', $erroresLinea) . '.';
+                continue;
+            }
+
+            $registrosValidados[] = compact('contrato', 'concepto', 'cantidadHoras', 'valor');
+        }
+
+        if (!empty($errores)) {
+            return redirect('index_procesos/nomina.procesos.transacciones_via_interface?id=17')
+                ->with('mensaje_error', 'No se almacenó ningún registro. ' . implode(' ', $errores));
+        }
+
+        if (empty($registrosValidados)) {
+            return redirect('index_procesos/nomina.procesos.transacciones_via_interface?id=17')
+                ->with('mensaje_error', 'No hay registros correctos para almacenar.');
+        }
+
+        DB::beginTransaction();
+        try {
+            foreach ($registrosValidados as $datos) {
+                $valor_a_liquidar = $datos['valor'];
+                if ($datos['cantidadHoras'] > 0) {
+                    $valor_a_liquidar = $datos['concepto']->get_valor_hora_porcentaje_sobre_basico(
+                        $datos['contrato']->salario_x_hora(),
+                        $datos['cantidadHoras']
+                    );
+                }
+
+                $valores = get_valores_devengo_deduccion($datos['concepto']->naturaleza, $valor_a_liquidar);
+                $registro = new NomDocRegistro;
+                $registro->fill([
+                    'nom_doc_encabezado_id' => $encabezado_documento->id,
+                    'core_tercero_id' => $datos['contrato']->core_tercero_id,
+                    'nom_contrato_id' => $datos['contrato']->id,
+                    'fecha' => $encabezado_documento->fecha,
+                    'core_empresa_id' => $encabezado_documento->core_empresa_id,
+                    'nom_concepto_id' => $datos['concepto']->id,
+                    'cantidad_horas' => $datos['cantidadHoras'],
+                    'valor_devengo' => $valores->devengo,
+                    'valor_deduccion' => $valores->deduccion,
+                    'estado' => 'Activo',
+                    'creado_por' => Auth::user()->email
+                ]);
+                $registro->save();
+            }
+
+            $encabezado_documento->actualizar_totales();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al almacenar transacciones de nómina desde Excel.', ['exception' => $e]);
+            return redirect('index_procesos/nomina.procesos.transacciones_via_interface?id=17')
+                ->with('mensaje_error', 'No se almacenó ningún registro porque ocurrió un error durante el proceso.');
+        }
+
+        $cantidad_registros = count($registrosValidados);
+        return redirect('index_procesos/nomina.procesos.transacciones_via_interface?id=17')
+            ->with('flash_message', 'Se almacenaron <b>' . $cantidad_registros . ' registros</b> correctamente en el documento <b>' . $encabezado_documento->descripcion . '</b>.');
     }
 
     public function generar_archivo_consignar_cesantias( Request $request )

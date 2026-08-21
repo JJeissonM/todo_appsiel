@@ -147,6 +147,7 @@ Route::group(['middleware' => ['auth', 'role:Empleado']], function () {
 
 //PROCESOS
 Route::post('nom_procesar_archivo_plano','Nomina\ProcesosController@procesar_archivo_plano');
+Route::post('nom_procesar_libro_excel','Nomina\ProcesosController@procesar_libro_excel');
 Route::post('nom_almacenar_registros_via_interface','Nomina\ProcesosController@almacenar_registros_via_interface');
 
 Route::post('nom_calcular_acumulados_seguridad_social_parafiscales','Nomina\ProcesosController@calcular_acumulados_seguridad_social_parafiscales');
