@@ -211,6 +211,15 @@
             get_mov_salida();
 
             var sum;
+            var usarMovimientosTesoreriaPorHora = {{ \App\Tesoreria\TesoMovimiento::usarMovimientosTesoreriaPorHora() ? 'true' : 'false' }};
+
+            $('#fecha').on('change', function () {
+                if (usarMovimientosTesoreriaPorHora) {
+                    cargarRangoPdvPorFecha($(this).val());
+                } else if (typeof recalcularSaldoInicialArqueo === 'function') {
+                    recalcularSaldoInicialArqueo();
+                }
+            });
 
             $('#teso_caja_id').on('change', function () {
                 $('#pdv_id').val('');
@@ -223,6 +232,66 @@
             $('#fecha_hora_apertura, #fecha_hora_cierre').on('change', function () {
                 actualizarMensajeRango();
             });
+
+            function cargarRangoPdvPorFecha(fecha) {
+                var pdvId = $('#pdv_id').val();
+                if (!pdvId || !fecha) {
+                    $('#fecha_hora_apertura, #fecha_hora_cierre').val('');
+                    $('#rango_pdv_mensaje').text('Seleccione una fecha y un PDV válidos para consultar el turno.').show();
+                    if (typeof recalcularSaldoInicialArqueo === 'function') {
+                        recalcularSaldoInicialArqueo();
+                    }
+                    return;
+                }
+
+                $('#btn_get_mov_entrada, #btn_get_mov_salida').addClass('disabled');
+
+                $.get({!! json_encode(url('tesoreria/get_turnos_pdv_fecha')) !!}, {
+                    pdv_id: pdvId,
+                    fecha: fecha
+                }).done(function (response) {
+                    aplicarRangoPdvEdit(response.range, response.message, response.pdv_description);
+                    if (typeof recalcularSaldoInicialArqueo === 'function') {
+                        recalcularSaldoInicialArqueo();
+                    }
+                    get_mov_entrada();
+                    get_mov_salida();
+                }).fail(function (xhr) {
+                    $('#fecha_hora_apertura, #fecha_hora_cierre').val('');
+                    $('#rango_pdv_mensaje')
+                        .text(obtenerMensajeErrorAjax(xhr, 'No fue posible consultar la apertura y el cierre para la fecha seleccionada.'))
+                        .show();
+                    if (typeof recalcularSaldoInicialArqueo === 'function') {
+                        recalcularSaldoInicialArqueo();
+                    }
+                }).always(function () {
+                    $('#btn_get_mov_entrada, #btn_get_mov_salida').removeClass('disabled');
+                });
+            }
+
+            function aplicarRangoPdvEdit(range, message, pdvDescription) {
+                if (pdvDescription) {
+                    $('#pdv_descripcion').text(pdvDescription);
+                }
+
+                if (range === null) {
+                    $('#fecha_hora_apertura, #fecha_hora_cierre').val('');
+                } else {
+                    $('#fecha_hora_apertura').val(formatearFechaHoraInput(range.opening_at));
+                    $('#fecha_hora_cierre').val(formatearFechaHoraInput(range.closing_at));
+                }
+
+                $('#rango_pdv_mensaje').text(message || 'Puede ajustar manualmente el rango de fecha y hora.');
+                actualizarMensajeRango();
+            }
+
+            function formatearFechaHoraInput(value) {
+                if (!value) {
+                    return '';
+                }
+
+                return value.substring(0, 19).replace(' ', 'T');
+            }
 
             $('form').on('submit', function () {
                 return validarRangoFechaHora();

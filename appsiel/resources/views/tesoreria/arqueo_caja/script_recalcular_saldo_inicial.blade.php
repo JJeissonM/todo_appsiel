@@ -2,14 +2,18 @@
     $('#btn_recalcular_saldo_inicial').on('click', function (event) {
         event.preventDefault();
 
-        var $boton = $(this);
+        recalcularSaldoInicialArqueo();
+    });
+
+    function recalcularSaldoInicialArqueo() {
+        var $boton = $('#btn_recalcular_saldo_inicial');
         var $mensaje = $('#mensaje_recalcular_saldo_inicial');
         var fecha = $('#fecha').val();
         var cajaId = $('#teso_caja_id').val();
 
         if (!fecha || !cajaId) {
             alert('Debe seleccionar la fecha y la caja antes de recalcular el saldo inicial.');
-            return;
+            return false;
         }
 
         $boton.prop('disabled', true);
@@ -36,5 +40,5 @@
             $boton.prop('disabled', false);
             $boton.find('i').removeClass('fa-spin');
         });
-    });
+    }
 @endif

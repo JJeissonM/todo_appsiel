@@ -235,7 +235,7 @@
             var sum;
 
             $('#fecha').on('change', function () {
-                cargarRangoPdvPorFecha($(this).val());
+                cargarRangoPdvPorFecha($(this).val(), true);
             });
 
             $('#fecha_hora_apertura, #fecha_hora_cierre').on('change', function () {
@@ -243,10 +243,13 @@
                 limpiarMovimientosPorCambioTurno();
             });
 
-            cargarRangoPdvPorFecha($('#fecha').val());
+            cargarRangoPdvPorFecha($('#fecha').val(), false);
 
-            function cargarRangoPdvPorFecha(fecha) {
+            function cargarRangoPdvPorFecha(fecha, recalcularSaldoInicial) {
                 if ($('#pdv_id').val() === '' || fecha === '') {
+                    if (recalcularSaldoInicial && typeof recalcularSaldoInicialArqueo === 'function') {
+                        recalcularSaldoInicialArqueo();
+                    }
                     return;
                 }
 
@@ -256,8 +259,14 @@
                     fecha: fecha
                 }).done(function (response) {
                     aplicarRangoPdv(response.range, response.message, response.pdv_description);
+                    if (recalcularSaldoInicial && typeof recalcularSaldoInicialArqueo === 'function') {
+                        recalcularSaldoInicialArqueo();
+                    }
                 }).fail(function () {
                     aplicarRangoPdv(null, 'No fue posible consultar las aperturas y cierres para la fecha seleccionada.', '');
+                    if (recalcularSaldoInicial && typeof recalcularSaldoInicialArqueo === 'function') {
+                        recalcularSaldoInicialArqueo();
+                    }
                 }).always(function () {
                     $('#btn_get_mov_entrada, #btn_get_mov_salida').removeClass('disabled');
                 });
