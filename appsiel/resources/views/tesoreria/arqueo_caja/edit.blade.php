@@ -46,7 +46,10 @@
         </div>
         
         <h4><i class="fa fa-money"></i> Saldo inicial:</h4>
-        <input type="number" id="base" min="0" autocomplete="off" class="form-control" name="base" placeholder="$" value="{{$valor_base}}" required="required" style="width: 200px; text-align: right;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <input type="number" id="base" step="any" autocomplete="off" class="form-control" name="base" placeholder="$" value="{{$valor_base}}" required="required" style="width: 200px; text-align: right;">
+            @include('tesoreria.arqueo_caja.boton_recalcular_saldo_inicial', ['usuarioArqueo' => auth()->user()])
+        </div>
 
         <br><br>
 
@@ -282,6 +285,8 @@
                     $(this).select();
                 }
             });
+
+            @include('tesoreria.arqueo_caja.script_recalcular_saldo_inicial')
 
             $('.otros_saldos').on('keyup', function () {
                 if (validar_input_numerico($(this))) {

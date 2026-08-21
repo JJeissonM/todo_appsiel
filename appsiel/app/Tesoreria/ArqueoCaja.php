@@ -17,6 +17,7 @@ use Spatie\Permission\Models\Permission;
 class ArqueoCaja extends Model
 {
     const PERMISO_BLOQUEO_MOVIMIENTOS_SISTEMA = 'vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja';
+    const PERMISO_RECALCULAR_SALDO_INICIAL = 'teso_arqueo_caja_recalcular_saldo_inicial';
 
     use FiltraRegistrosPorUsuario;
 
@@ -28,7 +29,7 @@ class ArqueoCaja extends Model
         'lbl_total_sistema', 'total_saldo', 'detalles_mov_entradas', 'total_mov_entradas', 'detalles_mov_salidas', 'total_mov_salidas', 'observaciones', 'estado', 'creado_por', 'modificado_por'
     ];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Caja', 'Observaciones', 'Total saldo', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'No.', 'Fecha', 'Caja', 'Observaciones', 'Total saldo', 'Estado'];
 
     public function caja()
     {
@@ -48,16 +49,30 @@ class ArqueoCaja extends Model
         return !is_null($permission) && $user->hasPermissionTo($permission);
     }
 
+    public static function usuario_puede_recalcular_saldo_inicial($user = null)
+    {
+        $user = is_null($user) ? Auth::user() : $user;
+
+        if (is_null($user) || !Schema::hasTable('permissions')) {
+            return false;
+        }
+
+        $permission = Permission::where('name', self::PERMISO_RECALCULAR_SALDO_INICIAL)->first();
+
+        return !is_null($permission) && $user->hasPermissionTo($permission);
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $query = ArqueoCaja::leftJoin('teso_cajas', 'teso_cajas.id', '=', 'teso_arqueos_caja.teso_caja_id')
             ->select(
-                'teso_arqueos_caja.fecha AS campo1',
-                'teso_cajas.descripcion AS campo2',
-                'teso_arqueos_caja.observaciones AS campo3',
-                'teso_arqueos_caja.total_saldo AS campo4',
-                'teso_arqueos_caja.estado AS campo5',
-                'teso_arqueos_caja.id AS campo6'
+                'teso_arqueos_caja.id AS campo1',
+                'teso_arqueos_caja.fecha AS campo2',
+                'teso_cajas.descripcion AS campo3',
+                'teso_arqueos_caja.observaciones AS campo4',
+                'teso_arqueos_caja.total_saldo AS campo5',
+                'teso_arqueos_caja.estado AS campo6',
+                'teso_arqueos_caja.id AS campo7'
             );
 
         $query = self::aplicarFiltroCreadoPor($query, 'teso_arqueos_caja.creado_por');
@@ -79,6 +94,7 @@ class ArqueoCaja extends Model
     {
         $query = ArqueoCaja::leftJoin('teso_cajas', 'teso_cajas.id', '=', 'teso_arqueos_caja.teso_caja_id')
             ->select(
+                'teso_arqueos_caja.id AS No.',
                 'teso_arqueos_caja.fecha AS FECHA',
                 'teso_cajas.descripcion AS CAJA',
                 'teso_arqueos_caja.observaciones AS OBSERVACIONES',

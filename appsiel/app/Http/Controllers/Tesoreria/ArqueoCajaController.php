@@ -7,6 +7,8 @@ use App\Hotel\Support\HotelCreatorLabel;
 use App\Sistema\Html\Boton;
 use App\Sistema\TipoTransaccion;
 use App\Tesoreria\ArqueoCaja;
+use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoMovimiento;
 use App\User;
 use App\VentasPos\Pdv;
 use App\VentasPos\Services\CashRegisterShiftService;
@@ -15,6 +17,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 use App\Http\Controllers\Sistema\ModeloController;
 
@@ -64,6 +67,75 @@ class ArqueoCajaController extends ModeloController
             'pdv_description' => $pdv->descripcion,
             'range' => $range,
             'message' => $message
+        ]);
+    }
+
+    public function recalcular_saldo_inicial(Request $request)
+    {
+        $user = Auth::user();
+        if (!ArqueoCaja::usuario_puede_recalcular_saldo_inicial($user)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No tiene permiso para recalcular el saldo inicial.'
+            ], 403);
+        }
+
+        $fecha = trim((string)$request->input('fecha'));
+        $teso_caja_id = (int)$request->input('teso_caja_id');
+        $fecha_hora_apertura = trim(str_replace('T', ' ', (string)$request->input('fecha_hora_apertura')));
+
+        $fecha_valida = \DateTime::createFromFormat('Y-m-d', $fecha);
+        if ($fecha_valida === false || $fecha_valida->format('Y-m-d') !== $fecha) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'La fecha del arqueo no es válida.'
+            ], 422);
+        }
+
+        $caja = TesoCaja::where('id', $teso_caja_id)
+            ->where('core_empresa_id', $user->empresa_id)
+            ->first();
+
+        if (is_null($caja)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'La caja seleccionada no existe o no pertenece a la empresa.'
+            ], 422);
+        }
+
+        if (!TesoMovimiento::usarMovimientosTesoreriaPorHora()) {
+            $fecha_hora_apertura = null;
+        } elseif ($fecha_hora_apertura !== '') {
+            $formato_apertura = strlen($fecha_hora_apertura) === 16 ? 'Y-m-d H:i' : 'Y-m-d H:i:s';
+            $apertura_valida = \DateTime::createFromFormat($formato_apertura, $fecha_hora_apertura);
+
+            if ($apertura_valida === false
+                || $apertura_valida->format($formato_apertura) !== $fecha_hora_apertura
+                || $apertura_valida->format('Y-m-d') !== $fecha) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'La fecha y hora de apertura no es válida o no pertenece al día del arqueo.'
+                ], 422);
+            }
+
+            $fecha_hora_apertura = $apertura_valida->format('Y-m-d H:i:s');
+        } else {
+            $fecha_hora_apertura = null;
+        }
+
+        $saldo_inicial = TesoMovimiento::calcularSaldoInicialArqueo(
+            $user->empresa_id,
+            $caja->id,
+            $fecha,
+            $fecha_hora_apertura
+        );
+
+        return response()->json([
+            'status' => 'success',
+            'saldo_inicial' => $saldo_inicial,
+            'message' => is_null($fecha_hora_apertura)
+                ? 'Saldo calculado con los movimientos anteriores al día del arqueo.'
+                : 'Saldo calculado con los movimientos anteriores a la apertura del arqueo.'
         ]);
     }
 

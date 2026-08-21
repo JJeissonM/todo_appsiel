@@ -693,6 +693,30 @@ class TesoMovimiento extends Model
         return $saldo_inicial->valor_movimiento;
     }
 
+    /**
+     * Calcula el saldo de una caja justo antes del inicio de un arqueo.
+     * Sin apertura toma los movimientos anteriores al día. Cuando el manejo
+     * por horas está activo, incluye también los movimientos del día que sean
+     * anteriores a la hora de apertura.
+     */
+    public static function calcularSaldoInicialArqueo($empresa_id, $teso_caja_id, $fecha, $fecha_hora_apertura = null)
+    {
+        $query = TesoMovimiento::where('teso_movimientos.core_empresa_id', (int)$empresa_id)
+            ->where('teso_movimientos.teso_caja_id', (int)$teso_caja_id);
+
+        $hora_apertura = null;
+        if (self::usarMovimientosTesoreriaPorHora()) {
+            $fecha_hora_apertura = self::normalizarFechaHoraFiltro($fecha_hora_apertura);
+            if (!is_null($fecha_hora_apertura) && substr($fecha_hora_apertura, 0, 10) == $fecha) {
+                $hora_apertura = substr($fecha_hora_apertura, 11, 8);
+            }
+        }
+
+        self::aplicarFiltroAntesDeFechaHora($query, $fecha, $hora_apertura);
+
+        return (float)$query->sum('teso_movimientos.valor_movimiento');
+    }
+
     public function almacenar_registro_pago_contado( $datos, $registros_medio_pago, $movimiento, $valor_movimiento )
     {
         $signo_unidad = 1;

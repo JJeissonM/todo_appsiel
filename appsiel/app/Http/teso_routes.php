@@ -58,6 +58,7 @@ Route::resource('tesoreria/pagos', 'Tesoreria\PagoController');
 
 Route::resource('tesoreria/arqueo_caja', 'Tesoreria\ArqueoCajaController');
 Route::get('tesoreria/imprimir/{id}', 'Tesoreria\ArqueoCajaController@imprimir');
+Route::get('tesoreria/arqueo_caja_recalcular_saldo_inicial', 'Tesoreria\ArqueoCajaController@recalcular_saldo_inicial')->middleware('auth');
 
 //TRASLADOS
 Route::resource('tesoreria/traslado_efectivo', 'Tesoreria\TrasladoEfectivosController');
