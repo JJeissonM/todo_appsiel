@@ -59,6 +59,39 @@ class NomDocEncabezado extends Model
         return $this->belongsToMany(NomContrato::class, 'nom_empleados_del_documento', 'nom_doc_encabezado_id', 'nom_contrato_id');
     }
 
+    /**
+     * Contratos asignados al documento que cumplen los filtros usados en el
+     * ingreso manual de registros de nómina.
+     */
+    public function contratos_asignados_para_registros($grupoEmpleadoId = null, $cargoId = null, $contratoId = null)
+    {
+        $query = $this->empleados()
+            ->with('tercero', 'grupo_empleado', 'cargo');
+
+        if (!empty($grupoEmpleadoId)) {
+            $query->where('nom_contratos.grupo_empleado_id', (int) $grupoEmpleadoId);
+        }
+
+        if (!empty($cargoId)) {
+            $query->where('nom_contratos.cargo_id', (int) $cargoId);
+        }
+
+        if (!empty($contratoId)) {
+            $query->where('nom_contratos.id', (int) $contratoId);
+        }
+
+        $contratos = $query->get()->sortBy(function ($contrato) {
+            return is_null($contrato->tercero) ? '' : $contrato->tercero->descripcion;
+        });
+
+        $unicos = [];
+        foreach ($contratos as $contrato) {
+            $unicos[$contrato->id] = $contrato;
+        }
+
+        return collect(array_values($unicos));
+    }
+
     public function registros_liquidacion()
     {
         return $this->hasMany(NomDocRegistro::class, 'nom_doc_encabezado_id');

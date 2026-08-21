@@ -9,10 +9,10 @@ use App\Http\Controllers\Core\TransaccionController;
 use App\Nomina\NomConcepto;
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
-use App\Nomina\NomContrato;
 use App\Nomina\ParametroLegal;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\DB;
 
 class RegistrosDocumentosController extends TransaccionController
 {
@@ -52,16 +52,96 @@ class RegistrosDocumentosController extends TransaccionController
         return view('nomina.create_registros1',compact('documentos','conceptos','miga_pan'));
     }
 
+    public function filtros_registros($nom_doc_encabezado_id)
+    {
+        $documento = NomDocEncabezado::find((int) $nom_doc_encabezado_id);
+        if (is_null($documento) || !$documento->esta_activo_para_transacciones()) {
+            return response()->json([
+                'mensaje' => 'El documento de nómina no existe o no está activo.'
+            ], 422);
+        }
+
+        $contratos = $documento->contratos_asignados_para_registros();
+        $empleados = [];
+        $grupos = [];
+        $cargos = [];
+
+        foreach ($contratos as $contrato) {
+            if (is_null($contrato->tercero)) {
+                continue;
+            }
+
+            $empleados[] = [
+                'id' => (int) $contrato->id,
+                'grupo_empleado_id' => (int) $contrato->grupo_empleado_id,
+                'cargo_id' => (int) $contrato->cargo_id,
+                'texto' => $contrato->tercero->numero_identificacion . ' - ' . $contrato->tercero->descripcion
+            ];
+
+            if (!is_null($contrato->grupo_empleado)) {
+                $grupos[$contrato->grupo_empleado->id] = $contrato->grupo_empleado->descripcion;
+            }
+            if (!is_null($contrato->cargo)) {
+                $cargos[$contrato->cargo->id] = $contrato->cargo->descripcion;
+            }
+        }
+
+        asort($grupos);
+        asort($cargos);
+
+        return response()->json([
+            'empleados' => $empleados,
+            'grupos' => $this->opcionesJson($grupos),
+            'cargos' => $this->opcionesJson($cargos)
+        ]);
+    }
+
+    protected function opcionesJson(array $opciones)
+    {
+        $respuesta = [];
+        foreach ($opciones as $id => $texto) {
+            $respuesta[] = ['id' => (int) $id, 'texto' => $texto];
+        }
+
+        return $respuesta;
+    }
+
 
     /*
         Formulario para registrar los valores a liquidar del concepto y el documento seleccionado
     */
     public function crear_registros2(Request $request)
-    {        
-        // Verificar si ya se han ingresado registro para ese concepto y documento
-        $cant_registros = NomDocRegistro::where(['nom_doc_encabezado_id'=>$request->nom_doc_encabezado_id,
-                'nom_concepto_id'=>$request->nom_concepto_id])
-                ->count();
+    {
+        $documento = NomDocEncabezado::find((int) $request->nom_doc_encabezado_id);
+        $concepto = NomConcepto::find((int) $request->nom_concepto_id);
+
+        if (is_null($documento) || !$documento->esta_activo_para_transacciones()) {
+            return redirect()->back()->withInput()
+                ->with('mensaje_error', 'Debe seleccionar un documento de nómina activo.');
+        }
+
+        if (is_null($concepto) || $concepto->estado !== 'Activo' || (int) $concepto->modo_liquidacion_id !== 2) {
+            return redirect()->back()->withInput()
+                ->with('mensaje_error', 'Debe seleccionar un concepto manual activo.');
+        }
+
+        $grupoEmpleadoId = $this->filtroEntero($request->grupo_empleado_id);
+        $cargoId = $this->filtroEntero($request->cargo_id);
+        $contratoId = $this->filtroEntero($request->nom_contrato_id);
+        $empleados = $documento->contratos_asignados_para_registros($grupoEmpleadoId, $cargoId, $contratoId);
+
+        if ($empleados->isEmpty()) {
+            return redirect()->back()->withInput()
+                ->with('mensaje_error', 'No hay empleados del documento que cumplan los filtros seleccionados.');
+        }
+
+        $contratoIds = $empleados->pluck('id')->toArray();
+        $cant_registros = NomDocRegistro::where([
+                'nom_doc_encabezado_id' => $documento->id,
+                'nom_concepto_id' => $concepto->id
+            ])
+            ->whereIn('nom_contrato_id', $contratoIds)
+            ->count();
         
         $id_app = Input::get('id');
 
@@ -73,30 +153,65 @@ class RegistrosDocumentosController extends TransaccionController
                     ];
          
         // Si ya tienen al menos un empleado con concepto ingresado
-        if( $cant_registros > 0 )
-        {
-            return view( 'nomina.editar_registros1', array_merge( self::get_array_tabla_registros( $request->nom_concepto_id, $request->nom_doc_encabezado_id, $request->ruta), [ 'miga_pan' => $miga_pan ] ) );
-        }else{
-            // Si no tienen datos, se crean por primera vez
-            return view( 'nomina.create_registros2', array_merge( self::get_array_tabla_registros( $request->nom_concepto_id, $request->nom_doc_encabezado_id, $request->ruta ), [ 'miga_pan' => $miga_pan ] ) );
+        $datosVista = self::get_array_tabla_registros(
+            $concepto->id,
+            $documento->id,
+            $request->ruta,
+            $grupoEmpleadoId,
+            $cargoId,
+            $contratoId
+        );
+
+        if ($cant_registros > 0) {
+            return view('nomina.editar_registros1', array_merge($datosVista, ['miga_pan' => $miga_pan]));
         }
+
+        return view('nomina.create_registros2', array_merge($datosVista, ['miga_pan' => $miga_pan]));
     }
 
-    public static function get_array_tabla_registros( $nom_concepto_id, $nom_doc_encabezado_id, $ruta )
+    protected function filtroEntero($valor)
+    {
+        return is_numeric($valor) && (int) $valor > 0 ? (int) $valor : null;
+    }
+
+    public static function get_array_tabla_registros($nom_concepto_id, $nom_doc_encabezado_id, $ruta, $grupoEmpleadoId = null, $cargoId = null, $contratoId = null)
     {
         // Se obtienen las descripciones del concepto y documento de nómina
         $concepto = NomConcepto::find( $nom_concepto_id );
         $documento = NomDocEncabezado::find( $nom_doc_encabezado_id );
 
-        // Se obtienen los Empleados del documento
-        $empleados = $documento->empleados;
+        // Solo se incluyen contratos asignados al documento y que cumplan los filtros.
+        $empleados = $documento->contratos_asignados_para_registros($grupoEmpleadoId, $cargoId, $contratoId);
+        $contratoIds = $empleados->pluck('id')->toArray();
         
         // Verificar si ya se han ingresado registro para ese concepto y documento
         $cant_registros = NomDocRegistro::where([
                                                 'nom_doc_encabezado_id'=>$nom_doc_encabezado_id,
                                                 'nom_concepto_id'=>$nom_concepto_id
-                                                ])
+                                            ])
+                                            ->whereIn('nom_contrato_id', $contratoIds)
                                             ->count();
+
+        $filtros = [
+            'grupo_empleado_id' => $grupoEmpleadoId,
+            'cargo_id' => $cargoId,
+            'nom_contrato_id' => $contratoId,
+            'grupo' => '',
+            'cargo' => '',
+            'empleado' => ''
+        ];
+        $primerEmpleado = $empleados->first();
+        if (!is_null($primerEmpleado)) {
+            if (!is_null($grupoEmpleadoId) && !is_null($primerEmpleado->grupo_empleado)) {
+                $filtros['grupo'] = $primerEmpleado->grupo_empleado->descripcion;
+            }
+            if (!is_null($cargoId) && !is_null($primerEmpleado->cargo)) {
+                $filtros['cargo'] = $primerEmpleado->cargo->descripcion;
+            }
+            if (!is_null($contratoId) && !is_null($primerEmpleado->tercero)) {
+                $filtros['empleado'] = $primerEmpleado->tercero->descripcion;
+            }
+        }
 
         // Si ya tienen al menos un empleado con concepto ingresado
         if( $cant_registros > 0 )
@@ -111,9 +226,11 @@ class RegistrosDocumentosController extends TransaccionController
                 $vec_empleados[$i]['nombre'] = $empleado->tercero->descripcion;
                 
                 // Se verifica si cada persona tiene valor ingresado
+                $vec_empleados[$i]['nom_contrato_id'] = $empleado->id;
+
                 $datos = NomDocRegistro::where(['nom_doc_encabezado_id'=>$nom_doc_encabezado_id,
                                                 'nom_concepto_id'=>$nom_concepto_id,
-                                                'core_tercero_id'=>$empleado->core_tercero_id])
+                                                'nom_contrato_id'=>$empleado->id])
                                         ->get()
                                         ->first();
 
@@ -153,14 +270,16 @@ class RegistrosDocumentosController extends TransaccionController
                 'cantidad_empleados'=>count($empleados),
                 'concepto'=>$concepto,
                 'documento'=>$documento,
-                'ruta'=>$ruta];
+                'ruta'=>$ruta,
+                'filtros'=>$filtros];
         }else{
             // Si no tienen datos, se crean por primera vez
             return ['empleados'=>$empleados,
                 'cantidad_empleados'=>count($empleados),
                 'concepto'=>$concepto,
                 'documento'=>$documento,
-                'ruta'=>$ruta];
+                'ruta'=>$ruta,
+                'filtros'=>$filtros];
         }
     }
 
@@ -170,56 +289,66 @@ class RegistrosDocumentosController extends TransaccionController
      */
     public function store(Request $request)
     {
-        $datos = [];
+        try {
+            $contexto = $this->validarContextoGuardado($request);
+        } catch (\InvalidArgumentException $e) {
+            return $this->redirectListado($request)->with('mensaje_error', $e->getMessage());
+        }
+
         $usuario = Auth::user();
+        $documento = $contexto->documento;
+        $concepto = $contexto->concepto;
+        $datos = [
+            'nom_doc_encabezado_id' => $documento->id,
+            'fecha' => $documento->fecha,
+            'core_empresa_id' => $documento->core_empresa_id,
+            'nom_concepto_id' => $concepto->id,
+            'estado' => 'Activo',
+            'creado_por' => $usuario->email,
+            'modificado_por' => ''
+        ];
 
-        $concepto = NomConcepto::find($request->nom_concepto_id);
-        $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
+        DB::beginTransaction();
+        try {
+            foreach ($contexto->contratos as $i => $contrato) {
+                if (NomDocRegistro::where([
+                    'nom_doc_encabezado_id' => $documento->id,
+                    'nom_contrato_id' => $contrato->id,
+                    'nom_concepto_id' => $concepto->id
+                ])->exists()) {
+                    throw new \InvalidArgumentException('Ya existe un registro para ' . $contrato->tercero->descripcion . ' con el concepto seleccionado.');
+                }
 
-        if ( !$documento->esta_activo_para_transacciones() ) {
-            return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'mensaje_error','El documento de nómina no puede modificarse porque no está en estado Activo.' );
-        }
+                if ($request->has('valor')) {
+                    $this->registrar_por_valor($concepto, $contrato, $datos, $this->valorNumerico($request->input('valor.' . $i)));
+                }
 
-        $datos['nom_doc_encabezado_id'] = $request->nom_doc_encabezado_id;
-        $datos['fecha'] = $documento->fecha;
-        $datos['core_empresa_id'] = $documento->core_empresa_id;
-        $datos['nom_concepto_id'] = $request->nom_concepto_id;
-        $datos['estado'] = 'Activo';
-        $datos['creado_por'] = $usuario->email;
-        $datos['modificado_por'] = '';
-
-        // Guardar los valores para cada persona      
-        for( $i=0; $i < (int)$request->cantidad_empleados; $i++)
-        {
-            if ( isset( $request->valor ) )
-            {
-                $this->registrar_por_valor( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('valor.'.$i), $documento );
+                if ($request->has('cantidad_horas')) {
+                    $this->registrar_por_cantidad_horas($concepto, $contrato, $datos, $this->valorNumerico($request->input('cantidad_horas.' . $i)));
+                }
             }
 
-            if ( isset( $request->cantidad_horas ) )
-            {
-                $this->registrar_por_cantidad_horas( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('cantidad_horas.'.$i) );
-            }
+            $this->actualizar_totales_documento($documento->id);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $mensaje = $e instanceof \InvalidArgumentException
+                ? $e->getMessage()
+                : 'No fue posible guardar los registros de nómina.';
+            return $this->redirectListado($request)->with('mensaje_error', $mensaje);
         }
 
-        $this->actualizar_totales_documento($documento->id);
-
-        return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'flash_message','Registros CREADOS correctamente. Nómina: '.$documento->descripcion.', Concepto: '.$concepto->descripcion );
+        return $this->redirectListado($request)->with('flash_message', 'Registros CREADOS correctamente. Nómina: ' . $documento->descripcion . ', Concepto: ' . $concepto->descripcion);
     }
 
-    public function registrar_por_valor( $concepto, $core_tercero_id, $datos, $valor, $documento )
+    public function registrar_por_valor($concepto, $contrato, $datos, $valor)
     {
-        if ( $valor > 0 ) 
-        {
-            $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor );
-
-            $empleados_del_documento = $documento->empleados;
-
-            $contrato =$empleados_del_documento->where('core_tercero_id',(int)$core_tercero_id)->first();
+        if ($valor > 0) {
+            $valores = $this->get_valor_devengo_deduccion($concepto->naturaleza, $valor);
 
             NomDocRegistro::create(
                                     $datos +
-                                    [ 'core_tercero_id' => $core_tercero_id ] +
+                                    [ 'core_tercero_id' => $contrato->core_tercero_id ] +
                                     [ 'nom_contrato_id' => $contrato->id ] +
                                     [ 'valor_devengo' => round( $valores[0], 0) ] + 
                                     [ 'valor_deduccion' => round( $valores[1], 0) ]
@@ -227,34 +356,18 @@ class RegistrosDocumentosController extends TransaccionController
         }
     }
 
-    public function registrar_por_cantidad_horas( $concepto, $core_tercero_id, $datos, $cantidad_horas )
+    public function registrar_por_cantidad_horas($concepto, $contrato, $datos, $cantidad_horas)
     {
-        if ( $cantidad_horas > 0 )
-        {
-            $sueldo = NomContrato::where([
-                    ['core_tercero_id','=',$core_tercero_id],
-                    ['estado','=','Activo']
-                ])->value('sueldo');
-
-            if ( is_null( $sueldo ) )
-            {
-                return false;
-            }
-
-            $salario_x_hora = $sueldo / ParametroLegal::horas_laborales_para_fecha($datos['fecha']);
+        if ($cantidad_horas > 0) {
+            $salario_x_hora = $contrato->sueldo / ParametroLegal::horas_laborales_para_fecha($datos['fecha']);
 
             $valor_a_liquidar = $concepto->get_valor_hora_porcentaje_sobre_basico($salario_x_hora, $cantidad_horas);           
 
             $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor_a_liquidar );
 
-            $contrato = NomContrato::where([
-                    ['core_tercero_id','=',$core_tercero_id],
-                    ['estado','=','Activo']
-                ])->get()->first();
-
             NomDocRegistro::create(
                                     $datos +
-                                    [ 'core_tercero_id' => $core_tercero_id ] +
+                                    [ 'core_tercero_id' => $contrato->core_tercero_id ] +
                                     [ 'nom_contrato_id' => $contrato->id ] +
                                     [ 'valor_devengo' => round( $valores[0], 0) ] + 
                                     [ 'valor_deduccion' => round( $valores[1], 0) ] + 
@@ -262,6 +375,87 @@ class RegistrosDocumentosController extends TransaccionController
                                 );
         }
 
+    }
+
+    protected function validarContextoGuardado(Request $request)
+    {
+        $documento = NomDocEncabezado::find((int) $request->nom_doc_encabezado_id);
+        $concepto = NomConcepto::find((int) $request->nom_concepto_id);
+
+        if (is_null($documento) || !$documento->esta_activo_para_transacciones()) {
+            throw new \InvalidArgumentException('El documento de nómina no existe o no está activo.');
+        }
+
+        if (is_null($concepto) || $concepto->estado !== 'Activo' || (int) $concepto->modo_liquidacion_id !== 2) {
+            throw new \InvalidArgumentException('El concepto no existe, no está activo o no es de liquidación Manual.');
+        }
+
+        $grupoEmpleadoId = $this->filtroEntero($request->grupo_empleado_id);
+        $cargoId = $this->filtroEntero($request->cargo_id);
+        $filtroContratoId = $this->filtroEntero($request->filtro_nom_contrato_id);
+        $permitidos = $documento->contratos_asignados_para_registros($grupoEmpleadoId, $cargoId, $filtroContratoId);
+        $permitidosPorId = [];
+        foreach ($permitidos as $contrato) {
+            $permitidosPorId[(int) $contrato->id] = $contrato;
+        }
+
+        $contratoIds = $request->input('nom_contrato_id', []);
+        $terceroIds = $request->input('core_tercero_id', []);
+        if (!is_array($contratoIds) || empty($contratoIds) || !is_array($terceroIds)) {
+            throw new \InvalidArgumentException('No se recibieron empleados para guardar.');
+        }
+
+        $contratos = [];
+        $contratosResueltos = [];
+        foreach ($contratoIds as $indice => $contratoId) {
+            $contratoId = (int) $contratoId;
+            $terceroId = (int) (isset($terceroIds[$indice]) ? $terceroIds[$indice] : 0);
+            $contrato = isset($permitidosPorId[$contratoId]) ? $permitidosPorId[$contratoId] : null;
+
+            // Si el ID oculto quedó desfasado, se resuelve nuevamente usando
+            // el tercero y los filtros confirmados por el servidor.
+            if (is_null($contrato) || (int) $contrato->core_tercero_id !== $terceroId) {
+                $coincidencias = $permitidos->filter(function ($contratoPermitido) use ($terceroId) {
+                    return (int) $contratoPermitido->core_tercero_id === $terceroId;
+                })->values();
+
+                if ($coincidencias->count() !== 1) {
+                    throw new \InvalidArgumentException('No fue posible determinar un contrato único para uno de los empleados según los filtros seleccionados.');
+                }
+                $contrato = $coincidencias->first();
+            }
+
+            if (isset($contratosResueltos[$contrato->id])) {
+                throw new \InvalidArgumentException('El mismo contrato fue enviado más de una vez.');
+            }
+
+            $contratosResueltos[$contrato->id] = true;
+            $contratos[] = $contrato;
+        }
+
+        if (!$request->has('valor') && !$request->has('cantidad_horas')) {
+            throw new \InvalidArgumentException('No se recibió el valor ni la cantidad de horas del concepto.');
+        }
+
+        return (object) compact('documento', 'concepto', 'contratos');
+    }
+
+    protected function valorNumerico($valor)
+    {
+        if (is_null($valor) || trim((string) $valor) === '') {
+            return 0;
+        }
+
+        if (!is_numeric($valor) || (float) $valor < 0) {
+            throw new \InvalidArgumentException('Los valores y las cantidades de horas deben ser números mayores o iguales a cero.');
+        }
+
+        return (float) $valor;
+    }
+
+    protected function redirectListado(Request $request)
+    {
+        return redirect('web?id=' . (int) $request->app_id . '&id_modelo=' . (int) $request->modelo_id);
     }
 
 
@@ -276,65 +470,68 @@ class RegistrosDocumentosController extends TransaccionController
     {
         switch($id){
             case 'editar1':
-
-            $usuario = Auth::user();
-
-            $core_empresa_id = $usuario->empresa_id;
-
-            $concepto = NomConcepto::find($request->nom_concepto_id);
-            $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
-
-            if ( !$documento->esta_activo_para_transacciones() ) {
-                return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'mensaje_error','El documento de nómina no puede modificarse porque no está en estado Activo.' );
-            }
-
-            $datos['nom_doc_encabezado_id'] = $request->nom_doc_encabezado_id;
-            $datos['fecha'] = $documento->fecha;
-            $datos['core_empresa_id'] = $documento->core_empresa_id;
-            $datos['nom_concepto_id'] = $request->nom_concepto_id;
-            $datos['estado'] = 'Activo';
-            $datos['creado_por'] = $usuario->email;
-            $datos['modificado_por'] = '';
-            
-            // Guardar los valores para cada persona      
-            for($i=0;$i<$request->cantidad_empleados;$i++)
-            {
-                
-                if ( $request->input('nom_registro_id.'.$i) == "no" ) 
-                {
-                    if ( isset( $request->valor ) )
-                    {
-                        $this->registrar_por_valor( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('valor.'.$i), $documento );
-                    }
-
-                    if ( isset( $request->cantidad_horas ) )
-                    {
-                        $this->registrar_por_cantidad_horas( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('cantidad_horas.'.$i) );
-                    }
-
-                }else{
-                    // Se actualiza el registro
-                    $registro = NomDocRegistro::find( $request->input('nom_registro_id.'.$i) );
-
-                    if ( isset( $request->valor ) )
-                    {
-                        $this->actualizar_por_valor( $registro, $concepto, $request->input('valor.'.$i), $usuario );
-                    }
-
-                    if ( isset( $request->cantidad_horas ) )
-                    {
-                        $this->actualizar_por_cantidad_horas( $registro, $concepto, $request->input('core_tercero_id.'.$i), $request->input('cantidad_horas.'.$i), $usuario );
-                    }
+                try {
+                    $contexto = $this->validarContextoGuardado($request);
+                } catch (\InvalidArgumentException $e) {
+                    return $this->redirectListado($request)->with('mensaje_error', $e->getMessage());
                 }
 
-                    
-            }
+                $usuario = Auth::user();
+                $documento = $contexto->documento;
+                $concepto = $contexto->concepto;
+                $datos = [
+                    'nom_doc_encabezado_id' => $documento->id,
+                    'fecha' => $documento->fecha,
+                    'core_empresa_id' => $documento->core_empresa_id,
+                    'nom_concepto_id' => $concepto->id,
+                    'estado' => 'Activo',
+                    'creado_por' => $usuario->email,
+                    'modificado_por' => ''
+                ];
 
-            $this->actualizar_totales_documento($documento->id);
+                DB::beginTransaction();
+                try {
+                    foreach ($contexto->contratos as $i => $contrato) {
+                        $registroId = $request->input('nom_registro_id.' . $i);
+                        if ($registroId === 'no') {
+                            if ($request->has('valor')) {
+                                $this->registrar_por_valor($concepto, $contrato, $datos, $this->valorNumerico($request->input('valor.' . $i)));
+                            }
+                            if ($request->has('cantidad_horas')) {
+                                $this->registrar_por_cantidad_horas($concepto, $contrato, $datos, $this->valorNumerico($request->input('cantidad_horas.' . $i)));
+                            }
+                            continue;
+                        }
 
-            return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'flash_message','Registros ACTUALIZADOS correctamente. Nómina: '.$documento->descripcion.', Concepto: '.$concepto->descripcion );
+                        $registro = NomDocRegistro::where([
+                            'id' => (int) $registroId,
+                            'nom_doc_encabezado_id' => $documento->id,
+                            'nom_contrato_id' => $contrato->id,
+                            'nom_concepto_id' => $concepto->id
+                        ])->first();
+                        if (is_null($registro)) {
+                            throw new \InvalidArgumentException('Uno de los registros no corresponde al empleado y filtros seleccionados.');
+                        }
 
-            break;
+                        if ($request->has('valor')) {
+                            $this->actualizar_por_valor($registro, $concepto, $this->valorNumerico($request->input('valor.' . $i)), $usuario);
+                        }
+                        if ($request->has('cantidad_horas')) {
+                            $this->actualizar_por_cantidad_horas($registro, $concepto, $contrato, $this->valorNumerico($request->input('cantidad_horas.' . $i)), $usuario);
+                        }
+                    }
+
+                    $this->actualizar_totales_documento($documento->id);
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    $mensaje = $e instanceof \InvalidArgumentException
+                        ? $e->getMessage()
+                        : 'No fue posible actualizar los registros de nómina.';
+                    return $this->redirectListado($request)->with('mensaje_error', $mensaje);
+                }
+
+                return $this->redirectListado($request)->with('flash_message', 'Registros ACTUALIZADOS correctamente. Nómina: ' . $documento->descripcion . ', Concepto: ' . $concepto->descripcion);
 
             default:
                 // code
@@ -360,7 +557,7 @@ class RegistrosDocumentosController extends TransaccionController
         }
     }
 
-    public function actualizar_por_cantidad_horas( $registro, $concepto, $core_tercero_id, $cantidad_horas, $usuario)
+    public function actualizar_por_cantidad_horas($registro, $concepto, $contrato, $cantidad_horas, $usuario)
     {
         if ( $cantidad_horas == 0 )
         {
@@ -368,17 +565,7 @@ class RegistrosDocumentosController extends TransaccionController
             $registro->delete();
         }else{
 
-            $sueldo = NomContrato::where([
-                    ['core_tercero_id','=',$core_tercero_id],
-                    ['estado','=','Activo']
-                ])->value('sueldo');
-
-            if ( is_null( $sueldo ) )
-            {
-                return false;
-            }
-
-            $salario_x_hora = $sueldo / ParametroLegal::horas_laborales_para_fecha($registro->fecha);
+            $salario_x_hora = $contrato->sueldo / ParametroLegal::horas_laborales_para_fecha($registro->fecha);
 
             $valor_a_liquidar = $concepto->get_valor_hora_porcentaje_sobre_basico($salario_x_hora, $cantidad_horas);
 

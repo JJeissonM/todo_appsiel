@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 // Registros de documentos de nómina
 Route::get('nomina/crear_registros', 'Nomina\RegistrosDocumentosController@crear_registros1');
 Route::post('nomina/crear_registros2', 'Nomina\RegistrosDocumentosController@crear_registros2');
+Route::get('nomina/documentos/{nom_doc_encabezado_id}/filtros-registros', 'Nomina\RegistrosDocumentosController@filtros_registros');
 
 Route::resource('nom_registros_documentos', 'Nomina\RegistrosDocumentosController');
 

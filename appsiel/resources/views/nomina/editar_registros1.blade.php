@@ -29,6 +29,9 @@
 						<p>
 							<b>Documento de nómina:</b><code>{{ $documento->descripcion }}</code>
 							<b>Concepto:</b>	<code>{{ $concepto->descripcion }}</code>
+							@if($filtros['grupo'] !== '') <b>Grupo:</b> <code>{{ $filtros['grupo'] }}</code> @endif
+							@if($filtros['cargo'] !== '') <b>Cargo:</b> <code>{{ $filtros['cargo'] }}</code> @endif
+							@if($filtros['empleado'] !== '') <b>Empleado:</b> <code>{{ $filtros['empleado'] }}</code> @endif
 							
 							{{ Form::hidden('nom_doc_encabezado_id', $documento->id, ['id' =>'nom_doc_encabezado_id']) }}
 							
@@ -36,6 +39,9 @@
 
 
 							{{ Form::hidden('cantidad_empleados', $cantidad_empleados, ['id' =>'cantidad_empleados']) }}
+							{{ Form::hidden('grupo_empleado_id', $filtros['grupo_empleado_id']) }}
+							{{ Form::hidden('cargo_id', $filtros['cargo_id']) }}
+							{{ Form::hidden('filtro_nom_contrato_id', $filtros['nom_contrato_id']) }}
 						</p>
 					</div>							
 				</div>
@@ -63,6 +69,7 @@
 											<b>{{ $vec_empleados[$k]['nombre'] }}</b>
 											
 											{{ Form::hidden('core_tercero_id[]', $vec_empleados[$k]['core_tercero_id'], []) }}
+											{{ Form::hidden('nom_contrato_id[]', $vec_empleados[$k]['nom_contrato_id'], []) }}
 
 											{{ Form::hidden('nom_registro_id[]', $vec_empleados[$k]['nom_registro_id'], []) }}
 
