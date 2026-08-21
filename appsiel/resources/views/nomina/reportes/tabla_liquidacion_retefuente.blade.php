@@ -3,7 +3,11 @@
 	<div class="container-fluid">
 		
 		<h4 style="width: 100%;text-align: center;">
-			<strong>Liquidación Retefuente. <br>Procedimiento 2 (artículo 386 del estatuto tributario)</strong>
+			<strong>
+				Liquidación Retención en la Fuente.<br>
+				Procedimiento {{ isset($tabla_resumen['procedimiento']) ? $tabla_resumen['procedimiento'] : 1 }}
+				(artículos 383, 385 y 386 del Estatuto Tributario)
+			</strong>
 		</h4>
 
 		<table class="table" style="border: 1px solid; border-collapse: collapse; width:100%; font-size: 12px;">
@@ -162,6 +166,10 @@
 				<tr>
 					<td><strong>Base de retención</strong></td>
 					<td><strong>${{ number_format( $tabla_resumen['base_retencion'], '0', ',', '.') }}</strong></td>
+				</tr>
+				<tr>
+					<td>Base expresada en UVT (la retención inicia por encima de 95 UVT)</td>
+					<td>{{ number_format(isset($tabla_resumen['base_retencion_uvt']) ? $tabla_resumen['base_retencion_uvt'] : 0, 2, ',', '.') }} UVT</td>
 				</tr>
 				<tr>
 					<td><strong>Porcentaje fijo de retención </strong></td>

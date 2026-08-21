@@ -4,10 +4,13 @@
 
 @section('detalles')
 	<p>
-		Por esta opción, el sistema revisa todo pago laboral que debe incluirse en la base sujeta a retención en la fuente y procede a realizar el respectivo calculo según los procedimientos parametrizados y la tabla de retención configurada.
+		El sistema depura los pagos laborales mensuales y aplica la tabla del artículo 383 del Estatuto Tributario con la UVT vigente del documento.
 	</p>
-	<br>
-	<span class="text-info"> Si no se escoge una fecha final de promedios, se asume la fecha del Documento de liquidación. </span>
+	<div class="alert alert-info">
+		<strong>Configuración:</strong> si el empleado no tiene parámetros individuales se aplica automáticamente el Procedimiento 1.
+		Los parámetros del empleado solo son necesarios para deducciones soportadas o para usar el porcentaje fijo del Procedimiento 2.
+		La fecha final de promedios se utiliza únicamente para este último procedimiento.
+	</div>
 @endsection
 
 @section('formulario')

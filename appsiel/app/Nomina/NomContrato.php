@@ -332,13 +332,13 @@ class NomContrato extends Model
      */
     public static function get_filtros_avanzados_index()
     {
-        $contratos = self::opciones_contrato_filtro();
+        $terceros = self::opciones_tercero_filtro();
         $grupos = self::opciones_filtro('nom_grupos_empleados.id', 'nom_grupos_empleados.descripcion');
         $cargos = self::opciones_filtro('nom_cargos.id', 'nom_cargos.descripcion');
         $estados = self::opciones_filtro('nom_contratos.estado', 'nom_contratos.estado');
 
         return [
-            'filtro_empleado' => ['label' => 'Empleado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $contratos],
+            'filtro_tercero' => ['label' => 'Tercero', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $terceros],
             'filtro_grupo_empleado' => ['label' => 'Grupo empleado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $grupos],
             'filtro_cargo' => ['label' => 'Cargo', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $cargos],
             'filtro_estado' => ['label' => 'Estado', 'type' => 'combobox', 'options' => ['' => 'Todos'] + $estados],
@@ -382,7 +382,7 @@ class NomContrato extends Model
         }
 
         $filtros = [
-            'filtro_empleado' => 'nom_contratos.id',
+            'filtro_tercero' => 'nom_contratos.core_tercero_id',
             'filtro_grupo_empleado' => 'nom_contratos.grupo_empleado_id',
             'filtro_cargo' => 'nom_contratos.cargo_id',
             'filtro_estado' => 'nom_contratos.estado',
@@ -400,38 +400,26 @@ class NomContrato extends Model
         return $query;
     }
 
-    protected static function opciones_contrato_filtro()
+    protected static function opciones_tercero_filtro()
     {
         $opciones = self::query_listado()
             ->select(
-                'nom_contratos.id',
                 'core_terceros.id AS tercero_id',
                 'core_terceros.descripcion',
-                'core_terceros.numero_identificacion',
-                'nom_contratos.sueldo',
-                'nom_contratos.estado'
+                'core_terceros.numero_identificacion'
             )
+            ->whereNotNull('core_terceros.id')
+            ->distinct()
             ->orderBy('core_terceros.descripcion')
-            ->orderByRaw("CASE WHEN nom_contratos.estado = 'Activo' THEN 0 ELSE 1 END")
-            ->orderBy('nom_contratos.id', 'DESC')
             ->get();
 
-        $contratos = [];
-        $terceros_agregados = [];
+        $terceros = [];
         foreach ($opciones as $opcion) {
-            if (isset($terceros_agregados[$opcion->tercero_id])) {
-                continue;
-            }
-
-            $terceros_agregados[$opcion->tercero_id] = true;
-            $contratos[$opcion->id] = $opcion->descripcion
-                . ' (' . $opcion->numero_identificacion . ')'
-                . ' - $' . number_format($opcion->sueldo, 0, ',', '.')
-                . ' - ' . $opcion->estado
-                . ' [Contrato #' . $opcion->id . ']';
+            $terceros[$opcion->tercero_id] = $opcion->descripcion
+                . ' (' . $opcion->numero_identificacion . ')';
         }
 
-        return $contratos;
+        return $terceros;
     }
 
     protected static function opciones_filtro($id, $descripcion)

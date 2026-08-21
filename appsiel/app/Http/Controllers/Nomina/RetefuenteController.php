@@ -68,13 +68,6 @@ class RetefuenteController extends TransaccionController
         $vista = '';
         foreach ($empleados_documento as $empleado) 
         {
-            $parametros_retencion = $empleado->parametros_retefuente();
-
-            if ( is_null( $parametros_retencion ) )  // falta validar a qué empleados se aplicará
-            {
-                continue;
-            }
-             
             // Se llama al subsistema de liquidación
             $liquidacion = new LiquidacionConcepto( $concepto->id, $empleado, $documento_nomina, $request->fecha_final_promedios );
 
@@ -106,7 +99,7 @@ class RetefuenteController extends TransaccionController
 
         if ( $vista == '' )
         {
-            return '<h3> Ninguna ReteFuente fue aplicada. <br> <small> Tal vez el empleado no tiene parámetros de ReteFuente (Verifique en Catálogos).<br> O el empleado no tiene devengos ni deducciones en el lapso selecionado. </small> </h3>';
+            return '<h3>Ninguna retención en la fuente fue aplicada.<br><small>Los empleados no superaron la base gravable de 95 UVT o no tienen pagos gravables en el periodo seleccionado.</small></h3>';
         }
         
         return $vista;

@@ -6,9 +6,15 @@ use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\ParametrosRetefuenteEmpleado;
 use App\Nomina\NomConcepto;
+use App\Nomina\ParametroLegal;
+use App\Nomina\Services\RetencionFuenteLaboralService;
+use Carbon\Carbon;
 
 class Retefuente implements Estrategia
 {
+	protected $parametros_retefuente_empleado;
+	protected $uvt_actual = 0;
+
 	public $tabla_resumen = [
 								'salario_basico' => 0,
 								'otros_devengos' => 0,
@@ -56,54 +62,66 @@ class Retefuente implements Estrategia
 			        ];
 		}
 
-		$parametros_retefuente_empleado = ParametrosRetefuenteEmpleado::where('nom_contrato_id', $liquidacion['empleado']->id)->orderBy('fecha_final_promedios')->get()->last();
+		$fecha_documento = $liquidacion['documento_nomina']->fecha;
+		$parametros_retefuente_empleado = ParametrosRetefuenteEmpleado::where('nom_contrato_id', $liquidacion['empleado']->id)
+														->where('estado', 'Activo')
+														->where('fecha_final_promedios', '<=', $fecha_documento)
+														->orderBy('fecha_final_promedios', 'DESC')
+														->first();
 
-        if ( is_null( $parametros_retefuente_empleado ) )  // falta validar a qué empleados se aplicará
+        if ( is_null( $parametros_retefuente_empleado ) )
         {
             $parametros_retefuente_empleado = (object)[
-														'procedimiento' => 0,
-														'porcentaje_fijo' => 0
+														'procedimiento' => 1,
+														'porcentaje_fijo' => 0,
+														'deduccion_aportes_pension_voluntaria' => 0,
+														'deduccion_ahorros_cuentas_afc' => 0,
+														'deduccion_rentas_trabajo_exentas' => 0,
+														'deduccion_intereses_vivienda' => 0,
+														'deduccion_salud_prepagada' => 0,
+														'deduccion_por_dependientes' => 0
 													];
         }
-			
 
-		switch ( $parametros_retefuente_empleado->procedimiento )
+		$this->parametros_retefuente_empleado = $parametros_retefuente_empleado;
+		$this->tabla_resumen['procedimiento'] = (int)$parametros_retefuente_empleado->procedimiento;
+		$this->uvt_actual = ParametroLegal::uvt_para_fecha($fecha_documento, config('nomina.valor_uvt_actual', 0));
+		$fecha_referencia = Carbon::parse($fecha_documento);
+		$fecha_inicial = $fecha_referencia->copy()->startOfMonth()->format('Y-m-d');
+		$fecha_final = $fecha_referencia->copy()->endOfMonth()->format('Y-m-d');
+		$this->get_valor_base_depurada($fecha_inicial, $fecha_final, $liquidacion['empleado']);
+		$beneficios_acumulados = $this->get_beneficios_tributarios_acumulados(
+			$liquidacion['empleado'],
+			$fecha_referencia
+		);
+		$calculo_legal = $this->calcular_retencion_procedimiento_uno(
+			$beneficios_acumulados['renta_exenta_25'],
+			$beneficios_acumulados['ahorro_voluntario']
+		);
+
+		switch ( (int)$parametros_retefuente_empleado->procedimiento )
 		{
-			case '1': // Calculo mensual del porcentaje que corresponda según el monto del salario devengado
-
-				/*
-						PROCESO PENDIENTE
-				*/
-				$valor_liquidacion = 0;
+			case 1: // Cálculo mensual según la base gravable del empleado.
+				$valor_liquidacion = max(
+					0,
+					$calculo_legal['valor_retencion'] - $this->tabla_resumen['retefuente_practicada_periodo']
+				);
+				$this->tabla_resumen['porcentaje_aplicado'] = $calculo_legal['porcentaje_efectivo'];
+				$this->tabla_resumen['valor_liquidacion'] = $valor_liquidacion;
 				break;
 			
 			
-			case '2': // Porcentaje fijo mensual, ya calculado semestralmente 
-
-				$vec_fecha = explode( "-", $liquidacion['documento_nomina']->fecha );
-				if ( $liquidacion['fecha_final_promedios'] != '' )
-				{
-					$vec_fecha = explode( "-", $liquidacion['fecha_final_promedios'] );
-				}
-				$mes = $vec_fecha[1];
-				$anio = $vec_fecha[0];
-				$fecha_inicial = $anio.'-'.$mes.'-01';
-				$fecha_final = $anio.'-'.$mes.'-30';
-
-				$valor_base_depurada = $this->get_valor_base_depurada( $fecha_inicial, $fecha_final, $liquidacion['empleado'] ); // subtotal
-
-				// X	Renta de trabajo exenta del 25% numeral 10 del artículo 206 ET (W X 25%)
-				$renta_trabajo_exenta = $valor_base_depurada * 25 / 100;
-				$this->tabla_resumen['renta_trabajo_exenta'] = $renta_trabajo_exenta;
-
-				// Y	Base de retención que se multiplica por el porcentaje fijo de retención
-				$base_retencion = $valor_base_depurada - $renta_trabajo_exenta;
-				$this->tabla_resumen['base_retencion'] = $base_retencion;
+			case 2: // Porcentaje fijo mensual, calculado semestralmente.
+				$base_retencion = $calculo_legal['base_retencion'];
 
 				$porcentaje_aplicado = $parametros_retefuente_empleado->porcentaje_fijo;
 				$this->tabla_resumen['porcentaje_aplicado'] = $porcentaje_aplicado;
 
-				$valor_liquidacion = $this->redondear_a_unidad_seguida_ceros( $base_retencion * $porcentaje_aplicado / 100, 100, 'superior' );
+				$valor_liquidacion = max(
+					0,
+					$this->redondear_a_unidad_seguida_ceros($base_retencion * $porcentaje_aplicado / 100, 100, 'superior')
+					- $this->tabla_resumen['retefuente_practicada_periodo']
+				);
 				$this->tabla_resumen['valor_liquidacion'] = $valor_liquidacion;
 
 				break;
@@ -126,9 +144,92 @@ class Retefuente implements Estrategia
 
 	}
 
+	protected function calcular_retencion_procedimiento_uno($renta_exenta_acumulada = 0, $ahorro_voluntario_acumulado = 0)
+	{
+		$parametros = $this->parametros_retefuente_empleado;
+		$servicio = new RetencionFuenteLaboralService();
+		$calculo = $servicio->calcular([
+			'uvt' => $this->uvt_actual,
+			'total_pagos' => $this->tabla_resumen['total_pagos'],
+			'ingresos_no_constitutivos' => $this->tabla_resumen['total_ingresos_no_constitutivos_renta'],
+			'aportes_pension_voluntaria' => $this->tabla_resumen['aportes_pension_voluntaria'],
+			'ahorros_afc' => $this->tabla_resumen['ahorros_cuentas_afc'],
+			'otras_rentas_exentas' => $this->tabla_resumen['rentas_trabajo_exentas'],
+			'intereses_vivienda' => isset($parametros->deduccion_intereses_vivienda) ? $parametros->deduccion_intereses_vivienda : 0,
+			'salud_prepagada' => isset($parametros->deduccion_salud_prepagada) ? $parametros->deduccion_salud_prepagada : 0,
+			'aplica_dependientes' => !empty($parametros->deduccion_por_dependientes),
+			'renta_exenta_25_acumulada' => $renta_exenta_acumulada,
+			'ahorro_voluntario_acumulado' => $ahorro_voluntario_acumulado,
+		]);
+
+		$this->tabla_resumen['intereses_vivienda'] = $calculo['intereses_vivienda'];
+		$this->tabla_resumen['salud_prepagada'] = $calculo['salud_prepagada'];
+		$this->tabla_resumen['deduccion_por_dependientes'] = $calculo['deduccion_por_dependientes'];
+		$this->tabla_resumen['aportes_pension_voluntaria'] = $calculo['aportes_pension_voluntaria'];
+		$this->tabla_resumen['ahorros_cuentas_afc'] = $calculo['ahorros_afc'];
+		$this->tabla_resumen['total_rentas_exentas'] = $calculo['ahorro_voluntario_aplicado']
+			+ $this->tabla_resumen['rentas_trabajo_exentas'];
+		$this->tabla_resumen['subtotal'] = $calculo['subtotal'];
+		$this->tabla_resumen['renta_trabajo_exenta'] = $calculo['renta_trabajo_exenta'];
+		$this->tabla_resumen['total_deducciones_particulares'] = $calculo['intereses_vivienda']
+			+ $calculo['salud_prepagada']
+			+ $calculo['deduccion_por_dependientes'];
+		$this->tabla_resumen['total_deducciones'] = $this->tabla_resumen['total_ingresos_no_constitutivos_renta']
+			+ $calculo['deducciones_rentas_exentas_aplicadas'];
+		$this->tabla_resumen['base_retencion'] = $calculo['base_retencion'];
+		$this->tabla_resumen['base_retencion_uvt'] = $calculo['base_retencion_uvt'];
+		$this->tabla_resumen['valor_uvt'] = $this->uvt_actual;
+
+		return $calculo;
+	}
+
+	/**
+	 * Reconstruye los beneficios usados en meses anteriores para respetar los
+	 * límites anuales de los artículos 126-1, 126-4 y 206 del E.T.
+	 */
+	protected function get_beneficios_tributarios_acumulados($empleado, Carbon $fecha_referencia)
+	{
+		$fin_mes_anterior = $fecha_referencia->copy()->startOfMonth()->subDay();
+		if ((int)$fin_mes_anterior->format('Y') < (int)$fecha_referencia->format('Y')) {
+			return ['renta_exenta_25' => 0, 'ahorro_voluntario' => 0];
+		}
+
+		$registros = $empleado->get_registros_documentos_nomina_entre_fechas(
+			$fecha_referencia->copy()->startOfYear()->format('Y-m-d'),
+			$fin_mes_anterior->format('Y-m-d')
+		);
+
+		$renta_exenta_acumulada = 0;
+		$ahorro_voluntario_acumulado = 0;
+		foreach ($registros->groupBy(function ($registro) {
+			return substr($registro->fecha, 0, 7);
+		}) as $registros_mes) {
+			$calculador = new self();
+			$calculador->parametros_retefuente_empleado = $this->parametros_retefuente_empleado;
+			$calculador->uvt_actual = $this->uvt_actual;
+			$calculador->get_total_pagos_empleado($registros_mes);
+			$calculador->get_total_deducciones_empleado($registros_mes, $empleado);
+			$calculo = $calculador->calcular_retencion_procedimiento_uno(
+				$renta_exenta_acumulada,
+				$ahorro_voluntario_acumulado
+			);
+			$renta_exenta_acumulada += $calculo['renta_trabajo_exenta'];
+			$ahorro_voluntario_acumulado += $calculo['ahorro_voluntario_aplicado'];
+		}
+
+		return [
+			'renta_exenta_25' => $renta_exenta_acumulada,
+			'ahorro_voluntario' => $ahorro_voluntario_acumulado,
+		];
+	}
+
 	public function get_valor_base_depurada( $fecha_inicial, $fecha_final, $empleado )
 	{
 		$registros_liquidados_empleado = $empleado->get_registros_documentos_nomina_entre_fechas( $fecha_inicial, $fecha_final);
+		$conceptos_retefuente = NomConcepto::where('modo_liquidacion_id', 11)->pluck('id')->toArray();
+		$this->tabla_resumen['retefuente_practicada_periodo'] = $registros_liquidados_empleado
+			->whereIn('nom_concepto_id', $conceptos_retefuente)
+			->sum('valor_deduccion');
 
 		$total_pagos = $this->get_total_pagos_empleado( $registros_liquidados_empleado );
 
@@ -172,8 +273,10 @@ class Retefuente implements Estrategia
 
 		// E	Demás pagos ordinario o extraordinario realizados durante los 12 meses anteriores
 
-		//F	Total pagos efectuados durante los 12 meses anteriores (A+B+C+D+E)
-		$total_pagos = $salario_basico + $otros_devengos + $prestaciones_sociales;
+		// F Total de pagos laborales del periodo. Incluye cualquier concepto de devengo.
+		$total_pagos = $pagos_empleado->sum('valor_devengo');
+		$otros_devengos = max(0, $total_pagos - $salario_basico - $prestaciones_sociales);
+		$this->tabla_resumen['otros_devengos'] = $otros_devengos;
 		$this->tabla_resumen['total_pagos'] = $total_pagos;
 
 		return $total_pagos;
@@ -181,7 +284,7 @@ class Retefuente implements Estrategia
 
 	public function get_total_deducciones_empleado( $pagos_empleado, $empleado )
 	{
-		$parametros_retencion = $empleado->parametros_retefuente();
+		$parametros_retencion = $this->parametros_retefuente_empleado ?: $empleado->parametros_retefuente();
 		$aportes_pension_voluntaria = 0;
 		$ahorros_cuentas_afc = 0;
 		$rentas_trabajo_exentas = 0;
@@ -271,7 +374,9 @@ class Retefuente implements Estrategia
 
 		// U	Deducción por dependientes (artículo 387-1 ET) (máximo 10%)
 		$base_dependientes = $pagos_empleado->sum( 'valor_devengo' ) - $this->tabla_resumen['pagos_cesantias_e_intereses'];
-		$deduccion_por_dependientes = $base_dependientes * 10 / 100;
+		$deduccion_por_dependientes = !is_null($parametros_retencion) && !empty($parametros_retencion->deduccion_por_dependientes)
+			? $base_dependientes * 10 / 100
+			: 0;
 		$this->tabla_resumen['deduccion_por_dependientes'] = $deduccion_por_dependientes;
 
 		// V	Total deducciones de los 12 meses anteriores (N + R + T)
