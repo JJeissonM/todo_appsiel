@@ -52,6 +52,7 @@ Route::post('inv_fisico_unificar_registros/{id}','Inventarios\\InvFisicoControll
 Route::post('inv_fisico_ajustar_saldos_bodega/{id}','Inventarios\\InvFisicoController@ajustar_saldos_bodega');
 Route::post('inv_fisico_descontar_ventas/{id}','Inventarios\\InvFisicoController@descontar_ventas')->middleware('permission:inventarios.inventario_fisico.descontar_ventas');
 Route::get('inv_get_productos_del_grupo','Inventarios\InvFisicoController@get_productos_del_grupo');
+Route::get('inv_fisico_rango_turno_pdv','Inventarios\InvFisicoController@rango_turno_pdv');
 Route::get('inv_cargar_lista_ingredientes_fabricacion/{item_producir_id}/{cantidad_fabricar}','Inventarios\InvFisicoController@cargar_lista_ingredientes_fabricacion');
 Route::resource('inv_fisico', 'Inventarios\InvFisicoController');
 

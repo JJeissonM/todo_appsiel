@@ -42,6 +42,7 @@
 							<small>Si el cierre es menor que la apertura, se tomará como cierre del día siguiente.</small>
 						</div>
 					</div>
+					<div id="mensaje_turno_pdv" class="alert" style="display:none; margin: 5px;"></div>
 				@else
 					{{ Form::hidden('hora_inicio', null, ['id'=>'hora_inicio']) }}
 					{{ Form::hidden('hora_finalizacion', null, ['id'=>'hora_finalizacion']) }}
@@ -116,9 +117,9 @@
 			$('#fecha').val( get_fecha_hoy() );
 			$('#fecha').focus();			
 
-			if ( $('#hora_inicio').val() == '' ) {
-				$('#hora_inicio').val( get_hora_actual() );
-			}
+			@if( (int)config('inventarios.usar_inventario_fisico_por_horas', 0) )
+				consultar_turno_pdv();
+			@endif
 
 			$('#movimiento').removeAttr('required');
 
@@ -135,8 +136,61 @@
 			});
 
 		    $('#inv_bodega_id').change(function(){
+				@if( (int)config('inventarios.usar_inventario_fisico_por_horas', 0) )
+					consultar_turno_pdv();
+				@endif
 				$('#grupo_inventario_id').focus();
 			});
+
+			@if( (int)config('inventarios.usar_inventario_fisico_por_horas', 0) )
+				$('#fecha').change(function(){
+					consultar_turno_pdv();
+				});
+
+				function consultar_turno_pdv()
+				{
+					var fecha = $('#fecha').val();
+					var bodegaId = $('#inv_bodega_id').val();
+					var mensaje = $('#mensaje_turno_pdv');
+
+					if (!fecha || !bodegaId) {
+						return;
+					}
+
+					$('#hora_inicio, #hora_finalizacion').val('').prop('readonly', true);
+					mensaje.removeClass('alert-success alert-warning alert-danger')
+						.addClass('alert-info')
+						.text('Consultando la apertura y cierre del PDV...')
+						.show();
+
+					$.get("{{ url('inv_fisico_rango_turno_pdv') }}", {
+						fecha: fecha,
+						inv_bodega_id: bodegaId
+					}).done(function(respuesta){
+						if (respuesta.encontrado) {
+							$('#hora_inicio').val(respuesta.turno.hora_inicio).prop('readonly', true);
+							$('#hora_finalizacion').val(respuesta.turno.hora_finalizacion).prop('readonly', true);
+							mensaje.removeClass('alert-info alert-warning alert-danger')
+								.addClass('alert-success')
+								.text(respuesta.mensaje)
+								.show();
+							return;
+						}
+
+						$('#hora_inicio, #hora_finalizacion').prop('readonly', false);
+						mensaje.removeClass('alert-info alert-success alert-danger')
+							.addClass('alert-warning')
+							.text(respuesta.mensaje)
+							.show();
+					}).fail(function(){
+						$('#hora_inicio, #hora_finalizacion').prop('readonly', false);
+						mensaje.removeClass('alert-info alert-success alert-warning')
+							.addClass('alert-danger')
+							.text('No fue posible consultar el turno PDV. Puede ingresar las horas manualmente.')
+							.show();
+					});
+				}
+			@endif
 			
 
 		    $('#grupo_inventario_id').change(function(){
@@ -315,10 +369,6 @@
 					// Desactivar el click del botón
 					$( this ).off( event );
 
-					if ( $('#hora_finalizacion').val() == '' ) {
-						$('#hora_finalizacion').val( get_hora_actual() );
-					}
-					
 					var table = $('#ingreso_productos').tableToJSON();
 					
 					$('#movimiento').val(JSON.stringify(table));

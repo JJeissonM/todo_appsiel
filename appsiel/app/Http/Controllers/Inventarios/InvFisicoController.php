@@ -28,6 +28,8 @@ use App\Inventarios\InvDocumentoRelacionado;
 use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\AjustarSaldosBodegaService;
+use App\Inventarios\Services\InventoryPhysicalPdvShiftService;
+use App\Inventarios\Services\InventoryPhysicalShiftService;
 use App\Ventas\RestauranteCocina;
 use App\Ventas\VtasMovimiento;
 use App\Compras\Proveedor;
@@ -132,9 +134,22 @@ class InvFisicoController extends TransaccionController
      */
     public function store(Request $request)
     {
+        $shiftService = new InventoryPhysicalShiftService();
+        if ($shiftService->isEnabled()) {
+            $turnoPdv = $this->buscarTurnoPdvDelUsuario($request);
+            if (!is_null($turnoPdv)) {
+                // La fuente autoritativa es el turno POS, no el tiempo empleado
+                // por el usuario diligenciando el Inventario Fisico.
+                $request->merge([
+                    'hora_inicio' => $turnoPdv['hora_inicio'],
+                    'hora_finalizacion' => $turnoPdv['hora_finalizacion']
+                ]);
+            }
+        }
+
         $this->validarYNormalizarHorasMovimiento(
             $request,
-            (new \App\Inventarios\Services\InventoryPhysicalShiftService())->isEnabled()
+            $shiftService->isEnabled()
         );
 
         $lineas_registros = $this->preparar_array_lineas_registros( $request->movimiento );
@@ -142,6 +157,46 @@ class InvFisicoController extends TransaccionController
         $doc_encabezado_id = InvFisicoController::crear_documento( $request, $lineas_registros, $request->url_id_modelo );
 
         return redirect('inv_fisico/'.$doc_encabezado_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
+    }
+
+    public function rango_turno_pdv(Request $request)
+    {
+        if (!(new InventoryPhysicalShiftService())->isEnabled()) {
+            return response()->json([
+                'encontrado' => false,
+                'mensaje' => 'La modalidad de Inventario Fisico por horas no esta activa.'
+            ]);
+        }
+
+        $turno = $this->buscarTurnoPdvDelUsuario($request);
+        if (is_null($turno)) {
+            return response()->json([
+                'encontrado' => false,
+                'mensaje' => 'No se encontro un turno PDV cerrado para este usuario, fecha y bodega. Puede ingresar las horas manualmente.'
+            ]);
+        }
+
+        return response()->json([
+            'encontrado' => true,
+            'turno' => $turno,
+            'mensaje' => 'Horas tomadas automaticamente de la apertura y cierre del PDV ' . $turno['pdv'] . '.'
+        ]);
+    }
+
+    private function buscarTurnoPdvDelUsuario(Request $request)
+    {
+        $user = Auth::user();
+        if (is_null($user)) {
+            return null;
+        }
+
+        return (new InventoryPhysicalPdvShiftService())->findForUserWarehouseDate(
+            $user->empresa_id,
+            $user->id,
+            $user->email,
+            $request->input('inv_bodega_id'),
+            $request->input('fecha')
+        );
     }
 
     public function preparar_array_lineas_registros( $request_registros )

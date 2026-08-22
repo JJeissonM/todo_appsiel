@@ -81,9 +81,9 @@
                 <b>Fecha:</b> {{ $doc_encabezado->fecha }}
                 <br/>
                 @if( !empty($datos_balance['turno']) )
-                    <b>Apertura:</b> {{ $datos_balance['turno']['opening_at'] }}
+                    <b>Apertura turno:</b> {{ $datos_balance['turno']['opening_at'] }}
                     <br/>
-                    <b>Cierre:</b> {{ $datos_balance['turno']['closing_at'] }}
+                    <b>Cierre turno:</b> {{ $datos_balance['turno']['closing_at'] }}
                     <br/>
                 @endif
                 <b>Bodega:</b> {{ $doc_encabezado->bodega_descripcion }}
