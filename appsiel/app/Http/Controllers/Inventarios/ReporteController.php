@@ -94,7 +94,24 @@ class ReporteController extends Controller
      * Reporte esta en el Menu de Auditoria y Control
      */
     public function ajax_existencias(Request $request)
-    {        
+    {
+        $horaCorte = InvMovimiento::normalizarHoraFiltro($request->hora_corte);
+        if (!is_null($horaCorte)) {
+            $validator = Validator::make(['hora_corte' => $horaCorte], [
+                'hora_corte' => ['regex:/^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$/']
+            ], [
+                'hora_corte.regex' => 'La hora de corte debe tener el formato HH:MM o HH:MM:SS.'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => implode(' ', $validator->errors()->all())
+                ], 422);
+            }
+        }
+
+        $request->merge(['hora_corte' => $horaCorte]);
+
         $movement_serv = new MovementService();
         
         //$productos = $movement_serv->build_array_of_stocks_old( (object)$request->all() );
@@ -173,12 +190,8 @@ class ReporteController extends Controller
             }
         }
 
-        if ($request->hora_inicio != '') {
-            $filtros['Hora inicio'] = $request->hora_inicio;
-        }
-
-        if ($request->hora_finalizacion != '') {
-            $filtros['Hora finalizacion'] = $request->hora_finalizacion;
+        if ($request->hora_corte != '') {
+            $filtros['Hora de corte'] = $request->hora_corte;
         }
 
         return $filtros;
@@ -792,8 +805,7 @@ class ReporteController extends Controller
         $grupo_inventario_id = $request->grupo_inventario_id;
         $talla = $request->unidad_medida2;
         $inv_bodega_id = $request->inv_bodega_id;
-        $hora_inicio = $request->hora_inicio;
-        $hora_finalizacion = $request->hora_finalizacion;
+        $hora_corte = InvMovimiento::normalizarHoraFiltro($request->hora_corte);
 
         if ( $inv_bodega_id == '' )
         {
@@ -820,7 +832,7 @@ class ReporteController extends Controller
         
         $array_wheres = array_merge( $array_wheres, [['inv_movimientos.inv_bodega_id','=', $inv_bodega_id]] );
 
-        $movimientos = InvMovimiento::get_existencia_corte($array_wheres, $fecha_corte, $hora_inicio, $hora_finalizacion);
+        $movimientos = InvMovimiento::get_existencia_corte($array_wheres, $fecha_corte, null, $hora_corte);
       
         $vista = View::make( 'inventarios.incluir.existencias_tabla_con_talla', compact('movimientos') )->render();
         

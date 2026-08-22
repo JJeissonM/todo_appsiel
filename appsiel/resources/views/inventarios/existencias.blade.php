@@ -6,11 +6,8 @@
 		{{ Form::label('fecha_corte','Fecha corte') }}
 		{{ Form::date('fecha_corte',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_corte']) }}
 	<br>
-		{{ Form::label('hora_inicio','Hora inicio (opcional)') }}
-		{{ Form::input('time', 'hora_inicio', null, ['class'=>'form-control','id'=>'hora_inicio','step'=>'1']) }}
-	<br>
-		{{ Form::label('hora_finalizacion','Hora finalizacion (opcional)') }}
-		{{ Form::input('time', 'hora_finalizacion', null, ['class'=>'form-control','id'=>'hora_finalizacion','step'=>'1']) }}
+		{{ Form::label('hora_corte','Hora de corte (opcional)') }}
+		{{ Form::input('time', 'hora_corte', null, ['class'=>'form-control','id'=>'hora_corte','step'=>'1']) }}
 	<br>
 		{{ Form::label('mov_bodega_id','Bodega') }}
 		{{ Form::select('mov_bodega_id',$bodegas,null,['class'=>'form-control','id'=>'mov_bodega_id']) }}
@@ -85,8 +82,15 @@
 			$('#fecha_corte').keyup(function(event){
 				var x = event.which || event.keyCode;
 				if(x==13){
-					$('#mov_bodega_id').focus();				
+					$('#hora_corte').focus();
 				}		
+			});
+
+			$('#hora_corte').keyup(function(event){
+				var x = event.which || event.keyCode;
+				if(x==13){
+					$('#mov_bodega_id').focus();
+				}
 			});
 
 			$('#mov_bodega_id').change(function(){
@@ -137,6 +141,14 @@
 					}
 					
 					$('#btn_pdf').attr('href', new_url);
+				}).fail(function(xhr){
+					$('#div_spin').hide();
+					$('#div_cargando').hide();
+					var mensaje = 'No fue posible generar el reporte.';
+					if (xhr.responseJSON && xhr.responseJSON.message) {
+						mensaje = xhr.responseJSON.message;
+					}
+					alert(mensaje);
 				});
 			});
 
@@ -155,7 +167,7 @@
 
 			function valida_campos(){
 				var valida = true;
-				if($('#fecha_corte').val()=='' || $('#fecha_final').val()=='' ){
+				if($('#fecha_corte').val()==''){
 					valida = false;
 				}
 				return valida;

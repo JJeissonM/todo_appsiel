@@ -77,6 +77,12 @@ class InvMovimiento extends Model
         });
     }
 
+    /** Aplica un unico limite superior para reportes de existencias a corte. */
+    public function scopeHastaFechaHoraCorte($query, $fechaCorte, $horaCorte = null)
+    {
+        return $query->hastaFechaHora($fechaCorte, null, $horaCorte);
+    }
+
     /**
      * Filtra un periodo. En rangos de varios dias las horas se aplican a los
      * dias inicial/final; los dias intermedios se incluyen completos.
