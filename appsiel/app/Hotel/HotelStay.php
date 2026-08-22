@@ -3,6 +3,7 @@
 namespace App\Hotel;
 
 use App\CxC\CxcMovimiento;
+use App\Hotel\Services\HotelGuestBillingService;
 use App\Hotel\Services\HotelService;
 use App\Hotel\Support\HotelCreatorLabel;
 use Illuminate\Database\Eloquent\Model;
@@ -174,6 +175,16 @@ class HotelStay extends Model
         return null;
     }
 
+    public function update_adicional($datos, $id)
+    {
+        $stay = self::find($id);
+        if (!is_null($stay)) {
+            $stay->ensureCheckInRecords();
+        }
+
+        return null;
+    }
+
     public function get_campos_adicionales_create($lista_campos)
     {
         $lista_campos = $this->setCustomerAutocompleteField($lista_campos);
@@ -261,17 +272,81 @@ class HotelStay extends Model
                 $stay->save();
             }
 
-            $mainGuest = HotelStayGuest::firstOrCreate(array(
-                'empresa_id' => $stay->empresa_id,
-                'stay_id' => $stay->id,
-                'cliente_id' => $stay->main_cliente_id,
-            ), array(
-                'is_main_guest' => 1,
-            ));
+            $guestRows = HotelStayGuest::where('empresa_id', $stay->empresa_id)
+                ->where('stay_id', $stay->id)
+                ->lockForUpdate()
+                ->get();
+            $billingService = new HotelGuestBillingService();
+            $invoiceStatusByGuest = array();
+            $oldMainClientIds = array();
+            $mainGuest = null;
 
-            if ((int)$mainGuest->is_main_guest != 1) {
-                $mainGuest->is_main_guest = 1;
-                $mainGuest->save();
+            foreach ($guestRows as $guestRow) {
+                if ((int)$guestRow->cliente_id == (int)$stay->main_cliente_id) {
+                    $mainGuest = $guestRow;
+                }
+
+                if ((int)$guestRow->is_main_guest == 1 && (int)$guestRow->cliente_id != (int)$stay->main_cliente_id) {
+                    $oldMainClientIds[] = (int)$guestRow->cliente_id;
+                }
+            }
+
+            if (is_null($mainGuest)) {
+                // Reutilizar el registro principal anterior cuando no tiene
+                // facturación conserva el ID y evita crear un segundo principal.
+                foreach ($guestRows as $guestRow) {
+                    if ((int)$guestRow->is_main_guest != 1) {
+                        continue;
+                    }
+
+                    $invoiceStatusByGuest[$guestRow->id] = $billingService->invoiceStatus($stay, $guestRow);
+                    if (!$invoiceStatusByGuest[$guestRow->id]['has_invoices']) {
+                        $mainGuest = $guestRow;
+                        $mainGuest->cliente_id = $stay->main_cliente_id;
+                        break;
+                    }
+                }
+
+                if (is_null($mainGuest)) {
+                    $mainGuest = new HotelStayGuest(array(
+                        'empresa_id' => $stay->empresa_id,
+                        'stay_id' => $stay->id,
+                        'cliente_id' => $stay->main_cliente_id,
+                    ));
+                }
+            }
+
+            $mainGuest->is_main_guest = 1;
+            $mainGuest->relationship = null;
+            $mainGuest->save();
+
+            // Debe existir un solo principal. El anterior se elimina si no tiene
+            // facturas; si tiene facturación se conserva como acompañante para
+            // mantener el origen y la trazabilidad de esos documentos.
+            foreach ($guestRows as $guestRow) {
+                if ((int)$guestRow->id == (int)$mainGuest->id || (int)$guestRow->is_main_guest != 1) {
+                    continue;
+                }
+
+                if (!isset($invoiceStatusByGuest[$guestRow->id])) {
+                    $invoiceStatusByGuest[$guestRow->id] = $billingService->invoiceStatus($stay, $guestRow);
+                }
+
+                if ($invoiceStatusByGuest[$guestRow->id]['has_invoices']) {
+                    $guestRow->is_main_guest = 0;
+                    $guestRow->save();
+                } else {
+                    $guestRow->delete();
+                }
+            }
+
+            $oldMainClientIds = array_values(array_unique(array_filter($oldMainClientIds)));
+            if (count($oldMainClientIds) > 0) {
+                HotelOrderHeader::where('empresa_id', $stay->empresa_id)
+                    ->where('stay_id', $stay->id)
+                    ->where('status', HotelOrderHeader::STATUS_ABIERTO)
+                    ->whereIn('cliente_id', $oldMainClientIds)
+                    ->update(array('cliente_id' => $stay->main_cliente_id));
             }
 
             $room = HotelRoom::where('empresa_id', $stay->empresa_id)->where('id', $stay->room_id)->first();

@@ -228,7 +228,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($facturasPosIndependientes as $facturaPos)
+                        @foreach($facturasPos as $facturaPos)
                             <?php
                                 $facturaPosDocumento = $facturaPos->tipo_documento_app
                                     ? trim($facturaPos->tipo_documento_app->prefijo . ' ' . $facturaPos->consecutivo)
@@ -257,8 +257,8 @@
                                 </td>
                             </tr>
                         @endforeach
-                        @if(count($facturasPosIndependientes) == 0)
-                            <tr><td colspan="7">No hay facturas POS independientes asociables a esta estadía.</td></tr>
+                        @if(count($facturasPos) == 0)
+                            <tr><td colspan="7">No hay facturas POS realizadas a los huéspedes durante esta estadía.</td></tr>
                         @endif
                     </tbody>
                 </table>

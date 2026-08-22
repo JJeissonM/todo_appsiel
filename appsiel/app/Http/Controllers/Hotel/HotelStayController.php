@@ -51,7 +51,7 @@ class HotelStayController extends Controller
         $receivableService = new HotelReceivableService();
         $anticipos = $receivableService->availableAdvances($stay);
         $facturasCredito = $receivableService->pendingInvoices($stay);
-        $facturasPosIndependientes = $this->independentPosInvoices($stay);
+        $facturasPos = $this->posInvoicesForStayGuests($stay);
         $saldoPedidos = $this->openOrdersBalance($stay);
         $saldoFacturasCredito = $this->receivablesBalance($facturasCredito);
         $saldoAnticipos = abs(min(0, $this->receivablesBalance($anticipos)));
@@ -64,7 +64,7 @@ class HotelStayController extends Controller
         $canCancelIndependentPosInvoice = $this->canCancelIndependentPosInvoice();
         $guestRemoval = $this->guestRemovalStatus($stay);
         $miga_pan = $this->breadcrumb('Estadia #' . $stay->id);
-        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'facturasCredito', 'facturasPosIndependientes', 'saldoPedidos', 'saldoFacturasCredito', 'saldoAnticipos', 'saldoPendienteNeto', 'cancelBlockMessage', 'editBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'canCancelIndependentPosInvoice', 'guestRemoval', 'miga_pan'));
+        return view('hotel.stays.show', compact('stay', 'clients', 'anticipos', 'facturasCredito', 'facturasPos', 'saldoPedidos', 'saldoFacturasCredito', 'saldoAnticipos', 'saldoPendienteNeto', 'cancelBlockMessage', 'editBlockMessage', 'checkOutBlockMessage', 'canCancelHotelOrder', 'canCancelIndependentPosInvoice', 'guestRemoval', 'miga_pan'));
     }
 
     public function createCheckIn()
@@ -153,12 +153,12 @@ class HotelStayController extends Controller
         }
 
         $stay = $this->findStay($stayId);
-        $invoice = $this->independentPosInvoices($stay)->first(function ($key, $row) use ($invoiceId) {
+        $invoice = $this->posInvoicesForStayGuests($stay)->first(function ($key, $row) use ($invoiceId) {
             return (int)$row->id === (int)$invoiceId;
         });
 
         if (is_null($invoice)) {
-            return redirect()->back()->with('mensaje_error', 'La factura no pertenece a esta estadía o está asociada a un pedido hotelero.');
+            return redirect()->back()->with('mensaje_error', 'La factura no pertenece a uno de los huéspedes durante el periodo de esta estadía.');
         }
 
         if (strtolower(trim((string)$invoice->estado)) == 'anulado') {
@@ -303,7 +303,7 @@ class HotelStayController extends Controller
         return $total;
     }
 
-    private function independentPosInvoices(HotelStay $stay)
+    private function posInvoicesForStayGuests(HotelStay $stay)
     {
         $clientIds = array((int)$stay->main_cliente_id);
         $terceroIds = array();
@@ -324,12 +324,6 @@ class HotelStayController extends Controller
 
         $clientIds = array_values(array_unique(array_filter($clientIds)));
         $terceroIds = array_values(array_unique(array_filter($terceroIds)));
-        $associatedPosInvoiceIds = HotelOrderHeader::where('empresa_id', $stay->empresa_id)
-            ->whereNotNull('pos_doc_id')
-            ->where('pos_doc_id', '>', 0)
-            ->lists('pos_doc_id')
-            ->toArray();
-
         $dateFrom = substr((string)$stay->check_in_at, 0, 10);
         $dateTo = !empty($stay->check_out_at) ? substr((string)$stay->check_out_at, 0, 10) : date('Y-m-d');
 
@@ -350,10 +344,6 @@ class HotelStayController extends Controller
             ->orderBy('fecha', 'DESC')
             ->orderBy('id', 'DESC');
 
-        if (count($associatedPosInvoiceIds) > 0) {
-            $query->whereNotIn('id', $associatedPosInvoiceIds);
-        }
-
         $invoices = $query->get();
         $movementsByDocument = $this->receivableMovementsByPosInvoice($invoices, $stay->empresa_id);
         foreach ($invoices as $invoice) {
@@ -366,7 +356,7 @@ class HotelStayController extends Controller
 
             $movementKey = $this->posInvoiceMovementKey($invoice);
             $movement = isset($movementsByDocument[$movementKey]) ? $movementsByDocument[$movementKey] : null;
-            $this->setIndependentPosInvoiceStatus($invoice, $movement);
+            $this->setPosInvoiceStatus($invoice, $movement);
         }
 
         return $invoices;
@@ -407,7 +397,7 @@ class HotelStayController extends Controller
         ));
     }
 
-    private function setIndependentPosInvoiceStatus(FacturaPos $invoice, $movement)
+    private function setPosInvoiceStatus(FacturaPos $invoice, $movement)
     {
         $invoiceState = strtolower(trim((string)$invoice->estado));
 
