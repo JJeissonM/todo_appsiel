@@ -151,9 +151,9 @@
                                 <b>Responsable:</b> {{$responsable}}
                                 <br/>
                                 @if(\App\Tesoreria\TesoMovimiento::usarMovimientosTesoreriaPorHora())
-                                    <b>Apertura:</b> {{ !empty($registro->fecha_hora_apertura) && substr($registro->fecha_hora_apertura, 0, 10) != '0000-00-00' ? $registro->fecha_hora_apertura : 'No registrada' }}
+                                    <b>Apertura turno:</b> {{ !empty($registro->fecha_hora_apertura) && substr($registro->fecha_hora_apertura, 0, 10) != '0000-00-00' ? $registro->fecha_hora_apertura : 'No registrada' }}
                                     <br/>
-                                    <b>Cierre:</b> {{ !empty($registro->fecha_hora_cierre) && substr($registro->fecha_hora_cierre, 0, 10) != '0000-00-00' ? $registro->fecha_hora_cierre : 'No registrado' }}
+                                    <b>Cierre turno:</b> {{ !empty($registro->fecha_hora_cierre) && substr($registro->fecha_hora_cierre, 0, 10) != '0000-00-00' ? $registro->fecha_hora_cierre : 'No registrado' }}
                                     <br/>
                                 @endif
                                 <b>Realización: &nbsp;&nbsp;</b> {{$registro->created_at}}
