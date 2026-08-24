@@ -88,7 +88,7 @@ class CreateNominaPagosAutomaticos extends Migration
         $permission->modelo_id = 0;
         $permission->descripcion = 'Generar pagos de nómina';
         $permission->url = 'index_procesos/nomina.procesos.generar_pagos_nomina';
-        $permission->parent = 0;
+        $permission->parent = 448;
         $permission->orden = 0;
         $permission->enabled = 1;
         $permission->fa_icon = 'fa fa-credit-card';
