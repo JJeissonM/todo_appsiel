@@ -26,14 +26,14 @@
 				</div>
 
 				<div class="row" style="padding:5px;">
-					{{ Form::bsSelect('nom_contrato_id', '', 'Empleado del documento', ['' => 'Todos los empleados'], ['disabled' => 'disabled']) }}
+					{{ Form::bsSelect('nom_contrato_id', '', 'Empleado del documento', ['' => 'Todos los empleados'], ['class' => 'select2-empleado-documento', 'disabled' => 'disabled']) }}
 					<div class="col-sm-9 col-sm-offset-3">
 						<span id="estado_filtros" class="help-block">Seleccione primero el documento de nómina.</span>
 					</div>
 				</div>
 
 				<div class="row" style="padding:5px;">
-					{{ Form::bsSelect('nom_concepto_id', old('nom_concepto_id'), 'Seleccionar concepto', $conceptos, ['required'=>'required']) }}
+					{{ Form::bsSelect('nom_concepto_id', old('nom_concepto_id'), 'Seleccionar concepto', $conceptos, ['class' => 'select2-concepto-nomina', 'required'=>'required']) }}
 				</div>
 								
 				<div class="form-group">
@@ -59,11 +59,35 @@
 	<script>
 		$(document).ready(function(){
 			var empleadosDocumento = [];
+			var $selectEmpleado = $('#nom_contrato_id');
+			var $selectConcepto = $('#nom_concepto_id');
 			var seleccionInicial = {
 				grupo: {{ (int) old('grupo_empleado_id') }},
 				cargo: {{ (int) old('cargo_id') }},
 				empleado: {{ (int) old('nom_contrato_id') }}
 			};
+
+			if ($.fn.select2) {
+				$selectEmpleado.select2({
+					width: '100%',
+					placeholder: 'Buscar empleado por identificación o nombre...',
+					allowClear: true,
+					minimumResultsForSearch: 0
+				});
+
+				$selectConcepto.select2({
+					width: '100%',
+					placeholder: 'Buscar concepto por código o descripción...',
+					allowClear: true,
+					minimumResultsForSearch: 0
+				});
+			}
+
+			function actualizarBuscadorEmpleado() {
+				if ($selectEmpleado.data('select2')) {
+					$selectEmpleado.trigger('change.select2');
+				}
+			}
 
 			function llenarSelect($select, opciones, textoTodos) {
 				$select.empty().append($('<option>', { value: '', text: textoTodos }));
@@ -88,10 +112,11 @@
 					opciones.push({ id: empleado.id, texto: empleado.texto });
 				});
 
-				llenarSelect($('#nom_contrato_id'), opciones, 'Todos los empleados (' + opciones.length + ')');
+				llenarSelect($selectEmpleado, opciones, 'Todos los empleados (' + opciones.length + ')');
 				if (valorInicial) {
-					$('#nom_contrato_id').val(valorInicial);
+					$selectEmpleado.val(valorInicial);
 				}
+				actualizarBuscadorEmpleado();
 				$('#estado_filtros').text(opciones.length ?
 					'Seleccione un empleado o deje la opción “Todos” para registrar el concepto al grupo filtrado.' :
 					'No hay empleados que cumplan los filtros seleccionados.');
@@ -101,8 +126,9 @@
 				empleadosDocumento = [];
 				llenarSelect($('#grupo_empleado_id'), [], 'Todos los grupos');
 				llenarSelect($('#cargo_id'), [], 'Todos los cargos');
-				llenarSelect($('#nom_contrato_id'), [], 'Todos los empleados (0)');
+				llenarSelect($selectEmpleado, [], 'Todos los empleados (0)');
 				$('#grupo_empleado_id, #cargo_id, #nom_contrato_id').prop('disabled', true);
+				actualizarBuscadorEmpleado();
 			}
 
 			function cargarFiltrosDocumento(documentoId) {
