@@ -100,7 +100,7 @@
 					url('academico_docente/revisar_metas').'/'.$curso->id.'/'.$asignatura->id;
 				}
 			?>
-			<form class="form-horizontal" role="search" method="get" action="{{ $accion }}">
+			<form class="form-horizontal" role="search" method="get" action="{{ $accion }}" id="form-busqueda-index">
 				<input type="hidden" name="id" value="{{$id_app}}" />
 				<input type="hidden" name="id_modelo" value="{{$id_modelo}}" />
 				@if(isset($url_complemento))
