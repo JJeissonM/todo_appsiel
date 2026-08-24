@@ -23,9 +23,11 @@
 						$encabezado = $encabezados_calificaciones->where('columna_calificacion', 'C'.$k)->first();
 						$label = $encabezado && !empty($encabezado->label) ? $encabezado->label : 'C'.$k;
 					?>
-					<th class="celda_C{{$k}}">
-						<button class="btn btn-default btn-xs encabezado_calificacion" value="C{{$k}}">{{ $label }}</button>
-					</th>
+					@if(!$usar_encabezados_fijos || $encabezado)
+						<th class="celda_C{{$k}}">
+							<button class="btn btn-default btn-xs encabezado_calificacion" value="C{{$k}}">{{ $label }}</button>
+						</th>
+					@endif
 				@endfor
 				<th>
 					Def.
@@ -47,9 +49,11 @@
 					</td>				
 					
 					@for ($c=1; $c < $cantidad_calificaciones; $c++)
-						<td class="celda_C{{$c}}">
-							{{$vec_estudiantes[$k]['C'.$c]}}
-						</td>
+						@if(!$usar_encabezados_fijos || $encabezados_calificaciones->where('columna_calificacion', 'C'.$c)->first())
+							<td class="celda_C{{$c}}">
+								{{$vec_estudiantes[$k]['C'.$c]}}
+							</td>
+						@endif
 					@endfor
 
 					<td>

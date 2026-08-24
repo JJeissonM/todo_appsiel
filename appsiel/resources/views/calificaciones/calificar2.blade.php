@@ -28,7 +28,7 @@
 		</p>
 		<table class="table table-striped" id="tabla_registros">
 			<thead>
-				@if($usar_encabezados_por_anio)
+				@if($usar_encabezados_fijos)
 					<tr>
 						<th>&nbsp;</th>
 						@foreach($grupos_titulo_encabezados as $grupo_titulo)
@@ -56,10 +56,12 @@
 							}else{
 								$color_btn = '#50B794';
 							}
-						?>	
-						<th class="celda_C{{$k}}">
-							<button class="btn btn-default btn-xs encabezado_calificacion" value="C{{$k}}" data-peso="{{$array_pesos[$k]}}" title="Peso= {{$array_pesos[$k]}}%" id="btn_C{{$k}}" style="background-color: {{$color_btn}}; @if($usar_encabezados_por_anio) cursor: default; @endif" @if($usar_encabezados_por_anio) disabled="disabled" @endif>{{ $encabezado_columna->label }}</button>
-						</th>
+						?>
+						@if(!$usar_encabezados_fijos || $encabezado_columna->configurado)
+							<th class="celda_C{{$k}}">
+								<button class="btn btn-default btn-xs encabezado_calificacion" value="C{{$k}}" data-peso="{{$array_pesos[$k]}}" title="Peso= {{$array_pesos[$k]}}%" id="btn_C{{$k}}" style="background-color: {{$color_btn}}; @if($usar_encabezados_fijos) cursor: default; @endif" @if($usar_encabezados_fijos) disabled="disabled" @endif>{{ $encabezado_columna->label }}</button>
+							</th>
+						@endif
 					@endfor
 					<th>
 						Def.
@@ -82,10 +84,19 @@
 
 						<td width="250px" style="font-size:12px">
 							<b> {{$linea}} {{ $vec_estudiantes[$k]['nombre'] }}</b>
+							@if($usar_encabezados_fijos)
+								@for ($c=1; $c < $cantidad_calificaciones; $c++)
+									@if(!$encabezados_columnas[$c]->configurado)
+										<input type="hidden" id="C{{$c.'_'.$linea}}" class="campo_calificacion_auxiliar" value="{{$vec_estudiantes[$k]['C'.$c]}}">
+									@endif
+								@endfor
+							@endif
 						</td>				
 						
 						@for ($c=1; $c < $cantidad_calificaciones; $c++)
-							<td class="celda_C{{$c}}"><input type="text" name="C{{$c}}[]" id="C{{$c.'_'.$linea}}" style="width: 32px;" class="valores_{{$linea}}" value="{{$vec_estudiantes[$k]['C'.$c]}}" autocomplete="off"></td>
+							@if(!$usar_encabezados_fijos || $encabezados_columnas[$c]->configurado)
+								<td class="celda_C{{$c}}"><input type="text" name="C{{$c}}[]" id="C{{$c.'_'.$linea}}" style="width: 32px;" class="valores_{{$linea}} campo_calificacion_auxiliar" value="{{$vec_estudiantes[$k]['C'.$c]}}" autocomplete="off"></td>
+							@endif
 						@endfor
 
 						<td>

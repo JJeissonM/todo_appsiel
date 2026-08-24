@@ -15,12 +15,12 @@ use App\Calificaciones\Calificacion;
 use App\Calificaciones\CalificacionAuxiliar;
 use App\Calificaciones\CalificacionDesempenio;
 use App\Calificaciones\CursoTieneAsignatura;
-use App\Calificaciones\EncabezadoCalificacion;
 use App\Calificaciones\Periodo;
 use App\Calificaciones\Logro;
 
 use App\Calificaciones\EscalaValoracion;
 use App\Calificaciones\Services\AsignaturasService;
+use App\Calificaciones\Services\EncabezadosCalificacionService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 
@@ -29,10 +29,12 @@ class CalificacionDesempeniosController extends Controller
 
     protected $escala_valoracion;
     protected $aplicacion;
+    protected $encabezadosCalificacionService;
 
     public function __construct()
     {
         $this->middleware('auth');
+        $this->encabezadosCalificacionService = app(EncabezadosCalificacionService::class);
     }
 
 
@@ -157,24 +159,12 @@ class CalificacionDesempeniosController extends Controller
 
         $escalas_valoracion = EscalaValoracion::opciones_campo_select();
 
-        $pesos_encabezados = EncabezadoCalificacion::where([
-            ['periodo_id', '=', $request->id_periodo],
-            ['curso_id', '=', $request->curso_id],
-            ['asignatura_id', '=', $request->id_asignatura],
-            ['peso', '>', 0]
-        ])
-            ->select('columna_calificacion', 'peso')
-            ->orderBy('columna_calificacion')
-            ->get();
-
-        $array_pesos = array_fill(0, 16, 0);
-        $hay_pesos = false;
-        $suma_porcentajes = 0;
-        foreach ($pesos_encabezados as $peso_encabezado) {
-            $array_pesos[(int)str_replace('C', '', $peso_encabezado->columna_calificacion)] = $peso_encabezado->peso;
-            $hay_pesos = true;
-            $suma_porcentajes += $peso_encabezado->peso;
-        }
+        $resumen_encabezados = $this->encabezadosCalificacionService->getResumenParaCarga(
+            (int)$anio,
+            (int)$request->id_periodo,
+            (int)$request->curso_id,
+            (int)$request->id_asignatura
+        );
 
         $logros = Logro::where([
             'periodo_id' => $request->id_periodo,
@@ -201,9 +191,9 @@ class CalificacionDesempeniosController extends Controller
             'datos_asignatura' => $datos_asignatura,
             'ruta' => $request->ruta,
             'escalas_valoracion' => $escalas_valoracion,
-            'array_pesos' => $array_pesos,
-            'hay_pesos' => $hay_pesos,
-            'suma_porcentajes' => $suma_porcentajes,
+            'array_pesos' => $resumen_encabezados['array_pesos'],
+            'hay_pesos' => $resumen_encabezados['hay_pesos'],
+            'suma_porcentajes' => $resumen_encabezados['suma_porcentajes'],
             'creado_por' => $creado_por,
             'modificado_por' => $modificado_por
         ]);

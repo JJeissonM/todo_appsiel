@@ -208,26 +208,67 @@ $(document).ready(function () {
         var d = new Date();
         d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
         var expires = "expires=" + d.toUTCString();
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;SameSite=Lax";
     }
 
     function getCookie(cname) {
         var name = cname + "=";
         var ca = document.cookie.split(";");
+        var valorEncontrado = "";
+
         for (var i = 0; i < ca.length; i++) {
             var c = ca[i];
             while (c.charAt(0) == " ") {
                 c = c.substring(1);
             }
             if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
+                var valor = c.substring(name.length, c.length);
+
+                // Puede haber cookies antiguas con rutas distintas. Si alguna
+                // desactiva la ayuda, se respeta esa elección.
+                if (valor === "false") {
+                    return valor;
+                }
+
+                valorEncontrado = valor;
             }
         }
-        return "";
+        return valorEncontrado;
+    }
+
+    function getPreferenciaAyudaCalificaciones() {
+        try {
+            var preferenciaLocal = window.localStorage.getItem(
+                "mostrar_ayuda_calificaciones_form"
+            );
+
+            if (preferenciaLocal === "true" || preferenciaLocal === "false") {
+                return preferenciaLocal;
+            }
+        } catch (e) {
+            // La cookie mantiene la funcionalidad si localStorage no está disponible.
+        }
+
+        return getCookie("mostrar_ayuda_calificaciones_form");
+    }
+
+    function setPreferenciaAyudaCalificaciones(mostrar) {
+        var valor = mostrar ? "true" : "false";
+
+        try {
+            window.localStorage.setItem(
+                "mostrar_ayuda_calificaciones_form",
+                valor
+            );
+        } catch (e) {
+            // La preferencia también se almacena en cookie como respaldo.
+        }
+
+        setCookie("mostrar_ayuda_calificaciones_form", valor, 365);
     }
 
     function checkCookie() {
-        var mostrar_ayuda = getCookie("mostrar_ayuda_calificaciones_form");
+        var mostrar_ayuda = getPreferenciaAyudaCalificaciones();
 
         if (mostrar_ayuda == "true" || mostrar_ayuda == "") {
             $("#myModal").modal({
@@ -240,22 +281,18 @@ $(document).ready(function () {
 
             /* <li class="list-group-item">Las calificaciones se almacenan automáticamente cada diez (10) segundos.</li> */
             $("#contenido_modal").html(
-                '<div class="well well-lg"><ul class="list-group"><li class="list-group-item">Se pueden guardar las calificaciones en cualquier momento presionando el botón guardar y seguir ingresando información.</li>  <li class="list-group-item">Verifique que antes de salir de la página se muestre el mensaje <spam id="mensaje_guardadas" style="background-color: #b1e6b2;">Calificaciones guardadas</spam></li></ul> <div class="checkbox">  <label><input type="checkbox" name="mostrar_ayuda_calificaciones_form" id="mostrar_ayuda_calificaciones_form" value="true">No volver a mostrar este mensaje.</label> </div></div>'
+                '<div class="well well-lg"><ul class="list-group"><li class="list-group-item">Se pueden guardar las calificaciones en cualquier momento presionando el botón guardar y seguir ingresando información.</li>  <li class="list-group-item">Verifique que antes de salir de la página se muestre el mensaje <spam id="mensaje_guardadas" style="background-color: #b1e6b2;">Calificaciones guardadas</spam></li></ul> <div class="checkbox">  <label><input type="checkbox" name="mostrar_ayuda_calificaciones_form" id="mostrar_ayuda_calificaciones_form">No volver a mostrar este mensaje.</label> </div></div>'
             );
 
-            setCookie("mostrar_ayuda_calificaciones_form", true, 365);
-
+            $(document).off(
+                "change.calificacionesAyuda",
+                "#mostrar_ayuda_calificaciones_form"
+            );
             $(document).on(
-                "click",
+                "change.calificacionesAyuda",
                 "#mostrar_ayuda_calificaciones_form",
                 function () {
-                    if ($(this).val() == "true") {
-                        $(this).val("false");
-                        setCookie("mostrar_ayuda_calificaciones_form", "false", 365);
-                    } else {
-                        $(this).val("true");
-                        setCookie("mostrar_ayuda_calificaciones_form", "true", 365);
-                    }
+                    setPreferenciaAyudaCalificaciones(!this.checked);
                 }
             );
         }
@@ -467,7 +504,7 @@ $(document).ready(function () {
         };
 
         if (numero_fila !== null) {
-            $fila.find(".valores_" + numero_fila).each(function () {
+            $fila.find(".campo_calificacion_auxiliar").each(function () {
                 var nombreCampo = $(this).attr("id").split("_")[0];
                 datos[nombreCampo] = $(this).val();
             });
@@ -640,9 +677,6 @@ $(document).ready(function () {
     }
 
 });
-
-
-
 
 
 

@@ -11,7 +11,148 @@ class EncabezadoCalificacion extends Model
 	
 	protected $fillable = ['columna_calificacion', 'label', 'titulo', 'descripcion', 'peso', 'fecha', 'anio', 'periodo_id', 'curso_id', 'asignatura_id', 'creado_por', 'modificado_por'];
 
-	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año lectivo', 'Periodo', 'Curso', 'Asignatura', 'Fecha', 'Columna calificación', 'Detalle', 'Label', 'Peso (%)'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Columna', 'Agrupación', 'Label', 'Peso (%)', 'Fecha', 'Año lectivo', 'Periodo', 'Curso', 'Asignatura', 'Detalle'];
+
+	public $urls_acciones = '{"eliminar":"web_eliminar/id_fila","otros_enlaces":""}';
+
+	public function validar_datos_creacion($request, $controller)
+	{
+		$this->normalizarFechaRequest($request);
+		$this->validarUnicidadPorAlcance($request, $controller);
+	}
+
+	public function preparar_request_validacion($request, $id = null)
+	{
+		$this->normalizarFechaRequest($request, $id);
+	}
+
+	public function validar_datos_actualizacion($request, $controller, $id)
+	{
+		$this->normalizarFechaRequest($request, $id);
+		$this->validarUnicidadPorAlcance($request, $controller, $id);
+	}
+
+	public function get_campos_adicionales_create($listaCampos)
+	{
+		foreach ($listaCampos as $indice => $campo) {
+			if ($campo['name'] === 'fecha') {
+				$listaCampos[$indice]['value'] = '';
+			}
+		}
+
+		return $listaCampos;
+	}
+
+	public function validar_duplicacion($registro)
+	{
+		return 'No se puede duplicar un encabezado porque la columna ya está configurada para el mismo año, periodo, curso y asignatura.';
+	}
+
+	public function getReglaUnicidadPorAlcance($request, $id = null)
+	{
+		$this->normalizarAlcanceRequest($request, $id);
+
+		$valorId = is_null($id) ? 'NULL' : (int)$id;
+
+		return 'unique:' . $this->getTable()
+			. ',columna_calificacion,' . $valorId . ',id'
+			. ',anio,' . $this->valorCondicionUnicidad($request->input('anio'))
+			. ',periodo_id,' . $this->valorCondicionUnicidad($request->input('periodo_id'))
+			. ',curso_id,' . $this->valorCondicionUnicidad($request->input('curso_id'))
+			. ',asignatura_id,' . $this->valorCondicionUnicidad($request->input('asignatura_id'));
+	}
+
+	protected function validarUnicidadPorAlcance($request, $controller, $id = null)
+	{
+		$reglaFecha = $this->esEncabezadoSoloPorPeriodo($request, $id)
+			? 'date_format:Y-m-d'
+			: 'required|date_format:Y-m-d';
+
+		$controller->validate(
+			$request,
+			[
+				'fecha' => $reglaFecha,
+				'columna_calificacion' => [
+					'required',
+					$this->getReglaUnicidadPorAlcance($request, $id)
+				]
+			],
+			[
+				'fecha.required' => 'Debe ingresar la fecha de la actividad.',
+				'fecha.date_format' => 'La fecha de la actividad debe tener el formato año-mes-día.',
+				'columna_calificacion.unique' => 'La columna ya está configurada para el mismo año, periodo, curso y asignatura.'
+			]
+		);
+	}
+
+	protected function normalizarFechaRequest($request, $id = null)
+	{
+		$datosEnviados = $request->all();
+
+		if (!array_key_exists('fecha', $datosEnviados)) {
+			if (is_null($id)) {
+				$request->merge([
+					'fecha' => $this->esEncabezadoSoloPorPeriodo($request, $id) ? null : date('Y-m-d')
+				]);
+				return;
+			}
+
+			$registroActual = self::find($id);
+			if (!is_null($registroActual)) {
+				$request->merge(['fecha' => $registroActual->fecha]);
+			}
+			return;
+		}
+
+		$fecha = trim((string)$datosEnviados['fecha']);
+		$request->merge([
+			'fecha' => $fecha === '' && $this->esEncabezadoSoloPorPeriodo($request, $id) ? null : $fecha
+		]);
+	}
+
+	protected function esEncabezadoSoloPorPeriodo($request, $id = null)
+	{
+		$datosEnviados = $request->all();
+		$cursoId = $request->input('curso_id');
+		$asignaturaId = $request->input('asignatura_id');
+
+		if (!is_null($id) && (!array_key_exists('curso_id', $datosEnviados) || !array_key_exists('asignatura_id', $datosEnviados))) {
+			$registroActual = self::find($id);
+			if (!is_null($registroActual)) {
+				$cursoId = array_key_exists('curso_id', $datosEnviados) ? $cursoId : $registroActual->curso_id;
+				$asignaturaId = array_key_exists('asignatura_id', $datosEnviados) ? $asignaturaId : $registroActual->asignatura_id;
+			}
+		}
+
+		return ($cursoId === '' || is_null($cursoId))
+			&& ($asignaturaId === '' || is_null($asignaturaId));
+	}
+
+	protected function normalizarAlcanceRequest($request, $id = null)
+	{
+		$columna = strtoupper(trim((string)$request->input('columna_calificacion')));
+		$valores = ['columna_calificacion' => $columna];
+		$datosEnviados = $request->all();
+		$registroActual = is_null($id) ? null : self::find($id);
+
+		foreach (['anio', 'periodo_id', 'curso_id', 'asignatura_id'] as $campo) {
+			if (!array_key_exists($campo, $datosEnviados) && !is_null($registroActual)) {
+				$valorActual = $registroActual->$campo;
+				$valores[$campo] = is_null($valorActual) ? null : (int)$valorActual;
+				continue;
+			}
+
+			$valor = array_key_exists($campo, $datosEnviados) ? $datosEnviados[$campo] : null;
+			$valores[$campo] = $valor === '' || is_null($valor) ? null : (int)$valor;
+		}
+
+		$request->merge($valores);
+	}
+
+	protected function valorCondicionUnicidad($valor)
+	{
+		return $valor === '' || is_null($valor) ? 'NULL' : (int)$valor;
+	}
 
 	public static function consultar_registros($nro_registros, $search)
 	{
@@ -20,16 +161,17 @@ class EncabezadoCalificacion extends Model
 			->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_calificaciones_encabezados.curso_id')
 			->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_calificaciones_encabezados.asignatura_id')
 			->select(
-				'sga_periodos_lectivos.descripcion AS campo1',
-				'sga_periodos.descripcion AS campo2',
-				'sga_cursos.descripcion AS campo3',
-				'sga_asignaturas.descripcion AS campo4',
+				'sga_calificaciones_encabezados.columna_calificacion AS campo1',
+				'sga_calificaciones_encabezados.titulo AS campo2',
+				'sga_calificaciones_encabezados.label AS campo3',
+				'sga_calificaciones_encabezados.peso AS campo4',
 				'sga_calificaciones_encabezados.fecha AS campo5',
-				'sga_calificaciones_encabezados.columna_calificacion AS campo6',
-				'sga_calificaciones_encabezados.descripcion AS campo7',
-				'sga_calificaciones_encabezados.label AS campo8',
-				'sga_calificaciones_encabezados.peso AS campo9',
-				'sga_calificaciones_encabezados.id AS campo10'
+				'sga_periodos_lectivos.descripcion AS campo6',
+				'sga_periodos.descripcion AS campo7',
+				'sga_cursos.descripcion AS campo8',
+				'sga_asignaturas.descripcion AS campo9',
+				'sga_calificaciones_encabezados.descripcion AS campo10',
+				'sga_calificaciones_encabezados.id AS campo11'
 			)->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
 			->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
 			->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
@@ -49,15 +191,16 @@ class EncabezadoCalificacion extends Model
 			->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_calificaciones_encabezados.curso_id')
 			->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_calificaciones_encabezados.asignatura_id')
 			->select(
-				'sga_periodos_lectivos.descripcion AS campo1',
-				'sga_periodos.descripcion AS campo2',
-				'sga_cursos.descripcion AS campo3',
-				'sga_asignaturas.descripcion AS campo4',
+				'sga_calificaciones_encabezados.columna_calificacion AS campo1',
+				'sga_calificaciones_encabezados.titulo AS campo2',
+				'sga_calificaciones_encabezados.label AS campo3',
+				'sga_calificaciones_encabezados.peso AS campo4',
 				'sga_calificaciones_encabezados.fecha AS campo5',
-				'sga_calificaciones_encabezados.columna_calificacion AS campo6',
-				'sga_calificaciones_encabezados.descripcion AS campo7',
-				'sga_calificaciones_encabezados.label AS campo8',
-				'sga_calificaciones_encabezados.peso AS campo9'
+				'sga_periodos_lectivos.descripcion AS campo6',
+				'sga_periodos.descripcion AS campo7',
+				'sga_cursos.descripcion AS campo8',
+				'sga_asignaturas.descripcion AS campo9',
+				'sga_calificaciones_encabezados.descripcion AS campo10'
 			)->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
 			->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
 			->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")

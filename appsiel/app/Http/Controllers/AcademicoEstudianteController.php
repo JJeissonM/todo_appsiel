@@ -312,10 +312,10 @@ class AcademicoEstudianteController extends Controller
             return View::make('calificaciones.incluir.notas_estudiante_periodo_final', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante', 'periodos_del_anio_lectivo'))->render();
         } else {
 
-            $usar_encabezados_por_anio = $this->encabezadosCalificacionService->usarEncabezadosPorAnio();
+            $usar_encabezados_fijos = $this->encabezadosCalificacionService->usarEncabezadosFijosEnPeriodo($periodo_id);
 
-            if ((int)config('calificaciones.manejar_peso_estandar_encabezados_calificaciones') || $usar_encabezados_por_anio) {
-                return View::make('calificaciones.incluir.notas_estudiante_periodo_tabla_peso_estandar_encabezados', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante','lbl_calificaciones_aux', 'usar_encabezados_por_anio'))->render();
+            if ((int)config('calificaciones.manejar_peso_estandar_encabezados_calificaciones') || $usar_encabezados_fijos) {
+                return View::make('calificaciones.incluir.notas_estudiante_periodo_tabla_peso_estandar_encabezados', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante','lbl_calificaciones_aux', 'usar_encabezados_fijos'))->render();
             }
 
             return View::make('calificaciones.incluir.notas_estudiante_periodo_tabla', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante','lbl_calificaciones_aux'))->render();

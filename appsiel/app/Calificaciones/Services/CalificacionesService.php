@@ -32,20 +32,27 @@ class CalificacionesService
             $anio = (int)explode('-', $periodo->fecha_desde)[0];
         }
 
+        $usarEncabezadosFijos = $this->encabezadosCalificacionService->usarEncabezadosFijosEnPeriodo($periodo_id);
+        $encabezados = $this->encabezadosCalificacionService->getEncabezados(
+            $anio,
+            $periodo_id,
+            $curso_id,
+            null
+        );
+
         $columna_calificacion = 1;
         for ($columna_calificacion=1; $columna_calificacion < 16; $columna_calificacion++) { 
             $suma_calificaciones_columna = $calificaciones_aux_periodo->sum('C'.$columna_calificacion);
+            $encabezado_calificacion_aux = $encabezados
+                ->where('columna_calificacion', 'C'.$columna_calificacion)
+                ->first();
+            $mostrarColumna = $usarEncabezadosFijos
+                ? $encabezado_calificacion_aux !== null
+                : $suma_calificaciones_columna > 0;
             
-            if($suma_calificaciones_columna > 0)
+            if($mostrarColumna)
             {
                 $lbl_peso = '';
-                $encabezado_calificacion_aux = $this->encabezadosCalificacionService->getEncabezado(
-                    $anio,
-                    $periodo_id,
-                    $curso_id,
-                    null,
-                    'C'.$columna_calificacion
-                );
                 if ($encabezado_calificacion_aux != null) {
                     $lbl_peso = $encabezado_calificacion_aux->peso . '%';
                 }
@@ -94,4 +101,3 @@ class CalificacionesService
         return 'APROBÓ';
     }
 }
-

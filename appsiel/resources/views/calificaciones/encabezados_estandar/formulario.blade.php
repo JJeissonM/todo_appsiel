@@ -4,8 +4,8 @@
     {{ Form::open( [ 'url' => url('calificaciones_encabezados'), 'method'=> 'POST', 'class' => 'form-horizontal', 'id' => 'formulario_modal'] ) }}
 
         <div class="form-group">
-            <label for="fecha">Fecha actividad:</label>
-            <input name="fecha" type="date" class="form-control" id="fecha" value="{{ $fecha }}" required="required">
+            <label for="fecha">Fecha actividad{{ $usar_encabezados_fijos ? ' (opcional)' : '' }}:</label>
+            <input name="fecha" type="date" class="form-control" id="fecha" value="{{ $fecha }}" @if(!$usar_encabezados_fijos) required="required" @endif>
         </div>
 
         <div class="form-group">
@@ -13,7 +13,7 @@
             <textarea name="descripcion" class="form-control" id="descripcion" rows="2" required="required"> {{ $descripcion }} </textarea>
         </div>
 
-        @if( $usar_encabezados_por_anio )
+        @if( $usar_encabezados_fijos )
             <div class="form-group">
                 <label for="titulo">Título agrupador</label>
                 <input name="titulo" type="text" class="form-control" id="titulo" value="{{ $titulo }}">

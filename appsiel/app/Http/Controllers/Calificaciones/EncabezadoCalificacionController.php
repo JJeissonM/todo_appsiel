@@ -52,10 +52,12 @@ class EncabezadoCalificacionController extends Controller
             $asignaturaId,
             Input::get('columna_calificacion')
         );
+
+        $usar_encabezados_fijos = $this->encabezadosCalificacionService->usarEncabezadosFijosEnPeriodo($periodoId);
         
         // Datos Para crear nuevo
         $mensaje_descripcion = '';
-        $fecha = date('Y-m-d');
+        $fecha = $usar_encabezados_fijos ? '' : date('Y-m-d');
         $descripcion = '';
         $opcion = 'create';
         $id_encabezado_calificacion = 0;
@@ -67,7 +69,7 @@ class EncabezadoCalificacionController extends Controller
         if ( $encabezado != null )
         {
             // Datos Para editar
-            $fecha = $encabezado->fecha;
+            $fecha = is_null($encabezado->fecha) ? '' : $encabezado->fecha;
             $descripcion = $encabezado->descripcion;
             $opcion = 'edit';
             $id_encabezado_calificacion = $encabezado->id;
@@ -80,9 +82,7 @@ class EncabezadoCalificacionController extends Controller
             $mensaje_descripcion = '<span style="color:#ff4d4d; font-size: 0.9em;">Para eliminar el encabezado, deje vacía la descripción de la actividad y presione guardar.</span><br>';
         }
 
-        $usar_encabezados_por_anio = $this->encabezadosCalificacionService->usarEncabezadosPorAnio();
-
-        return View::make('calificaciones.encabezados_estandar.formulario', compact( 'fecha', 'descripcion', 'opcion', 'id_encabezado_calificacion', 'creado_por', 'modificado_por', 'peso', 'label', 'titulo', 'mensaje_descripcion', 'usar_encabezados_por_anio' ))->render();
+        return View::make('calificaciones.encabezados_estandar.formulario', compact( 'fecha', 'descripcion', 'opcion', 'id_encabezado_calificacion', 'creado_por', 'modificado_por', 'peso', 'label', 'titulo', 'mensaje_descripcion', 'usar_encabezados_fijos' ))->render();
     }
 
     /**
@@ -90,6 +90,8 @@ class EncabezadoCalificacionController extends Controller
      */
     public function store(Request $request)
     {
+        $this->normalizarYValidarFecha($request);
+
         $cerrar_modal = "true";
         $scope = $this->encabezadosCalificacionService->getAtributosDePersistencia(
             (int)$request->anio,
@@ -186,6 +188,36 @@ class EncabezadoCalificacionController extends Controller
         }
 
         return $cerrar_modal;
+    }
+
+    protected function normalizarYValidarFecha(Request $request)
+    {
+        $soloPeriodo = $this->encabezadosCalificacionService->usarEncabezadosFijosEnPeriodo(
+            (int)$request->input('periodo_id')
+        );
+
+        if (!$request->has('fecha')) {
+            $id = (int)$request->input('id_encabezado_calificacion', 0);
+            $registro = $id > 0 ? EncabezadoCalificacion::find($id) : null;
+
+            $request->merge([
+                'fecha' => is_null($registro)
+                    ? ($soloPeriodo ? null : date('Y-m-d'))
+                    : $registro->fecha
+            ]);
+        } else {
+            $fecha = trim((string)$request->input('fecha'));
+            $request->merge(['fecha' => $fecha === '' && $soloPeriodo ? null : $fecha]);
+        }
+
+        $this->validate(
+            $request,
+            ['fecha' => $soloPeriodo ? 'date_format:Y-m-d' : 'required|date_format:Y-m-d'],
+            [
+                'fecha.required' => 'Debe ingresar la fecha de la actividad.',
+                'fecha.date_format' => 'La fecha de la actividad debe tener el formato año-mes-día.'
+            ]
+        );
     }
 
     public function verificarUnicidad(Request $request)

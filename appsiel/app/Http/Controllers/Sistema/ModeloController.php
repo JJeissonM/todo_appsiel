@@ -292,6 +292,10 @@ class ModeloController extends Controller
     public function crear_nuevo_registro($request)
     {
         $this->modelo = Modelo::find( $request->url_id_modelo );
+
+        if (method_exists(app($this->modelo->name_space), 'preparar_request_validacion')) {
+            app($this->modelo->name_space)->preparar_request_validacion($request);
+        }
         
         $this->validar_requeridos_y_unicos($request, $this->modelo);
 
@@ -425,6 +429,10 @@ class ModeloController extends Controller
 
         // Se obtinene el registro a modificar del modelo
         $registro = app($modelo->name_space)->find($id);
+
+        if (method_exists(app($modelo->name_space), 'preparar_request_validacion')) {
+            app($modelo->name_space)->preparar_request_validacion($request, $id);
+        }
 
         $registro2 = '';
         // Si se envían datos tipo file
@@ -776,6 +784,15 @@ class ModeloController extends Controller
     public function duplicar($id_registro)
     {
         $registro = app($this->modelo->name_space)->find($id_registro);
+
+        if (method_exists(app($this->modelo->name_space), 'validar_duplicacion')) {
+            $mensaje = app($this->modelo->name_space)->validar_duplicacion($registro);
+
+            if (!empty($mensaje)) {
+                return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))
+                    ->with('mensaje_error', $mensaje);
+            }
+        }
 
         $nuevo_registro = $registro->replicate();
 

@@ -9,10 +9,48 @@ use Illuminate\Support\Facades\Schema;
 class EncabezadosCalificacionService
 {
     protected $columnasTabla = null;
+    protected $periodosConEncabezadosFijos = [];
 
-    public function usarEncabezadosPorAnio()
+    /**
+     * La clave de configuración conserva su nombre por compatibilidad con las
+     * instalaciones existentes, pero los encabezados fijos se aíslan por periodo.
+     */
+    public function manejarEncabezadosFijosPorPeriodo()
     {
         return config('calificaciones.manejar_encabezados_por_anio_lectivo_en_calificaciones', 'No') === 'Si';
+    }
+
+    /**
+     * Alias conservado para no romper integraciones que ya consuman el servicio.
+     */
+    public function usarEncabezadosPorAnio()
+    {
+        return $this->manejarEncabezadosFijosPorPeriodo();
+    }
+
+    public function usarEncabezadosFijosEnPeriodo($periodoId)
+    {
+        return $this->manejarEncabezadosFijosPorPeriodo()
+            && $this->periodoTieneEncabezadosFijos($periodoId);
+    }
+
+    public function periodoTieneEncabezadosFijos($periodoId)
+    {
+        $periodoId = (int)$periodoId;
+
+        if ($periodoId <= 0) {
+            return false;
+        }
+
+        if (!array_key_exists($periodoId, $this->periodosConEncabezadosFijos)) {
+            $this->periodosConEncabezadosFijos[$periodoId] = EncabezadoCalificacion::query()
+                ->where('periodo_id', $periodoId)
+                ->whereNull('curso_id')
+                ->whereNull('asignatura_id')
+                ->exists();
+        }
+
+        return $this->periodosConEncabezadosFijos[$periodoId];
     }
 
     public function getResumenParaCarga($anio, $periodoId, $cursoId, $asignaturaId)
@@ -23,6 +61,7 @@ class EncabezadosCalificacionService
         $array_pesos = array_fill(0, 16, 0);
         $hay_pesos = false;
         $suma_porcentajes = 0;
+        $usarEncabezadosFijos = $this->usarEncabezadosFijosEnPeriodo($periodoId);
 
         for ($k = 1; $k < 16; $k++) {
             $columna = 'C' . $k;
@@ -33,7 +72,8 @@ class EncabezadosCalificacionService
                 'descripcion' => $encabezado ? $encabezado->descripcion : '',
                 'peso' => $encabezado ? (float)$encabezado->peso : 0,
                 'label' => $encabezado && !empty($encabezado->label) ? $encabezado->label : $columna,
-                'titulo' => $encabezado ? $encabezado->titulo : ''
+                'titulo' => $encabezado ? $encabezado->titulo : '',
+                'configurado' => $encabezado !== null
             ];
 
             $array_pesos[$k] = $columnas[$k]->peso;
@@ -43,13 +83,21 @@ class EncabezadosCalificacionService
             }
         }
 
+        $columnasParaTitulos = $columnas;
+        if ($usarEncabezadosFijos) {
+            $columnasParaTitulos = array_filter($columnas, function ($columna) {
+                return $columna->configurado;
+            });
+        }
+
         return [
             'encabezados' => $encabezados,
             'columnas' => $columnas,
             'array_pesos' => $array_pesos,
             'hay_pesos' => $hay_pesos,
             'suma_porcentajes' => $suma_porcentajes,
-            'grupos_titulo' => $this->agruparTitulos($columnas)
+            'grupos_titulo' => $this->agruparTitulos($columnasParaTitulos),
+            'usar_encabezados_fijos' => $usarEncabezadosFijos
         ];
     }
 
@@ -71,9 +119,8 @@ class EncabezadosCalificacionService
     {
         $query = EncabezadoCalificacion::query();
 
-        if ($this->usarEncabezadosPorAnio()) {
-            return $query->where('anio', $anio)
-                ->whereNull('periodo_id')
+        if ($this->usarEncabezadosFijosEnPeriodo($periodoId)) {
+            return $query->where('periodo_id', $periodoId)
                 ->whereNull('curso_id')
                 ->whereNull('asignatura_id');
         }
@@ -90,10 +137,10 @@ class EncabezadosCalificacionService
 
     public function getAtributosDePersistencia($anio, $periodoId, $cursoId, $asignaturaId)
     {
-        if ($this->usarEncabezadosPorAnio()) {
+        if ($this->usarEncabezadosFijosEnPeriodo($periodoId)) {
             return [
                 'anio' => $anio,
-                'periodo_id' => null,
+                'periodo_id' => $periodoId,
                 'curso_id' => null,
                 'asignatura_id' => null
             ];

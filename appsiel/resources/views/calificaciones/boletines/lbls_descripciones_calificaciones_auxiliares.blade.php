@@ -36,7 +36,7 @@
 	{
 		$calificacion_nota_original = $linea->calificaciones_auxiliares;
 
-		$campo = $lbl_calificacion_aux->label;
+		$campo = $lbl_calificacion_aux->columna_calificacion;
 		$lbl_cali_periodo = '&nbsp;';
 		if ( $calificacion_nota_original != null )
 		{
@@ -79,5 +79,4 @@
 	echo '<td align="center"> ' . $lbl_cali_prom . ' </td>';
 
 ?>
-
 

@@ -398,7 +398,7 @@ class CalificacionController extends Controller
             'hay_pesos' => $resumen_encabezados['hay_pesos'],
             'suma_porcentajes' => $resumen_encabezados['suma_porcentajes'],
             'grupos_titulo_encabezados' => $resumen_encabezados['grupos_titulo'],
-            'usar_encabezados_por_anio' => $this->encabezadosCalificacionService->usarEncabezadosPorAnio(),
+            'usar_encabezados_fijos' => $resumen_encabezados['usar_encabezados_fijos'],
             'creado_por' => $creado_por,
             'modificado_por' => $modificado_por,
             'id_colegio' => $this->colegio->id,
@@ -436,7 +436,9 @@ class CalificacionController extends Controller
         $cantidad_calificaciones = isset($json_fila['cantidad_calificaciones']) ? (int)$json_fila['cantidad_calificaciones'] : 16;
         for ($k = 1; $k < $cantidad_calificaciones; $k++) {
             $columna = 'C' . $k;
-            $linea_datos[$columna] = isset($json_fila[$columna]) ? (float)$json_fila[$columna] : 0;
+            if (array_key_exists($columna, $json_fila)) {
+                $linea_datos[$columna] = (float)$json_fila[$columna];
+            }
         }
 
         $request_time = $this->getRequestTimestamp($json_fila);

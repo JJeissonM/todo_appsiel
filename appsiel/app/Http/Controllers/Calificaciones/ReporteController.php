@@ -400,10 +400,11 @@ class ReporteController extends Controller
             (int)$request->curso_id,
             (int)$request->asignatura_id
         );
+        $usar_encabezados_fijos = $this->encabezadosCalificacionService->usarEncabezadosFijosEnPeriodo($request->periodo_id);
 
         $vista_blade = 'calificaciones.incluir.consulta_notas_auxiliares';
 
-        $vista = View::make( $vista_blade, compact('vec_estudiantes', 'cantidad_estudiantes', 'anio','curso','periodo','periodo_lectivo', 'asignatura', 'encabezados_calificaciones') )->render();   
+        $vista = View::make( $vista_blade, compact('vec_estudiantes', 'cantidad_estudiantes', 'anio','curso','periodo','periodo_lectivo', 'asignatura', 'encabezados_calificaciones', 'usar_encabezados_fijos') )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 

@@ -105,7 +105,7 @@
 									$manejar_encabezados_por_anio_lectivo_en_calificaciones = $parametros['manejar_encabezados_por_anio_lectivo_en_calificaciones'];
 								}
 							?>
-							{{ Form::bsSelect('manejar_encabezados_por_anio_lectivo_en_calificaciones', $manejar_encabezados_por_anio_lectivo_en_calificaciones, 'Manejar encabezados fijos por año lectivo en calificaciones', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('manejar_encabezados_por_anio_lectivo_en_calificaciones', $manejar_encabezados_por_anio_lectivo_en_calificaciones, 'Manejar encabezados fijos por periodo en calificaciones', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
