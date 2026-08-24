@@ -2,6 +2,7 @@
 
 use App\Calificaciones\Services\EncabezadosCalificacionService;
 use App\Calificaciones\Services\CalificacionesService;
+use App\Calificaciones\Services\CalificacionDefinitivaService;
 use App\Calificaciones\EncabezadoCalificacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -51,16 +52,35 @@ class EncabezadosCalificacionServiceTest extends TestCase
 
         Schema::create('sga_calificaciones_auxiliares', function ($table) {
             $table->increments('id');
+			$table->integer('id_colegio')->nullable();
+			$table->integer('anio')->nullable();
             $table->integer('id_periodo');
             $table->integer('curso_id');
+			$table->integer('id_asignatura')->nullable();
+			$table->integer('id_estudiante')->nullable();
+			$table->string('codigo_matricula')->nullable();
             for ($i = 1; $i < 16; $i++) {
                 $table->decimal('C'.$i, 8, 2)->default(0);
             }
         });
+
+		Schema::create('sga_calificaciones', function ($table) {
+			$table->increments('id');
+			$table->integer('id_colegio')->nullable();
+			$table->integer('anio')->nullable();
+			$table->integer('id_periodo');
+			$table->integer('curso_id');
+			$table->integer('id_asignatura');
+			$table->integer('id_estudiante');
+			$table->string('codigo_matricula')->nullable();
+			$table->decimal('calificacion', 8, 2)->default(0);
+			$table->timestamps();
+		});
     }
 
     public function tearDown()
     {
+		Schema::dropIfExists('sga_calificaciones');
         Schema::dropIfExists('sga_calificaciones_auxiliares');
         Schema::dropIfExists('sga_periodos');
         Schema::dropIfExists('sga_calificaciones_encabezados');
@@ -344,11 +364,122 @@ class EncabezadosCalificacionServiceTest extends TestCase
         $this->assertTrue($controller->validator->errors()->has('fecha'));
     }
 
-    protected function insertarEncabezado($columna, $label, $anio, $periodoId, $cursoId, $asignaturaId)
+    public function test_definitiva_sin_pesos_usa_promedio_simple_de_notas_no_cero()
+    {
+        $definitiva = (new CalificacionDefinitivaService())->calcular(
+            2026,
+            100,
+            4,
+            9,
+            ['C1' => 4, 'C2' => 2, 'C3' => 0]
+        );
+
+        $this->assertSame(3.0, $definitiva);
+    }
+
+    public function test_definitiva_fija_ignora_columnas_no_configuradas()
+    {
+        $this->insertarEncabezado('C1', 'Tareas', 2026, 101, null, null);
+        $this->insertarEncabezado('C3', 'Examen', 2026, 101, null, null);
+
+        $definitiva = (new CalificacionDefinitivaService())->calcular(
+            2026,
+            101,
+            4,
+            9,
+            ['C1' => 4, 'C2' => 5, 'C3' => 2]
+        );
+
+        $this->assertSame(3.0, $definitiva);
+    }
+
+    public function test_definitiva_ponderada_usa_los_pesos_configurados()
+    {
+        $this->insertarEncabezado('C1', 'Tareas', 2026, 102, null, null, 20);
+        $this->insertarEncabezado('C2', 'Examen', 2026, 102, null, null, 80);
+        $this->insertarEncabezado('C3', 'Sin peso', 2026, 102, null, null, 0);
+
+        $definitiva = (new CalificacionDefinitivaService())->calcular(
+            2026,
+            102,
+            4,
+            9,
+            ['C1' => 3, 'C2' => 5, 'C3' => 5]
+        );
+
+        $this->assertSame(4.6, $definitiva);
+    }
+
+	public function test_recalcula_todo_el_periodo_al_eliminar_el_ultimo_encabezado_fijo()
+	{
+		$idEncabezado = $this->insertarEncabezado('C1', 'Tareas', 2026, 103, null, null, 100);
+		DB::table('sga_calificaciones_auxiliares')->insert([
+			'id_colegio' => 1,
+			'anio' => 2026,
+			'id_periodo' => 103,
+			'curso_id' => 4,
+			'id_asignatura' => 9,
+			'id_estudiante' => 7,
+			'codigo_matricula' => 'M1',
+			'C1' => 4,
+			'C2' => 2
+		]);
+		DB::table('sga_calificaciones')->insert([
+			'id_colegio' => 1,
+			'anio' => 2026,
+			'id_periodo' => 103,
+			'curso_id' => 4,
+			'id_asignatura' => 9,
+			'id_estudiante' => 7,
+			'codigo_matricula' => 'M1',
+			'calificacion' => 0
+		]);
+
+		$encabezado = EncabezadoCalificacion::find($idEncabezado);
+		$calculadora = new CalificacionDefinitivaService(new EncabezadosCalificacionService());
+		$calculadora->recalcularPorEncabezado($encabezado);
+		$this->assertEquals(4, DB::table('sga_calificaciones')->value('calificacion'));
+
+		DB::table('sga_calificaciones_encabezados')->where('id', $idEncabezado)->delete();
+		$calculadora->recalcularPorEncabezado($encabezado);
+
+		$this->assertEquals(3, DB::table('sga_calificaciones')->value('calificacion'));
+	}
+
+	public function test_crud_no_permite_pesos_negativos_ni_superiores_al_total_disponible()
+	{
+		$this->insertarEncabezado('C1', 'Tareas', 2026, 104, null, null, 60);
+		$modelo = new EncabezadoCalificacion();
+
+		$requestExcedido = Request::create('/', 'POST', [
+			'fecha' => '',
+			'columna_calificacion' => 'C2',
+			'peso' => 50,
+			'anio' => 2026,
+			'periodo_id' => 104,
+			'curso_id' => '',
+			'asignatura_id' => ''
+		]);
+		$controllerExcedido = new EncabezadoCalificacionValidationController();
+		$modelo->validar_datos_creacion($requestExcedido, $controllerExcedido);
+
+		$requestNegativo = Request::create('/', 'POST', array_merge(
+			$requestExcedido->all(),
+			['periodo_id' => 105, 'peso' => -1]
+		));
+		$controllerNegativo = new EncabezadoCalificacionValidationController();
+		$modelo->validar_datos_creacion($requestNegativo, $controllerNegativo);
+
+		$this->assertTrue($controllerExcedido->validator->errors()->has('peso'));
+		$this->assertTrue($controllerNegativo->validator->errors()->has('peso'));
+	}
+
+    protected function insertarEncabezado($columna, $label, $anio, $periodoId, $cursoId, $asignaturaId, $peso = 0)
     {
         return DB::table('sga_calificaciones_encabezados')->insertGetId([
             'columna_calificacion' => $columna,
             'label' => $label,
+			'peso' => $peso,
             'anio' => $anio,
             'periodo_id' => $periodoId,
             'curso_id' => $cursoId,

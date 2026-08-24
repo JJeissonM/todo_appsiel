@@ -16,6 +16,13 @@ class CalificacionAuxiliar extends Model
 	public static function get_todas_un_estudiante_periodo( $estudiante_id, $periodo_id )
 	{
 		return CalificacionAuxiliar::leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_calificaciones_auxiliares.id_asignatura')
+							->leftJoin('sga_calificaciones', function ($join) {
+								$join->on('sga_calificaciones.anio', '=', 'sga_calificaciones_auxiliares.anio')
+									->on('sga_calificaciones.id_periodo', '=', 'sga_calificaciones_auxiliares.id_periodo')
+									->on('sga_calificaciones.curso_id', '=', 'sga_calificaciones_auxiliares.curso_id')
+									->on('sga_calificaciones.id_estudiante', '=', 'sga_calificaciones_auxiliares.id_estudiante')
+									->on('sga_calificaciones.id_asignatura', '=', 'sga_calificaciones_auxiliares.id_asignatura');
+							})
 					            ->where('sga_calificaciones_auxiliares.id_estudiante' , $estudiante_id)
 					            ->where('sga_calificaciones_auxiliares.id_periodo' , $periodo_id)
 					            ->select(
@@ -34,8 +41,9 @@ class CalificacionAuxiliar extends Model
 					            			'sga_calificaciones_auxiliares.C11',
 					            			'sga_calificaciones_auxiliares.C12',
 					            			'sga_calificaciones_auxiliares.C13',
-					            			'sga_calificaciones_auxiliares.C14',
-					            			'sga_calificaciones_auxiliares.C15')
+							'sga_calificaciones_auxiliares.C14',
+							'sga_calificaciones_auxiliares.C15',
+							'sga_calificaciones.calificacion AS calificacion_definitiva')
 					            ->get();
 	}
 

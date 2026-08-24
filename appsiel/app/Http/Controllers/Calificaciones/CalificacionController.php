@@ -23,6 +23,7 @@ use App\Calificaciones\Logro;
 use App\Core\Colegio;
 use App\Sistema\Aplicacion;
 use App\Calificaciones\Services\EncabezadosCalificacionService;
+use App\Calificaciones\Services\CalificacionDefinitivaService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
@@ -416,8 +417,6 @@ class CalificacionController extends Controller
     public function store_calificacion(array $json_fila)
     {
         $id_calificacion = isset($json_fila['id_calificacion']) ? (int)$json_fila['id_calificacion'] : 0;
-        $calificacion_texto = isset($json_fila['calificacion']) ? (float)$json_fila['calificacion'] : 0;
-
         $user = Auth::user();
 
         $json_fila['creado_por'] = $json_fila['creado_por'] ?? $user->email;
@@ -427,7 +426,6 @@ class CalificacionController extends Controller
         $identificador = $this->buildCalificacionIdentificador($json_fila);
 
         $linea_datos = $identificador + [
-            'calificacion' => $calificacion_texto,
             'logros' => $json_fila['logros'] ?? '',
             'creado_por' => $json_fila['creado_por'],
             'modificado_por' => $json_fila['modificado_por']
@@ -441,8 +439,18 @@ class CalificacionController extends Controller
             }
         }
 
+        $calculadora = app(CalificacionDefinitivaService::class);
+        $linea_datos['calificacion'] = $calculadora->calcular(
+            $identificador['anio'],
+            $identificador['id_periodo'],
+            $identificador['curso_id'],
+            $identificador['id_asignatura'],
+            $linea_datos
+        );
+
         $request_time = $this->getRequestTimestamp($json_fila);
-        $should_delete = $calificacion_texto == 0 && trim($linea_datos['logros']) === '';
+        $should_delete = !$calculadora->tieneCalificacionesAuxiliares($linea_datos)
+            && trim($linea_datos['logros']) === '';
         $fila_id = $json_fila['fila_id'] ?? null;
 
         return DB::transaction(function () use ($id_calificacion, $linea_datos, $json_fila, $identificador, $request_time, $should_delete, $fila_id) {

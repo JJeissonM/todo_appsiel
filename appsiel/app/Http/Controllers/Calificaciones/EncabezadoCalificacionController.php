@@ -91,6 +91,16 @@ class EncabezadoCalificacionController extends Controller
     public function store(Request $request)
     {
         $this->normalizarYValidarFecha($request);
+		$this->validate(
+			$request,
+			['peso' => 'required|numeric|min:0|max:100'],
+			[
+				'peso.required' => 'Debe ingresar el peso de la actividad.',
+				'peso.numeric' => 'El peso debe ser un valor numérico.',
+				'peso.min' => 'El peso no puede ser negativo.',
+				'peso.max' => 'El peso no puede superar el 100%.'
+			]
+		);
 
         $cerrar_modal = "true";
         $scope = $this->encabezadosCalificacionService->getAtributosDePersistencia(

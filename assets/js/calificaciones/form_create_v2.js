@@ -654,6 +654,15 @@ $(document).ready(function () {
             fila.setAttribute( "data-calificacion", response[0].calificacion_texto );
             fila.setAttribute( "data-id_calificacion_aux", response[0].id_calificacion_aux );
 
+            var numeroFila = response[0].numero_fila
+                ? response[0].numero_fila.toString().split("_")[1]
+                : null;
+            if (numeroFila) {
+                $("#calificacion_texto" + numeroFila).val(
+                    parseFloat(response[0].calificacion_texto || 0).toFixed(2)
+                );
+            }
+
             quitarFilaModificada(matricula_id);
             restantes--;
             actualizarContador(restantes);
@@ -677,7 +686,6 @@ $(document).ready(function () {
     }
 
 });
-
 
 
 

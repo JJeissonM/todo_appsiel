@@ -4,6 +4,7 @@ namespace App\Calificaciones;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Calificaciones\CursoTieneAsignatura;
+use App\Calificaciones\Services\CalificacionDefinitivaService;
 
 class EncabezadoCalificacion extends Model
 {
@@ -14,6 +15,19 @@ class EncabezadoCalificacion extends Model
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Columna', 'Agrupación', 'Label', 'Peso (%)', 'Fecha', 'Año lectivo', 'Periodo', 'Curso', 'Asignatura', 'Detalle'];
 
 	public $urls_acciones = '{"eliminar":"web_eliminar/id_fila","otros_enlaces":""}';
+
+	protected static function boot()
+	{
+		parent::boot();
+
+		static::saved(function ($encabezado) {
+			app(CalificacionDefinitivaService::class)->recalcularPorEncabezado($encabezado);
+		});
+
+		static::deleted(function ($encabezado) {
+			app(CalificacionDefinitivaService::class)->recalcularPorEncabezado($encabezado);
+		});
+	}
 
 	public function validar_datos_creacion($request, $controller)
 	{
@@ -64,14 +78,17 @@ class EncabezadoCalificacion extends Model
 
 	protected function validarUnicidadPorAlcance($request, $controller, $id = null)
 	{
+		$this->normalizarAlcanceRequest($request, $id);
 		$reglaFecha = $this->esEncabezadoSoloPorPeriodo($request, $id)
 			? 'date_format:Y-m-d'
 			: 'required|date_format:Y-m-d';
+		$pesoMaximo = max(0, 100 - $this->getSumaPesosDelAlcance($request, $id));
 
 		$controller->validate(
 			$request,
 			[
 				'fecha' => $reglaFecha,
+				'peso' => 'numeric|min:0|max:' . $pesoMaximo,
 				'columna_calificacion' => [
 					'required',
 					$this->getReglaUnicidadPorAlcance($request, $id)
@@ -80,9 +97,32 @@ class EncabezadoCalificacion extends Model
 			[
 				'fecha.required' => 'Debe ingresar la fecha de la actividad.',
 				'fecha.date_format' => 'La fecha de la actividad debe tener el formato año-mes-día.',
+				'peso.numeric' => 'El peso debe ser un valor numérico.',
+				'peso.min' => 'El peso no puede ser negativo.',
+				'peso.max' => 'La suma de pesos del alcance no puede superar el 100%.',
 				'columna_calificacion.unique' => 'La columna ya está configurada para el mismo año, periodo, curso y asignatura.'
 			]
 		);
+	}
+
+	protected function getSumaPesosDelAlcance($request, $id = null)
+	{
+		$query = self::where('anio', $request->input('anio'))
+			->where('periodo_id', $request->input('periodo_id'));
+
+		foreach (['curso_id', 'asignatura_id'] as $campo) {
+			if (is_null($request->input($campo))) {
+				$query->whereNull($campo);
+			} else {
+				$query->where($campo, $request->input($campo));
+			}
+		}
+
+		if (!is_null($id)) {
+			$query->where('id', '<>', (int)$id);
+		}
+
+		return (float)$query->sum('peso');
 	}
 
 	protected function normalizarFechaRequest($request, $id = null)

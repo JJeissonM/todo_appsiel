@@ -100,6 +100,10 @@
                                 $prom = $promedio / $n;
                             }
 
+							if (!is_null($registros[$i]->calificacion_definitiva)) {
+								$prom = (float)$registros[$i]->calificacion_definitiva;
+							}
+
                             // La calificación de nivelación reemplaza la nota promedio final.
                             $cali_nivelacion_periodo = $periodo->get_calificacion_nivelacion( $curso->id, $estudiante->id, $registros[$i]->asignatura_id );
                             

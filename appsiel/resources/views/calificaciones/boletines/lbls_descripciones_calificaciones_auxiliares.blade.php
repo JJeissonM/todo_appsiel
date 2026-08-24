@@ -32,9 +32,10 @@
 
 	$prom = 0;
 	$n = 0;
+	$calificaciones_auxiliares_linea = $linea->calificaciones_auxiliares;
 	foreach($lbl_calificaciones_aux as $lbl_calificacion_aux)
 	{
-		$calificacion_nota_original = $linea->calificaciones_auxiliares;
+		$calificacion_nota_original = $calificaciones_auxiliares_linea;
 
 		$campo = $lbl_calificacion_aux->columna_calificacion;
 		$lbl_cali_periodo = '&nbsp;';
@@ -43,15 +44,30 @@
 			$cali_periodo = (float)$calificacion_nota_original->$campo;
 			$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' );
 
-			$prom += $cali_periodo * (float)$lbl_calificacion_aux->peso / 100;
 			$n++;
 		}
 		
 		echo '<td align="center"> ' . $lbl_cali_periodo . ' </td>';	
 	}
 
+	if ($calificaciones_auxiliares_linea != null)
+	{
+		$prom = app(App\Calificaciones\Services\CalificacionDefinitivaService::class)->calcular(
+			(int)substr($periodo->fecha_desde, 0, 4),
+			$periodo->id,
+			$curso->id,
+			$linea->asignatura_id,
+			$calificaciones_auxiliares_linea
+		);
+	}
+
+	if ($linea->calificacion != null)
+	{
+		$prom = (float)$linea->calificacion->calificacion;
+	}
+
 	$lbl_cali_prom = '&nbsp;';
-	if( $n != 0 )
+	if( $n != 0 || $linea->calificacion != null )
 	{
 		$lbl_cali_prom = number_format( $prom, $decimales, ',', '.' );
 	}
@@ -79,4 +95,3 @@
 	echo '<td align="center"> ' . $lbl_cali_prom . ' </td>';
 
 ?>
-

@@ -53,6 +53,11 @@ class EncabezadosCalificacionService
         return $this->periodosConEncabezadosFijos[$periodoId];
     }
 
+    public function olvidarPeriodo($periodoId)
+    {
+        unset($this->periodosConEncabezadosFijos[(int)$periodoId]);
+    }
+
     public function getResumenParaCarga($anio, $periodoId, $cursoId, $asignaturaId)
     {
         $encabezados = $this->getEncabezados($anio, $periodoId, $cursoId, $asignaturaId);
