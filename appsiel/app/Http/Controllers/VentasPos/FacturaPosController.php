@@ -74,6 +74,7 @@ use App\VentasPos\Services\TipService;
 use App\VentasPos\Services\FacturaPosService;
 use App\VentasPos\Services\InvoicingService;
 use App\VentasPos\Services\PosPaymentModalService;
+use App\VentasPos\Services\PosTransactionDateService;
 use App\VentasPos\Services\TreasuryService;
 
 class FacturaPosController extends TransaccionController
@@ -1429,11 +1430,7 @@ class FacturaPosController extends TransaccionController
 
         $tipo_docs_app_id = $tipo_transaccion->tipos_documentos->first()->id;
 
-        $fecha = date('Y-m-d');        
-        if(config('ventas_pos.asignar_fecha_apertura_a_facturas'))
-        {
-            $fecha = $pdv->ultima_fecha_apertura();
-        }
+        $fecha = (new PosTransactionDateService())->resolve($pdv);
 
         $campos = (object)[
             'core_tipo_transaccion_id' => $id_transaccion,
@@ -1511,6 +1508,7 @@ class FacturaPosController extends TransaccionController
         $this->datos['cliente_proveedor_id'] = $core_tercero_id;
         $this->datos['core_tercero_id'] = $core_tercero_id;
         $this->datos['descripcion'] = $request->detalle_operacion;
+        $this->datos['fecha'] = (new PosTransactionDateService())->resolve($pdv, $request->fecha);
 
         
         $detalle_operacion = $request->detalle_operacion;
