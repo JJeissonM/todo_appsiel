@@ -149,7 +149,7 @@ class PrimaServicios implements Estrategia
                     $valor_agrupacion_x_dia = $valor_acumulado_agrupacion / $cantidad_dias;
                 }
 
-                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find($parametros_prestacion->nom_agrupacion_id)->descripcion;
+                $this->tabla_resumen['descripcion_agrupacion'] = PrestacionSocial::get_agrupacion_validada($parametros_prestacion->nom_agrupacion_id)->descripcion;
                 $this->tabla_resumen['valor_acumulado_salario'] = $empleado->sueldo;
                 $this->tabla_resumen['valor_acumulado_agrupacion'] = $valor_acumulado_agrupacion;
                 $this->tabla_resumen['valor_salario_x_dia'] = $empleado->salario_x_dia();
@@ -177,7 +177,7 @@ class PrimaServicios implements Estrategia
                     $valor_base_diaria = $valor_acumulado_agrupacion / $cantidad_dias;
                 }
 
-                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find($parametros_prestacion->nom_agrupacion_id)->descripcion;
+                $this->tabla_resumen['descripcion_agrupacion'] = PrestacionSocial::get_agrupacion_validada($parametros_prestacion->nom_agrupacion_id)->descripcion;
                 $this->tabla_resumen['valor_acumulado_salario'] = 0;
                 $this->tabla_resumen['valor_acumulado_agrupacion'] = $valor_acumulado_agrupacion;
                 $this->tabla_resumen['valor_salario_x_dia'] = 0;
@@ -206,7 +206,7 @@ class PrimaServicios implements Estrategia
     */
     public function get_valor_acumulado_agrupacion_entre_meses_conceptos_solo_salario( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
     {
-        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
+        $conceptos_de_la_agrupacion = PrestacionSocial::get_agrupacion_validada($nom_agrupacion_id)->conceptos;
 
         $vec_conceptos = [];
         foreach ($conceptos_de_la_agrupacion as $concepto)

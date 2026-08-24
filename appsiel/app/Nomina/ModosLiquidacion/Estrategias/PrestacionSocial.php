@@ -113,7 +113,7 @@ class PrestacionSocial
     */
     public static function get_valor_acumulado_agrupacion_entre_meses( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
     {
-        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
+        $conceptos_de_la_agrupacion = self::get_agrupacion_validada($nom_agrupacion_id)->conceptos->pluck('id')->toArray();
 
         $registros = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'core_tercero_id', $empleado->core_tercero_id )
@@ -140,7 +140,7 @@ class PrestacionSocial
 
     public static function get_valor_acumulado_agrupacion_entre_meses_conceptos_no_salario( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
     {
-        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
+        $conceptos_de_la_agrupacion = self::get_agrupacion_validada($nom_agrupacion_id)->conceptos;
 
         $vec_conceptos = [];
         foreach ($conceptos_de_la_agrupacion as $concepto)
@@ -161,6 +161,25 @@ class PrestacionSocial
                                             ->sum( 'valor_deduccion' );
 
         return ( $total_devengos - $total_deducciones );
+    }
+
+    public static function get_agrupacion_validada($nom_agrupacion_id)
+    {
+        $agrupacion = AgrupacionConcepto::with('conceptos')->find((int)$nom_agrupacion_id);
+
+        if (is_null($agrupacion)) {
+            throw new \InvalidArgumentException(
+                'La agrupación de conceptos de la prestación no existe o no fue configurada.'
+            );
+        }
+
+        if ($agrupacion->conceptos->isEmpty()) {
+            throw new \InvalidArgumentException(
+                'La agrupación de conceptos de la prestación no tiene conceptos asociados.'
+            );
+        }
+
+        return $agrupacion;
     }
 
 

@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class ParametroLiquidacionPrestacionesSociales extends Model
 {
+    const BASE_SUELDO = 'sueldo';
+    const BASE_SUELDO_MAS_PROMEDIO_AGRUPACION = 'sueldo_mas_promedio_agrupacion';
+    const BASE_PROMEDIO_AGRUPACION = 'promedio_agrupacion';
+
     protected $table = 'nom_parametros_liquidacion_prestaciones_sociales';
 
     /*
@@ -30,6 +34,138 @@ class ParametroLiquidacionPrestacionesSociales extends Model
     public function agrupacion_conceptos()
     {
         return $this->belongsTo(AgrupacionConcepto::class, 'nom_agrupacion_id');
+    }
+
+    public function validar_configuracion($tipo_liquidacion = null)
+    {
+        $bases_validas = [
+            self::BASE_SUELDO,
+            self::BASE_SUELDO_MAS_PROMEDIO_AGRUPACION,
+            self::BASE_PROMEDIO_AGRUPACION
+        ];
+
+        if (!in_array($this->base_liquidacion, $bases_validas, true)) {
+            return 'La base de liquidación configurada no es válida.';
+        }
+
+        if ((int)$this->nom_concepto_id <= 0 || is_null(NomConcepto::find($this->nom_concepto_id))) {
+            return 'La prestación no tiene asociado un concepto de nómina válido.';
+        }
+
+        if (!$this->base_requiere_agrupacion()) {
+            return '';
+        }
+
+        $error = $this->validar_agrupacion($this->nom_agrupacion_id, 'La agrupación de conceptos');
+        if ($error !== '') {
+            return $error;
+        }
+
+        if ($this->concepto_prestacion === 'vacaciones' && $tipo_liquidacion === 'terminacion_contrato') {
+            return $this->validar_agrupacion(
+                $this->nom_agrupacion2_id,
+                'La agrupación de conceptos para terminación de contrato'
+            );
+        }
+
+        return '';
+    }
+
+    public function base_requiere_agrupacion()
+    {
+        return in_array($this->base_liquidacion, [
+            self::BASE_SUELDO_MAS_PROMEDIO_AGRUPACION,
+            self::BASE_PROMEDIO_AGRUPACION
+        ], true);
+    }
+
+    protected function validar_agrupacion($agrupacion_id, $nombre_campo)
+    {
+        if ((int)$agrupacion_id <= 0) {
+            return $nombre_campo . ' es obligatoria para la base de liquidación seleccionada.';
+        }
+
+        $agrupacion = AgrupacionConcepto::find($agrupacion_id);
+        if (is_null($agrupacion)) {
+            return $nombre_campo . ' no existe.';
+        }
+
+        if (!$agrupacion->conceptos()->exists()) {
+            return $nombre_campo . ' no tiene conceptos asociados.';
+        }
+
+        return '';
+    }
+
+    public function validar_datos_creacion($request, $controller)
+    {
+        $this->validar_datos_formulario($request, $controller);
+    }
+
+    public function validar_datos_actualizacion($request, $controller, $id)
+    {
+        $this->validar_datos_formulario($request, $controller);
+    }
+
+    protected function validar_datos_formulario($request, $controller)
+    {
+        $controller->validate($request, [
+            'base_liquidacion' => 'required|in:' . implode(',', [
+                self::BASE_SUELDO,
+                self::BASE_SUELDO_MAS_PROMEDIO_AGRUPACION,
+                self::BASE_PROMEDIO_AGRUPACION
+            ]),
+            'nom_concepto_id' => 'required|not_in:0|exists:nom_conceptos,id'
+        ], [
+            'base_liquidacion.in' => 'La base de liquidación seleccionada no es válida.',
+            'nom_concepto_id.not_in' => 'Debe seleccionar el concepto de nómina de la prestación.',
+            'nom_concepto_id.exists' => 'El concepto de nómina seleccionado no existe.'
+        ]);
+
+        if (!in_array($request->base_liquidacion, [
+            self::BASE_SUELDO_MAS_PROMEDIO_AGRUPACION,
+            self::BASE_PROMEDIO_AGRUPACION
+        ], true)) {
+            return;
+        }
+
+        $controller->validate($request, [
+            'nom_agrupacion_id' => 'required|not_in:0|exists:nom_agrupaciones_conceptos,id'
+        ], [
+            'nom_agrupacion_id.required' => 'Debe seleccionar una agrupación de conceptos.',
+            'nom_agrupacion_id.not_in' => 'Debe seleccionar una agrupación de conceptos.',
+            'nom_agrupacion_id.exists' => 'La agrupación de conceptos seleccionada no existe.'
+        ]);
+
+        $agrupacion = AgrupacionConcepto::find($request->nom_agrupacion_id);
+        if (!is_null($agrupacion) && !$agrupacion->conceptos()->exists()) {
+            $controller->validate($request, [
+                'nom_agrupacion_id' => 'in:__agrupacion_con_conceptos__'
+            ], [
+                'nom_agrupacion_id.in' => 'La agrupación seleccionada no tiene conceptos asociados.'
+            ]);
+        }
+
+        if ($request->concepto_prestacion !== 'vacaciones') {
+            return;
+        }
+
+        $controller->validate($request, [
+            'nom_agrupacion2_id' => 'required|not_in:0|exists:nom_agrupaciones_conceptos,id'
+        ], [
+            'nom_agrupacion2_id.required' => 'Debe seleccionar la agrupación para vacaciones por terminación de contrato.',
+            'nom_agrupacion2_id.not_in' => 'Debe seleccionar la agrupación para vacaciones por terminación de contrato.',
+            'nom_agrupacion2_id.exists' => 'La agrupación para vacaciones por terminación de contrato no existe.'
+        ]);
+
+        $agrupacion_terminacion = AgrupacionConcepto::find($request->nom_agrupacion2_id);
+        if (!is_null($agrupacion_terminacion) && !$agrupacion_terminacion->conceptos()->exists()) {
+            $controller->validate($request, [
+                'nom_agrupacion2_id' => 'in:__agrupacion_con_conceptos__'
+            ], [
+                'nom_agrupacion2_id.in' => 'La agrupación para terminación de contrato no tiene conceptos asociados.'
+            ]);
+        }
     }
 
     public function cuenta_debito()

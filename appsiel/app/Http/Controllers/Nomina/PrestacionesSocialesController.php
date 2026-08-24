@@ -48,12 +48,33 @@ class PrestacionesSocialesController extends TransaccionController
 
         $documento_nomina = NomDocEncabezado::find( (int)$request->nom_doc_encabezado_id );
 
+        if (is_null($documento_nomina)) {
+            return '<div class="alert alert-danger">El documento de nómina seleccionado no existe.</div>';
+        }
+
+        if (empty($request->prestaciones) || !is_array($request->prestaciones)) {
+            return '<div class="alert alert-danger">Debe seleccionar al menos una prestación para liquidar.</div>';
+        }
+
         if ( !$documento_nomina->esta_activo_para_transacciones() ) {
             return '<div class="alert alert-warning">El documento de nómina no puede modificarse porque no está en estado Activo.</div>';
         }
 
         // Se obtienen los Empleados del documento de nómina
         $empleados_documento = $documento_nomina->empleados;
+
+        $errores_parametrizacion = $this->validar_parametrizacion(
+            $empleados_documento,
+            (array)$request->prestaciones,
+            $documento_nomina->tipo_liquidacion
+        );
+
+        if (!empty($errores_parametrizacion)) {
+            $lista_errores = '<li>' . implode('</li><li>', array_map('e', $errores_parametrizacion)) . '</li>';
+
+            return '<div class="alert alert-danger"><strong>No se puede generar la liquidación.</strong>'
+                . '<ul>' . $lista_errores . '</ul></div>';
+        }
         
         $array_prestaciones_liquidadas = (object)[];
 
@@ -148,6 +169,47 @@ class PrestacionesSocialesController extends TransaccionController
         $this->actualizar_totales_documento( (int)$request->nom_doc_encabezado_id );
 
         return $vista;
+    }
+
+    protected function validar_parametrizacion($empleados, array $prestaciones, $tipo_liquidacion)
+    {
+        $errores = [];
+        $configuraciones_validadas = [];
+
+        foreach ($empleados as $empleado) {
+            if (in_array($empleado->tipo_cotizante, [51]) || $empleado->clase_contrato == 'por_turnos') {
+                continue;
+            }
+
+            foreach ($prestaciones as $prestacion) {
+                $llave = $empleado->grupo_empleado_id . '|' . $prestacion;
+                if (isset($configuraciones_validadas[$llave])) {
+                    continue;
+                }
+                $configuraciones_validadas[$llave] = true;
+
+                $parametros = ParametroLiquidacionPrestacionesSociales::where('concepto_prestacion', $prestacion)
+                    ->where('grupo_empleado_id', $empleado->grupo_empleado_id)
+                    ->first();
+
+                $grupo = $empleado->grupo_empleado;
+                $nombre_grupo = is_null($grupo) ? 'ID ' . $empleado->grupo_empleado_id : $grupo->descripcion;
+                $nombre_prestacion = str_replace('_', ' ', $prestacion);
+
+                if (is_null($parametros)) {
+                    $errores[] = ucfirst($nombre_prestacion) . ' - grupo ' . $nombre_grupo
+                        . ': no existe parametrización.';
+                    continue;
+                }
+
+                $error = $parametros->validar_configuracion($tipo_liquidacion);
+                if ($error !== '') {
+                    $errores[] = ucfirst($nombre_prestacion) . ' - grupo ' . $nombre_grupo . ': ' . $error;
+                }
+            }
+        }
+
+        return $errores;
     }
 
     public function almacenar_prestaciones_liquidadas( $array_prestaciones_liquidadas )
