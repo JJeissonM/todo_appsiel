@@ -104,7 +104,10 @@ class NomDocRegistro extends Model
     public static function get_filtros_avanzados_index()
     {
         $documentos = self::opciones_filtro('nom_doc_encabezados.id', 'nom_doc_encabezados.descripcion');
-        $empleados = self::opciones_filtro('core_terceros.id', 'core_terceros.descripcion');
+        // El empleado debe pertenecer al resultado de los demas filtros activos.
+        // Si se retira su ultimo registro del documento/concepto, no debe seguir
+        // apareciendo solo porque tenga registros historicos en otro documento.
+        $empleados = self::opciones_filtro_empleados();
         $conceptos = self::opciones_filtro('nom_conceptos.id', 'nom_conceptos.descripcion');
 
         return [
@@ -172,6 +175,31 @@ class NomDocRegistro extends Model
             ->distinct()
             ->orderBy($descripcion)
             ->lists($descripcion, $id)
+            ->all();
+    }
+
+    protected static function opciones_filtro_empleados()
+    {
+        $query = self::query_listado();
+        $filtrosRelacionados = [
+            'filtro_documento' => 'nom_doc_registros.nom_doc_encabezado_id',
+            'filtro_fecha' => 'nom_doc_registros.fecha',
+            'filtro_concepto' => 'nom_doc_registros.nom_concepto_id'
+        ];
+
+        foreach ($filtrosRelacionados as $parametro => $columna) {
+            $valor = trim((string) Input::get($parametro, ''));
+            if ($valor !== '') {
+                $query->where($columna, $valor);
+            }
+        }
+
+        return $query
+            ->whereNotNull('core_terceros.id')
+            ->select('core_terceros.id', 'core_terceros.descripcion')
+            ->distinct()
+            ->orderBy('core_terceros.descripcion')
+            ->lists('core_terceros.descripcion', 'core_terceros.id')
             ->all();
     }
 
