@@ -8,6 +8,7 @@
         $fechaHoraCierre = '';
         $pdvDescripcion = '';
         $fechaInicialArqueo = date('Y-m-d');
+        $usarMovimientosTesoreriaPorHora = \App\Tesoreria\TesoMovimiento::usarMovimientosTesoreriaPorHora();
 
         if (Input::get('pdv_id') != null) {
             $pdv = \App\VentasPos\Pdv::find($pdvId);
@@ -18,8 +19,10 @@
 
                 if (!is_null($rangoDiaPdv)) {
                     $valor_base = $rangoDiaPdv['cash_base'];
-                    $fechaHoraApertura = $rangoDiaPdv['opening_at'];
-                    $fechaHoraCierre = $rangoDiaPdv['closing_at'];
+                    if ($usarMovimientosTesoreriaPorHora) {
+                        $fechaHoraApertura = $rangoDiaPdv['opening_at'];
+                        $fechaHoraCierre = $rangoDiaPdv['closing_at'];
+                    }
                 }
             }
         }
@@ -39,22 +42,24 @@
             <div id="pdv_descripcion" class="form-control" style="background-color: #f5f5f5;">{{ $pdvDescripcion }}</div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6 form-group">
-                <label for="fecha_hora_apertura">Fecha y hora de apertura:</label>
-                <input type="datetime-local" id="fecha_hora_apertura" name="fecha_hora_apertura" class="form-control" step="1"
-                       value="{{ $fechaHoraApertura == '' ? '' : str_replace(' ', 'T', substr($fechaHoraApertura, 0, 19)) }}">
+        @if($usarMovimientosTesoreriaPorHora)
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="fecha_hora_apertura">Fecha y hora de apertura:</label>
+                    <input type="datetime-local" id="fecha_hora_apertura" name="fecha_hora_apertura" class="form-control" step="1"
+                           value="{{ $fechaHoraApertura == '' ? '' : str_replace(' ', 'T', substr($fechaHoraApertura, 0, 19)) }}">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="fecha_hora_cierre">Fecha y hora de cierre:</label>
+                    <input type="datetime-local" id="fecha_hora_cierre" name="fecha_hora_cierre" class="form-control" step="1"
+                           value="{{ $fechaHoraCierre == '' ? '' : str_replace(' ', 'T', substr($fechaHoraCierre, 0, 19)) }}">
+                </div>
             </div>
-            <div class="col-md-6 form-group">
-                <label for="fecha_hora_cierre">Fecha y hora de cierre:</label>
-                <input type="datetime-local" id="fecha_hora_cierre" name="fecha_hora_cierre" class="form-control" step="1"
-                       value="{{ $fechaHoraCierre == '' ? '' : str_replace(' ', 'T', substr($fechaHoraCierre, 0, 19)) }}">
-            </div>
-        </div>
 
-        <div id="rango_pdv_mensaje" class="alert alert-warning" style="{{ $fechaHoraApertura != '' && $fechaHoraCierre != '' ? 'display: none;' : '' }}">
-            Complete el rango de apertura y cierre, o déjelo vacío para consultar el día completo.
-        </div>
+            <div id="rango_pdv_mensaje" class="alert alert-warning" style="{{ $fechaHoraApertura != '' && $fechaHoraCierre != '' ? 'display: none;' : '' }}">
+                Complete el rango de apertura y cierre, o déjelo vacío para consultar el día completo.
+            </div>
+        @endif
         
 
         <br><br>
@@ -233,17 +238,24 @@
                 $('.breadcrumb > li').eq(1).find('a').attr('href','#');   
             }
             var sum;
+            var usarMovimientosTesoreriaPorHora = {{ $usarMovimientosTesoreriaPorHora ? 'true' : 'false' }};
 
             $('#fecha').on('change', function () {
-                cargarRangoPdvPorFecha($(this).val(), true);
+                if (usarMovimientosTesoreriaPorHora) {
+                    cargarRangoPdvPorFecha($(this).val(), true);
+                } else if (typeof recalcularSaldoInicialArqueo === 'function') {
+                    recalcularSaldoInicialArqueo();
+                }
             });
 
-            $('#fecha_hora_apertura, #fecha_hora_cierre').on('change', function () {
-                actualizarMensajeRango();
-                limpiarMovimientosPorCambioTurno();
-            });
+            if (usarMovimientosTesoreriaPorHora) {
+                $('#fecha_hora_apertura, #fecha_hora_cierre').on('change', function () {
+                    actualizarMensajeRango();
+                    limpiarMovimientosPorCambioTurno();
+                });
 
-            cargarRangoPdvPorFecha($('#fecha').val(), false);
+                cargarRangoPdvPorFecha($('#fecha').val(), false);
+            }
 
             function cargarRangoPdvPorFecha(fecha, recalcularSaldoInicial) {
                 if ($('#pdv_id').val() === '' || fecha === '') {
@@ -318,6 +330,10 @@
             });
 
             function validarCierrePdvArqueo() {
+                if (!usarMovimientosTesoreriaPorHora) {
+                    return true;
+                }
+
                 var apertura = $('#fecha_hora_apertura').val();
                 var cierre = $('#fecha_hora_cierre').val();
 

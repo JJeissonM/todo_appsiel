@@ -29,7 +29,7 @@ class ArqueoCaja extends Model
         'lbl_total_sistema', 'total_saldo', 'detalles_mov_entradas', 'total_mov_entradas', 'detalles_mov_salidas', 'total_mov_salidas', 'observaciones', 'estado', 'creado_por', 'modificado_por'
     ];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'No.', 'Fecha', 'Caja', 'Observaciones', 'Total saldo', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'No.', 'Caja', 'Observaciones', 'Total saldo', 'Estado'];
 
     public function caja()
     {
@@ -66,8 +66,8 @@ class ArqueoCaja extends Model
     {
         $query = ArqueoCaja::leftJoin('teso_cajas', 'teso_cajas.id', '=', 'teso_arqueos_caja.teso_caja_id')
             ->select(
-                'teso_arqueos_caja.id AS campo1',
-                'teso_arqueos_caja.fecha AS campo2',
+                'teso_arqueos_caja.fecha AS campo1',
+                'teso_arqueos_caja.id AS campo2',
                 'teso_cajas.descripcion AS campo3',
                 'teso_arqueos_caja.observaciones AS campo4',
                 'teso_arqueos_caja.total_saldo AS campo5',
@@ -94,8 +94,8 @@ class ArqueoCaja extends Model
     {
         $query = ArqueoCaja::leftJoin('teso_cajas', 'teso_cajas.id', '=', 'teso_arqueos_caja.teso_caja_id')
             ->select(
-                'teso_arqueos_caja.id AS No.',
                 'teso_arqueos_caja.fecha AS FECHA',
+                'teso_arqueos_caja.id AS No.',
                 'teso_cajas.descripcion AS CAJA',
                 'teso_arqueos_caja.observaciones AS OBSERVACIONES',
                 'teso_arqueos_caja.total_saldo AS TOTAL_SALDO',

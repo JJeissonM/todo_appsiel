@@ -68,9 +68,11 @@ class InvMovimientoReporteHoraFiltroTest extends TestCase
 
         $sql = strtolower($query->toSql());
 
-        $this->assertNotContains('coalesce(inv_movimientos.hora_inicio, inv_movimientos.hora_finalizacion) >= ?', $sql);
+        $this->assertContains('`inv_movimientos`.`fecha` <= ?', $sql);
+        $this->assertContains('time(inv_movimientos.created_at) <= ?', $sql);
         $this->assertContains('coalesce(inv_movimientos.hora_finalizacion, inv_movimientos.hora_inicio) <= ?', $sql);
-        $this->assertSame(['2026-08-12', '2026-08-12', '14:30:00'], $query->getBindings());
+        $this->assertNotContains('coalesce(inv_movimientos.hora_inicio, inv_movimientos.hora_finalizacion) >= ?', $sql);
+        $this->assertSame(['2026-08-12', '14:30:00', '14:30:00'], $query->getBindings());
     }
 
     public function test_existencias_sin_hora_conserva_el_corte_tradicional_por_fecha()

@@ -77,10 +77,37 @@ class InvMovimiento extends Model
         });
     }
 
-    /** Aplica un unico limite superior para reportes de existencias a corte. */
+    /**
+     * Aplica un unico limite superior horario a todos los movimientos del
+     * reporte de existencias. Para registros historicos que no almacenaron
+     * horas se usa la hora de created_at, que es la mostrada en movimientos.
+     */
     public function scopeHastaFechaHoraCorte($query, $fechaCorte, $horaCorte = null)
     {
-        return $query->hastaFechaHora($fechaCorte, null, $horaCorte);
+        $fechaCorte = \Carbon\Carbon::parse($fechaCorte)->format('Y-m-d');
+        $horaCorte = self::normalizarHoraFiltro($horaCorte);
+
+        $query->where('inv_movimientos.fecha', '<=', $fechaCorte);
+
+        if (is_null($horaCorte)) {
+            return $query;
+        }
+
+        return $query->where(function ($query) use ($horaCorte) {
+            $query->where(function ($query) use ($horaCorte) {
+                $query->whereNull('inv_movimientos.hora_inicio')
+                    ->whereNull('inv_movimientos.hora_finalizacion')
+                    ->whereRaw('TIME(inv_movimientos.created_at) <= ?', [$horaCorte]);
+            })->orWhere(function ($query) use ($horaCorte) {
+                $query->where(function ($query) {
+                    $query->whereNotNull('inv_movimientos.hora_inicio')
+                        ->orWhereNotNull('inv_movimientos.hora_finalizacion');
+                })->whereRaw(
+                    'COALESCE(inv_movimientos.hora_finalizacion, inv_movimientos.hora_inicio) <= ?',
+                    [$horaCorte]
+                );
+            });
+        });
     }
 
     /**

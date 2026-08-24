@@ -8,6 +8,7 @@
         $pdv_descripcion_arqueo = is_null($pdv_arqueo) ? '' : $pdv_arqueo->descripcion;
         $fecha_hora_apertura_arqueo = isset($registro->fecha_hora_apertura) ? $registro->fecha_hora_apertura : '';
         $fecha_hora_cierre_arqueo = isset($registro->fecha_hora_cierre) ? $registro->fecha_hora_cierre : '';
+        $usarMovimientosTesoreriaPorHora = \App\Tesoreria\TesoMovimiento::usarMovimientosTesoreriaPorHora();
 
         if (substr($fecha_hora_apertura_arqueo, 0, 10) == '0000-00-00') {
             $fecha_hora_apertura_arqueo = '';
@@ -28,22 +29,24 @@
             <div id="pdv_descripcion" class="form-control" style="background-color: #f5f5f5;">{{ $pdv_descripcion_arqueo }}</div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6 form-group">
-                <label for="fecha_hora_apertura">Fecha y hora de apertura:</label>
-                <input type="datetime-local" id="fecha_hora_apertura" name="fecha_hora_apertura" class="form-control" step="1"
-                       value="{{ $fecha_hora_apertura_arqueo == '' ? '' : str_replace(' ', 'T', substr($fecha_hora_apertura_arqueo, 0, 19)) }}">
+        @if($usarMovimientosTesoreriaPorHora)
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="fecha_hora_apertura">Fecha y hora de apertura:</label>
+                    <input type="datetime-local" id="fecha_hora_apertura" name="fecha_hora_apertura" class="form-control" step="1"
+                           value="{{ $fecha_hora_apertura_arqueo == '' ? '' : str_replace(' ', 'T', substr($fecha_hora_apertura_arqueo, 0, 19)) }}">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="fecha_hora_cierre">Fecha y hora de cierre:</label>
+                    <input type="datetime-local" id="fecha_hora_cierre" name="fecha_hora_cierre" class="form-control" step="1"
+                           value="{{ $fecha_hora_cierre_arqueo == '' ? '' : str_replace(' ', 'T', substr($fecha_hora_cierre_arqueo, 0, 19)) }}">
+                </div>
             </div>
-            <div class="col-md-6 form-group">
-                <label for="fecha_hora_cierre">Fecha y hora de cierre:</label>
-                <input type="datetime-local" id="fecha_hora_cierre" name="fecha_hora_cierre" class="form-control" step="1"
-                       value="{{ $fecha_hora_cierre_arqueo == '' ? '' : str_replace(' ', 'T', substr($fecha_hora_cierre_arqueo, 0, 19)) }}">
-            </div>
-        </div>
 
-        <div id="rango_pdv_mensaje" class="alert alert-warning" style="{{ $fecha_hora_apertura_arqueo != '' && $fecha_hora_cierre_arqueo != '' ? 'display: none;' : '' }}">
-            Complete el rango de apertura y cierre, o déjelo vacío para consultar el día completo.
-        </div>
+            <div id="rango_pdv_mensaje" class="alert alert-warning" style="{{ $fecha_hora_apertura_arqueo != '' && $fecha_hora_cierre_arqueo != '' ? 'display: none;' : '' }}">
+                Complete el rango de apertura y cierre, o déjelo vacío para consultar el día completo.
+            </div>
+        @endif
         
         <h4><i class="fa fa-money"></i> Saldo inicial:</h4>
         <div style="display: flex; align-items: center; gap: 10px;">
@@ -211,7 +214,7 @@
             get_mov_salida();
 
             var sum;
-            var usarMovimientosTesoreriaPorHora = {{ \App\Tesoreria\TesoMovimiento::usarMovimientosTesoreriaPorHora() ? 'true' : 'false' }};
+            var usarMovimientosTesoreriaPorHora = {{ $usarMovimientosTesoreriaPorHora ? 'true' : 'false' }};
 
             $('#fecha').on('change', function () {
                 if (usarMovimientosTesoreriaPorHora) {
