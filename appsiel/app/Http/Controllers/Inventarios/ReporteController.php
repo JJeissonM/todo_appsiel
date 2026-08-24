@@ -30,6 +30,7 @@ use App\Inventarios\Services\ItemsFiltersServices;
 use App\Inventarios\Services\MovementService;
 use App\Inventarios\Services\StockAmountService;
 use App\Ventas\ListaPrecioDetalle;
+use App\Support\ReportTimeFormatter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 
@@ -191,7 +192,7 @@ class ReporteController extends Controller
         }
 
         if ($request->hora_corte != '') {
-            $filtros['Hora de corte'] = $request->hora_corte;
+            $filtros['Hora de corte'] = ReportTimeFormatter::time($request->hora_corte);
         }
 
         return $filtros;
@@ -394,18 +395,18 @@ class ReporteController extends Controller
         $horaFinalizacion = InvMovimiento::normalizarHoraFiltro($horaFinalizacion);
 
         if (is_null($horaInicio) && is_null($horaFinalizacion)) {
-            return is_null($createdAt) ? '' : date('H:i:s', strtotime($createdAt));
+            return ReportTimeFormatter::time($createdAt);
         }
 
         if ($horaInicio === $horaFinalizacion || is_null($horaFinalizacion)) {
-            return (string)$horaInicio;
+            return ReportTimeFormatter::time($horaInicio);
         }
 
         if (is_null($horaInicio)) {
-            return (string)$horaFinalizacion;
+            return ReportTimeFormatter::time($horaFinalizacion);
         }
 
-        return $horaInicio . ' - ' . $horaFinalizacion;
+        return ReportTimeFormatter::time($horaInicio) . ' - ' . ReportTimeFormatter::time($horaFinalizacion);
     }
     
 

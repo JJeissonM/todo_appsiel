@@ -288,9 +288,9 @@
             <td class="meta-label">Horario</td>
             <td colspan="3">
                 @if(!is_null($hora_desde) || !is_null($hora_hasta))
-                    {{ !is_null($hora_desde) ? substr($hora_desde, 0, 5) : 'Inicio del día' }}
+                    {{ !is_null($hora_desde) ? \App\Support\ReportTimeFormatter::time($hora_desde) : 'Inicio del día' }}
                     hasta
-                    {{ !is_null($hora_hasta) ? substr($hora_hasta, 0, 5) : 'Fin del día' }}
+                    {{ !is_null($hora_hasta) ? \App\Support\ReportTimeFormatter::time($hora_hasta) : 'Fin del día' }}
                 @else
                     Todo el día
                 @endif

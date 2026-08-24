@@ -22,8 +22,8 @@
 {{ Form::bsBtnExcel('movimiento_inventarios') }}
 <h3>Movimiento de inventarios <small>{{ $bodega->descripcion }}</small></h3>
 <p>
-    <b>Rango:</b> {{ $fecha_inicial }}{{ $hora_inicio ? ' '.$hora_inicio : '' }}
-    a {{ $fecha_final }}{{ $hora_finalizacion ? ' '.$hora_finalizacion : '' }}
+    <b>Rango:</b> {{ $fecha_inicial }}{{ $hora_inicio ? ' '.\App\Support\ReportTimeFormatter::time($hora_inicio) : '' }}
+    a {{ $fecha_final }}{{ $hora_finalizacion ? ' '.\App\Support\ReportTimeFormatter::time($hora_finalizacion) : '' }}
 </p>
 @if($mensaje_advertencia != '')
     <div class="alert alert-warning">

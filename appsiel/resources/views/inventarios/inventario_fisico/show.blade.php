@@ -242,9 +242,9 @@
             <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
         </td>
         <td style="border: solid 1px #ddd;">
-            <b>Hora inicio:</b> {{ $doc_encabezado->hora_inicio ? date('g:i a', strtotime($doc_encabezado->hora_inicio)) : '' }}
+            <b>Hora inicio:</b> {{ \App\Support\ReportTimeFormatter::time($doc_encabezado->hora_inicio) }}
             <br/>
-            <b>Hora finalizacion:</b> {{ $doc_encabezado->hora_finalizacion ? date('g:i a', strtotime($doc_encabezado->hora_finalizacion)) : '' }}
+            <b>Hora finalizacion:</b> {{ \App\Support\ReportTimeFormatter::time($doc_encabezado->hora_finalizacion) }}
         </td>
     </tr>
 @endsection

@@ -263,11 +263,11 @@
             <table class="info-table">
                 <tr>
                     <td class="label">Hora inicio:</td>
-                    <td>{{ $doc_encabezado->hora_inicio ? date('g:i a', strtotime($doc_encabezado->hora_inicio)) : '' }}</td>
+                    <td>{{ \App\Support\ReportTimeFormatter::time($doc_encabezado->hora_inicio) }}</td>
                 </tr>
                 <tr>
                     <td class="label">Hora fin:</td>
-                    <td>{{ $doc_encabezado->hora_finalizacion ? date('g:i a', strtotime($doc_encabezado->hora_finalizacion)) : '' }}</td>
+                    <td>{{ \App\Support\ReportTimeFormatter::time($doc_encabezado->hora_finalizacion) }}</td>
                 </tr>
             </table>
         </td>
