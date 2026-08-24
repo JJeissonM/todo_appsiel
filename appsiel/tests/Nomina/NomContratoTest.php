@@ -34,7 +34,7 @@ class NomContratoTest extends TestCase
 
         $this->assertFalse($contrato->excluye_aporte_obligatorio(12));
         $this->assertTrue($contrato->excluye_aporte_obligatorio(13));
-        $this->assertFalse($contrato->excluye_aporte_obligatorio(10));
+        $this->assertTrue($contrato->excluye_aporte_obligatorio(10));
     }
 
     /** @test */
@@ -48,5 +48,6 @@ class NomContratoTest extends TestCase
 
         $this->assertFalse($contrato->excluye_aporte_obligatorio(12));
         $this->assertFalse($contrato->excluye_aporte_obligatorio(13));
+        $this->assertFalse($contrato->excluye_aporte_obligatorio(10));
     }
 }

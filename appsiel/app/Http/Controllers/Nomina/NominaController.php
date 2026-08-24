@@ -171,10 +171,21 @@ class NominaController extends TransaccionController
             if ( $modo_liquidacion_id != 7 ) // Si no es TNL. Pueden haber varios registros de estos conceptos en el mismo Doc.
             {
                 // Se valida si ya hay una liquidación previa del concepto en ese documento
-                $cant = NomDocRegistro::where( 'nom_doc_encabezado_id', $documento_nomina->id)
-                                        ->where('nom_contrato_id', $empleado->id)
-                                        ->where('nom_concepto_id', $concepto->id)
-                                        ->count();
+                $registros_previos = NomDocRegistro::where('nom_doc_encabezado_id', $documento_nomina->id)
+                                                    ->where('nom_contrato_id', $empleado->id);
+
+                // En datos migrados puede existir un concepto manual diferente
+                // para el mismo Fondo de Solidaridad. El código DIAN evita que
+                // la reliquidación automática duplique ese descuento.
+                if ($modo_liquidacion_id == 10 && (int)$concepto->cpto_dian_id > 0)
+                {
+                    $registros_previos->join('nom_conceptos AS concepto_previo', 'concepto_previo.id', '=', 'nom_doc_registros.nom_concepto_id')
+                                      ->where('concepto_previo.cpto_dian_id', $concepto->cpto_dian_id);
+                }else{
+                    $registros_previos->where('nom_concepto_id', $concepto->id);
+                }
+
+                $cant = $registros_previos->count();
             }
                 
 

@@ -5,6 +5,7 @@ namespace App\Nomina\ModosLiquidacion\Estrategias;
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\AgrupacionConcepto;
+use App\Nomina\NomConcepto;
 use App\Nomina\ParametroLegal;
 
 class FondoSolidaridadPensional implements Estrategia
@@ -22,20 +23,11 @@ class FondoSolidaridadPensional implements Estrategia
 						]
 					];
 		}
-        {
-            return [ 
-                        [
-                            'cantidad_horas' => 0,
-                            'valor_devengo' => 0,
-                            'valor_deduccion' => 0 
-                        ]
-                    ];
-        }
 
         $lapso_documento = $liquidacion['documento_nomina']->lapso();
         $smmlv = ParametroLegal::smmlv_para_fecha($lapso_documento->fecha_final);
 
-		$conceptos_de_la_agrupacion = AgrupacionConcepto::find( $liquidacion['concepto']->nom_agrupacion_id )->conceptos->pluck('id')->toArray();
+		$conceptos_de_la_agrupacion = $this->get_conceptos_base_pension($liquidacion['concepto']);
 		
 		$valor_liquidacion = 0;
 
@@ -92,6 +84,51 @@ class FondoSolidaridadPensional implements Estrategia
 
 	}
 
+	/**
+	 * La solidaridad usa el mismo IBC de pensión obligatoria. Primero respeta
+	 * la agrupación configurada en el concepto y, para datos migrados sin ella,
+	 * toma la agrupación válida del concepto activo de pensión obligatoria.
+	 */
+	protected function get_conceptos_base_pension(NomConcepto $concepto)
+	{
+		$agrupacion = null;
+		if ((int)$concepto->nom_agrupacion_id > 0)
+		{
+			$agrupacion = AgrupacionConcepto::find((int)$concepto->nom_agrupacion_id);
+		}
+
+		if (is_null($agrupacion))
+		{
+			$agrupacion_id = NomConcepto::where('estado', 'Activo')
+									->where('modo_liquidacion_id', 13)
+									->where('nom_agrupacion_id', '>', 0)
+									->orderBy('id')
+									->value('nom_agrupacion_id');
+
+			if (!is_null($agrupacion_id))
+			{
+				$agrupacion = AgrupacionConcepto::find((int)$agrupacion_id);
+			}
+		}
+
+		if (is_null($agrupacion))
+		{
+			throw new \RuntimeException(
+				'El concepto de Fondo de Solidaridad Pensional no tiene una agrupación válida para calcular el IBC de pensión.'
+			);
+		}
+
+		$conceptos = $agrupacion->conceptos->pluck('id')->toArray();
+		if (empty($conceptos))
+		{
+			throw new \RuntimeException(
+				'La agrupación usada para calcular el Fondo de Solidaridad Pensional no contiene conceptos.'
+			);
+		}
+
+		return $conceptos;
+	}
+
 	public function retirar(NomDocRegistro $registro)
 	{
         $registro->delete();
@@ -104,13 +141,15 @@ class FondoSolidaridadPensional implements Estrategia
 		$fecha_inicial = str_replace($dia_final, '01', $fecha_final);
 
 		$registros_liquidacion = $empleado->get_registros_documentos_nomina_entre_fechas( $fecha_inicial, $fecha_final);
+		$conceptos_base = array_map('intval', $conceptos_de_la_agrupacion);
+		$registros_base = $registros_liquidacion->filter(function ($registro) use ($conceptos_base) {
+			return in_array((int)$registro->nom_concepto_id, $conceptos_base, true);
+		});
 
 		// Todo lo liquidado en el mes
-		$total_devengos = $registros_liquidacion->whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-	                                            ->sum( 'valor_devengo' );
+		$total_devengos = $registros_base->sum( 'valor_devengo' );
 
-		$total_deducciones = $registros_liquidacion->whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-	                                            ->sum( 'valor_deduccion' );
+		$total_deducciones = $registros_base->sum( 'valor_deduccion' );
 	    
 	    return ($total_devengos - $total_deducciones);
 	}

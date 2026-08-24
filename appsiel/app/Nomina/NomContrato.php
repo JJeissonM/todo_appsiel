@@ -98,7 +98,7 @@ class NomContrato extends Model
     /**
      * Indica si debe omitirse el aporte obligatorio configurado para este contrato.
      *
-     * 12: Salud obligatoria; 13: Pensión obligatoria.
+     * 10: Fondo de solidaridad; 12: Salud; 13: Pensión obligatoria.
      */
     public function excluye_aporte_obligatorio($modo_liquidacion_id)
     {
@@ -111,7 +111,7 @@ class NomContrato extends Model
             return (int) $this->entidad_salud_id === $entidad_excluyente_id;
         }
 
-        if ((int) $modo_liquidacion_id === 13) {
+        if (in_array((int) $modo_liquidacion_id, [10, 13], true)) {
             return (int) $this->entidad_pension_id === $entidad_excluyente_id;
         }
 
