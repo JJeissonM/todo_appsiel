@@ -86,4 +86,55 @@ class InvMovimientoReporteHoraFiltroTest extends TestCase
         $this->assertNotContains('coalesce', $sql);
         $this->assertSame(['2026-08-12'], $query->getBindings());
     }
+
+    public function test_balance_incluye_documentos_relacionados_aunque_estan_fuera_del_turno()
+    {
+        config(['inventarios.usar_inventario_fisico_por_horas' => 1]);
+
+        $query = InvMovimiento::whereRaw('1 = 1');
+        $query->duranteTurnoInventarioFisicoIncluyendoDocumentos(
+            '2026-08-12',
+            '06:00',
+            '14:00',
+            [501, 502, 501, 0]
+        );
+
+        $sql = strtolower($query->toSql());
+
+        $this->assertContains('`inv_movimientos`.`created_at` between ? and ?', $sql);
+        $this->assertContains('or `inv_movimientos`.`inv_doc_encabezado_id` in (?, ?)', $sql);
+        $this->assertSame([
+            '2026-08-12',
+            '2026-08-12',
+            '2026-08-12 06:00:00',
+            '2026-08-12 14:00:00',
+            501,
+            502
+        ], $query->getBindings());
+    }
+
+    public function test_existencia_show_incluye_ajuste_relacionado_despues_del_cierre()
+    {
+        config(['inventarios.usar_inventario_fisico_por_horas' => 1]);
+
+        $query = InvMovimiento::whereRaw('1 = 1');
+        $query->hastaCierreTurnoInventarioFisicoIncluyendoDocumentos(
+            '2026-08-12',
+            '06:00',
+            '14:00',
+            [501]
+        );
+
+        $sql = strtolower($query->toSql());
+
+        $this->assertContains('`inv_movimientos`.`created_at` <= ?', $sql);
+        $this->assertContains('or `inv_movimientos`.`inv_doc_encabezado_id` in (?)', $sql);
+        $this->assertSame([
+            '2026-08-12',
+            '2026-08-12',
+            '2026-08-12',
+            '2026-08-12 14:00:00',
+            501
+        ], $query->getBindings());
+    }
 }

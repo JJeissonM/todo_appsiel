@@ -232,6 +232,27 @@ class InvMovimiento extends Model
             ->whereBetween('inv_movimientos.created_at', [$range['opening_at'], $range['closing_at']]);
     }
 
+    /**
+     * Incluye, ademas del turno, movimientos de documentos expresamente
+     * relacionados con el Inventario Fisico (por ejemplo, su ajuste).
+     */
+    public function scopeDuranteTurnoInventarioFisicoIncluyendoDocumentos($query, $fecha, $horaInicio = null, $horaFinalizacion = null, array $documentoIds = [])
+    {
+        $documentoIds = self::normalizarDocumentoIds($documentoIds);
+        if (empty($documentoIds)) {
+            return $query->duranteTurnoInventarioFisico($fecha, $horaInicio, $horaFinalizacion);
+        }
+
+        return $query->where(function ($query) use ($fecha, $horaInicio, $horaFinalizacion, $documentoIds) {
+            $query->where(function ($query) use ($fecha, $horaInicio, $horaFinalizacion) {
+                // Laravel 5.2 requiere una condicion previa al invocar un scope
+                // dentro de una consulta anidada.
+                $query->whereRaw('1 = 1')
+                    ->duranteTurnoInventarioFisico($fecha, $horaInicio, $horaFinalizacion);
+            })->orWhereIn('inv_movimientos.inv_doc_encabezado_id', $documentoIds);
+        });
+    }
+
     /** Saldo existente inmediatamente antes de abrir el turno. */
     public function scopeAntesTurnoInventarioFisico($query, $fecha, $horaInicio = null, $horaFinalizacion = null)
     {
@@ -273,6 +294,35 @@ class InvMovimiento extends Model
                         ->where('inv_movimientos.created_at', '<=', $range['closing_at']);
                 });
         });
+    }
+
+    /** Existencia al cierre incluyendo los ajustes relacionados, sin importar su hora. */
+    public function scopeHastaCierreTurnoInventarioFisicoIncluyendoDocumentos($query, $fecha, $horaInicio = null, $horaFinalizacion = null, array $documentoIds = [])
+    {
+        $documentoIds = self::normalizarDocumentoIds($documentoIds);
+        if (empty($documentoIds)) {
+            return $query->hastaCierreTurnoInventarioFisico($fecha, $horaInicio, $horaFinalizacion);
+        }
+
+        return $query->where(function ($query) use ($fecha, $horaInicio, $horaFinalizacion, $documentoIds) {
+            $query->where(function ($query) use ($fecha, $horaInicio, $horaFinalizacion) {
+                $query->whereRaw('1 = 1')
+                    ->hastaCierreTurnoInventarioFisico($fecha, $horaInicio, $horaFinalizacion);
+            })->orWhereIn('inv_movimientos.inv_doc_encabezado_id', $documentoIds);
+        });
+    }
+
+    private static function normalizarDocumentoIds(array $documentoIds)
+    {
+        $ids = [];
+        foreach ($documentoIds as $documentoId) {
+            $documentoId = (int)$documentoId;
+            if ($documentoId > 0) {
+                $ids[$documentoId] = $documentoId;
+            }
+        }
+
+        return array_values($ids);
     }
 
     private static function aplicarHorasAlQuery($query, $horaInicio, $horaFinalizacion)

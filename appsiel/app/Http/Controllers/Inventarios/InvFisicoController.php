@@ -287,12 +287,13 @@ class InvFisicoController extends TransaccionController
         $botones_anterior_siguiente = new BotonesAnteriorSiguiente( $this->transaccion, $id );
         
         $doc_registros = InvDocRegistro::get_registros_impresion( $doc_encabezado->id );
+        $ajustes_asociados = $this->get_ajustes_asociados($doc_encabezado->id);
+        $ajuste_documento_ids = $this->get_documentos_ajuste_ids($ajustes_asociados);
 
-        $this->preparar_lineas_para_vista($doc_registros, $doc_encabezado->fecha, $doc_encabezado->hora_inicio, $doc_encabezado->hora_finalizacion);
+        $this->preparar_lineas_para_vista($doc_registros, $doc_encabezado->fecha, $doc_encabezado->hora_inicio, $doc_encabezado->hora_finalizacion, $ajuste_documento_ids);
 
         $empresa = $this->empresa;
         $id_transaccion = $this->transaccion->id;
-        $ajustes_asociados = $this->get_ajustes_asociados($doc_encabezado->id);
         $inventario_fisico_tiene_ajuste = $ajustes_asociados->count() > 0;
 
         $documento_vista = View::make( 'inventarios.inventario_fisico.documento_vista', compact('doc_encabezado', 'doc_registros' ) )->render();
@@ -317,8 +318,9 @@ class InvFisicoController extends TransaccionController
         $doc_encabezado = InvDocEncabezado::get_registro_impresion( $id );
         
         $doc_registros = InvDocRegistro::get_registros_impresion( $doc_encabezado->id );
+        $ajuste_documento_ids = $this->get_documentos_ajuste_ids($this->get_ajustes_asociados($doc_encabezado->id));
 
-        $this->preparar_lineas_para_vista($doc_registros, $doc_encabezado->fecha, $doc_encabezado->hora_inicio, $doc_encabezado->hora_finalizacion);
+        $this->preparar_lineas_para_vista($doc_registros, $doc_encabezado->fecha, $doc_encabezado->hora_inicio, $doc_encabezado->hora_finalizacion, $ajuste_documento_ids);
 
         $empresa = $this->empresa;
 
@@ -336,7 +338,7 @@ class InvFisicoController extends TransaccionController
         {
             $orientacion = 'landscape';
             $vista = 'inventarios.inventario_fisico.balance_inventarios';
-            $datos_balance = $this->preparar_datos_balance_inventario_fisico( $id );
+            $datos_balance = $this->preparar_datos_balance_inventario_fisico( $id, $ajuste_documento_ids );
         }
 
         $documento_vista = View::make( $vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'datos_balance' ) )->render();
@@ -350,7 +352,7 @@ class InvFisicoController extends TransaccionController
         return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
     }
 
-    private function preparar_datos_balance_inventario_fisico( $id )
+    private function preparar_datos_balance_inventario_fisico( $id, array $ajuste_documento_ids = [] )
     {
         $doc_encabezado = InvDocEncabezado::findOrFail( $id );
         $fecha = \Carbon\Carbon::parse( $doc_encabezado->fecha )->format('Y-m-d');
@@ -428,7 +430,7 @@ class InvFisicoController extends TransaccionController
                             ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
                             ->where('inv_movimientos.inv_bodega_id', $inv_bodega_id)
                             ->where('inv_movimientos.core_empresa_id', $core_empresa_id)
-                            ->duranteTurnoInventarioFisico($fecha, $hora_inicio, $hora_finalizacion)
+                            ->duranteTurnoInventarioFisicoIncluyendoDocumentos($fecha, $hora_inicio, $hora_finalizacion, $ajuste_documento_ids)
                             ->where('inv_motivos.movimiento', 'entrada')
                             ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
                             ->select(
@@ -446,7 +448,7 @@ class InvFisicoController extends TransaccionController
                             ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
                             ->where('inv_movimientos.inv_bodega_id', $inv_bodega_id)
                             ->where('inv_movimientos.core_empresa_id', $core_empresa_id)
-                            ->duranteTurnoInventarioFisico($fecha, $hora_inicio, $hora_finalizacion)
+                            ->duranteTurnoInventarioFisicoIncluyendoDocumentos($fecha, $hora_inicio, $hora_finalizacion, $ajuste_documento_ids)
                             ->where('inv_motivos.movimiento', 'salida')
                             ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
                             ->select(
@@ -977,7 +979,7 @@ class InvFisicoController extends TransaccionController
     /**
      * Preparar datos de lineas para vistas show y imprimir sin N+1 queries.
      */
-    private function preparar_lineas_para_vista($doc_registros, $fecha_corte, $hora_inicio = null, $hora_finalizacion = null)
+    private function preparar_lineas_para_vista($doc_registros, $fecha_corte, $hora_inicio = null, $hora_finalizacion = null, array $documento_ids_incluidos = [])
     {
         if ( $doc_registros->count() == 0 )
         {
@@ -1049,7 +1051,7 @@ class InvFisicoController extends TransaccionController
         {
             $fecha_corte = \Carbon\Carbon::parse( $fecha_corte )->format('Y-m-d');
             $existencias = InvMovimiento::where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                                ->hastaCierreTurnoInventarioFisico($fecha_corte, $hora_inicio, $hora_finalizacion)
+                                ->hastaCierreTurnoInventarioFisicoIncluyendoDocumentos($fecha_corte, $hora_inicio, $hora_finalizacion, $documento_ids_incluidos)
                                 ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
                                 ->whereIn('inv_movimientos.inv_bodega_id', $bodega_ids)
                                 ->select(
@@ -1575,6 +1577,21 @@ class InvFisicoController extends TransaccionController
                 ->where('tipo_relacion', InvDocumentoRelacionado::TIPO_IF_AJUSTE)
                 ->with('documento_relacionado.tipo_documento_app')
                 ->get();
+    }
+
+    private function get_documentos_ajuste_ids($ajustes_asociados)
+    {
+        return $ajustes_asociados
+            ->pluck('inv_doc_encabezado_relacionado_id')
+            ->map(function ($id) {
+                return (int)$id;
+            })
+            ->filter(function ($id) {
+                return $id > 0;
+            })
+            ->unique()
+            ->values()
+            ->all();
     }
 
     private function build_variables_url(Request $request)
