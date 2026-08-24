@@ -161,6 +161,10 @@ Route::post('nomina/procesos/actualizar_sueldos/preview', 'Nomina\ActualizacionS
 Route::post('nomina/procesos/actualizar_sueldos/guardar', 'Nomina\ActualizacionSueldosController@guardar');
 Route::post('nomina/procesos/actualizar_sueldos/revertir/{proceso_id}', 'Nomina\ActualizacionSueldosController@revertir');
 
+// Generación automática de pagos de CxP desde documentos de nómina
+Route::post('nomina/procesos/pagos/previsualizar', 'Nomina\PagoAutomaticoNominaController@previsualizar');
+Route::post('nomina/procesos/pagos/generar', 'Nomina\PagoAutomaticoNominaController@pagar');
+
 // Cotizante 51 (tiempo parcial)
 Route::post('nomina/cotizante51/{contrato_id}/dias-laborados', 'Nomina\Cotizante51Controller@actualizar_dias_laborados');
 

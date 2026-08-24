@@ -46,9 +46,11 @@ use App\CxP\Services\CxpAccountingAccountResolver;
 use App\CxP\CxpMovimiento;
 use App\CxP\DocumentosPendientes;
 use App\CxP\CxpAbono;
+use App\Nomina\NomPagoAutomatico;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use NumerosEnLetras;
 
@@ -584,6 +586,17 @@ class PagoCxpController extends TransaccionController
 
         // Marcar como anulado el encabezado
         $pago->update( [ 'estado' => 'Anulado', 'modificado_por' => Auth::user()->email ] );
+
+        // Conserva la trazabilidad del proceso de nómina. Los detalles no se
+        // eliminan: el saldo de CxP restaurado vuelve a habilitar al empleado.
+        if (Schema::hasTable('nom_pagos_automaticos')) {
+            NomPagoAutomatico::where('teso_doc_encabezado_id', $pago->id)
+                ->update([
+                    'estado' => 'Anulado',
+                    'modificado_por' => Auth::user()->email,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+        }
 
         $this->restablecer_cheque( $pago );
 
