@@ -51,7 +51,7 @@ class HotelStayController extends Controller
         $receivableService = new HotelReceivableService();
         $anticipos = $receivableService->availableAdvances($stay);
         $facturasCredito = $receivableService->pendingInvoices($stay);
-        $facturasPos = $this->posInvoicesForStayGuests($stay);
+        $facturasPos = $this->directPosInvoicesForStayGuests($stay);
         $saldoPedidos = $this->openOrdersBalance($stay);
         $saldoFacturasCredito = $this->receivablesBalance($facturasCredito);
         $saldoAnticipos = abs(min(0, $this->receivablesBalance($anticipos)));
@@ -153,12 +153,12 @@ class HotelStayController extends Controller
         }
 
         $stay = $this->findStay($stayId);
-        $invoice = $this->posInvoicesForStayGuests($stay)->first(function ($key, $row) use ($invoiceId) {
+        $invoice = $this->directPosInvoicesForStayGuests($stay)->first(function ($key, $row) use ($invoiceId) {
             return (int)$row->id === (int)$invoiceId;
         });
 
         if (is_null($invoice)) {
-            return redirect()->back()->with('mensaje_error', 'La factura no pertenece a uno de los huéspedes durante el periodo de esta estadía.');
+            return redirect()->back()->with('mensaje_error', 'La factura no pertenece a esta estadía o fue generada desde un pedido hotelero.');
         }
 
         if (strtolower(trim((string)$invoice->estado)) == 'anulado') {
@@ -303,7 +303,7 @@ class HotelStayController extends Controller
         return $total;
     }
 
-    private function posInvoicesForStayGuests(HotelStay $stay)
+    private function directPosInvoicesForStayGuests(HotelStay $stay)
     {
         $clientIds = array((int)$stay->main_cliente_id);
         $terceroIds = array();
@@ -324,6 +324,11 @@ class HotelStayController extends Controller
 
         $clientIds = array_values(array_unique(array_filter($clientIds)));
         $terceroIds = array_values(array_unique(array_filter($terceroIds)));
+        $hotelOrderPosInvoiceIds = HotelOrderHeader::where('empresa_id', $stay->empresa_id)
+            ->whereNotNull('pos_doc_id')
+            ->where('pos_doc_id', '>', 0)
+            ->lists('pos_doc_id')
+            ->toArray();
         $dateFrom = substr((string)$stay->check_in_at, 0, 10);
         $dateTo = !empty($stay->check_out_at) ? substr((string)$stay->check_out_at, 0, 10) : date('Y-m-d');
 
@@ -343,6 +348,10 @@ class HotelStayController extends Controller
             ->with('tipo_documento_app', 'cliente.tercero')
             ->orderBy('fecha', 'DESC')
             ->orderBy('id', 'DESC');
+
+        if (count($hotelOrderPosInvoiceIds) > 0) {
+            $query->whereNotIn('id', $hotelOrderPosInvoiceIds);
+        }
 
         $invoices = $query->get();
         $movementsByDocument = $this->receivableMovementsByPosInvoice($invoices, $stay->empresa_id);

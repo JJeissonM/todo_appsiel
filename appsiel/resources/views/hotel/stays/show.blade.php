@@ -258,7 +258,7 @@
                             </tr>
                         @endforeach
                         @if(count($facturasPos) == 0)
-                            <tr><td colspan="7">No hay facturas POS realizadas a los huéspedes durante esta estadía.</td></tr>
+                            <tr><td colspan="7">No hay facturas realizadas directamente en Ventas POS a los huéspedes durante esta estadía.</td></tr>
                         @endif
                     </tbody>
                 </table>
