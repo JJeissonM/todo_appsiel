@@ -15,6 +15,68 @@ use Illuminate\Support\Facades\DB;
 class RetiroPersonalizadoNominaService
 {
     /**
+     * Retira una sola linea desde el CRUD de registros de nomina.
+     */
+    public function retirarRegistro(NomDocRegistro $registro)
+    {
+        $registroId = (int) $registro->id;
+        $documentoId = (int) $registro->nom_doc_encabezado_id;
+        $resultado = [];
+
+        DB::transaction(function () use ($registroId, $documentoId, &$resultado) {
+            $documento = NomDocEncabezado::where('id', $documentoId)->lockForUpdate()->first();
+            if (is_null($documento)) {
+                throw new RetiroPersonalizadoException('El documento de nómina no existe.');
+            }
+
+            if (!$documento->esta_activo_para_transacciones()) {
+                throw new RetiroPersonalizadoException('El documento de nómina no puede modificarse porque no está en estado Activo.');
+            }
+
+            $registroBloqueado = NomDocRegistro::with(['concepto', 'contrato', 'encabezado_documento'])
+                ->where('id', $registroId)
+                ->where('nom_doc_encabezado_id', $documento->id)
+                ->where('core_empresa_id', $documento->core_empresa_id)
+                ->lockForUpdate()
+                ->first();
+
+            if (is_null($registroBloqueado)) {
+                throw new RetiroPersonalizadoException('El registro de nómina no existe o no pertenece al documento.');
+            }
+
+            try {
+                $this->bloquearAsociaciones($registroBloqueado);
+                $this->revertirRegistro($registroBloqueado, $documento);
+            } catch (RetiroPersonalizadoException $e) {
+                throw $e;
+            } catch (\RuntimeException $e) {
+                if ($e instanceof \PDOException) {
+                    throw $e;
+                }
+
+                throw new RetiroPersonalizadoException(
+                    'No se pudo revertir el registro #' . $registroId . ': ' . $e->getMessage(),
+                    0,
+                    $e
+                );
+            }
+
+            if (NomDocRegistro::where('id', $registroId)->exists()) {
+                throw new RetiroPersonalizadoException('No se pudo eliminar completamente el registro de nómina.');
+            }
+
+            $documento->actualizar_totales();
+            $resultado = [
+                'cantidad_retirada' => 1,
+                'total_devengos_documento' => (float) $documento->total_devengos,
+                'total_deducciones_documento' => (float) $documento->total_deducciones,
+            ];
+        });
+
+        return $resultado;
+    }
+
+    /**
      * Retorna únicamente combinaciones que realmente existen en el documento.
      */
     public function opciones(NomDocEncabezado $documento)

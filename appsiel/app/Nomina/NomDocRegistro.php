@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use App\Nomina\Services\RetiroPersonalizadoNominaService;
 
 class NomDocRegistro extends Model
 {
@@ -19,7 +20,7 @@ class NomDocRegistro extends Model
         'edit' => 'web/id_fila/edit'
     ];
 
-    public $urls_acciones = '{"edit":"web/id_fila/edit"}';
+    public $urls_acciones = '{"edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
     public function encabezado_documento()
     {
@@ -54,6 +55,15 @@ class NomDocRegistro extends Model
     public function novedad_tnl()
     {
         return $this->belongsTo(NovedadTnl::class, 'novedad_tnl_id');
+    }
+
+    /**
+     * Elimina una linea de nomina revirtiendo sus acumulados y recalculando
+     * los totales del documento dentro de una misma transaccion.
+     */
+    public function eliminar_con_dependencias()
+    {
+        return (new RetiroPersonalizadoNominaService())->retirarRegistro($this);
     }
 
     public static function consultar_registros($nro_registros, $search)

@@ -1,6 +1,7 @@
 <?php
 
 use App\Nomina\NomDocEncabezado;
+use App\Nomina\NomDocRegistro;
 use App\Nomina\Services\RetiroPersonalizadoNominaService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Config;
@@ -33,6 +34,68 @@ class RetiroPersonalizadoNominaServiceTest extends TestCase
         DB::purge('retiro_testing');
         Config::set('database.default', $this->conexionOriginal);
         parent::tearDown();
+    }
+
+    /** @test */
+    public function la_eliminacion_individual_recalcula_los_totales_del_documento()
+    {
+        DB::table('nom_conceptos')->insert([
+            'id' => 20, 'modo_liquidacion_id' => 2, 'naturaleza' => 'devengo', 'descripcion' => 'BONIFICACIÓN'
+        ]);
+        $this->insertarRegistroNomina([
+            'id' => 90, 'nom_concepto_id' => 20, 'valor_devengo' => 100000, 'valor_deduccion' => 0
+        ]);
+        $this->insertarRegistroNomina([
+            'id' => 91, 'nom_concepto_id' => 20, 'valor_devengo' => 50000, 'valor_deduccion' => 0
+        ]);
+
+        NomDocRegistro::find(90)->eliminar_con_dependencias();
+
+        $this->assertEquals(50000, DB::table('nom_doc_encabezados')->where('id', 1)->value('total_devengos'));
+        $this->assertEquals(0, DB::table('nom_doc_encabezados')->where('id', 1)->value('total_deducciones'));
+        $this->assertEquals([91], DB::table('nom_doc_registros')->lists('id'));
+    }
+
+    /** @test */
+    public function la_eliminacion_individual_de_cuota_revierte_el_acumulado_y_los_totales()
+    {
+        DB::table('nom_conceptos')->insert([
+            'id' => 30, 'modo_liquidacion_id' => 3, 'naturaleza' => 'deduccion', 'descripcion' => 'CUOTA'
+        ]);
+        DB::table('nom_cuotas')->insert([
+            'id' => 7, 'tope_maximo' => 200000, 'valor_acumulado' => 100000, 'estado' => 'Activo'
+        ]);
+        $this->insertarRegistroNomina([
+            'id' => 92, 'nom_concepto_id' => 30, 'nom_cuota_id' => 7,
+            'valor_devengo' => 0, 'valor_deduccion' => 40000
+        ]);
+
+        NomDocRegistro::find(92)->eliminar_con_dependencias();
+
+        $this->assertEquals(60000, DB::table('nom_cuotas')->where('id', 7)->value('valor_acumulado'));
+        $this->assertSame('Activo', DB::table('nom_cuotas')->where('id', 7)->value('estado'));
+        $this->assertEquals(0, DB::table('nom_doc_encabezados')->where('id', 1)->value('total_deducciones'));
+    }
+
+    /** @test */
+    public function la_eliminacion_individual_de_prestamo_revierte_el_acumulado_y_los_totales()
+    {
+        DB::table('nom_conceptos')->insert([
+            'id' => 40, 'modo_liquidacion_id' => 4, 'naturaleza' => 'deduccion', 'descripcion' => 'PRÉSTAMO'
+        ]);
+        DB::table('nom_prestamos')->insert([
+            'id' => 8, 'valor_prestamo' => 500000, 'valor_acumulado' => 250000, 'estado' => 'Activo'
+        ]);
+        $this->insertarRegistroNomina([
+            'id' => 93, 'nom_concepto_id' => 40, 'nom_prestamo_id' => 8,
+            'valor_devengo' => 0, 'valor_deduccion' => 50000
+        ]);
+
+        NomDocRegistro::find(93)->eliminar_con_dependencias();
+
+        $this->assertEquals(200000, DB::table('nom_prestamos')->where('id', 8)->value('valor_acumulado'));
+        $this->assertSame('Activo', DB::table('nom_prestamos')->where('id', 8)->value('estado'));
+        $this->assertEquals(0, DB::table('nom_doc_encabezados')->where('id', 1)->value('total_deducciones'));
     }
 
     /** @test */

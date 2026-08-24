@@ -191,7 +191,16 @@ class CrudController extends Controller
 
         $registro = app($this->modelo->name_space)->find($id);
 
-        $registro->delete();
+        try {
+            if (method_exists($registro, 'eliminar_con_dependencias')) {
+                $registro->eliminar_con_dependencias();
+            } else {
+                $registro->delete();
+            }
+        } catch (\RuntimeException $e) {
+            return redirect('web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))
+                ->with('mensaje_error', 'Registro No puede ser ELIMINADO. '.$e->getMessage());
+        }
 
         $ruta = 'web';
         
