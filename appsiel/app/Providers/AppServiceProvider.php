@@ -29,6 +29,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->singleton(\App\Core\Services\TurnoContext::class, function () {
+            return new \App\Core\Services\TurnoContext();
+        });
+        $this->app->singleton(\App\Core\Services\TurnoModeResolver::class, function () {
+            return new \App\Core\Services\TurnoModeResolver();
+        });
+
         if ($this->app->environment() !== 'production')
         {
             $this->app->register(\Way\Generators\GeneratorsServiceProvider::class);

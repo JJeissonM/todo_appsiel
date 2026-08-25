@@ -11,9 +11,12 @@ use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\DocRegistro;
+use App\Traits\HasTurnoOperativo;
 
 class HotelOrderHeader extends Model
 {
+    use HasTurnoOperativo;
+
     const STATUS_ABIERTO = 'ABIERTO';
     const STATUS_FACTURADO = 'FACTURADO';
     const STATUS_ANULADO = 'ANULADO';
@@ -23,7 +26,12 @@ class HotelOrderHeader extends Model
 
     protected $table = 'hotel_order_headers';
 
-    protected $fillable = array('empresa_id', 'stay_id', 'cliente_id', 'pdv_id', 'document_number', 'order_date', 'status', 'invoice_type', 'sales_doc_id', 'pos_doc_id', 'notes', 'created_by');
+    protected $fillable = array('empresa_id', 'stay_id', 'cliente_id', 'pdv_id', 'turno_operativo_id', 'document_number', 'order_date', 'status', 'invoice_type', 'sales_doc_id', 'pos_doc_id', 'notes', 'created_by');
+
+    protected function turnoModuleName()
+    {
+        return 'hotel';
+    }
 
     public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Doc', 'Creado por', 'Fecha', 'Estadía', 'Hab', 'Cliente', 'Factura, Creado por', 'Estado');
 

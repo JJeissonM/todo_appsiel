@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use App\Traits\FiltraRegistrosPorUsuario;
+use App\Traits\HasTurnoOperativo;
 
 use App\Inventarios\InvDocEncabezado;
 use App\VentasPos\Pdv;
@@ -18,11 +19,16 @@ use Illuminate\Support\Facades\Auth;
 
 class FacturaPos extends Model
 {
-    use FiltraRegistrosPorUsuario;
+    use FiltraRegistrosPorUsuario, HasTurnoOperativo;
 
     protected $table = 'vtas_pos_doc_encabezados';
 
-    protected $fillable = [ 'uniqid', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'datos_temporales_cliente', 'vendedor_id', 'pdv_id', 'cajero_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'lineas_registros_medios_recaudos', 'descripcion', 'lote_acumulacion', 'valor_total', 'estado', 'creado_por', 'modificado_por', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio', 'valor_total_bolsas'];
+    protected $fillable = [ 'uniqid', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'datos_temporales_cliente', 'vendedor_id', 'pdv_id', 'cajero_id', 'turno_operativo_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'lineas_registros_medios_recaudos', 'descripcion', 'lote_acumulacion', 'valor_total', 'estado', 'creado_por', 'modificado_por', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio', 'valor_total_bolsas'];
+
+    protected function turnoModuleName()
+    {
+        return 'ventas_pos';
+    }
 
     public $urls_acciones = '{"store":"pos_factura","update":"pos_factura/id_fila","imprimir":"pos_factura_imprimir/id_fila","show":"pos_factura/id_fila"}'; // ,"eliminar":"pos_factura_anular/id_fila"
 

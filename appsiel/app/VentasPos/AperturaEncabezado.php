@@ -17,7 +17,7 @@ class AperturaEncabezado extends Model
     use FiltraRegistrosPorUsuario;
 
     protected $table = 'vtas_pos_apertura_encabezados';
-    protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'cajero_id', 'pdv_id', 'efectivo_base', 'responsable', 'detalle', 'creado_por', 'modificado_por', 'estado'];
+    protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'cajero_id', 'pdv_id', 'turno_operativo_id', 'efectivo_base', 'responsable', 'detalle', 'creado_por', 'modificado_por', 'estado'];
 
     public $vistas = '{"show":"ventas_pos.index"}';
 
@@ -195,6 +195,14 @@ class AperturaEncabezado extends Model
 
     public function validar_datos_creacion($request, $controller)
     {
+        $pdv = Pdv::find((int)$request->pdv_id);
+        $empresaId = !empty($request->core_empresa_id) ? $request->core_empresa_id : (is_null($pdv) ? null : $pdv->core_empresa_id);
+        try {
+            app(\App\Core\Services\TurnoManager::class)->assertCanOpen($empresaId, $request->pdv_id);
+        } catch (\UnexpectedValueException $e) {
+            $controller->validate($request, array('pdv_id' => 'in:0'), array('pdv_id.in' => $e->getMessage()));
+        }
+
         if (!self::hotelModuleEnabled()) {
             return;
         }
@@ -230,6 +238,13 @@ class AperturaEncabezado extends Model
 
         $registro->estado = 'Activo';
         $registro->save();
+
+        app(\App\Core\Services\TurnoManager::class)->openFromLegacy($registro, $registro->cajero_id);
+    }
+
+    public function turnoOperativo()
+    {
+        return $this->belongsTo('App\Core\TurnoOperativo', 'turno_operativo_id');
     }
 
     private static function hotelModuleEnabled()

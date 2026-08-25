@@ -9,10 +9,18 @@ use App\Inventarios\Services\InventoryPhysicalShiftService;
 use App\Inventarios\Services\ProductWarehouseActivityService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Traits\HasTurnoOperativo;
 
 class InvMovimiento extends Model
 {
-    protected $fillable = [ 'core_empresa_id', 'inv_doc_encabezado_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'hora_inicio', 'hora_finalizacion', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'costo_unitario', 'cantidad', 'costo_total', 'creado_por', 'modificado_por', 'codigo_referencia_tercero', 'core_tercero_id'];
+    use HasTurnoOperativo;
+
+    protected $fillable = [ 'core_empresa_id', 'inv_doc_encabezado_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'hora_inicio', 'hora_finalizacion', 'turno_operativo_id', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'costo_unitario', 'cantidad', 'costo_total', 'creado_por', 'modificado_por', 'codigo_referencia_tercero', 'core_tercero_id'];
+
+    protected function turnoModuleName()
+    {
+        return 'inventarios';
+    }
 
     public $encabezado_tabla = [ '<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Tercero', 'Producto', 'Bodega', 'Motivo', 'Movimiento', 'Costo unit.', 'Cantidad', 'Costo total', '&nbsp;'];
 

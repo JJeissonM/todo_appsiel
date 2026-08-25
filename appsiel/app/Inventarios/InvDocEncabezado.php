@@ -24,14 +24,20 @@ use App\Ventas\VtasDocEncabezado;
 use App\VentasPos\FacturaPos;
 use App\Ventas\Cliente;
 use App\Compras\Proveedor;
+use App\Traits\HasTurnoOperativo;
 
 class InvDocEncabezado extends Model
 {
-    use FiltraRegistrosPorUsuario;
+    use FiltraRegistrosPorUsuario, HasTurnoOperativo;
 
     //protected $table = 'inv_doc_encabezados'; 
 
-    protected $fillable = ['core_empresa_id','core_tipo_transaccion_id','core_tipo_doc_app_id', 'vtas_doc_encabezado_origen_id', 'consecutivo','fecha','core_tercero_id', 'inv_bodega_id', 'bodega_destino_id','documento_soporte','descripcion','estado','creado_por','modificado_por','hora_inicio','hora_finalizacion'];
+    protected $fillable = ['core_empresa_id','core_tipo_transaccion_id','core_tipo_doc_app_id', 'vtas_doc_encabezado_origen_id', 'turno_operativo_id', 'consecutivo','fecha','core_tercero_id', 'inv_bodega_id', 'bodega_destino_id','documento_soporte','descripcion','estado','creado_por','modificado_por','hora_inicio','hora_finalizacion'];
+
+    protected function turnoModuleName()
+    {
+        return 'inventarios';
+    }
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Bodega', 'Tercero', 'Detalle', 'Estado'];
 

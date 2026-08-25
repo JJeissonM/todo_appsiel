@@ -65,6 +65,11 @@ class Pdv extends Model
 
     public function ultima_fecha_apertura($validar_acumulacion_tiempo_real = true)
     {
+        $turno = $this->turno_operativo_actual();
+        if (!is_null($turno)) {
+            return $turno->fecha_operativa;
+        }
+
         if ($validar_acumulacion_tiempo_real && (int)config('ventas_pos.acumular_facturas_en_tiempo_real') ) {
             return date('Y-m-d');
         }
@@ -75,6 +80,15 @@ class Pdv extends Model
             return date('Y-m-d');
         }
         return $ultima_apertura->fecha;
+    }
+
+    public function turno_operativo_actual()
+    {
+        $manager = app(\App\Core\Services\TurnoManager::class);
+        if (!$manager->enabledForPdv($this->core_empresa_id, $this->id)) {
+            return null;
+        }
+        return $manager->currentForPdv($this->core_empresa_id, $this->id);
     }
 
     public function get_valor_base_ultima_apertura()

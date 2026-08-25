@@ -17,12 +17,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Schema;
+use App\Traits\HasTurnoOperativo;
+use App\Core\Services\TurnoAssignmentResolver;
+use App\Core\Services\TurnoManager;
 
 class TesoMovimiento extends Model
 {
-    use FiltraRegistrosPorUsuario;
+    use FiltraRegistrosPorUsuario, HasTurnoOperativo;
 
-    protected $fillable = ['fecha', 'core_empresa_id', 'core_tercero_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'teso_medio_recaudo_id', 'teso_motivo_id', 'teso_caja_id', 'teso_cuenta_bancaria_id', 'pdv_id', 'valor_movimiento', 'documento_soporte', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'codigo_referencia_tercero'];
+    protected $fillable = ['fecha', 'core_empresa_id', 'core_tercero_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'turno_operativo_id', 'teso_medio_recaudo_id', 'teso_motivo_id', 'teso_caja_id', 'teso_cuenta_bancaria_id', 'pdv_id', 'valor_movimiento', 'documento_soporte', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'codigo_referencia_tercero'];
+
+    protected function turnoModuleName()
+    {
+        return 'tesoreria';
+    }
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Caja/Banco', 'Tercero', 'Motivo', 'Valor movimiento', 'Detalle','F. creación'];
 
@@ -40,7 +48,12 @@ class TesoMovimiento extends Model
             $pdv_id = PdvResolver::resolveFromArray($model->getAttributes());
             $model->pdv_id = $pdv_id;
 
-            if ( !$model->isDirty('created_at') ) {
+            app(TurnoAssignmentResolver::class)->assign($model, 'tesoreria', $pdv_id);
+
+            $advancedMode = !is_null($pdv_id)
+                && app(TurnoManager::class)->enabledForPdv($model->core_empresa_id, $pdv_id, 'tesoreria');
+
+            if (empty($model->turno_operativo_id) && !$advancedMode && !$model->isDirty('created_at')) {
                 $model->sincronizarCreatedAtConUltimoCierre();
             }
         });
@@ -50,7 +63,12 @@ class TesoMovimiento extends Model
                 return;
             }
 
-            $model->sincronizarCreatedAtConUltimoCierre();
+            $pdvId = PdvResolver::normalize($model->pdv_id);
+            $advancedMode = !is_null($pdvId)
+                && app(TurnoManager::class)->enabledForPdv($model->core_empresa_id, $pdvId, 'tesoreria');
+            if (empty($model->turno_operativo_id) && !$advancedMode) {
+                $model->sincronizarCreatedAtConUltimoCierre();
+            }
         });
     }
 
@@ -325,9 +343,12 @@ class TesoMovimiento extends Model
         return $registros;
     }
 
-    public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null)
+    public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null, $turno_operativo_id = null)
     {
-        if ( self::usarMovimientosTesoreriaPorHora() ) {
+        if (!is_null($turno_operativo_id)) {
+            $fecha_hora_apertura = null;
+            $fecha_hora_cierre = null;
+        } elseif ( self::usarMovimientosTesoreriaPorHora() ) {
             $fecha_hora_apertura = self::normalizarFechaHoraFiltro($fecha_hora_apertura);
             $fecha_hora_cierre = self::normalizarFechaHoraFiltro($fecha_hora_cierre);
         } else {
@@ -349,10 +370,16 @@ class TesoMovimiento extends Model
         }
 
         $query = TesoMovimiento::leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
-                                ->whereBetween('teso_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
                                 ->where( $array_wheres );
 
-        if ( (int)$pdv_id != 0 ) {
+        if (!is_null($turno_operativo_id)) {
+            // En modo turnos la FK es autoritativa; la fecha solo conserva valor contable.
+            $query->where('teso_movimientos.turno_operativo_id', (int)$turno_operativo_id);
+        } else {
+            $query->whereBetween('teso_movimientos.fecha', [ $fecha_inicial, $fecha_final ] );
+        }
+
+        if (is_null($turno_operativo_id) && (int)$pdv_id != 0) {
             $query = self::aplicarFiltroPdv($query, (int)$pdv_id, (int)$teso_caja_id, 0);
         }
 
@@ -366,7 +393,7 @@ class TesoMovimiento extends Model
 
         // Un arqueo de PDV debe incluir todos los movimientos de ese punto de venta,
         // incluso cuando no existe una apertura/cierre registrada para el día.
-        $filtrarPorUsuario = (int)$pdv_id == 0;
+        $filtrarPorUsuario = is_null($turno_operativo_id) && (int)$pdv_id == 0;
 
         if ( $filtrarPorUsuario ) {
             if ( !is_null($creado_por) )

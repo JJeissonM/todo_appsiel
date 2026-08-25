@@ -8,6 +8,34 @@ use App\VentasPos\Pdv;
 
 class CashRegisterShiftService
 {
+    public function getOperationalShift(Pdv $pdv, $turnoId = null)
+    {
+        $query = \App\Core\TurnoOperativo::where('core_empresa_id', $pdv->core_empresa_id)
+            ->where('contexto_tipo', 'pdv')
+            ->where('contexto_id', $pdv->id);
+
+        if (is_null($turnoId)) {
+            $query->where('estado', \App\Core\TurnoOperativo::ESTADO_ABIERTO);
+        } else {
+            $query->where('id', (int)$turnoId);
+        }
+
+        $turno = $query->orderBy('id', 'DESC')->first();
+        if (is_null($turno)) {
+            return null;
+        }
+
+        return array(
+            'turno_operativo_id' => (int)$turno->id,
+            'operational_date' => $turno->fecha_operativa,
+            'opening_at' => (string)$turno->abierto_en,
+            'closing_at' => is_null($turno->cerrado_en) ? '' : (string)$turno->cerrado_en,
+            'cash_base' => (float)$turno->saldo_inicial,
+            'has_opening' => true,
+            'has_closing' => !is_null($turno->cerrado_en),
+        );
+    }
+
     public function getDayRange(Pdv $pdv, $date)
     {
         $date = $this->normalizeDate($date);

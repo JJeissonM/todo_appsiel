@@ -589,6 +589,12 @@ class HotelService
             $consecutivo = TipoDocApp::get_consecutivo_actual($order->empresa_id, $tipoDocAppId) + 1;
             TipoDocApp::aumentar_consecutivo($order->empresa_id, $tipoDocAppId);
 
+            $turnoId = null;
+            if (!empty($order->pdv_id)) {
+                $turno = app(\App\Core\Services\TurnoManager::class)->currentForPdv($order->empresa_id, $order->pdv_id);
+                $turnoId = is_null($turno) ? null : $turno->id;
+            }
+
             // Integracion minima: crea encabezado y registros en tablas de ventas.
             // La contabilizacion, cartera e inventario quedan para el flujo oficial si se requiere ampliar.
             $doc = VtasDocEncabezado::create(array(
@@ -598,6 +604,7 @@ class HotelService
                 'consecutivo' => $consecutivo,
                 'fecha' => date('Y-m-d'),
                 'core_tercero_id' => $cliente->core_tercero_id,
+                'turno_operativo_id' => $turnoId,
                 'cliente_id' => $cliente->id,
                 'descripcion' => '',
                 'estado' => 'Activo',
@@ -681,6 +688,7 @@ class HotelService
                 'cliente_id' => $cliente->id,
                 'vendedor_id' => $vendedorId,
                 'pdv_id' => $pdv->id,
+                'turno_operativo_id' => is_null($pdv->turno_operativo_actual()) ? null : $pdv->turno_operativo_actual()->id,
                 'cajero_id' => Auth::check() ? Auth::user()->id : null,
                 'forma_pago' => $formaPago,
                 'fecha_vencimiento' => $cliente->fecha_vencimiento_pago(date('Y-m-d')),
