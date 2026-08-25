@@ -28,6 +28,7 @@ use App\Tesoreria\TesoDocRegistro;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\ControlCheque;
 use App\Tesoreria\TesoEntidadFinanciera;
+use App\Tesoreria\Services\DaviviendaMassPaymentFileService;
 
 use App\Tesoreria\RegistroDeEfectivo;
 use App\Tesoreria\RegistroDeTransferenciaConsignacion;
@@ -242,13 +243,15 @@ class PagoCxpController extends TransaccionController
 
         $documento_vista = '';
 
+        $davivienda_archivo = (new DaviviendaMassPaymentFileService())->summary($encabezado_documento);
+
         $miga_pan = [
                 ['url'=>'tesoreria?id='.Input::get('id'),'etiqueta'=>'Tesorería'],
                 ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=> $modelo->descripcion ],
                 ['url'=>'NO','etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo]
             ];
         
-        return view( 'tesoreria.pagos_cxp.show', compact( 'id', 'botones_anterior_siguiente', 'id_transaccion', 'miga_pan','doc_encabezado','registros_contabilidad','doc_pagados','empresa','documento_vista', 'encabezado_documento') );
+        return view( 'tesoreria.pagos_cxp.show', compact( 'id', 'botones_anterior_siguiente', 'id_transaccion', 'miga_pan','doc_encabezado','registros_contabilidad','doc_pagados','empresa','documento_vista', 'encabezado_documento', 'davivienda_archivo') );
     }
 
 

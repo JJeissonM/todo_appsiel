@@ -14,8 +14,28 @@
 
 @section('botones_acciones')
     {{ Form::bsBtnCreate('tesoreria/pagos_cxp/create' . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion) }}
+    @if(Auth::user()->can('teso_pagos_cxp') && isset($davivienda_archivo) && $davivienda_archivo['available'] && $doc_encabezado->estado != 'Anulado')
+        <a class="btn-gmail"
+           href="{{ url('tesoreria/pagos_cxp/' . $id . '/archivo-davivienda') }}"
+           title="Descargar archivo Davivienda: {{ $davivienda_archivo['eligible_count'] }} beneficiario(s), {{ $davivienda_archivo['omitted_count'] }} omitido(s)">
+            <i class="fa fa-btn fa-download"></i>
+        </a>
+    @endif
     @if($doc_encabezado->estado != 'Anulado')
         <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
+    @endif
+@endsection
+
+@section('informacion_antes_encabezado')
+    @if(isset($davivienda_archivo) && $davivienda_archivo['is_davivienda_bank_payment'] && $davivienda_archivo['omitted_count'] > 0)
+        <div class="alert alert-warning">
+            <b>Archivo Davivienda:</b> {{ $davivienda_archivo['omitted_count'] }} beneficiario(s) no se incluirán por datos bancarios o de identificación incompletos.
+            <ul style="margin-bottom:0;">
+                @foreach($davivienda_archivo['omitted'] as $motivo_omision)
+                    <li>{{ $motivo_omision }}</li>
+                @endforeach
+            </ul>
+        </div>
     @endif
 @endsection
 

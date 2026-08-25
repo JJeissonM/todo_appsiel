@@ -86,6 +86,7 @@ Route::get('tesoreria/get_documentos_pendientes_cxp', 'Tesoreria\PagoCxpControll
 Route::get('teso_anular_pago_cxp/{id}', 'Tesoreria\PagoCxpController@anular_pago_cxp');
 Route::get('tesoreria_pagos_cxp_apm_payload/{id}', 'Tesoreria\PagoCxpController@get_apm_payload');
 Route::get('tesoreria_pagos_cxp_imprimir/{id}', 'Tesoreria\PagoCxpController@imprimir');
+Route::get('tesoreria/pagos_cxp/{id}/archivo-davivienda', 'Tesoreria\DaviviendaPaymentFileController@download');
 Route::resource('tesoreria/pagos_cxp', 'Tesoreria\PagoCxpController');
 
 // CUENTAS BANCARIAS (SHOW PERSONALIZADO)
