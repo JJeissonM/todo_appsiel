@@ -32,6 +32,10 @@ class ContabilizacionDocumentoController extends TransaccionController
             Log::error('Nómina: no fue posible inicializar la contabilización.', [
                 'documento_id' => $documento->id,
                 'error' => $e->getMessage(),
+                'exception_class' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return $this->respuesta_error('Ocurrió un error al iniciar el proceso. Consulte el registro de la aplicación.');
@@ -55,6 +59,10 @@ class ContabilizacionDocumentoController extends TransaccionController
             Log::error('Nómina: no fue posible preparar la contabilización.', [
                 'documento_id' => $documento->id,
                 'error' => $e->getMessage(),
+                'exception_class' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return $this->respuesta_error('Ocurrió un error al preparar la contabilización. Consulte el registro de la aplicación.');
@@ -96,6 +104,10 @@ class ContabilizacionDocumentoController extends TransaccionController
                 Log::error('Nómina: error almacenando la contabilización.', [
                     'documento_id' => $documento->id,
                     'error' => $e->getMessage(),
+                    'exception_class' => get_class($e),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
                 ]);
 
                 return $this->respuesta_error('No se almacenó ningún movimiento contable. Consulte el registro de la aplicación.');

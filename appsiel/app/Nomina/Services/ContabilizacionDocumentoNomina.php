@@ -106,6 +106,12 @@ class ContabilizacionDocumentoNomina
 				? $this->tercero_inconsistente($linea_registro_nomina)
 				: $this->get_tercero_movimiento( $equ_contab, $contrato );
 			$tercero_mov = $this->get_tercero_movimiento_cxp_aportes($equ_contab, $linea_registro_nomina, $tercero_mov);
+			if (is_null($tercero_mov) || (int)$tercero_mov->id === 0) {
+				$detalle_tercero = is_null($tercero_mov) || empty($tercero_mov->descripcion)
+					? 'No se pudo determinar el tercero del movimiento contable.'
+					: $tercero_mov->descripcion;
+				$errores_integridad[] = $detalle_tercero;
+			}
 			$detalle_operador_pila = $this->get_detalle_operador_pila($equ_contab, $linea_registro_nomina);
 			$registro_equivalencia_contable = (object)[
 									'es_contrapartida' => 0,
@@ -332,7 +338,7 @@ class ContabilizacionDocumentoNomina
 			return false;
 		}
 
-		return in_array((int)$concepto->modo_liquidacion_id, [10, 12, 13]);
+		return !is_null($this->get_tipo_entidad_relacionada($concepto));
 	}
 
 	protected function get_detalle_operador_pila($equ_contab, $linea_registro_nomina)
@@ -354,32 +360,25 @@ class ContabilizacionDocumentoNomina
 
 	public function get_tercero_movimiento( $equ_contab, NomContrato $contrato )
 	{
-		$tercero = (object)['id'=>0,'numero_identificacion'=>0,'descripcion'=>0];
+		$tercero = $this->tercero_no_definido(
+			'No se pudo determinar el tercero asociado a la equivalencia contable.'
+		);
 
 		switch ( $equ_contab->tercero_movimiento )
 		{
 			case 'empleado':
-				$tercero = $contrato->tercero;
+				$tercero = is_null($contrato->tercero)
+					? $this->tercero_no_definido('El contrato #' . $contrato->id . ' no tiene un empleado válido asociado.')
+					: $contrato->tercero;
 				break;
 
 			case 'entidad_relacionada':
 
 				if ( !is_null($equ_contab->concepto) )
 				{
-					switch( $equ_contab->concepto->modo_liquidacion_id )
-					{
-						case '10': // Fondo Solidaridad Pensional
-							$tercero = $contrato->entidad_pension->tercero;
-							break;
-						case '12': // Salud Obligatoria
-							$tercero = $contrato->entidad_salud->tercero;
-							break;
-						case '13': // Pension Obligatoria
-							$tercero = $contrato->entidad_pension->tercero;
-							break;
-						default:
-							// 
-							break;
+					$tipo_entidad = $this->get_tipo_entidad_relacionada($equ_contab->concepto);
+					if (!is_null($tipo_entidad)) {
+						$tercero = $this->get_tercero_entidad_contrato($contrato, $tipo_entidad);
 					}
 				}
 
@@ -398,12 +397,64 @@ class ContabilizacionDocumentoNomina
 				break;
 		}
 
-		if( is_null($tercero) )
-		{
-			$tercero = (object)[ 'id' => 0, 'numero_identificacion' => 0, 'descripcion'  => 'Tercero no esta definido. Por favor revise el Tercero asociado a la Equivalencia contable de este Concepto.'];
+		return $tercero;
+	}
+
+	protected function get_tercero_entidad_contrato(NomContrato $contrato, $tipo_entidad)
+	{
+		$es_salud = $tipo_entidad === 'salud';
+		$campo_id = $es_salud ? 'entidad_salud_id' : 'entidad_pension_id';
+		$relacion = $es_salud ? 'entidad_salud' : 'entidad_pension';
+		$etiqueta = $es_salud ? 'salud' : 'pensión';
+		$entidad_id = (int)$contrato->{$campo_id};
+		$entidad = $contrato->{$relacion};
+
+		if (is_null($entidad)) {
+			$referencia = $entidad_id > 0 ? ' #' . $entidad_id : '';
+			return $this->tercero_no_definido(
+				'El contrato #' . $contrato->id . ' tiene una entidad de ' . $etiqueta . $referencia . ' inexistente o sin asignar.'
+			);
 		}
 
-		return $tercero;
+		if (is_null($entidad->tercero)) {
+			return $this->tercero_no_definido(
+				'La entidad de ' . $etiqueta . ' #' . $entidad->id . ' (' . $entidad->descripcion . ') no tiene un tercero válido asociado.'
+			);
+		}
+
+		return $entidad->tercero;
+	}
+
+	protected function tercero_no_definido($descripcion)
+	{
+		return (object)[
+			'id' => 0,
+			'numero_identificacion' => 0,
+			'descripcion' => $descripcion
+		];
+	}
+
+	protected function get_tipo_entidad_relacionada($concepto)
+	{
+		$modo_liquidacion_id = (int)$concepto->modo_liquidacion_id;
+		if ($modo_liquidacion_id === 12) {
+			return 'salud';
+		}
+
+		if (in_array($modo_liquidacion_id, [10, 13])) {
+			return 'pension';
+		}
+
+		$codigo_dian = is_null($concepto->cpto_dian) ? '' : $concepto->cpto_dian->codigo;
+		if ($codigo_dian === 'SALUD') {
+			return 'salud';
+		}
+
+		if (in_array($codigo_dian, ['FONDO_PENSION', 'FONDO_SOLIDARIDAD_PENSIONAL'])) {
+			return 'pension';
+		}
+
+		return null;
 	}
 
 	public function get_valor_debito( $equ_contab, $linea_registro_nomina )
@@ -437,8 +488,7 @@ class ContabilizacionDocumentoNomina
 		$lineas_tabla = [];
 		foreach ( $this->movimiento_contabilizar as $movimiento )
 		{
-			if ($movimiento->concepto == null
-					&& ($movimiento->valor_debito + $movimiento->valor_credito) == 0
+			if (($movimiento->valor_debito + $movimiento->valor_credito) == 0
 					&& empty($movimiento->error_integridad))
 			{
 				continue;

@@ -93,6 +93,7 @@ class NomDocRegistro extends Model
             ->select(
                 'nom_doc_encabezados.descripcion AS DOCUMENTO',
                 'core_terceros.descripcion AS EMPLEADO',
+                'core_terceros.numero_identificacion AS IDENTIFICACION',
                 'nom_doc_registros.fecha AS FECHA',
                 'nom_doc_registros.detalle AS DETALLE',
                 'nom_conceptos.abreviatura AS ABREVIATURA',
@@ -106,7 +107,7 @@ class NomDocRegistro extends Model
             ), $search)
             ->orderBy('nom_doc_registros.created_at', 'DESC');
 
-        return self::sql_con_bindings($query);
+        return self::sql_con_bindings($query); 
     }
 
     /**
