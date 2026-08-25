@@ -74,6 +74,7 @@ class RegistrosDocumentosFiltrosTest extends TestCase
             $table->integer('cpto_dian_id')->nullable();
             $table->string('naturaleza');
             $table->decimal('porcentaje_sobre_basico', 8, 4)->default(0);
+            $table->string('abreviatura')->nullable();
             $table->string('descripcion');
             $table->string('estado');
         });
@@ -89,6 +90,7 @@ class RegistrosDocumentosFiltrosTest extends TestCase
             $table->date('fecha');
             $table->integer('core_empresa_id');
             $table->integer('nom_concepto_id');
+            $table->string('detalle')->nullable();
             $table->decimal('cantidad_horas', 10, 2)->default(0);
             $table->decimal('valor_devengo', 15, 2)->default(0);
             $table->decimal('valor_deduccion', 15, 2)->default(0);
@@ -96,6 +98,12 @@ class RegistrosDocumentosFiltrosTest extends TestCase
             $table->string('creado_por');
             $table->string('modificado_por')->nullable();
             $table->timestamps();
+        });
+        Schema::create('compras_proveedores_cuentas_bancarias', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('tercero_id');
+            $table->string('numero_cuenta');
+            $table->string('estado');
         });
 
         DB::table('nom_parametros_legales')->insert([
@@ -191,6 +199,22 @@ class RegistrosDocumentosFiltrosTest extends TestCase
 
         $this->assertSame(['' => 'Todos'], $opciones);
         $this->assertSame(0, NomDocRegistro::consultar_registros(10, '')->total());
+    }
+
+    /** @test */
+    public function exporta_el_numero_de_cuenta_sin_duplicar_registros_de_nomina()
+    {
+        $this->insertarRegistroNomina(50, 1, 1, 101, 5);
+        DB::table('compras_proveedores_cuentas_bancarias')->insert([
+            ['id' => 1, 'tercero_id' => 1, 'numero_cuenta' => 'INACTIVA-001', 'estado' => 'Inactivo'],
+            ['id' => 2, 'tercero_id' => 1, 'numero_cuenta' => 'ACTIVA-001', 'estado' => 'Activo'],
+            ['id' => 3, 'tercero_id' => 1, 'numero_cuenta' => 'INACTIVA-002', 'estado' => 'Inactivo']
+        ]);
+
+        $registros = DB::select(NomDocRegistro::sqlString(''));
+
+        $this->assertCount(1, $registros);
+        $this->assertSame('ACTIVA-001', $registros[0]->{'Nro. Cuenta'});
     }
 
     /** @test */

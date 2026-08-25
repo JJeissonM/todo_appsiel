@@ -94,6 +94,11 @@ class NomDocRegistro extends Model
                 'nom_doc_encabezados.descripcion AS DOCUMENTO',
                 'core_terceros.descripcion AS EMPLEADO',
                 'core_terceros.numero_identificacion AS IDENTIFICACION',
+                DB::raw('(SELECT cuenta_bancaria.numero_cuenta
+                    FROM compras_proveedores_cuentas_bancarias AS cuenta_bancaria
+                    WHERE cuenta_bancaria.tercero_id = nom_doc_registros.core_tercero_id
+                    ORDER BY (cuenta_bancaria.estado = \'Activo\') DESC, cuenta_bancaria.id DESC
+                    LIMIT 1) AS `Nro. Cuenta`'),
                 'nom_doc_registros.fecha AS FECHA',
                 'nom_doc_registros.detalle AS DETALLE',
                 'nom_conceptos.abreviatura AS ABREVIATURA',
