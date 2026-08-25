@@ -95,6 +95,7 @@ class NomDocRegistro extends Model
                 'core_terceros.descripcion AS EMPLEADO',
                 'nom_doc_registros.fecha AS FECHA',
                 'nom_doc_registros.detalle AS DETALLE',
+                'nom_conceptos.abreviatura AS ABREVIATURA',
                 'nom_conceptos.descripcion AS CONCEPTO',
                 'nom_elect_cat_cptos_dian.codigo AS CODIGO_DIAN',
                 'nom_doc_registros.cantidad_horas AS HORAS',
