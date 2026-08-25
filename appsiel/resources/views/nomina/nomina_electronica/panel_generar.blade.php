@@ -41,6 +41,9 @@
 			<div class="col-md-6">
 
 				<button class="btn btn-primary" id="btn_previsualizar"> <i class="fa fa-check"></i> Consultar </button>
+				<button type="button" class="btn btn-default" id="btn_imprimir_vista_previa" style="display:none; margin-left: 5px;">
+					<i class="fa fa-print"></i> Imprimir vista previa
+				</button>
 			</div>
 			<div class="col-md-6">
 				<button type="button" class="btn btn-info" id="btn_enviar" style="display:none;" data-ids="[]">
@@ -131,6 +134,25 @@
 			function ocultar_mensaje_envio()
 			{
 				$("#mensaje_envio_generados").removeAttr('class').html('').hide();
+			}
+
+			function actualizar_boton_impresion()
+			{
+				var hay_tablas = $("#div_resultado_panel_generar .cuadro > table").length > 0;
+				$("#btn_imprimir_vista_previa").toggle(hay_tablas);
+			}
+
+			function obtener_tablas_vista_previa()
+			{
+				var tablas = [];
+
+				// TextoMoneda genera tablas internas para alinear el símbolo y el valor.
+				// Solo se copian las tablas principales para evitar imprimirlas nuevamente.
+				$("#div_resultado_panel_generar .cuadro > table").each(function(){
+					tablas.push('<div class="bloque-tabla">' + this.outerHTML + '</div>');
+				});
+
+				return tablas.join('');
 			}
 
 			function bloquear_boton_envio(estado)
@@ -233,6 +255,7 @@
 
 		 		$("#div_cargando").show();
         		$("#div_resultado_panel_generar").html( '' );
+				$("#btn_imprimir_vista_previa").hide();
         		$("#btn_enviar").hide().attr('data-ids', '[]');
         		$("#panel_envio_generados").hide();
         		ocultar_mensaje_envio();
@@ -258,6 +281,7 @@
 
         			$("#div_resultado_panel_generar").html( respuesta );
         			$("#div_resultado_panel_generar").fadeIn( 1000 );
+					actualizar_boton_impresion();
 
 					if( document.getElementById('status') != null )
 					{
@@ -296,8 +320,47 @@
 
         			$("#div_resultado_panel_generar").html( respuesta );
         			$("#div_resultado_panel_generar").fadeIn( 1000 );
+					actualizar_boton_impresion();
 			    });
 		    });
+
+			$("#btn_imprimir_vista_previa").on('click', function(event){
+				event.preventDefault();
+
+				var contenido = obtener_tablas_vista_previa();
+				if (contenido === '') {
+					alert('Primero debe consultar la vista previa de la nómina electrónica.');
+					return false;
+				}
+
+				var ventana_impresion = window.open('', '_blank', 'width=1100,height=800,scrollbars=yes');
+				if (!ventana_impresion) {
+					alert('El navegador bloqueó la ventana de impresión. Permita las ventanas emergentes para este sitio.');
+					return false;
+				}
+
+				ventana_impresion.document.open();
+				ventana_impresion.document.write(
+					'<!DOCTYPE html><html><head><meta charset="utf-8">' +
+					'<title>Vista previa de nómina electrónica</title>' +
+					'<style>' +
+					'@page{size:auto;margin:12mm;}' +
+					'body{font-family:Arial,sans-serif;color:#111;margin:0;font-size:11px;}' +
+					'table{width:100%;border-collapse:collapse;margin:0 0 12px;page-break-inside:auto;}' +
+					'thead{display:table-header-group;}tr{page-break-inside:avoid;page-break-after:auto;}' +
+					'th,td{border:1px solid #777;padding:5px;vertical-align:top;}' +
+					'th{background:#e7e7e7;text-align:center;}' +
+					'.bloque-tabla{margin-bottom:14px;page-break-inside:auto;}' +
+					'.alert{border:1px solid #999;padding:6px;}' +
+					'</style></head><body>' + contenido + '</body></html>'
+				);
+				ventana_impresion.document.close();
+				ventana_impresion.focus();
+
+				setTimeout(function(){
+					ventana_impresion.print();
+				}, 300);
+			});
 
 			$("#btn_enviar").on('click',function(event){
 		    	event.preventDefault();
