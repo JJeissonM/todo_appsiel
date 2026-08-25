@@ -186,9 +186,8 @@ class RecaudoController extends TransaccionController
                             [ 'valor_movimiento' => $valor]
                         );
 
-            // Se hace explícito en el recaudo general: si existe un cierre para el
-            // PDV y la fecha del recaudo, el movimiento pertenece a ese cierre.
-            $movimiento->sincronizarCreatedAtConUltimoCierre();
+            // El modelo centraliza la asignación: FK estricta en TURNOS y el parche
+            // de created_at únicamente en compatibilidad TRADICIONAL.
             $movimiento->save();
 
             $total_recaudo += $valor;

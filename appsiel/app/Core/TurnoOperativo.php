@@ -21,6 +21,30 @@ class TurnoOperativo extends Model
 
     protected $dates = array('abierto_en', 'cerrado_en');
 
+    protected $stateTransitionAuthorized = false;
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::updating(function ($turno) {
+            $previousState = $turno->getOriginal('estado');
+            if ($turno->isDirty('estado') && !$turno->stateTransitionAuthorized) {
+                throw new \App\Core\Exceptions\TurnoStateException('Los cambios de estado del turno deben realizarse mediante TurnoManager.');
+            }
+            if ($previousState === self::ESTADO_AUDITADO && !$turno->stateTransitionAuthorized && $turno->isDirty()) {
+                throw new \App\Core\Exceptions\TurnoStateException('Un turno auditado es inmutable; utilice un ajuste o proceso excepcional autorizado.');
+            }
+            $turno->stateTransitionAuthorized = false;
+        });
+    }
+
+    public function authorizeStateTransition()
+    {
+        $this->stateTransitionAuthorized = true;
+        return $this;
+    }
+
     public function empresa()
     {
         return $this->belongsTo(Empresa::class, 'core_empresa_id');

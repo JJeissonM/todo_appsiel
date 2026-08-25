@@ -13,6 +13,7 @@ use App\Matriculas\Curso;
 use App\Core\Colegio;
 use App\Core\TipoDocApp;
 use App\Core\Tercero;
+use App\Core\TurnoOperativo;
 use App\Sistema\Aplicacion;
 use App\Tesoreria\Services\ReportsServices;
 use App\Tesoreria\TesoLibretasPago;
@@ -990,6 +991,18 @@ class ReporteController extends TesoreriaController
         $pdv_id = (int)Input::get('pdv_id');
         $fecha_hora_apertura = $this->normalizarFechaHoraArqueo(Input::get('fecha_hora_apertura'));
         $fecha_hora_cierre = $this->normalizarFechaHoraArqueo(Input::get('fecha_hora_cierre'));
+        $turno_operativo_id = (int)Input::get('turno_operativo_id');
+
+        if ($turno_operativo_id > 0) {
+            $turnoValido = TurnoOperativo::where('id', $turno_operativo_id)
+                ->where('core_empresa_id', Auth::user()->empresa_id)
+                ->where('contexto_tipo', 'pdv')
+                ->where('contexto_id', $pdv_id)
+                ->exists();
+            if (!$turnoValido) {
+                return response()->json(array('message' => 'El turno operativo no corresponde a la empresa y PDV consultados.'), 422);
+            }
+        }
 
         if ( !TesoMovimiento::usarMovimientosTesoreriaPorHora() ) {
             $fecha_hora_apertura = null;
@@ -1043,7 +1056,8 @@ class ReporteController extends TesoreriaController
             $creado_por,
             $pdv_id,
             $fecha_hora_apertura,
-            $fecha_hora_cierre
+            $fecha_hora_cierre,
+            $turno_operativo_id > 0 ? $turno_operativo_id : null
         )->toArray();
 
         $total_valor_movimiento = 0;

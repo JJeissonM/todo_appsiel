@@ -37,6 +37,14 @@
     <div class="container-fluid">
         <input type="hidden" id="pdv_id" name="pdv_id" value="{{ $pdvId }}">
 
+        <div id="turno_operativo_group" class="form-group" style="display: none;">
+            <label for="turno_operativo_id">Turno operativo:</label>
+            <select id="turno_operativo_id" name="turno_operativo_id" class="form-control">
+                <option value="">Seleccione un turno</option>
+            </select>
+            <span class="help-block">El arqueo y sus consultas utilizarán la identidad del turno, no un rango horario estimado.</span>
+        </div>
+
         <div class="form-group" style="margin-top: 20px;">
             <label>PDV:</label>
             <div id="pdv_descripcion" class="form-control" style="background-color: #f5f5f5;">{{ $pdvDescripcion }}</div>
@@ -239,13 +247,11 @@
             }
             var sum;
             var usarMovimientosTesoreriaPorHora = {{ $usarMovimientosTesoreriaPorHora ? 'true' : 'false' }};
+            var modoTurnos = false;
+            var turnosOperativos = [];
 
             $('#fecha').on('change', function () {
-                if (usarMovimientosTesoreriaPorHora) {
-                    cargarRangoPdvPorFecha($(this).val(), true);
-                } else if (typeof recalcularSaldoInicialArqueo === 'function') {
-                    recalcularSaldoInicialArqueo();
-                }
+                cargarRangoPdvPorFecha($(this).val(), true);
             });
 
             if (usarMovimientosTesoreriaPorHora) {
@@ -254,8 +260,9 @@
                     limpiarMovimientosPorCambioTurno();
                 });
 
-                cargarRangoPdvPorFecha($('#fecha').val(), false);
             }
+
+            cargarRangoPdvPorFecha($('#fecha').val(), false);
 
             function cargarRangoPdvPorFecha(fecha, recalcularSaldoInicial) {
                 if ($('#pdv_id').val() === '' || fecha === '') {
@@ -270,18 +277,57 @@
                     pdv_id: $('#pdv_id').val(),
                     fecha: fecha
                 }).done(function (response) {
+                    configurarTurnosOperativos(response);
                     aplicarRangoPdv(response.range, response.message, response.pdv_description);
-                    if (recalcularSaldoInicial && typeof recalcularSaldoInicialArqueo === 'function') {
+                    if (recalcularSaldoInicial && typeof recalcularSaldoInicialArqueo === 'function'
+                        && (!modoTurnos || $('#turno_operativo_id').val() !== '')) {
                         recalcularSaldoInicialArqueo();
                     }
                 }).fail(function () {
+                    turnosOperativos = [];
+                    $('#turno_operativo_id').html('<option value="">Seleccione un turno</option>');
                     aplicarRangoPdv(null, 'No fue posible consultar las aperturas y cierres para la fecha seleccionada.', '');
-                    if (recalcularSaldoInicial && typeof recalcularSaldoInicialArqueo === 'function') {
-                        recalcularSaldoInicialArqueo();
-                    }
                 }).always(function () {
                     $('#btn_get_mov_entrada, #btn_get_mov_salida').removeClass('disabled');
                 });
+            }
+
+            $('#turno_operativo_id').on('change', function () {
+                var turnoId = parseInt($(this).val(), 10);
+                var turno = null;
+                $.each(turnosOperativos, function (index, item) {
+                    if (parseInt(item.id, 10) === turnoId) {
+                        turno = item;
+                        return false;
+                    }
+                });
+                aplicarRangoPdv(turno, turno === null ? 'Debe seleccionar un turno operativo.' : '', $('#pdv_descripcion').text());
+                if (typeof recalcularSaldoInicialArqueo === 'function' && turno !== null) {
+                    recalcularSaldoInicialArqueo();
+                }
+            });
+
+            function configurarTurnosOperativos(response) {
+                modoTurnos = response.mode === 'TURNOS';
+                turnosOperativos = response.shifts || [];
+                var $select = $('#turno_operativo_id');
+                $select.html('<option value="">Seleccione un turno</option>');
+
+                if (!modoTurnos) {
+                    $('#turno_operativo_group').hide();
+                    $('#fecha_hora_apertura, #fecha_hora_cierre').prop('readonly', false);
+                    return;
+                }
+
+                $.each(turnosOperativos, function (index, turno) {
+                    var label = (turno.code || ('Turno ' + turno.id)) + ' - ' + turno.state + ' (' + (turno.opening_at || '') + ' / ' + (turno.closing_at || 'sin cierre') + ')';
+                    $('<option>').val(turno.id).text(label).appendTo($select);
+                });
+                $('#turno_operativo_group').show();
+                $('#fecha_hora_apertura, #fecha_hora_cierre').prop('readonly', true);
+                if (turnosOperativos.length === 1) {
+                    $select.val(turnosOperativos[0].id);
+                }
             }
 
             function aplicarRangoPdv(range, message, pdvDescription) {
@@ -330,6 +376,10 @@
             });
 
             function validarCierrePdvArqueo() {
+                if (modoTurnos && $('#turno_operativo_id').val() === '') {
+                    alert('Debe seleccionar el turno operativo que se va a arquear.');
+                    return false;
+                }
                 if (!usarMovimientosTesoreriaPorHora) {
                     return true;
                 }
@@ -456,6 +506,7 @@
                     fecha_hasta: $('#fecha').val(),
                     teso_caja_id: $('#teso_caja_id').val(),
                     pdv_id: $('#pdv_id').val(),
+                    turno_operativo_id: $('#turno_operativo_id').val(),
                     fecha_hora_apertura: $('#fecha_hora_apertura').val(),
                     fecha_hora_cierre: $('#fecha_hora_cierre').val()
                 })
@@ -511,6 +562,7 @@
                     fecha_hasta: $('#fecha').val(),
                     teso_caja_id: $('#teso_caja_id').val(),
                     pdv_id: $('#pdv_id').val(),
+                    turno_operativo_id: $('#turno_operativo_id').val(),
                     fecha_hora_apertura: $('#fecha_hora_apertura').val(),
                     fecha_hora_cierre: $('#fecha_hora_cierre').val()
                 })

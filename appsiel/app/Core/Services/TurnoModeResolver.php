@@ -45,6 +45,11 @@ class TurnoModeResolver
         return $this->cache[$key] = false;
     }
 
+    public function enabledForModule($empresaId, $modulo)
+    {
+        return $this->enabled($empresaId, $modulo, '*', 0);
+    }
+
     public function clearCache()
     {
         $this->cache = array();

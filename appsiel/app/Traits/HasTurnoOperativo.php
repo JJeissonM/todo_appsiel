@@ -9,6 +9,9 @@ trait HasTurnoOperativo
     public static function bootHasTurnoOperativo()
     {
         static::creating(function ($model) {
+            if (method_exists($model, 'deferTurnoAssignment') && $model->deferTurnoAssignment()) {
+                return;
+            }
             app(TurnoAssignmentResolver::class)->assign($model, $model->turnoModuleName());
         });
     }

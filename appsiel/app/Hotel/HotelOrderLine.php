@@ -5,9 +5,12 @@ namespace App\Hotel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Traits\HasTurnoOperativo;
 
 class HotelOrderLine extends Model
 {
+    use HasTurnoOperativo;
+
     const SOURCE_ROOM = 'ROOM';
     const SOURCE_PRODUCT = 'PRODUCT';
     const SOURCE_SERVICE = 'SERVICE';
@@ -15,7 +18,17 @@ class HotelOrderLine extends Model
 
     protected $table = 'hotel_order_lines';
 
-    protected $fillable = array('empresa_id', 'hotel_order_id', 'producto_id', 'room_id', 'inv_bodega_id', 'description', 'quantity', 'unit_price', 'discount', 'tax_value', 'line_total', 'source_type', 'source_id');
+    protected $fillable = array('empresa_id', 'hotel_order_id', 'turno_operativo_id', 'producto_id', 'room_id', 'inv_bodega_id', 'description', 'quantity', 'unit_price', 'discount', 'tax_value', 'line_total', 'source_type', 'source_id');
+
+    protected function turnoModuleName()
+    {
+        return 'hotel';
+    }
+
+    protected function deferTurnoAssignment()
+    {
+        return true;
+    }
 
     public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Pedido', 'Producto', 'Habitacion', 'Bodega', 'Cantidad', 'Precio', 'Descuento', 'Impuesto', 'Total');
 
@@ -27,6 +40,9 @@ class HotelOrderLine extends Model
 
         static::creating(function ($line) {
             self::prepareLine($line);
+            $order = HotelOrderHeader::find((int)$line->hotel_order_id);
+            $pdvId = is_null($order) ? null : $order->pdv_id;
+            app(\App\Core\Services\TurnoAssignmentResolver::class)->assign($line, 'hotel', $pdvId);
         });
 
         static::updating(function ($line) {

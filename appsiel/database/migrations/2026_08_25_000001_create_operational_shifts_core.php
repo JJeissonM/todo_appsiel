@@ -3,6 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class CreateOperationalShiftsCore extends Migration
 {
@@ -95,8 +96,11 @@ class CreateOperationalShiftsCore extends Migration
 
     public function down()
     {
-        foreach (array('vtas_pos_apertura_encabezados', 'vtas_pos_cierre_encabezados', 'vtas_pos_doc_encabezados', 'vtas_doc_encabezados', 'teso_movimientos', 'inv_movimientos', 'inv_doc_encabezados', 'hotel_order_headers', 'teso_arqueos_caja') as $tableName) {
-            if (Schema::hasTable($tableName) && Schema::hasColumn($tableName, 'turno_operativo_id')) {
+        foreach (array('vtas_pos_apertura_encabezados', 'vtas_pos_cierre_encabezados', 'vtas_pos_doc_encabezados', 'vtas_doc_encabezados', 'teso_doc_encabezados', 'teso_movimientos', 'inv_movimientos', 'inv_doc_encabezados', 'hotel_order_headers', 'teso_arqueos_caja') as $tableName) {
+            $indexName = substr($tableName, 0, 42) . '_turno_idx';
+            // Si la columna ya existía antes de esta migración, up() no creó
+            // nuestro índice y rollback no debe apropiarse de información ajena.
+            if (Schema::hasTable($tableName) && Schema::hasColumn($tableName, 'turno_operativo_id') && $this->hasIndex($tableName, $indexName)) {
                 Schema::table($tableName, function (Blueprint $table) use ($tableName) {
                     $table->dropIndex(substr($tableName, 0, 42) . '_turno_idx');
                     $table->dropColumn('turno_operativo_id');
@@ -107,5 +111,13 @@ class CreateOperationalShiftsCore extends Migration
         Schema::dropIfExists('core_turno_eventos');
         Schema::dropIfExists('core_turnos_operativos');
         Schema::dropIfExists('core_turno_configuraciones');
+    }
+
+    protected function hasIndex($tableName, $indexName)
+    {
+        return count(DB::select(
+            'SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ? LIMIT 1',
+            array($tableName, $indexName)
+        )) > 0;
     }
 }

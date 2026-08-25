@@ -33,6 +33,11 @@ class HotelOrderHeader extends Model
         return 'hotel';
     }
 
+    protected function deferTurnoAssignment()
+    {
+        return true;
+    }
+
     public $encabezado_tabla = array('<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Doc', 'Creado por', 'Fecha', 'Estadía', 'Hab', 'Cliente', 'Factura, Creado por', 'Estado');
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"hotel/orders/id_fila"}';
@@ -67,6 +72,8 @@ class HotelOrderHeader extends Model
             if (empty($order->status)) {
                 $order->status = self::STATUS_ABIERTO;
             }
+
+            app(\App\Core\Services\TurnoAssignmentResolver::class)->assign($order, 'hotel', $order->pdv_id);
         });
     }
 

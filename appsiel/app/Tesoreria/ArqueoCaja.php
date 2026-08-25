@@ -3,6 +3,8 @@
 namespace App\Tesoreria;
 
 use App\Http\Controllers\Tesoreria\ArqueoCajaController;
+use App\Core\Services\TurnoManager;
+use App\Core\TurnoOperativo;
 use App\Sistema\Html\Boton;
 use App\Sistema\TipoTransaccion;
 use App\Traits\FiltraRegistrosPorUsuario;
@@ -34,6 +36,16 @@ class ArqueoCaja extends Model
     protected function turnoModuleName()
     {
         return 'tesoreria';
+    }
+
+    /**
+     * El arqueo es una operación de control sobre un turno ya identificado, no
+     * una operación normal nueva. Por eso puede apuntar explícitamente al turno
+     * cerrado/auditado, sin habilitar esa excepción para otros modelos.
+     */
+    public function allowsHistoricalTurnoAssignment()
+    {
+        return true;
     }
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'No.', 'Caja', 'Observaciones', 'Total saldo', 'Estado'];
@@ -196,6 +208,37 @@ class ArqueoCaja extends Model
 
     protected function validateAndNormalizeShift($request, $controller)
     {
+        $empresaId = (int)Auth::user()->empresa_id;
+        $pdvId = (int)$request->pdv_id;
+        $turnoManager = app(TurnoManager::class);
+
+        if ($pdvId > 0 && $turnoManager->enabledForPdv($empresaId, $pdvId, 'tesoreria')) {
+            $turno = TurnoOperativo::where('id', (int)$request->turno_operativo_id)
+                ->where('core_empresa_id', $empresaId)
+                ->where('contexto_tipo', 'pdv')
+                ->where('contexto_id', $pdvId)
+                ->first();
+
+            if (is_null($turno)) {
+                $controller->validate($request, array(
+                    'turno_operativo_id' => 'required|integer|in:__turno_invalido__'
+                ), array(
+                    'turno_operativo_id.required' => 'Debe seleccionar el turno operativo que se va a arquear.',
+                    'turno_operativo_id.in' => 'El turno seleccionado no existe o no corresponde a la empresa y PDV del arqueo.'
+                ));
+                return;
+            }
+
+            $request->merge(array(
+                'turno_operativo_id' => $turno->id,
+                'fecha' => $turno->fecha_operativa,
+                'fecha_hora_apertura' => $this->turnoDateValue($turno->abierto_en),
+                'fecha_hora_cierre' => $this->turnoDateValue($turno->cerrado_en),
+                'base' => $turno->saldo_inicial
+            ));
+            return;
+        }
+
         if ( !TesoMovimiento::usarMovimientosTesoreriaPorHora() ) {
             $request->merge([
                 'fecha_hora_apertura' => null,
@@ -239,6 +282,14 @@ class ArqueoCaja extends Model
             'fecha_hora_apertura' => $range['opening_at'],
             'fecha_hora_cierre' => $range['closing_at']
         ]);
+    }
+
+    protected function turnoDateValue($value)
+    {
+        if (is_null($value)) {
+            return null;
+        }
+        return method_exists($value, 'format') ? $value->format('Y-m-d H:i:s') : substr((string)$value, 0, 19);
     }
 
     public function get_datos_adicionales( $datos )

@@ -23,6 +23,7 @@
     <div class="container-fluid">
         <input type="hidden" id="creado_por_arqueo" value="{{ $registro->creado_por }}">
         <input type="hidden" id="pdv_id" name="pdv_id" value="{{ $pdv_id_arqueo }}">
+        <input type="hidden" id="turno_operativo_id" name="turno_operativo_id" value="{{ $registro->turno_operativo_id }}">
 
         <div class="form-group" style="margin-top: 20px;">
             <label>PDV:</label>
@@ -435,6 +436,7 @@
                     teso_caja_id: $('#teso_caja_id').val(),
                     creado_por: $('#creado_por_arqueo').val(),
                     pdv_id: $('#pdv_id').val(),
+                    turno_operativo_id: $('#turno_operativo_id').val(),
                     fecha_hora_apertura: valorFechaHoraArqueo('#fecha_hora_apertura'),
                     fecha_hora_cierre: valorFechaHoraArqueo('#fecha_hora_cierre')
                 })
@@ -488,6 +490,7 @@
                     teso_caja_id: $('#teso_caja_id').val(),
                     creado_por: $('#creado_por_arqueo').val(),
                     pdv_id: $('#pdv_id').val(),
+                    turno_operativo_id: $('#turno_operativo_id').val(),
                     fecha_hora_apertura: valorFechaHoraArqueo('#fecha_hora_apertura'),
                     fecha_hora_cierre: valorFechaHoraArqueo('#fecha_hora_cierre')
                 })

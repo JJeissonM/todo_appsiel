@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Tesoreria;
 
 use App\Core\Empresa;
+use App\Core\Services\TurnoManager;
+use App\Core\TurnoOperativo;
 use App\Hotel\Support\HotelCreatorLabel;
 use App\Sistema\Html\Boton;
 use App\Sistema\TipoTransaccion;
@@ -53,6 +55,38 @@ class ArqueoCajaController extends ModeloController
             ], 404);
         }
 
+
+        $turnoManager = app(TurnoManager::class);
+        if ($turnoManager->enabledForPdv(Auth::user()->empresa_id, $pdv->id, 'tesoreria')) {
+            $turnos = TurnoOperativo::where('core_empresa_id', Auth::user()->empresa_id)
+                ->where('contexto_tipo', 'pdv')
+                ->where('contexto_id', $pdv->id)
+                ->where('fecha_operativa', Input::get('fecha'))
+                ->orderBy('abierto_en')
+                ->get()
+                ->map(function ($turno) {
+                    return array(
+                        'id' => $turno->id,
+                        'code' => $turno->codigo,
+                        'state' => $turno->estado,
+                        'opening_at' => is_null($turno->abierto_en) ? null : $turno->abierto_en->format('Y-m-d H:i:s'),
+                        'closing_at' => is_null($turno->cerrado_en) ? null : $turno->cerrado_en->format('Y-m-d H:i:s'),
+                        'cash_base' => (float)$turno->saldo_inicial,
+                    );
+                })->values();
+
+            return response()->json(array(
+                'status' => 'success',
+                'mode' => 'TURNOS',
+                'pdv_description' => $pdv->descripcion,
+                'shifts' => $turnos,
+                'range' => $turnos->count() === 1 ? $turnos->first() : null,
+                'message' => $turnos->isEmpty()
+                    ? 'No existen turnos operativos para la fecha seleccionada.'
+                    : ($turnos->count() === 1 ? 'Se seleccionó el único turno operativo de la fecha.' : 'Seleccione el turno operativo que se va a arquear.')
+            ));
+        }
+
         $range = (new CashRegisterShiftService())->getDayRange($pdv, Input::get('fecha'));
 
         $message = '';
@@ -64,8 +98,10 @@ class ArqueoCajaController extends ModeloController
 
         return response()->json([
             'status' => 'success',
+            'mode' => 'TRADICIONAL',
             'pdv_description' => $pdv->descripcion,
             'range' => $range,
+            'shifts' => [],
             'message' => $message
         ]);
     }
@@ -101,6 +137,24 @@ class ArqueoCajaController extends ModeloController
                 'status' => 'error',
                 'message' => 'La caja seleccionada no existe o no pertenece a la empresa.'
             ], 422);
+        }
+
+        $pdvId = (int)$request->input('pdv_id');
+        $turnoManager = app(TurnoManager::class);
+        if ($pdvId > 0 && $turnoManager->enabledForPdv($user->empresa_id, $pdvId, 'tesoreria')) {
+            $turno = TurnoOperativo::where('id', (int)$request->input('turno_operativo_id'))
+                ->where('core_empresa_id', $user->empresa_id)
+                ->where('contexto_tipo', 'pdv')
+                ->where('contexto_id', $pdvId)
+                ->first();
+            if (is_null($turno)) {
+                return response()->json(array('status' => 'error', 'message' => 'Seleccione un turno operativo válido antes de recalcular el saldo inicial.'), 422);
+            }
+            return response()->json(array(
+                'status' => 'success',
+                'saldo_inicial' => (float)$turno->saldo_inicial,
+                'message' => 'Saldo inicial tomado del turno operativo seleccionado.'
+            ));
         }
 
         if (!TesoMovimiento::usarMovimientosTesoreriaPorHora()) {
@@ -332,6 +386,7 @@ class ArqueoCajaController extends ModeloController
             'pdv_id' => isset($registro->pdv_id) ? $registro->pdv_id : 0,
             'fecha_hora_apertura' => isset($registro->fecha_hora_apertura) ? $registro->fecha_hora_apertura : null,
             'fecha_hora_cierre' => isset($registro->fecha_hora_cierre) ? $registro->fecha_hora_cierre : null,
+            'turno_operativo_id' => isset($registro->turno_operativo_id) ? $registro->turno_operativo_id : null,
             'sumar_efectivo_base_en_saldo_esperado' => (int)config('ventas_pos.sumar_efectivo_base_en_saldo_esperado')
         ]);
 

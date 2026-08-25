@@ -67,6 +67,7 @@ class StudentInvoiceElectronicConversionService
                 return $this->resultado('error', $documentHeaderId, '', '', 'Factura no encontrada.');
             }
 
+            $turnoOperativoId = $documento->turno_operativo_id;
             $origen = $this->datosDocumento($documento);
 
             if ((int)$documento->core_tipo_transaccion_id === $feTransactionId) {
@@ -125,6 +126,11 @@ class StudentInvoiceElectronicConversionService
             $documento->modificado_por = $modificadoPor;
             $documento->save();
 
+            if ((int)$documento->turno_operativo_id !== (int)$turnoOperativoId) {
+                throw new \App\Core\Exceptions\TurnoIntegrityException('La conversión electrónica no puede cambiar ni recalcular el turno de la factura origen.');
+            }
+
+            $conteos['turno_operativo_id'] = $turnoOperativoId;
             $this->registrarTraza($documento, $origen, $destino, 'convertido', $filters, 'Convertida para envio posterior a la DIAN.', $modificadoPor, $conteos);
 
             return $this->resultado('convertido', $documento->id, $this->label($origen), $this->label($destino), 'Contabilizado - Sin enviar');

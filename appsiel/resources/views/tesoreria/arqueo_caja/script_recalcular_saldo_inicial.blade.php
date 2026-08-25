@@ -23,6 +23,8 @@
         $.get({!! json_encode(url('tesoreria/arqueo_caja_recalcular_saldo_inicial')) !!}, {
             fecha: fecha,
             teso_caja_id: cajaId,
+            pdv_id: $('#pdv_id').val(),
+            turno_operativo_id: $('#turno_operativo_id').val(),
             fecha_hora_apertura: $('#fecha_hora_apertura').val()
         }).done(function (respuesta) {
             $('#base').val(respuesta.saldo_inicial);

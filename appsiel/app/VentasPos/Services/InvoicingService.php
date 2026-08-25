@@ -57,26 +57,26 @@ class InvoicingService
 
         $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
-        // Lineas de registros
-        $this->crear_registros_documento_pos($request, $doc_encabezado, $lineas_registros);  
-        
-        $doc_encabezado->valor_total = $doc_encabezado->lineas_registros->sum('precio_total');
-        $doc_encabezado->save();
+        $service = $this;
+        $completeOperation = function () use ($service, $request, $doc_encabezado, $lineas_registros) {
+            $service->crear_registros_documento_pos($request, $doc_encabezado, $lineas_registros);
+            $doc_encabezado->valor_total = $doc_encabezado->lineas_registros->sum('precio_total');
+            $doc_encabezado->save();
+            $service->crear_movimiento_pos($doc_encabezado);
 
-        // Movimiento
-        $this->crear_movimiento_pos($doc_encabezado);
-        
-        $obj_acumm_serv = new AccumulationService( $doc_encabezado->pdv_id );
-        
-        // Realizar preparaciones de recetas
-        $obj_acumm_serv->hacer_preparaciones_recetas( 'Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha, $doc_encabezado->id );
+            $accumulation = new AccumulationService($doc_encabezado->pdv_id);
+            $accumulation->hacer_preparaciones_recetas('Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha, $doc_encabezado->id);
+            $accumulation->hacer_desarme_automatico('Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha);
+            $accumulation->accumulate_one_invoice($doc_encabezado->id);
 
-        // Realizar desarme automático
-        $obj_acumm_serv->hacer_desarme_automatico( 'Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha);
+            return $doc_encabezado;
+        };
 
-        $obj_acumm_serv->accumulate_one_invoice($doc_encabezado->id);
+        if (empty($doc_encabezado->turno_operativo_id)) {
+            return $completeOperation();
+        }
 
-        return $doc_encabezado;
+        return app(\App\Core\Services\TurnoContext::class)->run($doc_encabezado->turnoOperativo, $completeOperation);
     }
 
     protected function aplicar_fechas_factura_pos_por_defecto(Request $request)

@@ -73,7 +73,22 @@ class HotelReceivableService
                     throw new \InvalidArgumentException('El punto de venta asociado al usuario no pertenece a la empresa de la estadía.');
                 }
 
-                $receiptId = $service->createReceipt($stay, $invoices, $advanceApplied, $paymentMethods, $terceroId, $pdv->id);
+                $manager = app(\App\Core\Services\TurnoManager::class);
+                $turno = null;
+                if ($manager->enabledForContext($stay->empresa_id, 'hotel', 'pdv', $pdv->id)
+                    || $manager->enabledForContext($stay->empresa_id, 'tesoreria', 'pdv', $pdv->id)) {
+                    $turno = $manager->requireCurrent($stay->empresa_id, 'hotel', 'pdv', $pdv->id);
+                } else {
+                    $turno = $manager->currentForContext($stay->empresa_id, 'pdv', $pdv->id);
+                }
+
+                if (is_null($turno)) {
+                    $receiptId = $service->createReceipt($stay, $invoices, $advanceApplied, $paymentMethods, $terceroId, $pdv->id);
+                } else {
+                    $receiptId = app(\App\Core\Services\TurnoContext::class)->run($turno, function () use ($service, $stay, $invoices, $advanceApplied, $paymentMethods, $terceroId, $pdv) {
+                        return $service->createReceipt($stay, $invoices, $advanceApplied, $paymentMethods, $terceroId, $pdv->id);
+                    });
+                }
             }
 
             return array(

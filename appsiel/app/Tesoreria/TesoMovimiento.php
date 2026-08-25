@@ -32,6 +32,11 @@ class TesoMovimiento extends Model
         return 'tesoreria';
     }
 
+    protected function deferTurnoAssignment()
+    {
+        return true;
+    }
+
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Caja/Banco', 'Tercero', 'Motivo', 'Valor movimiento', 'Detalle','F. creación'];
 
     public $vistas = '{"index":"layouts.index3"}';
@@ -42,6 +47,9 @@ class TesoMovimiento extends Model
 
         static::creating(function ($model) {
             if ( !Schema::hasColumn($model->getTable(), 'pdv_id') ) {
+                // Instalaciones históricas sin la columna PDV aún deben respetar
+                // un contexto propagado o fallar si el módulo fue activado globalmente.
+                app(TurnoAssignmentResolver::class)->assign($model, 'tesoreria');
                 return;
             }
 
