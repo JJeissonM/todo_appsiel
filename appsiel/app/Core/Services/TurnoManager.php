@@ -90,7 +90,12 @@ class TurnoManager
         $openedAt = is_null($openedAt) ? date('Y-m-d H:i:s') : $openedAt;
         $manager = $this;
 
-        return DB::transaction(function () use ($empresaId, $contextType, $contextId, $operationalDate, $userId, $openingBalance, $openedAt, $metadata, $manager) {
+        return DB::transaction(function () use ($empresaId, $module, $contextType, $contextId, $operationalDate, $userId, $openingBalance, $openedAt, $metadata, $manager) {
+            $manager->lockCompany($empresaId);
+            $manager->modeResolver->clearCache();
+            if (!$manager->enabledForContext($empresaId, $module, $contextType, $contextId)) {
+                throw new TurnoIntegrityException('La configuración cambió y el contexto ya no opera en modo TURNOS. No se realizó la apertura.');
+            }
             if (!is_null($manager->currentForContext($empresaId, $contextType, $contextId, true))) {
                 throw new TurnoStateException('Ya existe un turno abierto para este contexto operativo.');
             }
@@ -147,12 +152,13 @@ class TurnoManager
 
     public function openFromLegacy(Model $opening, $userId = null)
     {
-        if (!$this->enabledForPdv($opening->core_empresa_id, $opening->pdv_id)) {
-            return null;
-        }
-
         $manager = $this;
         return DB::transaction(function () use ($opening, $userId, $manager) {
+            $manager->lockCompany($opening->core_empresa_id);
+            $manager->modeResolver->clearCache();
+            if (!$manager->enabledForPdv($opening->core_empresa_id, $opening->pdv_id)) {
+                return null;
+            }
             $existing = $manager->currentForPdv($opening->core_empresa_id, $opening->pdv_id, true);
             if (!is_null($existing)) {
                 throw new \UnexpectedValueException('Ya existe un turno operativo abierto para este punto de venta.');
@@ -189,12 +195,13 @@ class TurnoManager
 
     public function closeFromLegacy(Model $closing, $userId = null, $closingBalance = null)
     {
-        if (!$this->enabledForPdv($closing->core_empresa_id, $closing->pdv_id)) {
-            return null;
-        }
-
         $manager = $this;
         return DB::transaction(function () use ($closing, $userId, $closingBalance, $manager) {
+            $manager->lockCompany($closing->core_empresa_id);
+            $manager->modeResolver->clearCache();
+            if (!$manager->enabledForPdv($closing->core_empresa_id, $closing->pdv_id)) {
+                return null;
+            }
             $turno = $manager->currentForPdv($closing->core_empresa_id, $closing->pdv_id, true);
             if (is_null($turno)) {
                 throw new \UnexpectedValueException('No existe un turno operativo abierto para este punto de venta.');
@@ -214,38 +221,59 @@ class TurnoManager
             $closing->turno_operativo_id = $turno->id;
             // La fecha del cierre historico se conserva; la fecha operativa vive en el turno.
             $closing->save();
-            $manager->recordEvent($turno, 'CIERRE', $previous, $turno->estado, $closing, $actorId, null);
+            $manager->recordEvent($turno, 'CIERRE', $previous, $turno->estado, $closing, $actorId, $closing->getAttribute('detalle'));
             $manager->context->clear();
 
             return $turno;
         });
     }
 
-    public function assignAdjustment(Model $movement, TurnoOperativo $turno, $reason, $userId = null)
+    public function assignAdjustment(Model $movement, TurnoOperativo $turno, $reason, $userId = null, $idempotencyKey = null)
     {
         if (trim((string)$reason) === '') {
             throw new \InvalidArgumentException('Los ajustes posteriores deben indicar un motivo de auditoria.');
         }
         $this->requireActor($userId, 'registrar un ajuste');
-        if (!in_array($turno->estado, array(TurnoOperativo::ESTADO_CERRADO, TurnoOperativo::ESTADO_AUDITADO), true)) {
-            throw new TurnoStateException('Los ajustes posteriores sólo pueden asociarse a turnos cerrados o auditados.');
-        }
         $movementCompany = $movement->getAttribute('core_empresa_id') ?: $movement->getAttribute('empresa_id');
         if ((int)$movementCompany !== (int)$turno->core_empresa_id) {
             throw new \UnexpectedValueException('El movimiento y el turno deben pertenecer a la misma empresa.');
         }
-
-        $createdAt = $movement->getAttribute('created_at');
-        $movement->setAttribute('turno_operativo_id', $turno->id);
-        $context = $this->context;
-        $context->runFromOrigin($turno, 'turno_ajuste', $turno->id, function () use ($movement) {
-            $movement->save();
-        });
-        if ($movement->exists && !is_null($createdAt) && (string)$createdAt !== (string)$movement->getAttribute('created_at')) {
-            throw new TurnoIntegrityException('Un ajuste no puede modificar la fecha real de creación del movimiento.');
+        if (!$movement->exists && trim((string)$idempotencyKey) === '') {
+            throw new TurnoIntegrityException('Un ajuste sobre una entidad nueva requiere una clave de idempotencia explícita.');
         }
-        $this->recordEvent($turno, 'AJUSTE_POSTERIOR', $turno->estado, $turno->estado, $movement, $userId, $reason);
-        return $movement;
+
+        $operationKey = trim((string)$idempotencyKey);
+        if ($operationKey === '') {
+            $operationKey = sha1(get_class($movement) . '|' . $movement->getKey() . '|' . $turno->id . '|' . $userId . '|' . trim((string)$reason));
+        }
+
+        $manager = $this;
+        return DB::transaction(function () use ($movement, $turno, $reason, $userId, $operationKey, $manager) {
+            $lockedTurn = TurnoOperativo::where('id', $turno->id)->lockForUpdate()->firstOrFail();
+            if (!in_array($lockedTurn->estado, array(TurnoOperativo::ESTADO_CERRADO, TurnoOperativo::ESTADO_AUDITADO), true)) {
+                throw new TurnoStateException('Los ajustes posteriores sólo pueden asociarse a turnos cerrados o auditados.');
+            }
+
+            $eventData = array('idempotency_key' => $operationKey);
+            $existing = TurnoEvento::where('turno_operativo_id', $lockedTurn->id)
+                ->where('tipo', 'AJUSTE_POSTERIOR')
+                ->where('datos', json_encode($eventData))
+                ->first();
+            if (!is_null($existing)) {
+                return $movement;
+            }
+
+            $createdAt = $movement->getAttribute('created_at');
+            $movement->setAttribute('turno_operativo_id', $lockedTurn->id);
+            $manager->context->runFromOrigin($lockedTurn, 'turno_ajuste', $lockedTurn->id, function () use ($movement) {
+                $movement->save();
+            });
+            if ($movement->exists && !is_null($createdAt) && (string)$createdAt !== (string)$movement->getAttribute('created_at')) {
+                throw new TurnoIntegrityException('Un ajuste no puede modificar la fecha real de creación del movimiento.');
+            }
+            $manager->recordEvent($lockedTurn, 'AJUSTE_POSTERIOR', $lockedTurn->estado, $lockedTurn->estado, $movement, $userId, $reason, $eventData);
+            return $movement;
+        });
     }
 
     public function reopen(TurnoOperativo $turno, $reason, $userId = null)
@@ -329,6 +357,11 @@ class TurnoManager
     protected function contextKey($empresaId, $contextType, $contextId)
     {
         return (string)$contextType . ':' . (int)$empresaId . ':' . (int)$contextId;
+    }
+
+    protected function lockCompany($empresaId)
+    {
+        DB::table('core_empresas')->where('id', (int)$empresaId)->lockForUpdate()->first();
     }
 
     public function recordEvent(TurnoOperativo $turno, $type, $previous, $new, Model $entity = null, $userId = null, $reason = null, array $data = array())

@@ -28,6 +28,12 @@ class TurnoOperativo extends Model
         parent::boot();
 
         static::updating(function ($turno) {
+            $identityFields = array('core_empresa_id', 'contexto_tipo', 'contexto_id', 'pdv_id', 'teso_caja_id', 'fecha_operativa', 'abierto_en', 'codigo');
+            foreach ($identityFields as $field) {
+                if ($turno->isDirty($field)) {
+                    throw new \App\Core\Exceptions\TurnoIntegrityException('La identidad del turno es inmutable después de la apertura. No se puede modificar ' . $field . '.');
+                }
+            }
             $previousState = $turno->getOriginal('estado');
             if ($turno->isDirty('estado') && !$turno->stateTransitionAuthorized) {
                 throw new \App\Core\Exceptions\TurnoStateException('Los cambios de estado del turno deben realizarse mediante TurnoManager.');

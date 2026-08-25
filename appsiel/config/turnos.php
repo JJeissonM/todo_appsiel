@@ -35,4 +35,17 @@ return array(
             'enforce_uniform_mode' => false,
         ),
     ),
+
+    // Fuentes revisadas por el diagnóstico previo al piloto. Si una tabla no
+    // conserva el contexto directamente, el conteo se reporta a nivel empresa.
+    'diagnostic_sources' => array(
+        array('module' => 'ventas_pos', 'label' => 'Ventas POS', 'table' => 'vtas_pos_doc_encabezados', 'company_column' => 'core_empresa_id', 'context_type' => 'pdv', 'context_column' => 'pdv_id'),
+        array('module' => 'ventas', 'label' => 'Ventas estándar', 'table' => 'vtas_doc_encabezados', 'company_column' => 'core_empresa_id'),
+        array('module' => 'tesoreria', 'label' => 'Documentos de tesorería', 'table' => 'teso_doc_encabezados', 'company_column' => 'core_empresa_id'),
+        array('module' => 'tesoreria', 'label' => 'Movimientos de tesorería', 'table' => 'teso_movimientos', 'company_column' => 'core_empresa_id', 'context_type' => 'pdv', 'context_column' => 'pdv_id'),
+        array('module' => 'inventarios', 'label' => 'Documentos de inventario', 'table' => 'inv_doc_encabezados', 'company_column' => 'core_empresa_id'),
+        array('module' => 'inventarios', 'label' => 'Movimientos de inventario', 'table' => 'inv_movimientos', 'company_column' => 'core_empresa_id'),
+        array('module' => 'hotel', 'label' => 'Pedidos hoteleros', 'table' => 'hotel_order_headers', 'company_column' => 'empresa_id', 'context_type' => 'pdv', 'context_column' => 'pdv_id'),
+        array('module' => 'hotel', 'label' => 'Cargos hoteleros', 'table' => 'hotel_order_lines', 'company_column' => 'empresa_id'),
+    ),
 );

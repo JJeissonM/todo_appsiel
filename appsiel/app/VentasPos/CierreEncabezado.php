@@ -205,14 +205,17 @@ class CierreEncabezado extends Model
 
     public function store_adicional($datos, $registro)
     {
-        $pdv = Pdv::find($datos['pdv_id']);
-        $pdv->estado = 'Cerrado';
-        $pdv->save();
+        DB::transaction(function () use ($datos, $registro) {
+            app(\App\Core\Services\TurnoConfigurationService::class)->lockCompany($registro->core_empresa_id);
+            $pdv = Pdv::where('id', $datos['pdv_id'])->lockForUpdate()->firstOrFail();
+            $pdv->estado = 'Cerrado';
+            $pdv->save();
 
-        $registro->estado = 'Activo';
-        $registro->save();
+            $registro->estado = 'Activo';
+            $registro->save();
 
-        app(\App\Core\Services\TurnoManager::class)->closeFromLegacy($registro, $registro->cajero_id);
+            app(\App\Core\Services\TurnoManager::class)->closeFromLegacy($registro, $registro->cajero_id);
+        });
     }
 
     public function turnoOperativo()

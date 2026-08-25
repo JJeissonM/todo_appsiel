@@ -29,5 +29,11 @@ class TurnoConfiguracion extends Model
         static::saved(function () {
             app(\App\Core\Services\TurnoModeResolver::class)->clearCache();
         });
+        static::deleting(function ($configuration) {
+            app(\App\Core\Services\TurnoConfigurationService::class)->assertCanDelete($configuration);
+        });
+        static::deleted(function () {
+            app(\App\Core\Services\TurnoModeResolver::class)->clearCache();
+        });
     }
 }

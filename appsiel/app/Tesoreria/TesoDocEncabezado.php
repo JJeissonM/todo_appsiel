@@ -22,11 +22,19 @@ use App\CxP\CxpMovimiento;
 use App\Compras\DescuentoProntoPago;
 use App\Ventas\DescuentoPpEncabezado;
 use Illuminate\Support\Facades\DB;
+use App\Traits\HasTurnoOperativo;
 
 class TesoDocEncabezado extends Model
 {
+    use HasTurnoOperativo;
+
     // teso_tipo_motivo debe desaparecer, pues se una segun el motivo de cada registro del documento, en un mismom documento pueden haber varios teso_tipo_motivo
-    protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','core_empresa_id','core_tercero_id','codigo_referencia_tercero','teso_tipo_motivo','documento_soporte','descripcion','teso_medio_recaudo_id','teso_caja_id','teso_cuenta_bancaria_id','valor_total','estado','creado_por','modificado_por'];
+    protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','core_empresa_id','core_tercero_id','turno_operativo_id','codigo_referencia_tercero','teso_tipo_motivo','documento_soporte','descripcion','teso_medio_recaudo_id','teso_caja_id','teso_cuenta_bancaria_id','valor_total','estado','creado_por','modificado_por'];
+
+    protected function turnoModuleName()
+    {
+        return 'tesoreria';
+    }
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Fecha', 'Tercero', 'Detalle'];
 

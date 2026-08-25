@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         Commands\RunSqlFileWithChecks::class,
         Commands\CorregirMedioRecaudoMovimientos::class,
         Commands\ConvertirFacturasEstudiantesElectronicas::class,
+        Commands\DiagnosticarTurnosPiloto::class,
     ];
 
     /**

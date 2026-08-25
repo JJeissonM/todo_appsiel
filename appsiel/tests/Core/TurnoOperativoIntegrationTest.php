@@ -6,6 +6,7 @@ use App\Core\Services\TurnoContext;
 use App\Core\Services\TurnoEnvelope;
 use App\Core\Services\TurnoManager;
 use App\Core\Services\TurnoModeResolver;
+use App\Core\Services\TurnoPilotDiagnosticService;
 use App\Core\TurnoConfiguracion;
 use App\Core\TurnoEvento;
 use App\Core\TurnoOperativo;
@@ -15,13 +16,16 @@ use App\Core\Exceptions\TurnoStateException;
 use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelOrderLine;
 use App\Inventarios\InvMovimiento;
+use App\Inventarios\InvDocEncabezado;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\ArqueoCaja;
+use App\Tesoreria\TesoDocEncabezado;
 use App\Ventas\VtasDocEncabezado;
 use App\VentasPos\AperturaEncabezado;
 use App\VentasPos\CierreEncabezado;
 use App\VentasPos\FacturaPos;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 
 class TurnoOperativoIntegrationTest extends TestCase
 {
@@ -39,8 +43,8 @@ class TurnoOperativoIntegrationTest extends TestCase
         TurnoConfiguracion::create(array(
             'core_empresa_id' => 1,
             'modulo' => '*',
-            'contexto_tipo' => '*',
-            'contexto_id' => 0,
+            'contexto_tipo' => 'pdv',
+            'contexto_id' => 1,
             'modo' => TurnoConfiguracion::MODO_TURNOS,
         ));
         app(TurnoModeResolver::class)->clearCache();
@@ -99,6 +103,15 @@ class TurnoOperativoIntegrationTest extends TestCase
             $this->assertContains($eventType, $eventTypes);
         }
         $this->assertSame(0, TurnoEvento::where('turno_operativo_id', $firstTurn->id)->whereNull('usuario_id')->count());
+        $timeline = TurnoEvento::where('turno_operativo_id', $firstTurn->id)->orderBy('id')->get();
+        $this->assertSame(
+            array('APERTURA', 'CIERRE', 'REAPERTURA', 'CIERRE', 'INICIO_AUDITORIA', 'FIN_AUDITORIA', 'AJUSTE_POSTERIOR'),
+            $timeline->pluck('tipo')->toArray()
+        );
+        foreach ($timeline as $event) {
+            $this->assertNotNull($event->created_at);
+        }
+        $this->assertNotEmpty(TurnoEvento::where('turno_operativo_id', $firstTurn->id)->where('tipo', 'CIERRE')->orderBy('id')->first()->motivo);
 
         $cashMovements = TesoMovimiento::movimiento_por_tipo_motivo(
             'entrada', '1900-01-01', '1900-01-01', 1, null, 1, null, null, $firstTurn->id
@@ -121,8 +134,18 @@ class TurnoOperativoIntegrationTest extends TestCase
             'fecha' => '2020-01-01',
         ));
 
-        app(TurnoAssignmentResolver::class)->assign($movement, 'tesoreria', 999999);
+        $resolver = app(TurnoAssignmentResolver::class);
+        $resolver->assign($movement, 'tesoreria', 999999);
         $this->assertNull($movement->turno_operativo_id);
+        $this->assertSame('TRADITIONAL', $resolver->lastResolutionSource());
+
+        $header = TesoDocEncabezado::create(array(
+            'core_empresa_id' => 999999, 'core_tipo_transaccion_id' => 47,
+            'core_tipo_doc_app_id' => 45, 'consecutivo' => 919998,
+            'fecha' => '2020-01-01', 'core_tercero_id' => 1,
+            'teso_caja_id' => 1, 'valor_total' => 10, 'estado' => 'Activo',
+        ));
+        $this->assertNull($header->turno_operativo_id);
     }
 
     public function test_apertura_y_cierre_tradicional_no_crean_turno_explicito()
@@ -140,13 +163,19 @@ class TurnoOperativoIntegrationTest extends TestCase
     public function test_modo_turnos_rechaza_operacion_sin_apertura()
     {
         $this->configure('ventas_pos', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
-        $this->setExpectedException(TurnoRequiredException::class, 'Debe realizar la apertura');
-        $this->newPosInvoice(920001)->save();
+        $resolver = app(TurnoAssignmentResolver::class);
+        try {
+            $resolver->assign($this->newPosInvoice(920001), 'ventas_pos', 1);
+            $this->fail('Debió exigirse una apertura.');
+        } catch (TurnoRequiredException $e) {
+            $this->assertContains('Debe realizar la apertura', $e->getMessage());
+            $this->assertSame('OPEN_CONTEXT', $resolver->lastResolutionSource());
+        }
     }
 
     public function test_rechaza_turno_de_otra_empresa()
     {
-        $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
         $turno = app(TurnoManager::class)->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 920002), 3);
         $invoice = $this->newPosInvoice(920002);
         $invoice->core_empresa_id = 999999;
@@ -158,7 +187,7 @@ class TurnoOperativoIntegrationTest extends TestCase
 
     public function test_rechaza_turno_de_otro_contexto()
     {
-        $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
         $turno = app(TurnoManager::class)->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 920003), 3);
         $invoice = $this->newPosInvoice(920003);
         $invoice->pdv_id = 999999;
@@ -170,7 +199,7 @@ class TurnoOperativoIntegrationTest extends TestCase
 
     public function test_rechaza_turno_cerrado_para_operacion_normal_y_cambio_directo_de_estado()
     {
-        $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
         $manager = app(TurnoManager::class);
         $turno = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 920004), 3);
         $manager->closeFromLegacy($this->closing('2026-08-22', '2026-08-22 12:00:00', 920004), 3);
@@ -209,7 +238,7 @@ class TurnoOperativoIntegrationTest extends TestCase
 
     public function test_no_permite_dos_turnos_abiertos_para_el_mismo_contexto()
     {
-        $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
         $manager = app(TurnoManager::class);
         $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 920005), 3);
 
@@ -219,7 +248,7 @@ class TurnoOperativoIntegrationTest extends TestCase
 
     public function test_turno_explicito_no_puede_contradecir_el_contexto_propagado()
     {
-        $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
         $manager = app(TurnoManager::class);
         $anterior = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 920050), 3);
         $manager->closeFromLegacy($this->closing('2026-08-22', '2026-08-22 10:00:00', 920050), 3);
@@ -236,7 +265,7 @@ class TurnoOperativoIntegrationTest extends TestCase
 
     public function test_sobre_diferido_conserva_turno_cerrado_en_reintentos()
     {
-        $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
         $manager = app(TurnoManager::class);
         $turno = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 920007), 3);
         $origin = $this->posInvoice(920007);
@@ -260,7 +289,7 @@ class TurnoOperativoIntegrationTest extends TestCase
 
     public function test_venta_estandar_y_documento_electronico_derivado_conservan_turno_cerrado()
     {
-        $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
         $manager = app(TurnoManager::class);
         $turno = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 920013), 3);
         $standard = $this->standardInvoice(920013);
@@ -278,7 +307,7 @@ class TurnoOperativoIntegrationTest extends TestCase
 
     public function test_cargos_de_una_estadia_pueden_pertenecer_a_turnos_distintos()
     {
-        $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
         $manager = app(TurnoManager::class);
         $first = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 920010), 3);
         $order = HotelOrderHeader::create(array(
@@ -330,7 +359,7 @@ class TurnoOperativoIntegrationTest extends TestCase
 
     public function test_ajuste_y_reapertura_exigen_motivo_y_usuario()
     {
-        $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
         $manager = app(TurnoManager::class);
         $turno = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 920012), 3);
         $origin = $this->posInvoice(920012);
@@ -345,6 +374,262 @@ class TurnoOperativoIntegrationTest extends TestCase
 
         $this->setExpectedException(InvalidArgumentException::class, 'motivo');
         $manager->reopen($turno, '', 1);
+    }
+
+    public function test_configuracion_no_cambia_modo_efectivo_mientras_hay_turno_abierto()
+    {
+        DB::table('vtas_pos_puntos_de_ventas')->where('core_empresa_id', 1)->where('id', '<>', 1)->update(array('estado' => 'Cerrado'));
+        $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
+        $configuration = TurnoConfiguracion::where('core_empresa_id', 1)->where('modulo', '*')->first();
+        $manager = app(TurnoManager::class);
+        $turno = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 930001), 3);
+        $service = app(TurnoConfigurationService::class);
+
+        foreach (array(
+            array('core_empresa_id' => 1, 'modulo' => '*', 'contexto_tipo' => '*', 'contexto_id' => 0, 'modo' => TurnoConfiguracion::MODO_TRADICIONAL),
+            array('core_empresa_id' => 1, 'modulo' => 'ventas_pos', 'contexto_tipo' => 'pdv', 'contexto_id' => 1, 'modo' => TurnoConfiguracion::MODO_TRADICIONAL),
+        ) as $candidate) {
+            try {
+                $service->configure($candidate);
+                $this->fail('Debió bloquearse el cambio de modo con un turno abierto.');
+            } catch (TurnoIntegrityException $e) {
+                $this->assertContains((string)$turno->id, $e->getMessage());
+                $this->assertContains('ABIERTO', $e->getMessage());
+            }
+        }
+
+        try {
+            $configuration->delete();
+            $this->fail('Debió bloquearse la eliminación de la configuración heredada.');
+        } catch (TurnoIntegrityException $e) {
+            $this->assertContains((string)$turno->id, $e->getMessage());
+        }
+
+        $manager->closeFromLegacy($this->closing('2026-08-22', '2026-08-22 12:00:00', 930001), 3);
+        $result = $service->configure(array(
+            'core_empresa_id' => 1, 'modulo' => '*', 'contexto_tipo' => '*',
+            'contexto_id' => 0, 'modo' => TurnoConfiguracion::MODO_TRADICIONAL,
+        ));
+        $this->assertSame(TurnoConfiguracion::MODO_TRADICIONAL, $result['configuration']->modo);
+    }
+
+    public function test_identidad_y_fecha_operativa_son_inmutables_durante_todo_el_ciclo()
+    {
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
+        $manager = app(TurnoManager::class);
+        $turno = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 23:30:00', 930002), 3);
+
+        $turno->fecha_operativa = '2026-08-23';
+        try {
+            $turno->save();
+            $this->fail('Debió rechazarse el cambio de fecha operativa.');
+        } catch (TurnoIntegrityException $e) {
+            $this->assertContains('fecha_operativa', $e->getMessage());
+        }
+
+        $turno = $turno->fresh();
+        $manager->close($turno, 3, 100, 'Cierre posterior a medianoche', '2026-08-23 02:00:00');
+        $manager->reopen($turno, 'Corrección operativa autorizada', 1);
+        $manager->close($turno, 3, 100, 'Segundo cierre', '2026-08-23 02:10:00');
+        $manager->startAudit($turno, 1, 'Auditoría');
+        $manager->completeAudit($turno, 1, 'Auditoría terminada');
+
+        $this->assertSame('2026-08-22', $turno->fresh()->fecha_operativa);
+    }
+
+    public function test_no_activa_turnos_sobre_un_pdv_abierto_en_modo_tradicional()
+    {
+        DB::table('vtas_pos_puntos_de_ventas')->where('id', 1)->update(array('estado' => 'Abierto'));
+
+        try {
+            app(TurnoConfigurationService::class)->configure(array(
+                'core_empresa_id' => 1, 'modulo' => '*', 'contexto_tipo' => 'pdv',
+                'contexto_id' => 1, 'modo' => TurnoConfiguracion::MODO_TURNOS,
+            ));
+            $this->fail('Debió impedirse activar TURNOS sobre una apertura tradicional.');
+        } catch (TurnoIntegrityException $e) {
+            $this->assertContains('modelo tradicional', $e->getMessage());
+            $this->assertContains('PDV 1', $e->getMessage());
+        }
+    }
+
+    public function test_reintentos_del_ciclo_son_controlados_y_el_ajuste_es_idempotente()
+    {
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
+        $manager = app(TurnoManager::class);
+        $turno = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 930003), 3);
+        $origin = $this->posInvoice(930003);
+        $manager->closeFromLegacy($this->closing('2026-08-22', '2026-08-22 12:00:00', 930003), 3);
+        $turno = $turno->fresh();
+
+        $this->assertControlledRetry(function () use ($manager, $turno) {
+            $manager->close($turno, 3, 100, 'Cierre repetido');
+        });
+
+        $manager->startAudit($turno, 1, 'Inicio');
+        $this->assertControlledRetry(function () use ($manager, $turno) {
+            $manager->startAudit($turno, 1, 'Inicio repetido');
+        });
+        $manager->completeAudit($turno, 1, 'Fin');
+        $this->assertControlledRetry(function () use ($manager, $turno) {
+            $manager->completeAudit($turno, 1, 'Fin repetido');
+        });
+
+        $manager->assignAdjustment($origin, $turno, 'Ajuste idempotente', 1);
+        $manager->assignAdjustment($origin, $turno, 'Ajuste idempotente', 1);
+        $this->assertSame(1, TurnoEvento::where('turno_operativo_id', $turno->id)->where('tipo', 'AJUSTE_POSTERIOR')->count());
+
+        $reopened = $manager->reopen($turno, 'Reapertura controlada', 1);
+        $this->assertControlledRetry(function () use ($manager, $reopened) {
+            $manager->reopen($reopened, 'Reapertura repetida', 1);
+        });
+
+        foreach (array('APERTURA', 'CIERRE', 'INICIO_AUDITORIA', 'FIN_AUDITORIA', 'REAPERTURA') as $type) {
+            $this->assertSame(1, TurnoEvento::where('turno_operativo_id', $turno->id)->where('tipo', $type)->count(), $type);
+        }
+    }
+
+    public function test_envelope_detiene_proceso_si_el_origen_cambia_de_turno()
+    {
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
+        $manager = app(TurnoManager::class);
+        $first = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 930004), 3);
+        $origin = $this->posInvoice(930004);
+        $envelope = TurnoEnvelope::fromOrigin($origin)->toArray();
+        $manager->closeFromLegacy($this->closing('2026-08-22', '2026-08-22 12:00:00', 930004), 3);
+        $second = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 13:00:00', 930005), 3);
+        DB::table('vtas_pos_doc_encabezados')->where('id', $origin->id)->update(array('turno_operativo_id' => $second->id));
+
+        $this->setExpectedException(TurnoIntegrityException::class, 'no coincide');
+        TurnoEnvelope::fromArray($envelope)->run(function () use ($first) {
+            return $first->id;
+        });
+    }
+
+    public function test_e2e_operacion_pos_cruza_medianoche_y_persiste_un_solo_turno()
+    {
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
+        $manager = app(TurnoManager::class);
+        $turno = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 23:50:00', 930006), 3);
+        $sale = $this->posInvoice(930006);
+        $inventoryHeader = InvDocEncabezado::create(array(
+            'core_empresa_id' => 1, 'core_tipo_transaccion_id' => 4, 'core_tipo_doc_app_id' => 45,
+            'consecutivo' => 930006, 'fecha' => '2026-08-23', 'core_tercero_id' => 1,
+            'inv_bodega_id' => 1, 'vtas_doc_encabezado_origen_id' => $sale->id,
+            'descripcion' => 'Inventario derivado POS', 'estado' => 'Activo',
+        ));
+        $inventoryMovement = InvMovimiento::create(array(
+            'core_empresa_id' => 1, 'inv_doc_encabezado_id' => $inventoryHeader->id,
+            'core_tipo_transaccion_id' => 4, 'core_tipo_doc_app_id' => 45, 'consecutivo' => 930006,
+            'fecha' => '2026-08-23', 'inv_motivo_id' => 1, 'inv_bodega_id' => 1,
+            'inv_producto_id' => 1, 'costo_unitario' => 10, 'cantidad' => -1, 'costo_total' => -10,
+        ));
+        $treasuryHeader = TesoDocEncabezado::create(array(
+            'core_empresa_id' => 1, 'core_tipo_transaccion_id' => 47, 'core_tipo_doc_app_id' => 45,
+            'consecutivo' => 930006, 'fecha' => '2026-08-23', 'core_tercero_id' => 1,
+            'teso_caja_id' => 1, 'valor_total' => 321, 'estado' => 'Activo',
+        ));
+        $treasuryMovement = $this->treasuryMovement(930006);
+        $electronic = $this->newStandardInvoice(930007);
+        $electronic->ventas_doc_relacionado_id = $sale->id;
+        $electronic->save();
+
+        $manager->closeFromLegacy($this->closing('2026-08-23', '2026-08-23 02:00:00', 930006), 3);
+        foreach (array($sale, $inventoryHeader, $inventoryMovement, $treasuryHeader, $treasuryMovement, $electronic) as $record) {
+            $this->assertSame((int)$turno->id, (int)$record->fresh()->turno_operativo_id, get_class($record));
+            $this->assertNotNull($record->fresh()->turno_operativo_id);
+        }
+        $this->assertSame('2026-08-22', $turno->fresh()->fecha_operativa);
+    }
+
+    public function test_e2e_estadia_con_cargos_pagos_y_factura_en_turnos_distintos()
+    {
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
+        $manager = app(TurnoManager::class);
+        $first = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 930010), 3);
+        $order = HotelOrderHeader::create(array(
+            'empresa_id' => 1, 'stay_id' => 500, 'cliente_id' => 1, 'pdv_id' => 1,
+            'document_number' => 'STAY-500', 'order_date' => '2026-08-22 08:10:00',
+            'status' => HotelOrderHeader::STATUS_ABIERTO, 'created_by' => 3,
+        ));
+        $advance = $this->treasuryMovement(930010);
+        $manager->closeFromLegacy($this->closing('2026-08-22', '2026-08-22 12:00:00', 930010), 3);
+
+        $second = $manager->openFromLegacy($this->opening('2026-08-23', '2026-08-23 07:00:00', 930011), 3);
+        $minibar = $this->hotelLine($order, 'Minibar');
+        $manager->closeFromLegacy($this->closing('2026-08-23', '2026-08-23 12:00:00', 930011), 3);
+
+        $third = $manager->openFromLegacy($this->opening('2026-08-23', '2026-08-23 13:00:00', 930012), 3);
+        $restaurant = $this->hotelLine($order, 'Restaurante');
+        $payment = $this->treasuryMovement(930012);
+        $manager->closeFromLegacy($this->closing('2026-08-23', '2026-08-23 20:00:00', 930012), 3);
+
+        $fourth = $manager->openFromLegacy($this->opening('2026-08-24', '2026-08-24 08:00:00', 930013), 3);
+        $invoice = $this->newPosInvoice(930013);
+        $invoice->fecha = '2026-08-24';
+        $invoice->save();
+        $order->pos_doc_id = $invoice->id;
+        $order->save();
+
+        $this->assertSame((int)$first->id, (int)$order->fresh()->turno_operativo_id);
+        $this->assertSame((int)$first->id, (int)$advance->turno_operativo_id);
+        $this->assertSame((int)$second->id, (int)$minibar->turno_operativo_id);
+        $this->assertSame((int)$third->id, (int)$restaurant->turno_operativo_id);
+        $this->assertSame((int)$third->id, (int)$payment->turno_operativo_id);
+        $this->assertSame((int)$fourth->id, (int)$invoice->turno_operativo_id);
+        $this->assertSame((int)$second->id, (int)$minibar->fresh()->turno_operativo_id);
+        $this->assertSame((int)$third->id, (int)$restaurant->fresh()->turno_operativo_id);
+    }
+
+    public function test_diagnostico_piloto_es_solo_lectura_y_reporta_fuentes_declaradas()
+    {
+        $before = TurnoOperativo::count();
+        $result = app(TurnoPilotDiagnosticService::class)->diagnose(1, 'pdv', 1, 7);
+
+        $this->assertSame($before, TurnoOperativo::count());
+        $this->assertArrayHasKey('ventas_pos', $result['modules']);
+        $this->assertTrue($result['modules']['ventas_pos']['integrated']);
+        $this->assertArrayHasKey('recent_null_fk', $result);
+        $this->assertArrayHasKey('legacy_queries', $result);
+        $this->assertNotEmpty($result['groups']);
+    }
+
+    public function test_arqueo_consulta_individualmente_turnos_de_todos_los_estados()
+    {
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
+        $manager = app(TurnoManager::class);
+
+        $closed = $manager->openFromLegacy($this->opening('2026-08-25', '2026-08-25 06:00:00', 930020), 3);
+        $manager->closeFromLegacy($this->closing('2026-08-25', '2026-08-25 08:00:00', 930020), 3);
+        $closed = $closed->fresh();
+
+        $auditing = $manager->openFromLegacy($this->opening('2026-08-25', '2026-08-25 09:00:00', 930021), 3);
+        $manager->closeFromLegacy($this->closing('2026-08-25', '2026-08-25 11:00:00', 930021), 3);
+        $auditing = $auditing->fresh();
+        $manager->startAudit($auditing, 1, 'Arqueo en revisión');
+
+        $audited = $manager->openFromLegacy($this->opening('2026-08-25', '2026-08-25 12:00:00', 930022), 3);
+        $manager->closeFromLegacy($this->closing('2026-08-25', '2026-08-25 14:00:00', 930022), 3);
+        $audited = $audited->fresh();
+        $manager->startAudit($audited, 1, 'Inicio auditoría');
+        $manager->completeAudit($audited, 1, 'Fin auditoría');
+
+        $open = $manager->openFromLegacy($this->opening('2026-08-25', '2026-08-25 15:00:00', 930023), 3);
+        app(TurnoContext::class)->clear();
+
+        $turns = TurnoOperativo::where('core_empresa_id', 1)->where('contexto_tipo', 'pdv')
+            ->where('contexto_id', 1)->where('fecha_operativa', '2026-08-25')->orderBy('abierto_en')->get();
+        $this->assertCount(4, $turns);
+        $this->assertSame(
+            array(TurnoOperativo::ESTADO_CERRADO, TurnoOperativo::ESTADO_AUDITANDO, TurnoOperativo::ESTADO_AUDITADO, TurnoOperativo::ESTADO_ABIERTO),
+            $turns->pluck('estado')->toArray()
+        );
+
+        foreach (array($closed, $auditing, $audited, $open) as $turno) {
+            $arqueo = new ArqueoCaja(array('core_empresa_id' => 1, 'pdv_id' => 1, 'turno_operativo_id' => $turno->id));
+            app(TurnoAssignmentResolver::class)->assign($arqueo, 'tesoreria');
+            $this->assertSame((int)$turno->id, (int)$arqueo->turno_operativo_id);
+        }
     }
 
     protected function opening($operationalDate, $createdAt, $consecutive)
@@ -367,6 +652,16 @@ class TurnoOperativoIntegrationTest extends TestCase
         $opening->updated_at = $createdAt;
         $opening->save();
         return $opening;
+    }
+
+    protected function assertControlledRetry(\Closure $operation)
+    {
+        try {
+            $operation();
+            $this->fail('La segunda ejecución debió rechazarse de forma controlada.');
+        } catch (\UnexpectedValueException $e) {
+            $this->assertNotEmpty($e->getMessage());
+        }
     }
 
     protected function closing($date, $createdAt, $consecutive)

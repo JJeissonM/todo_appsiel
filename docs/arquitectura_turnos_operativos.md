@@ -20,6 +20,13 @@ hasta la regla global de empresa. La propagación de una operación compuesta ti
 prioridad sobre el modo individual de un módulo derivado: si el documento origen
 ya tiene turno, sus movimientos integrados conservan ese mismo turno.
 
+Una configuración no puede cambiar el modo efectivo de ningún módulo integrado
+mientras exista un turno abierto en el contexto afectado. La comparación se hace
+antes y después de la regla candidata, por lo que también cubre reglas globales,
+sobrescrituras por módulo/PDV, herencia y eliminación de configuraciones. La
+apertura y la configuración toman el mismo bloqueo de empresa para evitar carreras.
+Tampoco se activa `TURNOS` sobre un PDV que figure abierto en el modelo tradicional.
+
 ## Resolución estricta
 
 El orden autoritativo es:
@@ -36,6 +43,12 @@ reintento puede conservar el turno original ya cerrado. Un turno de otra empresa
 contexto siempre se rechaza. Para ventas estándar sin PDV, la activación global del
 módulo exige que el llamador propague `TurnoContext` o una FK; una venta sin contexto
 queda fuera de un alcance configurado únicamente para un PDV concreto.
+
+Los fallos del resolver escriben `turnos.assignment_failed` en el log existente,
+con empresa, módulo, contexto, tipo/ID de operación, turno recibido/esperado,
+estado y fuente. Las fuentes normalizadas son `CONTEXT`, `EXPLICIT_FK`, `ORIGIN`,
+`DOCUMENT_IDENTITY`, `OPEN_CONTEXT` y `TRADITIONAL`; no se registran payloads ni
+datos personales del documento.
 
 ## Contextos y operaciones compuestas
 
@@ -59,6 +72,23 @@ operación normal: selecciona una FK de turno explícita y validada contra empre
 PDV, y por ello puede consultar un turno cerrado o auditado. En `TURNOS` su interfaz
 lista cada turno de la fecha operativa y nunca fusiona la primera apertura con el
 último cierre. En `TRADICIONAL` conserva el rango editable histórico.
+
+### Hecho original frente a nueva operación
+
+La herencia no depende sólo de que dos documentos estén relacionados:
+
+| Flujo | Regla |
+|---|---|
+| Venta → inventario/tesorería derivados | Hereda obligatoriamente el turno de la venta |
+| Documento → conversión/envío electrónico | Hereda obligatoriamente; es procesamiento técnico |
+| Reintento/job del mismo documento | Hereda obligatoriamente mediante `TurnoEnvelope` |
+| Cargo hotelero agregado a pedido abierto | Usa el turno vigente del nuevo cargo |
+| Pago o recaudo hotelero posterior | Usa el turno vigente del pago |
+| Checkout/factura comercial posterior | Usa el turno vigente de facturación |
+| Ajuste histórico autorizado | Conserva el turno afectado y registra la fecha real del ajuste |
+
+Una factura de checkout no reescribe los turnos del pedido, anticipos o cargos. Si
+el flujo sólo transforma técnicamente una factura ya creada, conserva su FK.
 
 ## Procesos diferidos
 
@@ -98,10 +128,21 @@ ABIERTO -> CERRADO -> AUDITANDO -> AUDITADO
   `TurnoManager` con usuario, motivo cuando corresponde y bloqueo transaccional.
 - Una reapertura registra el estado anterior y los datos del cierre que se limpian.
 - Un ajuste exige motivo y usuario, conserva su `created_at` real y genera evento.
+- La empresa, contexto, PDV/caja, código, apertura y `fecha_operativa` son identidad
+  inmutable después de crear el turno. No existe corrección silenciosa ni formulario
+  administrativo para cambiarlos.
 
 `core_turno_eventos` registra apertura, cierre, reapertura, inicio/fin de auditoría,
 ajustes, usuario, entidad afectada, motivo, estados y metadatos. El índice de línea
 de tiempo soporta consultas por turno y fecha del evento.
+
+Las transiciones toman bloqueo de fila y transacción. Un segundo cierre, inicio/fin
+de auditoría o reapertura se rechaza de manera controlada sin crear otro evento. Los
+ajustes usan una clave idempotente en sus metadatos; para entidades existentes se
+deriva de entidad, turno, usuario y motivo, y para entidades nuevas el llamador debe
+proporcionarla. La reapertura limpia los campos del estado actual (`cerrado_en`,
+`cerrado_por`, `saldo_cierre`), pero el evento de cierre conserva usuario, motivo,
+fecha y entidad de cierre.
 
 ## Configuración y grupos relacionados
 
@@ -161,8 +202,34 @@ las restricciones físicas pueden incorporarse por instalación tras auditar dat
 - Los inserts directos futuros sobre tablas integradas eluden las garantías. La
   regla de desarrollo es usar modelos con `HasTurnoOperativo` o un servicio que
   restaure `TurnoEnvelope`.
+- La revisión de escapes no encontró inserts directos operacionales adicionales
+  sobre las tablas integradas. `TiendaController`, reportes de Hotel y Factura POS
+  sólo consultan/actualizan relaciones; `CorregirMedioRecaudoMovimientos` sólo
+  corrige filas existentes. Permanecen como bypass las herramientas SQL genéricas.
+- `PagoAutomaticoNominaService` crea `TesoDocEncabezado` mediante Eloquent. En un
+  piloto exacto por PDV permanece fuera del contexto; una regla global de Tesorería
+  sí lo incluiría y por eso no debe usarse hasta definir explícitamente esa frontera.
 
 El parche histórico de Tesorería que alinea `created_at` con un cierre permanece
 exclusivamente en modo tradicional. La llamada duplicada del recaudo general fue
 retirada; el modelo es ahora el único punto que decide entre FK estricta y parche
 heredado.
+
+`TesoDocEncabezado` también aplica `HasTurnoOperativo`: en operaciones compuestas
+recibe el contexto propagado; un documento autónomo sin PDV sólo queda dentro del
+piloto si su llamador proporciona contexto explícito.
+
+## Diagnóstico previo al piloto
+
+El comando de sólo lectura:
+
+```bash
+php artisan turnos:diagnosticar-piloto EMPRESA_ID pdv PDV_ID --dias=7
+php artisan turnos:diagnosticar-piloto EMPRESA_ID pdv PDV_ID --dias=7 --json
+```
+
+muestra configuración efectiva, integración por módulo, grupos mixtos, turno
+abierto, PDV tradicional incompatible, conteos/muestras recientes sin FK y la lista
+de consultas heredadas. Sus fuentes se declaran en `config/turnos.php` para poder
+ampliarlas sin modificar el núcleo. El procedimiento operativo está en
+`docs/piloto_turnos_operativos.md`.
