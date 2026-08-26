@@ -27,6 +27,7 @@
                                 </th>
                                 <th>Identificación</th>
                                 <th>Empleado</th>
+                                <th>Nro. Cuenta</th>
                                 <th class="text-right">Valor causado</th>
                                 <th class="text-right">Saldo a pagar</th>
                                 <th class="text-center">Estado</th>
@@ -42,6 +43,7 @@
                                     </td>
                                     <td>{{ $linea->numero_identificacion }}</td>
                                     <td>{{ $linea->empleado }}</td>
+                                    <td>{{ $linea->cuenta_bancaria }}</td>
                                     <td class="text-right">$ {{ number_format($linea->valor_documento, 2, ',', '.') }}</td>
                                     <td class="text-right">$ {{ number_format($linea->saldo_pendiente, 2, ',', '.') }}</td>
                                     <td class="text-center">

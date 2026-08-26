@@ -56,12 +56,13 @@ class PagoAutomaticoNominaService
             } else {
                 $estado = 'Sin CxP';
             }
-
+            
             $lineas[] = (object) [
                 'nom_contrato_id' => (int) $contrato->id,
                 'core_tercero_id' => (int) $contrato->core_tercero_id,
                 'numero_identificacion' => $contrato->tercero->numero_identificacion,
                 'empleado' => $contrato->tercero->descripcion,
+                'cuenta_bancaria' => $contrato->tercero->ultima_cuenta_bancaria_activa()!=null ? $contrato->tercero->ultima_cuenta_bancaria_activa()->numero_cuenta : null,
                 'valor_documento' => $valorOriginal,
                 'saldo_pendiente' => $saldo,
                 'estado_pago' => $estado,

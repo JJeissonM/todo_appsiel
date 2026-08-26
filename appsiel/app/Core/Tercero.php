@@ -14,6 +14,9 @@ use App\Matriculas\Responsableestudiante;
 use App\Nomina\NomContrato;
 use App\Sistema\Services\CrudService;
 use App\Ventas\Cliente;
+
+use App\Compras\ProveedorCuentaBancaria;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -97,6 +100,16 @@ class Tercero extends Model
     public function empleado()
     {
         return $this->hasOne(NomContrato::class, 'core_tercero_id');
+    }
+
+    public function proveedor_cuentas_bancarias()
+    {
+        return $this->hasMany(ProveedorCuentaBancaria::class, 'tercero_id');
+    }
+
+    public function ultima_cuenta_bancaria_activa()
+    {
+        return $this->proveedor_cuentas_bancarias()->where('estado', 'Activo')->orderBy('id', 'DESC')->first();
     }
 
     public function get_label_to_show()
