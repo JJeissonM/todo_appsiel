@@ -654,6 +654,13 @@ class ContabilizacionDocumentoNomina
 
 			foreach ($this->movimiento_contabilizar as $movimiento )
 			{
+				// Omitir movimientos de valor cero sin errores de integridad,
+				// coherente con get_lineas_html_movimiento_contable() que los oculta en la previsualización.
+				if (($movimiento->valor_debito + $movimiento->valor_credito) == 0
+						&& empty($movimiento->error_integridad)) {
+					continue;
+				}
+
 				$observacion = $this->get_observacion($movimiento);
 				if ($observacion->error)
 				{
