@@ -61,7 +61,7 @@ class NomConcepto extends Model
     {
         //$salario_x_hora = $sueldo / config('nomina')['horas_laborales'];
 
-        if ($this->porcentaje_sobre_basico < 1) {
+        if ( $this->esDecimal($this->porcentaje_sobre_basico) ) {
             // Fraccion del Salario
             $valor_a_liquidar = ($salario_x_hora * $this->porcentaje_sobre_basico) * $cantidad_horas;
         } else {
@@ -70,6 +70,10 @@ class NomConcepto extends Model
         }
 
         return $valor_a_liquidar;
+    }
+
+    public function esDecimal($val) {
+        return is_numeric($val) && floor($val) != $val;
     }
 
     public static function consultar_registros($nro_registros, $search)
