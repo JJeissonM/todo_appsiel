@@ -225,7 +225,7 @@ class ContabilizacionDocumentoNomina
 					'valor_debito' => $valor_debito,
 					'valor_credito' => $valor_credito ,
 					'tipo_transaccion' => 'crear_cxp',
-					'detalle_movimiento' => 'Origen: Contrapartida del neto a pagar. Configure la cuenta en Cuenta causación pasivo.',
+					'detalle_movimiento' => '',
 					'detalle_operador_pila' => '',
 					'estado' => 'Activo',
 					'creado_por' => $this->usuario_actual(),
@@ -260,7 +260,7 @@ class ContabilizacionDocumentoNomina
 				'valor_debito' => $valor_debito,
 				'valor_credito' => $valor_credito,
 				'tipo_transaccion' => 'crear_cxp',
-				'detalle_movimiento' => 'Origen: Contrapartida del neto a pagar. Configure la cuenta en Cuenta causación pasivo.',
+				'detalle_movimiento' => '',
 				'detalle_operador_pila' => '',
 				'estado' => 'Activo',
 				'creado_por' => $this->usuario_actual(),
@@ -355,7 +355,8 @@ class ContabilizacionDocumentoNomina
 			return '';
 		}
 
-		return 'La CxP de este aporte se genera al operador PILA configurado.';
+		return '';
+		//return '<i class="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="La CxP de este aporte se genera al operador PILA configurado."></i>';
 	}
 
 	public function get_tercero_movimiento( $equ_contab, NomContrato $contrato )
