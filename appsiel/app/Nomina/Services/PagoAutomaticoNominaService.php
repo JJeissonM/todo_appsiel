@@ -205,12 +205,14 @@ class PagoAutomaticoNominaService
         if (!$this->fechaValida($fechaPago)) {
             throw new \InvalidArgumentException('La fecha de pago no es válida.');
         }
+        /*
         if ($fechaPago < $documento->fecha) {
             throw new \InvalidArgumentException('La fecha de pago no puede ser anterior a la fecha del documento de nómina.');
         }
         if ($fechaPago > date('Y-m-d')) {
             throw new \InvalidArgumentException('La fecha de pago no puede ser futura.');
         }
+        */
     }
 
     protected function fechaValida($fecha)
