@@ -10,6 +10,8 @@ use App\Nomina\Services\RetiroPersonalizadoNominaService;
 
 class NomDocRegistro extends Model
 {
+    protected static $valores_cuota_antes_actualizacion = [];
+
     //protected $table = 'nom_doc_registros';
     protected $fillable = [ 'nom_doc_encabezado_id', 'core_tercero_id', 'nom_contrato_id', 'fecha', 'core_empresa_id', 'porcentaje', 'detalle', 'nom_concepto_id', 'nom_cuota_id', 'nom_prestamo_id', 'novedad_tnl_id', 'orden_trabajo_id', 'cantidad_horas', 'valor_devengo', 'valor_deduccion', 'estado', 'creado_por', 'modificado_por' ];
 
@@ -55,6 +57,18 @@ class NomDocRegistro extends Model
     public function novedad_tnl()
     {
         return $this->belongsTo(NovedadTnl::class, 'novedad_tnl_id');
+    }
+
+    /**
+     * Los registros generados por cuotas son la unica excepcion de los modos
+     * automaticos 3, 4 y 7 que puede modificarse desde el CRUD generico.
+     */
+    public function es_cuota_editable_desde_crud()
+    {
+        return !is_null($this->concepto)
+            && (int)$this->concepto->modo_liquidacion_id === 3
+            && (int)$this->nom_cuota_id > 0
+            && !is_null($this->cuota);
     }
 
     /**
@@ -386,7 +400,8 @@ class NomDocRegistro extends Model
 			4: Prestamo
 			7: Tiempo NO Laborado
     	*/
-        if (in_array($registro->concepto->modo_liquidacion_id, [3, 4, 7])) {
+        if (in_array((int)$registro->concepto->modo_liquidacion_id, [3, 4, 7], true)
+            && !$registro->es_cuota_editable_desde_crud()) {
             return [[
                 "id" => 999,
                 "descripcion" => "",
@@ -521,9 +536,89 @@ class NomDocRegistro extends Model
         return $lista_campos;
     }
 
+    public function preparar_request_validacion($request, $id = null)
+    {
+        $registro = self::with(['concepto', 'cuota'])->find($id);
+        if (is_null($registro) || !$registro->es_cuota_editable_desde_crud()) {
+            return;
+        }
+
+        self::$valores_cuota_antes_actualizacion[$registro->id] = [
+            'nom_cuota_id' => (int)$registro->nom_cuota_id,
+            'valor_registro' => (float)$registro->valor_devengo + (float)$registro->valor_deduccion
+        ];
+
+        // La excepcion permite editar los valores del movimiento, no cambiar
+        // las asociaciones que identifican la cuota, empleado o documento.
+        $request->merge([
+            'nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id,
+            'core_tercero_id' => $registro->core_tercero_id,
+            'nom_contrato_id' => $registro->nom_contrato_id,
+            'core_empresa_id' => $registro->core_empresa_id,
+            'nom_concepto_id' => $registro->nom_concepto_id,
+            'nom_cuota_id' => $registro->nom_cuota_id,
+            'nom_prestamo_id' => $registro->nom_prestamo_id,
+            'novedad_tnl_id' => $registro->novedad_tnl_id,
+            'orden_trabajo_id' => $registro->orden_trabajo_id
+        ]);
+    }
+
+    public function validar_datos_actualizacion($request, $controller, $id)
+    {
+        $registro = self::with(['concepto', 'cuota', 'encabezado_documento'])->find($id);
+
+        if (is_null($registro)) {
+            $this->rechazar_actualizacion($request, $controller, 'El registro de nomina no existe.');
+            return;
+        }
+
+        if (is_null($registro->encabezado_documento) || $registro->encabezado_documento->estado !== 'Activo') {
+            $this->rechazar_actualizacion(
+                $request,
+                $controller,
+                'El documento de nomina no esta Activo. Sus registros no pueden modificarse.'
+            );
+            return;
+        }
+
+        $modo_liquidacion_id = is_null($registro->concepto)
+            ? 0
+            : (int)$registro->concepto->modo_liquidacion_id;
+
+        if (in_array($modo_liquidacion_id, [3, 4, 7], true) && !$registro->es_cuota_editable_desde_crud()) {
+            $this->rechazar_actualizacion(
+                $request,
+                $controller,
+                'Este registro automatico no puede modificarse desde el CRUD. Debe reliquidar la transaccion correspondiente.'
+            );
+            return;
+        }
+
+        if ($registro->es_cuota_editable_desde_crud()) {
+            $controller->validate($request, [
+                'cantidad_horas' => 'required|numeric|min:0',
+                'valor_devengo' => 'required|numeric|min:0',
+                'valor_deduccion' => 'required|numeric|min:0'
+            ]);
+        }
+    }
+
+    protected function rechazar_actualizacion($request, $controller, $mensaje)
+    {
+        $request->merge(['validacion_registro_nomina' => 'invalido']);
+        $controller->validate($request, [
+            'validacion_registro_nomina' => 'in:valido'
+        ], [
+            'validacion_registro_nomina.in' => $mensaje
+        ]);
+    }
+
     public function update_adicional($datos, $id)
     {
         $registro = NomDocRegistro::find($id);
+        $valores_cuota_anteriores = isset(self::$valores_cuota_antes_actualizacion[$id])
+            ? self::$valores_cuota_antes_actualizacion[$id]
+            : null;
         
         $documento = $registro->encabezado_documento;
         
@@ -538,5 +633,57 @@ class NomDocRegistro extends Model
         {
             $registro->delete();
         }
+
+        $nom_cuota_id = is_null($valores_cuota_anteriores)
+            ? $registro->nom_cuota_id
+            : $valores_cuota_anteriores['nom_cuota_id'];
+
+        $this->sincronizar_valor_acumulado_cuota($nom_cuota_id, $id, $valores_cuota_anteriores);
+        unset(self::$valores_cuota_antes_actualizacion[$id]);
+    }
+
+    protected function sincronizar_valor_acumulado_cuota($nom_cuota_id, $registro_id, $valores_anteriores = null)
+    {
+        if ((int)$nom_cuota_id <= 0) {
+            return;
+        }
+
+        $cuota = NomCuota::find($nom_cuota_id);
+        if (is_null($cuota)) {
+            return;
+        }
+
+        $valor_acumulado_anterior = (float)$cuota->valor_acumulado;
+        if (is_null($valores_anteriores)) {
+            $nuevo_valor_acumulado = (float)self::where('nom_cuota_id', $nom_cuota_id)
+                ->sum(DB::raw('COALESCE(valor_devengo, 0) + COALESCE(valor_deduccion, 0)'));
+        } else {
+            $registro_actualizado = self::find($registro_id);
+            $nuevo_valor_registro = is_null($registro_actualizado)
+                ? 0
+                : (float)$registro_actualizado->valor_devengo + (float)$registro_actualizado->valor_deduccion;
+
+            $nuevo_valor_acumulado = max(
+                0,
+                $valor_acumulado_anterior - (float)$valores_anteriores['valor_registro'] + $nuevo_valor_registro
+            );
+        }
+
+        $cuota->valor_acumulado = $nuevo_valor_acumulado;
+
+        if ($cuota->tope_maximo !== null && $cuota->tope_maximo !== '') {
+            $tope_maximo = (float)$cuota->tope_maximo;
+
+            if ($tope_maximo > 0 && $nuevo_valor_acumulado >= $tope_maximo) {
+                $cuota->estado = 'Inactivo';
+            } elseif ($tope_maximo > 0
+                && $cuota->estado === 'Inactivo'
+                && $valor_acumulado_anterior >= $tope_maximo
+                && $nuevo_valor_acumulado < $tope_maximo) {
+                $cuota->estado = 'Activo';
+            }
+        }
+
+        $cuota->save();
     }
 }
