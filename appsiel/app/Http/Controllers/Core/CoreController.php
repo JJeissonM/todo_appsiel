@@ -2,19 +2,7 @@
 
 namespace App\Http\Controllers\Core;
 
-use SoapClient;
-USE SoapHeader;
-
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Core\TransaccionController;
-
-use Input;
-use DB;
-use Cache;
-use View;
 
 use App\Sistema\Modelo;
 

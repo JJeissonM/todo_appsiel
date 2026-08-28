@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers\Core;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use DB;
 
 use App\Core\CoreEvento;
-
 
 class EventoController extends Controller
 {

@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Core;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
 use App\Inventarios\Services\FiltroMovimientos;
 

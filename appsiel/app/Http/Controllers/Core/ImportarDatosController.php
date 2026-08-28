@@ -4,16 +4,10 @@ namespace App\Http\Controllers\Core;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
-use DB;
-use View;
 use Auth;
 use Input;
-use Form;
 
-use App\Core\Colegio;
-use App\Core\Empresa;
 use App\Core\Tercero;
 use App\Sistema\Modelo;
 
@@ -24,10 +18,7 @@ use App\Contabilidad\ContabCuenta;
 
 use App\CxC\CxcServicio;
 
-
-use App\Http\Requests\ExcelRequest;
 use \Excel;
-
 
 class ImportarDatosController extends Controller
 {	

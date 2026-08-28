@@ -7,7 +7,6 @@ use App\Core\Foro;
 use App\Core\Fororespuesta;
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Matriculas\Curso;
 use App\Matriculas\PeriodoLectivo;

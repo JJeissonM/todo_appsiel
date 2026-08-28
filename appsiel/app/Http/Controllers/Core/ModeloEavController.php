@@ -4,22 +4,14 @@ namespace App\Http\Controllers\Core;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\VistaController;
 
 use Input;
-use DB;
 use View;
 
 use App\Sistema\Modelo;
 use App\Core\ModeloEavValor;
-
-use App\Salud\ExamenTieneVariables;
-use App\Salud\ExamenTieneOrganos;
-use App\Salud\ExamenMedico;
 
 class ModeloEavController extends ModeloController
 {

@@ -16,7 +16,6 @@ use App\Tesoreria\TesoMovimiento;
 use App\Contabilidad\ContabMovimiento;
 use App\Inventarios\InvMovimiento;
 use App\Ventas\VtasMovimiento;
-use App\VentasPos\FacturaPos;
 use App\VentasPos\Movimiento;
 use App\Compras\ComprasMovimiento;
 
