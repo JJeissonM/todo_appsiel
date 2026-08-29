@@ -110,7 +110,13 @@ class TurnoManager
                 'abierto_por' => $userId,
                 'saldo_inicial' => $openingBalance,
                 'estado' => TurnoOperativo::ESTADO_ABIERTO,
-                'codigo' => 'TUR-' . strtoupper($contextType) . '-' . (int)$empresaId . '-' . (int)$contextId . '-' . str_replace('.', '', uniqid('', true)),
+                'codigo' => $manager->buildTurnCode(
+                    $empresaId,
+                    $contextType,
+                    $contextId,
+                    $openedAt,
+                    str_replace('.', '', uniqid('', true))
+                ),
                 'clave_contexto_abierto' => $manager->contextKey($empresaId, $contextType, $contextId),
             ));
             $manager->recordEvent($turno, 'APERTURA', null, TurnoOperativo::ESTADO_ABIERTO, null, $userId, null, $metadata);
@@ -180,7 +186,14 @@ class TurnoManager
                 'abierto_por' => $actorId,
                 'saldo_inicial' => $opening->efectivo_base ?: 0,
                 'estado' => TurnoOperativo::ESTADO_ABIERTO,
-                'codigo' => 'TUR-' . $opening->core_empresa_id . '-' . $opening->pdv_id . '-' . date('YmdHis', strtotime($openedAt)) . '-' . $opening->id,
+                'codigo' => $manager->buildTurnCode(
+                    $opening->core_empresa_id,
+                    'pdv',
+                    $opening->pdv_id,
+                    $openedAt,
+                    $opening->id,
+                    is_null($pdv) ? null : $pdv->descripcion
+                ),
                 'clave_contexto_abierto' => $contextKey,
             ));
 
@@ -360,6 +373,38 @@ class TurnoManager
     protected function contextKey($empresaId, $contextType, $contextId)
     {
         return (string)$contextType . ':' . (int)$empresaId . ':' . (int)$contextId;
+    }
+
+    protected function buildTurnCode($empresaId, $contextType, $contextId, $openedAt, $uniqueSuffix, $contextLabel = null)
+    {
+        if (is_null($contextLabel) && (string)$contextType === 'pdv') {
+            $contextLabel = DB::table('vtas_pos_puntos_de_ventas')
+                ->where('id', (int)$contextId)
+                ->where('core_empresa_id', (int)$empresaId)
+                ->value('descripcion');
+        }
+        if (trim((string)$contextLabel) === '') {
+            $contextLabel = (string)$contextType;
+        }
+
+        $label = strtoupper(trim((string)str_slug($contextLabel, '-'), '-'));
+        if ($label === '') {
+            $label = strtoupper((string)$contextType);
+        }
+
+        $suffix = preg_replace('/[^A-Za-z0-9]/', '', (string)$uniqueSuffix);
+        if ($suffix === '') {
+            $suffix = str_replace('.', '', uniqid('', true));
+        }
+        $timestamp = date('YmdHis', strtotime($openedAt));
+        $tail = '-' . (int)$empresaId . '-' . (int)$contextId . '-' . $timestamp . '-' . $suffix;
+
+        // codigo tiene una longitud máxima de 80. Se recorta solamente el nombre
+        // descriptivo; empresa, contexto, fecha y sufijo de unicidad se conservan.
+        $maxLabelLength = 80 - strlen('TUR-') - strlen($tail);
+        $label = rtrim(substr($label, 0, max(1, $maxLabelLength)), '-');
+
+        return 'TUR-' . $label . $tail;
     }
 
     protected function lockCompany($empresaId)

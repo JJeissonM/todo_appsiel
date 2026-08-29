@@ -41,6 +41,7 @@ class TurnoFormService
         $persistedTurnId = is_object($registro) ? (int)$registro->getAttribute('turno_operativo_id') : 0;
         $isEdit = $accion === 'edit';
         $allowsManualCreate = isset($manualModels[$modelo->name_space]);
+        $selectionLocked = !$isEdit && $this->selectionLockedForCurrentUser();
 
         if (!$isEdit && (!$allowsManualCreate || !$this->hasTurnosScope($empresaId, $module))) {
             return $campos;
@@ -50,21 +51,26 @@ class TurnoFormService
         }
 
         $options = $this->options($empresaId, $module, $persistedTurnId, $isEdit);
+        if ($selectionLocked) {
+            $options = $this->lockedOptionsForRequest($options, $empresaId, $module);
+        }
         $value = $persistedTurnId > 0 ? $persistedTurnId : $this->singleOptionValue($options);
         $field = array(
             'tipo' => 'select',
             'name' => 'turno_operativo_id',
-            'descripcion' => $isEdit ? 'Turno operativo (inmutable)' : 'Turno operativo',
+            'descripcion' => ($isEdit || $selectionLocked)
+                ? 'Turno operativo (asignado automáticamente)'
+                : 'Turno operativo',
             'opciones' => $options,
             'value' => $value,
-            'atributos' => $isEdit
-                ? array('disabled' => 'disabled', 'class' => 'form-control')
+            'atributos' => ($isEdit || $selectionLocked)
+                ? array('disabled' => 'disabled', 'class' => 'form-control', 'data-turno-locked' => '1')
                 : array('class' => 'form-control combobox', 'data-turno-module' => $module),
-            'definicion' => $isEdit
+            'definicion' => ($isEdit || $selectionLocked)
                 ? 'El turno identifica el hecho operativo original y no puede reasignarse desde la edición.'
                 : 'Obligatorio cuando el contexto seleccionado opera en modo TURNOS. Sólo se muestran turnos abiertos válidos para este módulo.',
             'requerido' => 0,
-            'editable' => $isEdit ? 0 : 1,
+            'editable' => ($isEdit || $selectionLocked) ? 0 : 1,
             'unico' => 0,
         );
 
@@ -76,6 +82,40 @@ class TurnoFormService
         }
         $campos[] = $field;
         return $campos;
+    }
+
+    protected function selectionLockedForCurrentUser()
+    {
+        $user = Auth::user();
+        if (is_null($user)) {
+            return false;
+        }
+        foreach ((array)config('turnos.turn_selection_locked_roles', array()) as $role) {
+            if ($user->hasRole($role)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected function lockedOptionsForRequest(array $options, $empresaId, $module)
+    {
+        $pdvId = (int)request()->input('pdv_id');
+        if ($pdvId > 0) {
+            $turno = TurnoOperativo::where('core_empresa_id', (int)$empresaId)
+                ->where('contexto_tipo', 'pdv')
+                ->where('contexto_id', $pdvId)
+                ->abiertos()
+                ->orderBy('id', 'DESC')
+                ->first();
+            if (!is_null($turno) && $this->modeResolver->enabled($empresaId, $module, 'pdv', $pdvId)) {
+                return array($turno->id => $this->optionLabel($turno));
+            }
+            return array();
+        }
+
+        unset($options['']);
+        return $options;
     }
 
     protected function companyId($registro)
@@ -116,10 +156,15 @@ class TurnoFormService
             )) {
                 continue;
             }
-            $options[$turno->id] = $turno->codigo . ' | ' . $turno->fecha_operativa . ' | '
-                . $turno->contexto_tipo . ' ' . $turno->contexto_id . ' | ' . $turno->estado;
+            $options[$turno->id] = $this->optionLabel($turno);
         }
         return $options;
+    }
+
+    protected function optionLabel(TurnoOperativo $turno)
+    {
+        return $turno->codigo . ' | ' . $turno->fecha_operativa . ' | '
+            . $turno->contexto_tipo . ' ' . $turno->contexto_id . ' | ' . $turno->estado;
     }
 
     protected function singleOptionValue(array $options)

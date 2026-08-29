@@ -24,7 +24,7 @@ class TurnoConfiguracion extends Model
 
     public $encabezado_tabla = array(
         '<i style="font-size: 20px;" class="fa fa-check-square-o"></i>',
-        'Empresa', 'Módulo', 'Contexto', 'ID contexto', 'Modo', 'Actualizado'
+        'Empresa', 'Módulo', 'Contexto', 'Contexto operativo', 'Modo', 'Actualizado'
     );
 
     protected static function boot()
@@ -67,11 +67,15 @@ class TurnoConfiguracion extends Model
     {
         $query = static::queryForCurrentCompany()
             ->leftJoin('core_empresas', 'core_empresas.id', '=', 'core_turno_configuraciones.core_empresa_id')
+            ->leftJoin('vtas_pos_puntos_de_ventas AS turno_contexto_pdv', function ($join) {
+                $join->on('turno_contexto_pdv.id', '=', 'core_turno_configuraciones.contexto_id')
+                    ->on('turno_contexto_pdv.core_empresa_id', '=', 'core_turno_configuraciones.core_empresa_id');
+            })
             ->select(
                 'core_empresas.descripcion AS campo1',
                 'core_turno_configuraciones.modulo AS campo2',
                 'core_turno_configuraciones.contexto_tipo AS campo3',
-                'core_turno_configuraciones.contexto_id AS campo4',
+                DB::raw(static::contextDescriptionSql() . ' AS campo4'),
                 'core_turno_configuraciones.modo AS campo5',
                 'core_turno_configuraciones.updated_at AS campo6',
                 'core_turno_configuraciones.id AS campo7'
@@ -86,11 +90,15 @@ class TurnoConfiguracion extends Model
     {
         $query = static::queryForCurrentCompany()
             ->leftJoin('core_empresas', 'core_empresas.id', '=', 'core_turno_configuraciones.core_empresa_id')
+            ->leftJoin('vtas_pos_puntos_de_ventas AS turno_contexto_pdv', function ($join) {
+                $join->on('turno_contexto_pdv.id', '=', 'core_turno_configuraciones.contexto_id')
+                    ->on('turno_contexto_pdv.core_empresa_id', '=', 'core_turno_configuraciones.core_empresa_id');
+            })
             ->select(
                 'core_empresas.descripcion AS EMPRESA',
                 'core_turno_configuraciones.modulo AS MODULO',
                 'core_turno_configuraciones.contexto_tipo AS CONTEXTO',
-                'core_turno_configuraciones.contexto_id AS CONTEXTO_ID',
+                DB::raw(static::contextDescriptionSql() . ' AS CONTEXTO_OPERATIVO'),
                 'core_turno_configuraciones.modo AS MODO',
                 'core_turno_configuraciones.updated_at AS ACTUALIZADO'
             );
@@ -118,8 +126,23 @@ class TurnoConfiguracion extends Model
         $empresaId = Auth::check() ? (int)Auth::user()->empresa_id : 0;
         foreach ($campos as $key => $campo) {
             if ($campo['name'] === 'core_empresa_id') {
-                $campos[$key]['tipo'] = 'hidden';
+                // bsLabel muestra la empresa activa y conserva su identificador en
+                // un input oculto. El controlador vuelve a resolverla desde el
+                // usuario autenticado al guardar.
+                $campos[$key]['tipo'] = 'bsLabel';
+                $campos[$key]['descripcion'] = 'Empresa';
                 $campos[$key]['value'] = $editing ? (int)$registro->core_empresa_id : $empresaId;
+                $campos[$key]['editable'] = 0;
+                $campos[$key]['atributos'] = array();
+            }
+            if ($campo['name'] === 'contexto_tipo') {
+                // Se fuerza también en tiempo de ejecución para tolerar metadatos
+                // antiguos hasta que el seeder administrativo sea reaplicado.
+                $campos[$key]['tipo'] = 'select';
+                $campos[$key]['opciones'] = array(
+                    'pdv' => 'PDV',
+                    '*' => 'Empresa / todos',
+                );
             }
             if ($campo['name'] === 'contexto_id') {
                 $campos[$key]['opciones'] = static::contextOptions($empresaId);
@@ -166,11 +189,30 @@ class TurnoConfiguracion extends Model
         $query->where(function ($inner) use ($search) {
             $like = '%' . $search . '%';
             $inner->where('core_empresas.descripcion', 'LIKE', $like)
+                ->orWhere('turno_contexto_pdv.descripcion', 'LIKE', $like)
                 ->orWhere('core_turno_configuraciones.modulo', 'LIKE', $like)
                 ->orWhere('core_turno_configuraciones.contexto_tipo', 'LIKE', $like)
                 ->orWhere('core_turno_configuraciones.contexto_id', 'LIKE', $like)
                 ->orWhere('core_turno_configuraciones.modo', 'LIKE', $like);
         });
+    }
+
+    protected static function contextDescriptionSql()
+    {
+        return "CASE
+            WHEN core_turno_configuraciones.contexto_tipo = 'pdv' THEN
+                COALESCE(
+                    CONCAT('PDV ', turno_contexto_pdv.id, ' - ', turno_contexto_pdv.descripcion),
+                    CONCAT('PDV ', core_turno_configuraciones.contexto_id, ' - No encontrado')
+                )
+            WHEN core_turno_configuraciones.contexto_tipo = '*'
+                OR core_turno_configuraciones.contexto_id = 0 THEN 'Empresa / todos los contextos'
+            ELSE CONCAT(
+                core_turno_configuraciones.contexto_tipo,
+                ' ',
+                core_turno_configuraciones.contexto_id
+            )
+        END";
     }
 
     protected static function interpolate($query)

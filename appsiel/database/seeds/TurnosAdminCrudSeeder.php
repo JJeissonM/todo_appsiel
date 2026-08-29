@@ -53,7 +53,7 @@ class TurnosAdminCrudSeeder extends Seeder
                     'turnos/configuraciones', 'turnos/configuraciones/id_fila/eliminar'
                 ),
                 'fields' => array(
-                    $this->field(1, 'Empresa', 'hidden', 'core_empresa_id', '', 'null', 1, 0),
+                    $this->field(1, 'Empresa', 'bsLabel', 'core_empresa_id', '', 'null', 0, 1),
                     $this->field(2, 'Módulo', 'select', 'modulo', json_encode($moduleOptions), '*', 1, 1),
                     $this->field(3, 'Tipo de contexto', 'select', 'contexto_tipo', '{"pdv":"PDV","*":"Empresa / todos"}', 'pdv', 1, 1),
                     $this->field(4, 'Contexto operativo', 'select', 'contexto_id', '{}', '0', 1, 1),
@@ -76,7 +76,9 @@ class TurnosAdminCrudSeeder extends Seeder
                 'fields' => array(
                     $this->field(1, 'Empresa', 'select', 'core_empresa_id', 'model_App\\Core\\Empresa', 'null', 1, 0),
                     $this->field(2, 'Código', 'bsText', 'codigo', '', 'null', 1, 0),
-                    $this->field(3, 'Tipo de contexto', 'bsText', 'contexto_tipo', '', 'null', 1, 0),
+                    // sys_campos es global. Esta descripción debe ser distinta de
+                    // la usada por la configuración, donde el mismo nombre es un select.
+                    $this->field(3, 'Tipo de contexto del turno', 'bsText', 'contexto_tipo', '', 'null', 1, 0),
                     $this->field(4, 'ID del contexto', 'bsText', 'contexto_id', '', 'null', 1, 0),
                     $this->field(5, 'PDV', 'select', 'pdv_id', 'model_App\\VentasPos\\Pdv', 'null', 0, 0),
                     $this->field(6, 'Caja', 'select', 'teso_caja_id', 'model_App\\Tesoreria\\TesoCaja', 'null', 0, 0),
@@ -182,13 +184,29 @@ class TurnosAdminCrudSeeder extends Seeder
             $order = $field['orden'];
             unset($field['orden']);
             $fieldId = DB::table('sys_campos')
-                ->where('name', $field['name'])->where('descripcion', $field['descripcion'])->value('id');
+                ->where('name', $field['name'])
+                ->where('descripcion', $field['descripcion'])
+                ->where('tipo', $field['tipo'])
+                ->value('id');
             $field['updated_at'] = date('Y-m-d H:i:s');
             if ($fieldId) {
                 DB::table('sys_campos')->where('id', $fieldId)->update($field);
             } else {
                 $field['created_at'] = date('Y-m-d H:i:s');
                 $fieldId = DB::table('sys_campos')->insertGetId($field);
+            }
+
+            // Repara relaciones sembradas por versiones anteriores que reutilizaron
+            // un sys_campo global con el mismo name pero otra representación.
+            $staleFieldIds = DB::table('sys_campos')
+                ->where('name', $field['name'])
+                ->where('id', '<>', $fieldId)
+                ->lists('id');
+            if (!empty($staleFieldIds)) {
+                DB::table('sys_modelo_tiene_campos')
+                    ->where('core_modelo_id', $modelId)
+                    ->whereIn('core_campo_id', $staleFieldIds)
+                    ->delete();
             }
 
             $relation = DB::table('sys_modelo_tiene_campos')

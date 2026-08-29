@@ -54,6 +54,9 @@ class TurnoOperativoIntegrationTest extends TestCase
         $firstTurn = $manager->openFromLegacy($firstOpening, 3);
 
         $this->assertSame('2026-08-22', $firstTurn->fecha_operativa);
+        $pdvName = DB::table('vtas_pos_puntos_de_ventas')->where('id', 1)->value('descripcion');
+        $this->assertContains('TUR-' . strtoupper(str_slug($pdvName, '-')) . '-1-1-20260822220000-', $firstTurn->codigo);
+        $this->assertLessThanOrEqual(80, strlen($firstTurn->codigo));
         $this->assertTrue($firstTurn->estaAbierto());
         $this->assertSame($firstTurn->id, $firstOpening->fresh()->turno_operativo_id);
 
@@ -397,6 +400,10 @@ class TurnoOperativoIntegrationTest extends TestCase
     public function test_configuracion_no_cambia_modo_efectivo_mientras_hay_turno_abierto()
     {
         DB::table('vtas_pos_puntos_de_ventas')->where('core_empresa_id', 1)->where('id', '<>', 1)->update(array('estado' => 'Cerrado'));
+        DB::table('core_turnos_operativos')->where('core_empresa_id', 1)
+            ->where('contexto_tipo', 'pdv')->where('contexto_id', '<>', 1)
+            ->where('estado', TurnoOperativo::ESTADO_ABIERTO)
+            ->update(array('estado' => TurnoOperativo::ESTADO_CERRADO, 'cerrado_en' => '2026-08-22 07:59:59'));
         $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
         $configuration = TurnoConfiguracion::where('core_empresa_id', 1)->where('modulo', '*')->first();
         $manager = app(TurnoManager::class);

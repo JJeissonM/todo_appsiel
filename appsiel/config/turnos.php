@@ -68,6 +68,14 @@ return array(
         'App\\Hotel\\HotelOrderHeader' => 'hotel',
     ),
 
+    // Estos perfiles operativos reciben el turno vigente automáticamente. No
+    // pueden quitarlo ni escoger otro desde formularios de transacciones.
+    'turn_selection_locked_roles' => array(
+        'Cajero PDV',
+        'Cajero Canchas',
+        'Cajero Domi',
+    ),
+
     // Fuentes revisadas por el diagnóstico previo al piloto. Si una tabla no
     // conserva el contexto directamente, el conteo se reporta a nivel empresa.
     'diagnostic_sources' => array(
