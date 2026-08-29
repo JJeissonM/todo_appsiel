@@ -187,9 +187,11 @@ si cambia el modo efectivo de un turno abierto o de una apertura tradicional.
 
 `TurnoFormService` extiende los campos del CRUD genérico sin agregar el campo a
 instalaciones tradicionales. En `create`, sólo los modelos declarados en
-`turnos.manual_assignment_models` muestran turnos abiertos de la empresa para los
-que el módulo tiene modo efectivo `TURNOS`. En `edit`, el turno persistido se muestra
-deshabilitado e inmutable.
+`turnos.manual_assignment_models` muestran un selector con búsqueda AJAX. El HTML
+inicial no serializa el histórico: el backend consulta como máximo 100 candidatos y
+devuelve hasta 20 coincidencias válidas por búsqueda, limitadas por empresa, módulo,
+PDV y permisos. Puede buscarse por código, fecha, estado o nombre del PDV. En `edit`,
+el único turno persistido se muestra deshabilitado e inmutable.
 
 Los usuarios con `turnos.ajustes.registrar` también pueden seleccionar turnos
 `CERRADO` o `AUDITADO` al crear una corrección. En ese caso el formulario exige
@@ -197,6 +199,8 @@ Los usuarios con `turnos.ajustes.registrar` también pueden seleccionar turnos
 un evento `AJUSTE_POSTERIOR` con usuario, motivo y entidad afectada. El permiso se
 concede inicialmente sólo a `SuperAdmin` y `Administrador`. Los perfiles de caja
 no ven históricos y reciben automáticamente el único turno abierto de su PDV.
+La búsqueda tiene espera corta (`debounce`), cancela la petición anterior y limpia
+la FK oculta si se cambia el texto o el PDV, evitando guardar una selección obsoleta.
 
 El selector es una ayuda de captura, no la garantía de integridad: al guardar,
 `HasTurnoOperativo` y `TurnoAssignmentResolver` vuelven a validar empresa, contexto,

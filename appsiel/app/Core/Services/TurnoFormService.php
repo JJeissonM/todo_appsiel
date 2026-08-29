@@ -51,20 +51,24 @@ class TurnoFormService
             return $campos;
         }
 
-        $options = $this->options($empresaId, $module, $persistedTurnId, $isEdit, $allowsClosedAdjustment);
-        if ($selectionLocked) {
-            $options = $this->lockedOptionsForRequest($options, $empresaId, $module);
+        $options = array();
+        $value = null;
+        if ($isEdit) {
+            $options = $this->options($empresaId, $module, $persistedTurnId, true);
+            $value = $persistedTurnId;
+        } elseif ($selectionLocked) {
+            $options = $this->lockedOptionsForRequest($empresaId, $module);
+            $value = $this->singleOptionValue($options);
+        } else {
+            $defaultTurn = $this->defaultOpenTurnForRequest($empresaId, $module);
+            $value = is_null($defaultTurn)
+                ? array('', '')
+                : array($this->optionLabel($defaultTurn), (int)$defaultTurn->id);
         }
-        $value = $persistedTurnId > 0 ? $persistedTurnId : $this->singleOptionValue($options);
-        if ($persistedTurnId <= 0 && $allowsClosedAdjustment) {
-            // Los históricos quedan disponibles, pero el valor predeterminado debe
-            // seguir siendo el único turno abierto para evitar ajustes accidentales.
-            $value = $this->singleOptionValue(
-                $this->options($empresaId, $module, 0, false, false)
-            );
-        }
+
+        $isAjaxSelector = !$isEdit && !$selectionLocked;
         $field = array(
-            'tipo' => 'select',
+            'tipo' => $isAjaxSelector ? 'input_lista_sugerencias' : 'select',
             'name' => 'turno_operativo_id',
             'descripcion' => ($isEdit || $selectionLocked)
                 ? 'Turno operativo (asignado automáticamente)'
@@ -73,10 +77,16 @@ class TurnoFormService
             'value' => $value,
             'atributos' => ($isEdit || $selectionLocked)
                 ? array('disabled' => 'disabled', 'class' => 'form-control', 'data-turno-locked' => '1')
-                : array('class' => 'form-control combobox', 'data-turno-module' => $module),
+                : array(
+                    'class' => 'form-control text_input_sugerencias turno-operativo-ajax',
+                    'data-url_busqueda' => url('turnos/operativos/sugerencias') . '?modulo=' . rawurlencode($module),
+                    'data-ajax-fields' => 'pdv_id',
+                    'data-turno-module' => $module,
+                    'data-selected-label' => is_null($defaultTurn) ? '' : $this->optionLabel($defaultTurn),
+                ),
             'definicion' => ($isEdit || $selectionLocked)
                 ? 'El turno identifica el hecho operativo original y no puede reasignarse desde la edición.'
-                : 'Obligatorio cuando el contexto seleccionado opera en modo TURNOS. Sólo se muestran turnos abiertos válidos para este módulo.',
+                : 'Busque por código, PDV o fecha. La consulta se realiza bajo demanda y sólo devuelve turnos válidos para la empresa, módulo, contexto y permisos actuales.',
             'requerido' => 0,
             'editable' => ($isEdit || $selectionLocked) ? 0 : 1,
             'unico' => 0,
@@ -135,7 +145,7 @@ class TurnoFormService
         return false;
     }
 
-    protected function lockedOptionsForRequest(array $options, $empresaId, $module)
+    protected function lockedOptionsForRequest($empresaId, $module)
     {
         $pdvId = (int)request()->input('pdv_id');
         if ($pdvId > 0) {
@@ -151,8 +161,7 @@ class TurnoFormService
             return array();
         }
 
-        unset($options['']);
-        return $options;
+        return array();
     }
 
     protected function companyId($registro)
@@ -177,18 +186,12 @@ class TurnoFormService
             ->exists();
     }
 
-    protected function options($empresaId, $module, $persistedTurnId, $isEdit, $includeHistorical = false)
+    protected function options($empresaId, $module, $persistedTurnId, $isEdit)
     {
         $options = array('' => 'Seleccione un turno operativo');
         $query = TurnoOperativo::where('core_empresa_id', $empresaId);
         if ($isEdit && $persistedTurnId > 0) {
             $query->where('id', $persistedTurnId);
-        } elseif ($includeHistorical) {
-            $query->whereIn('estado', array(
-                TurnoOperativo::ESTADO_ABIERTO,
-                TurnoOperativo::ESTADO_CERRADO,
-                TurnoOperativo::ESTADO_AUDITADO,
-            ));
         } else {
             $query->abiertos();
         }
@@ -204,10 +207,35 @@ class TurnoFormService
         return $options;
     }
 
+    protected function defaultOpenTurnForRequest($empresaId, $module)
+    {
+        $pdvId = (int)request()->input('pdv_id');
+        if ($pdvId <= 0 || !$this->modeResolver->enabled($empresaId, $module, 'pdv', $pdvId)) {
+            return null;
+        }
+
+        return TurnoOperativo::where('core_empresa_id', (int)$empresaId)
+            ->where('contexto_tipo', 'pdv')
+            ->where('contexto_id', $pdvId)
+            ->abiertos()
+            ->orderBy('id', 'DESC')
+            ->first();
+    }
+
     protected function optionLabel(TurnoOperativo $turno)
     {
+        $contextLabel = $turno->contexto_tipo . ' ' . $turno->contexto_id;
+        if ($turno->contexto_tipo === 'pdv') {
+            $pdvName = \DB::table('vtas_pos_puntos_de_ventas')
+                ->where('core_empresa_id', (int)$turno->core_empresa_id)
+                ->where('id', (int)$turno->contexto_id)
+                ->value('descripcion');
+            if (!empty($pdvName)) {
+                $contextLabel = 'PDV ' . $turno->contexto_id . ' - ' . $pdvName;
+            }
+        }
         return $turno->codigo . ' | ' . $turno->fecha_operativa . ' | '
-            . $turno->contexto_tipo . ' ' . $turno->contexto_id . ' | ' . $turno->estado;
+            . $contextLabel . ' | ' . $turno->estado;
     }
 
     protected function singleOptionValue(array $options)

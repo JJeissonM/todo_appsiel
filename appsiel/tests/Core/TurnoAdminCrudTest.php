@@ -203,11 +203,16 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertContains('TUR-' . strtoupper(str_slug($pdvName, '-')) . '-1-1-20260828080000-', $turn->codigo);
 
         $model = (object)array('name_space' => 'App\\VentasPos\\FacturaPos');
+        app('request')->merge(array('pdv_id' => 1));
         $createFields = app(TurnoFormService::class)->decorate($model, null, 'create', array());
         $field = $this->turnField($createFields);
         $this->assertNotNull($field);
-        $this->assertSame((int)$turn->id, (int)$field['value']);
-        $this->assertArrayHasKey($turn->id, $field['opciones']);
+        $this->assertSame('input_lista_sugerencias', $field['tipo']);
+        $this->assertSame((int)$turn->id, (int)$field['value'][1]);
+        $this->assertContains($pdvName, $field['value'][0]);
+        $this->assertSame(array(), $field['opciones']);
+        $this->assertContains('/turnos/operativos/sugerencias?modulo=ventas_pos', $field['atributos']['data-url_busqueda']);
+        $this->assertSame('pdv_id', $field['atributos']['data-ajax-fields']);
         $this->assertSame(1, $field['editable']);
 
         $cashierId = DB::table('users as user')
@@ -295,8 +300,21 @@ class TurnoAdminCrudTest extends TestCase
         app('request')->merge(array('pdv_id' => 1, 'turno_ajuste_motivo' => ''));
         $model = (object)array('name_space' => 'App\\Tesoreria\\TesoMovimiento');
         $fields = app(TurnoFormService::class)->decorate($model, null, 'create', array());
-        $this->assertArrayHasKey($turn->id, $this->turnField($fields)['opciones']);
+        $turnField = $this->turnField($fields);
+        $this->assertSame('input_lista_sugerencias', $turnField['tipo']);
+        $this->assertSame(array(), $turnField['opciones']);
         $this->assertNotNull($this->fieldNamed($fields, 'turno_ajuste_motivo'));
+
+        $this->call('GET', '/turnos/operativos/sugerencias', array(
+            'modulo' => 'tesoreria',
+            'pdv_id' => 1,
+            'texto_busqueda' => $turn->codigo,
+        ));
+        $this->assertResponseOk();
+        $suggestions = $this->response->getContent();
+        $this->assertContains('data-registro_id="' . $turn->id . '"', $suggestions);
+        $this->assertContains($turn->codigo, $suggestions);
+        $this->assertContains('CERRADO', $suggestions);
 
         app('request')->merge(array('pdv_id' => 999999, 'turno_ajuste_motivo' => 'Corrección inválida'));
         $wrongContextHeader = new \App\Tesoreria\TesoDocEncabezadoPago(array(
@@ -341,6 +359,44 @@ class TurnoAdminCrudTest extends TestCase
             'usuario_id' => $user->id,
             'motivo' => 'Corrección autorizada de pago omitido',
         ));
+    }
+
+    public function test_busqueda_ajax_de_turnos_es_limitada_y_no_serializa_el_historico_en_el_formulario()
+    {
+        (new TurnosAdminCrudSeeder())->run();
+        $user = $this->authenticateCompanyUser();
+        app(TurnoConfigurationService::class)->configure(array(
+            'core_empresa_id' => 1, 'modulo' => 'tesoreria', 'contexto_tipo' => 'pdv',
+            'contexto_id' => 1, 'modo' => TurnoConfiguracion::MODO_TURNOS,
+        ));
+
+        for ($index = 1; $index <= 25; $index++) {
+            TurnoOperativo::create(array(
+                'core_empresa_id' => 1,
+                'contexto_tipo' => 'pdv',
+                'contexto_id' => 1,
+                'pdv_id' => 1,
+                'fecha_operativa' => '2026-08-01',
+                'abierto_en' => '2026-08-01 08:' . str_pad($index, 2, '0', STR_PAD_LEFT) . ':00',
+                'cerrado_en' => '2026-08-01 09:' . str_pad($index, 2, '0', STR_PAD_LEFT) . ':00',
+                'abierto_por' => $user->id,
+                'cerrado_por' => $user->id,
+                'estado' => TurnoOperativo::ESTADO_CERRADO,
+                'codigo' => 'AJAX-LIMIT-' . $index,
+            ));
+        }
+
+        app('request')->merge(array('pdv_id' => 1));
+        $model = (object)array('name_space' => 'App\\Tesoreria\\TesoMovimiento');
+        $field = $this->turnField(app(TurnoFormService::class)->decorate($model, null, 'create', array()));
+        $this->assertSame('input_lista_sugerencias', $field['tipo']);
+        $this->assertSame(array(), $field['opciones']);
+
+        $this->call('GET', '/turnos/operativos/sugerencias', array(
+            'modulo' => 'tesoreria', 'pdv_id' => 1, 'texto_busqueda' => 'AJAX-LIMIT-',
+        ));
+        $this->assertResponseOk();
+        $this->assertSame(20, substr_count($this->response->getContent(), 'data-registro_id='));
     }
 
     protected function authenticateCompanyUser()

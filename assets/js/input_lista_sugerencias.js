@@ -25,11 +25,11 @@ $(document).ready( function(){
 
 	  });
 
-	$(document).on('keyup', '.text_input_sugerencias', function(){
+	$(document).on('keyup', '.text_input_sugerencias', function(event){
 
 		crear_div_lista_sugerencias( $(this) );
 
-    	var codigo_tecla_presionada = event.which || event.keyCode;
+		var codigo_tecla_presionada = event.which || event.keyCode;
 
     	var item_activo = $("a.list-group-item.active");
 
@@ -71,33 +71,67 @@ $(document).ready( function(){
 			    	return false;
 			    }
 			    
-    			window[ejecutar_funcion_tecla_enter( item_activo, $(this) ) ];
+				ejecutar_funcion_tecla_enter( item_activo, $(this) );
     			
     			break;
 
-    		default :
-    			// Si no se presiona tecla especial, se muestra listado de sugerencias
+			default :
+				// Si no se presiona tecla especial, se muestra listado de sugerencias
+				var obj_input = $(this);
+				var hidden_input = obj_input.next('input[type="hidden"]');
+				var selected_label = obj_input.attr('data-selected-label') || '';
+				if (hidden_input.val() !== '' && obj_input.val() === selected_label) {
+					return false;
+				}
+				obj_input.removeAttr('data-registro_id');
+				hidden_input.val('');
+				obj_input.attr('data-selected-label', '');
 
-		    	// Si la longitud es menor a dos, todavía no busca
+				// Una búsqueda vacía no consulta el backend.
 			    if ( $(this).val() == '' )
 			    { 
-			    	//$('#lista_sugerencias').html('');
+					clearTimeout(obj_input.data('suggestions-timeout'));
+					var empty_request = obj_input.data('suggestions-request');
+					if (empty_request && empty_request.readyState !== 4) {
+						empty_request.abort();
+					}
 			    	$('#lista_sugerencias').remove();
 			    	return false;
 			    }
 
-			    $('#div_cargando').show();
-	    		var url = $(this).attr('data-url_busqueda');
+				clearTimeout(obj_input.data('suggestions-timeout'));
+				var previous_request = obj_input.data('suggestions-request');
+				if (previous_request && previous_request.readyState !== 4) {
+					previous_request.abort();
+				}
 
-				$.get( url, { texto_busqueda: $(this).val() } )
-					.done(function( data ) {
-			    		$('#div_cargando').hide();
-						// Se llena el DIV con las sugerencias que aroja la consulta
-		                $('#lista_sugerencias').show().html(data);
-		                
-		                $('a.list-group-item.active').focus();
+				obj_input.data('suggestions-timeout', setTimeout(function () {
+					$('#div_cargando').show();
+					var url = obj_input.attr('data-url_busqueda');
+					var parameters = { texto_busqueda: obj_input.val() };
+					var extra_fields = (obj_input.attr('data-ajax-fields') || '').split(',');
+					$.each(extra_fields, function(index, field_name) {
+						field_name = $.trim(field_name);
+						if (field_name === '') {
+							return;
+						}
+						var field = $('[name="' + field_name + '"]').first();
+						if (field.length) {
+							parameters[field_name] = field.val();
+						}
 					});
-    			break;
+
+					var request = $.get(url, parameters)
+						.done(function(data) {
+							$('#lista_sugerencias').show().html(data);
+							$('a.list-group-item.active').focus();
+						})
+						.always(function() {
+							$('#div_cargando').hide();
+						});
+					obj_input.data('suggestions-request', request);
+				}, 250));
+				break;
     	}	
 
 	});
@@ -122,11 +156,13 @@ $(document).ready( function(){
 
 
 
-    function seleccionar_sugerencia( item_sugerencia, obj_text_input )
+	function seleccionar_sugerencia( item_sugerencia, obj_text_input )
     {
 		// Asignar descripción e ID al TextInput
+		var selected_label = $.trim(item_sugerencia.text());
 		obj_text_input.attr( 'data-registro_id', item_sugerencia.attr( 'data-registro_id' ) );
-        obj_text_input.val( item_sugerencia.html() );
+		obj_text_input.val(selected_label);
+		obj_text_input.attr('data-selected-label', selected_label);
         obj_text_input.css( 'background-color','white' );
 
         $('#lista_sugerencias').remove();
@@ -134,8 +170,10 @@ $(document).ready( function(){
         // Siempre el input text debe llevar un campo hidden despues donde almacena el value del registro_id
         obj_text_input.next().val( obj_text_input.attr('data-registro_id') );
 
-		// Función propia de cada formulario de creación
-        window[ ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input ) ];
+		// Función propia de cada formulario de creación, cuando exista.
+        if (typeof ejecutar_acciones_con_item_sugerencia === 'function') {
+			ejecutar_acciones_con_item_sugerencia(item_sugerencia, obj_text_input);
+        }
 
     }
 
@@ -148,7 +186,14 @@ $(document).ready( function(){
 			// Se le asigna como atributo CLASS el atributo ID del text_input para validar su remoción
 			text_input_sugerencias.after('<div id="lista_sugerencias" class="' + text_input_sugerencias.attr('id') + '" style="position: absolute; z-index: 99999;"> </div>');
 		}
-	}	
+	}
+
+	$(document).on('change', '[name="pdv_id"]', function() {
+		$('.turno-operativo-ajax').each(function() {
+			$(this).val('').removeAttr('data-registro_id').attr('data-selected-label', '');
+			$(this).next('input[type="hidden"]').val('');
+		});
+	});
 	
 
 } );
