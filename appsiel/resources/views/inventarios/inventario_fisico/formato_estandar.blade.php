@@ -239,6 +239,8 @@
     </tr>
 </table>
 
+@include('core.turnos.reference', ['documento' => $doc_encabezado])
+
 <table class="subheader">
     <tr>
         <td width="55%">

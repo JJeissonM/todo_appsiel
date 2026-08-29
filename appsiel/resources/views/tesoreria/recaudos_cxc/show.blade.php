@@ -60,6 +60,7 @@
 		<div class="marco_formulario">
 
 			<br><br>
+			@include('core.turnos.reference', ['documento' => $doc_encabezado])
 
 			{!! $documento_vista !!}
 			

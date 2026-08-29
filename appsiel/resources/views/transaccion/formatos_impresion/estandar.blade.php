@@ -33,6 +33,9 @@
                             <td>{{ $doc_encabezado->fecha }}</td>
                         </tr>
                         <tr>
+                            <td colspan="2">@include('core.turnos.reference', ['documento' => $doc_encabezado])</td>
+                        </tr>
+                        <tr>
                             @yield('documento_datos_adicionales')
                         </tr>
                     </table>

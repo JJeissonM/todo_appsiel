@@ -27,6 +27,7 @@
 
 	</head>
 	<body id="app-layout">
+		@include('core.turnos.reference', ['documento' => $doc_encabezado])
 
 		<table class="table tabla_pdf">
 		    <tr>

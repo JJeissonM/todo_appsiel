@@ -18,6 +18,7 @@
         $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
     ?>
 <body>
+    @include('core.turnos.reference', ['documento' => $registro])
     
     <img src="{{ $url_img }}" style="max-height: 110px; width: 100%;" />
     <br>

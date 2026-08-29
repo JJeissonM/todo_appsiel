@@ -425,6 +425,7 @@ class FacturaPos extends Model
                 'vtas_pos_doc_encabezados.fecha',
                 'vtas_pos_doc_encabezados.fecha_vencimiento',
                 'vtas_pos_doc_encabezados.pdv_id',
+                'vtas_pos_doc_encabezados.turno_operativo_id',
                 'vtas_pos_doc_encabezados.descripcion',
                 'vtas_pos_doc_encabezados.estado',
                 'vtas_pos_doc_encabezados.creado_por',

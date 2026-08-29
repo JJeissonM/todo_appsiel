@@ -394,6 +394,7 @@ class InvDocEncabezado extends Model
                                 'inv_doc_encabezados.core_tercero_id',
                                 'inv_doc_encabezados.core_tipo_transaccion_id',
                                 'inv_doc_encabezados.core_tipo_doc_app_id',
+                                'inv_doc_encabezados.turno_operativo_id',
                                 'inv_doc_encabezados.consecutivo',
                                 DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS fecha'),
                                 'inv_doc_encabezados.descripcion',

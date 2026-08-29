@@ -121,6 +121,7 @@
     <link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
 </head>
 <body>
+    @include('core.turnos.reference', ['documento' => $registro])
 <div class="col-md-12">
     <div class="container-fluid">
         <div class="marco_formulario">

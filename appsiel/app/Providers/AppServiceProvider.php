@@ -35,6 +35,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Core\Services\TurnoModeResolver::class, function () {
             return new \App\Core\Services\TurnoModeResolver();
         });
+        $this->app->singleton(\App\Core\Services\TurnoPresentationService::class, function () {
+            return new \App\Core\Services\TurnoPresentationService();
+        });
 
         if ($this->app->environment() !== 'production')
         {

@@ -74,6 +74,9 @@
             <tr>
                 <td><b>Fecha:</b> {{ $doc_encabezado->fecha }}</td>
             </tr>
+            <tr>
+                <td>@include('core.turnos.reference', ['documento' => $doc_encabezado])</td>
+            </tr>
             
 
             @yield('fila_datos_adicionales')

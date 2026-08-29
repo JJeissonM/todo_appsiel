@@ -16,6 +16,7 @@ use App\Core\Tercero;
     @include( 'core.dis_formatos.plantillas.estiloestandar2', [ 'vista' => 'imprimir' ] )
 </head>
 <body>
+    @include('core.turnos.reference', ['documento' => $doc_encabezado])
     <table class="encabezado" width="100%">
         <tr>
             <td width="70%" rowspan="2">

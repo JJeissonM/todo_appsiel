@@ -18,6 +18,7 @@ use App\Core\Tercero;
 </head>
 
 <body>
+    @include('core.turnos.reference', ['documento' => $doc_encabezado])
 
 <table class="encabezado" width="100%">
     <tr>

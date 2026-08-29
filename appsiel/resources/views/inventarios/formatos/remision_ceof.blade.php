@@ -19,6 +19,7 @@
     </style>
 </head>
 <body>
+    @include('core.turnos.reference', ['documento' => $doc_encabezado])
     <div style="position: absolute; left: 40mm; top: 69mm;">
         <b>{{ $doc_encabezado->tercero_nombre_completo }} 
         

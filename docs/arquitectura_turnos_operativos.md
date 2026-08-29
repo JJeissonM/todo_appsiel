@@ -210,6 +210,19 @@ errores web vuelven al formulario con un mensaje funcional y los errores AJAX
 responden `422`. Los derivados técnicos no se declaran como selección manual y
 heredan el turno del origen.
 
+### Trazabilidad visible en documentos
+
+Las vistas `show` y los formatos de impresión de los módulos integrados muestran
+el turno cuando `turno_operativo_id` tiene valor. El bloque común presenta código,
+fecha operativa, contexto/PDV y estado; si la FK es nula no genera contenido, para
+conservar sin cambios la presentación histórica tradicional. La resolución visual
+usa exclusivamente la FK persistida y nunca intenta reconstruir el turno por fecha.
+
+Ventas, POS, Facturación Electrónica, Inventarios y Tesorería reutilizan el mismo
+componente en sus formatos comunes y heredados. En el pedido hotelero se muestra
+además el turno de cada cargo, porque sus líneas pueden pertenecer legítimamente a
+turnos distintos sin que una facturación posterior reescriba esa historia.
+
 ## Matriz de módulos
 
 | Módulo | Estado | Alcance actual |

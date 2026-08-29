@@ -72,6 +72,7 @@
                 </td>
                 <td>
                     <b>Fecha:</b> <div id="lbl_fecha" style="display: inline;">{{$datos_factura->lbl_fecha}}</div>&nbsp;<div id="lbl_hora" style="display: inline;">{{$datos_factura->lbl_hora}}</div>
+                    @include('core.turnos.reference', ['documento' => $doc_encabezado])
                     
                     <div id="lbl_creado_por_fecha_y_hora" style="text-align: right; font-size: 1.1em; font-weight: 600;">{{$datos_factura->lbl_creado_por_fecha_y_hora}}</div>
                 </td>

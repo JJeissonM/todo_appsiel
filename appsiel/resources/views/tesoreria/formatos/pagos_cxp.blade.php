@@ -23,6 +23,7 @@
     </style>
 </head>
 <body>
+    @include('core.turnos.reference', ['documento' => $doc_encabezado])
     <div class="table-responsive">
         <table class="table table-bordered">
             <tr>

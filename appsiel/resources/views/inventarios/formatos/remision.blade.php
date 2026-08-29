@@ -59,6 +59,7 @@
 </head>
 
 <body>
+    @include('core.turnos.reference', ['documento' => $doc_encabezado])
     <table class="table">
         <tr>
             <td style="/*border: solid 1px #ddd;*/ border: none;" width="60%" colspan="3">

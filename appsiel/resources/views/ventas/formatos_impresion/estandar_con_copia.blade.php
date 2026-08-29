@@ -69,6 +69,7 @@
 </head>
 
 <body>
+    @include('core.turnos.reference', ['documento' => $doc_encabezado])
     @include('ventas.incluir.documento_anulado_watermark')
 
     <?php 

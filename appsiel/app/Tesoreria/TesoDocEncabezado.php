@@ -191,6 +191,7 @@ class TesoDocEncabezado extends Model
                                 'teso_doc_encabezados.core_tercero_id',
                                 'teso_doc_encabezados.core_tipo_transaccion_id',
                                 'teso_doc_encabezados.core_tipo_doc_app_id',
+                                'teso_doc_encabezados.turno_operativo_id',
                                 'teso_doc_encabezados.consecutivo',
                                 'teso_doc_encabezados.teso_caja_id',
                                 'teso_doc_encabezados.fecha',

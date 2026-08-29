@@ -8,6 +8,7 @@
     </style>
 </head>
 <body>
+    @include('core.turnos.reference', ['documento' => $doc_encabezado])
 
     <table>
         <tr>

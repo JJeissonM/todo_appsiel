@@ -18,6 +18,7 @@ use App\Core\Tercero;
 </head>
 
 <body>
+    @include('core.turnos.reference', ['documento' => $doc_encabezado])
 
     @include('ventas.formatos_impresion.colegio_banner_con_escudo')
     <hr>

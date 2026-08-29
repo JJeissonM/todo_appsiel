@@ -29,6 +29,8 @@
                                         <br/>
                                         <b>Fecha:</b> {{ $doc_encabezado['fecha'] }}
 
+                                        @include('core.turnos.reference', ['documento' => $registro])
+
                                         @yield('datos_adicionales_encabezado')
 
                                     </div>

@@ -836,7 +836,8 @@ class InventarioController extends TransaccionController
             
             default:
                 // No se especifica formato de impresión 
-                $view = View::make('inventarios.pdf', compact('datos_encabezado_doc', 'descripcion_transaccion', 'productos', 'elaboro') )->render();
+                $doc_encabezado = $encabezado_doc;
+                $view = View::make('inventarios.pdf', compact('datos_encabezado_doc', 'descripcion_transaccion', 'productos', 'elaboro', 'doc_encabezado') )->render();
                 break;
         }
 

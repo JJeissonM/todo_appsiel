@@ -583,6 +583,7 @@ class VtasDocEncabezado extends Model
                 $campo_inv_bodega_id,
                 'vtas_doc_encabezados.core_tipo_transaccion_id',
                 'vtas_doc_encabezados.core_tipo_doc_app_id',
+                'vtas_doc_encabezados.turno_operativo_id',
                 'vtas_doc_encabezados.consecutivo',
                 'vtas_doc_encabezados.valor_total',
                 DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS fecha'),

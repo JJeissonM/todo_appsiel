@@ -78,7 +78,7 @@
 			                    <br/>
 			                    <b>Fecha:</b> {{ date_format(date_create($doc_encabezado->fecha),"d-m-Y") }}
 			                    <br/>
-			                    <b>Estado:</b> {{ $doc_encabezado->estado }}
+				                    <b>Estado:</b> {{ $doc_encabezado->estado }}
 								@if( isset($doc_encabezado->sincronizado_bot) && $doc_encabezado->sincronizado_bot )
 									(Sinc. DIAN
 									@if(isset($doc_registros))
@@ -95,7 +95,9 @@
 									@endif
 								@endif
 
-			                    @yield('datos_adicionales_encabezado')
+							@include('core.turnos.reference', ['documento' => $doc_encabezado])
+
+				                    @yield('datos_adicionales_encabezado')
 			                    
 			                </div>
 			                @if( $doc_encabezado->estado == 'Anulado' )

@@ -22,6 +22,7 @@
     </style>
 </head>
 <body onload="window.print()">
+    @include('core.turnos.reference', ['documento' => $doc_encabezado])
     <?php        
         $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
 

@@ -42,6 +42,8 @@ use App\Core\Tercero;
     </table>
     <hr>
 
+    @include('core.turnos.reference', ['documento' => $doc_encabezado])
+
     @if($doc_encabezado->documento_transaccion_descripcion == "Órden de Compra")
     <table class="info">
         <tr>

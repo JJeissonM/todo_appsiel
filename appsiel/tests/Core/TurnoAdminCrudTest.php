@@ -8,10 +8,12 @@ use App\Core\Services\TurnoModeResolver;
 use App\Core\TurnoConfiguracion;
 use App\Core\TurnoOperativo;
 use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\TesoDocEncabezado;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
 
 class TurnoAdminCrudTest extends TestCase
 {
@@ -397,6 +399,39 @@ class TurnoAdminCrudTest extends TestCase
         ));
         $this->assertResponseOk();
         $this->assertSame(20, substr_count($this->response->getContent(), 'data-registro_id='));
+    }
+
+    public function test_referencia_visual_muestra_turno_persistido_y_oculta_fk_nula()
+    {
+        $user = $this->authenticateCompanyUser();
+        DB::table('core_turnos_operativos')->where('core_empresa_id', 1)
+            ->where('estado', TurnoOperativo::ESTADO_ABIERTO)
+            ->update(array('estado' => TurnoOperativo::ESTADO_CERRADO, 'cerrado_en' => '2026-08-28 07:59:59'));
+        DB::table('vtas_pos_puntos_de_ventas')->where('id', 1)->update(array('estado' => 'Cerrado'));
+        app(TurnoConfigurationService::class)->configure(array(
+            'core_empresa_id' => 1, 'modulo' => 'tesoreria', 'contexto_tipo' => 'pdv',
+            'contexto_id' => 1, 'modo' => TurnoConfiguracion::MODO_TURNOS,
+        ));
+        $turn = app(TurnoManager::class)->openContext(
+            1, 'tesoreria', 'pdv', 1, '2026-08-29', $user->id, 0, '2026-08-29 08:00:00'
+        );
+        $document = TesoDocEncabezado::where('core_empresa_id', 1)->first();
+        $this->assertNotNull($document);
+        DB::table('teso_doc_encabezados')->where('id', $document->id)
+            ->update(array('turno_operativo_id' => $turn->id));
+
+        // Simula las proyecciones históricas de impresión que no seleccionaban la FK.
+        $projected = TesoDocEncabezado::select('id', 'core_empresa_id')->find($document->id);
+        $html = View::make('core.turnos.reference', array('documento' => $projected))->render();
+        $this->assertContains('Turno operativo:', $html);
+        $this->assertContains($turn->codigo, $html);
+        $this->assertContains('Fecha operativa:', $html);
+        $this->assertContains('PDV 1', $html);
+
+        DB::table('teso_doc_encabezados')->where('id', $document->id)
+            ->update(array('turno_operativo_id' => null));
+        $withoutTurn = TesoDocEncabezado::select('id', 'core_empresa_id')->find($document->id);
+        $this->assertSame('', trim(View::make('core.turnos.reference', array('documento' => $withoutTurn))->render()));
     }
 
     protected function authenticateCompanyUser()

@@ -17,6 +17,7 @@
         $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
     ?>
 <body>
+    @include('core.turnos.reference', ['documento' => $registro])
         <div class="headdocp" style="width: 100%">
             <b style="font-size: 1.2em; text-align: center; display: block;">{{ $doc_encabezado['titulo'] }}</b>
             <br/>
