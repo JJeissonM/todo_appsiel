@@ -64,6 +64,7 @@ class ModeloController extends Controller
     */
     public function index()
     {
+        $this->authorizeModelCrud('index');
         $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, 'Listado');
 
         $encabezado_tabla = app($this->modelo->name_space)->encabezado_tabla;
@@ -163,6 +164,7 @@ class ModeloController extends Controller
     // FORMULARIO PARA CREAR UN NUEVO REGISTRO
     public function create()
     {
+        $this->authorizeModelCrud('create');
         // Se obtienen los campos que el Modelo tiene asignados
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
 
@@ -361,6 +363,7 @@ class ModeloController extends Controller
     // FORMULARIO PARA EDITAR UN REGISTRO
     public function edit($id)
     {
+        $this->authorizeModelCrud('edit');
         // Se obtiene el registro a modificar del modelo
         $registro = app($this->modelo->name_space)->find($id);
         
@@ -521,6 +524,7 @@ class ModeloController extends Controller
     // VISTA TIPO TABLA PARA MOSTRAR UN REGISTRO
     public function show($id)
     {
+        $this->authorizeModelCrud('show');
         // Se obtiene el registro del modelo indicado y el anterior y siguiente registro
         $registro = app($this->modelo->name_space)->find($id);
 
@@ -615,6 +619,18 @@ class ModeloController extends Controller
         }
 
         return view($vista, $datos_vista);
+    }
+
+    protected function authorizeModelCrud($action)
+    {
+        if (is_null($this->modelo)) {
+            return;
+        }
+        $instance = app($this->modelo->name_space);
+        if (method_exists($instance, 'authorizeCrudAction')
+            && !$instance->authorizeCrudAction($action, auth()->user())) {
+            abort(403, 'No tiene permiso para acceder a este catálogo administrativo.');
+        }
     }
 
 

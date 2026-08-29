@@ -8,6 +8,9 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use App\Core\Exceptions\TurnoIntegrityException;
+use App\Core\Exceptions\TurnoRequiredException;
+use App\Core\Exceptions\TurnoStateException;
 
 class Handler extends ExceptionHandler
 {
@@ -21,6 +24,9 @@ class Handler extends ExceptionHandler
         HttpException::class,
         ModelNotFoundException::class,
         ValidationException::class,
+        TurnoIntegrityException::class,
+        TurnoRequiredException::class,
+        TurnoStateException::class,
     ];
 
     /**
@@ -45,6 +51,16 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
+        if ($e instanceof TurnoIntegrityException || $e instanceof TurnoRequiredException || $e instanceof TurnoStateException) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(array(
+                    'error' => 'turno_operativo_invalido',
+                    'message' => $e->getMessage(),
+                ), 422);
+            }
+            return redirect()->back()->withInput()->with('mensaje_error', $e->getMessage());
+        }
+
         if($this->isHttpException($e))
         {
             switch ($e->getStatusCode()) 

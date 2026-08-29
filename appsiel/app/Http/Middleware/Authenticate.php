@@ -144,7 +144,10 @@ class Authenticate
 
         }
 
-        if( $request->method() == 'POST' )
+        // Las escrituras ya fueron autorizadas arriba con url_id/url_id_modelo.
+        // No deben volver a pasar por la validación GET usando el parámetro {id}
+        // de la ruta como si fuera el ID de la aplicación.
+        if (in_array($request->method(), array('POST', 'PUT', 'PATCH', 'DELETE'), true))
         {
             return $next($request);
         }

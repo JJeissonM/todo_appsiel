@@ -16,20 +16,25 @@ Producción, Nómina o restaurante autónomo.
 
 ## Activación controlada
 
-1. Configurar por `TurnoConfigurationService` el contexto exacto `pdv:PDV_ID`.
-2. Activar sólo los módulos que participarán. Para POS compuesto revisar al menos
+1. Ejecutar `TurnosAdminCrudSeeder` una sola vez para registrar catálogos y permisos.
+2. En **Configuración > Configuración de turnos operativos**, crear el alcance exacto
+   `pdv:PDV_ID`. La pantalla usa internamente `TurnoConfigurationService`; revisar
+   las advertencias mostradas antes de continuar.
+3. Activar sólo los módulos que participarán. Para POS compuesto revisar al menos
    Ventas POS, Ventas, Inventarios, Tesorería y Facturación Electrónica; añadir Hotel
    sólo si el PDV ejecutará esos flujos.
-3. Revisar y aceptar deliberadamente cualquier advertencia de grupo mixto.
-4. Abrir el primer turno con usuario identificado, fecha operativa y saldo inicial.
-5. Ejecutar una venta controlada y verificar FK en documento, inventario, tesorería
+4. Revisar y aceptar deliberadamente cualquier advertencia de grupo mixto.
+5. Abrir el primer turno con usuario identificado, fecha operativa y saldo inicial.
+6. Ejecutar una venta controlada. El formulario debe mostrar el turno abierto; si
+   existe uno solo quedará preseleccionado. Verificar FK en documento, inventario, tesorería
    y FE. Si aplica hotel, ejecutar cargo, recaudo y factura como eventos separados.
-6. Confirmar que no existan registros nuevos sin FK mediante el diagnóstico JSON.
-7. Cerrar el turno, generar arqueo por su FK y comparar ventas, inventario, caja y
+7. Confirmar que no existan registros nuevos sin FK mediante el diagnóstico JSON.
+8. Cerrar el turno, generar arqueo por su FK y comparar ventas, inventario, caja y
    eventos. No combinar rangos de otros turnos de la misma fecha.
-8. Revisar en orden `APERTURA` y `CIERRE`, con usuario, estados y timestamps. Probar
+9. Revisar los catálogos **Turnos operativos** y **Auditoría de turnos**. Confirmar
+   `APERTURA` y `CIERRE`, con usuario, estados y timestamps. Probar
    auditoría o reapertura sólo con autorización y motivo.
-9. Revisar el log por `turnos.assignment_failed` y resolver cualquier ocurrencia
+10. Revisar el log por `turnos.assignment_failed` y resolver cualquier ocurrencia
    antes de ampliar el alcance.
 
 ## Retorno a TRADICIONAL

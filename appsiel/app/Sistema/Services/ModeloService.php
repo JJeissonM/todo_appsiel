@@ -147,7 +147,8 @@ class ModeloService
         // Ajustar los valores según la acción
         $lista_campos = $this->ajustar_valores_lista_campos_segun_accion($lista_campos, $registro, $modelo, $accion);
 
-        return $lista_campos;
+        return app(\App\Core\Services\TurnoFormService::class)
+            ->decorate($modelo, $registro, $accion, $lista_campos);
     }
 
     public function ajustar_valores_lista_campos( $lista_campos )

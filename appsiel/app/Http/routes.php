@@ -88,6 +88,10 @@ Route::post('creacion_masiva_registros_store', 'Core\ConfiguracionController@cre
 
 
 Route::resource('configuracion', 'Core\ConfiguracionController');
+Route::post('turnos/configuraciones', 'Core\TurnoConfiguracionController@store');
+Route::put('turnos/configuraciones/{id}', 'Core\TurnoConfiguracionController@update');
+Route::patch('turnos/configuraciones/{id}', 'Core\TurnoConfiguracionController@update');
+Route::get('turnos/configuraciones/{id}/eliminar', 'Core\TurnoConfiguracionController@destroy');
 
 
 

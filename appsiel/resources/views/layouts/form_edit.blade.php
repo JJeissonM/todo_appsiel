@@ -19,7 +19,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
 		<?php
 			if (count($form_create['campos']) > 0) {
-				$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
+				$url = htmlspecialchars(request()->headers->get('referer', url('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))));
 				echo '<div class="row" style="margin: 5px;">' . Form::bsButtonsForm($url) . '</div>';
 			} else {
 				echo "<p>El modelo no tiene campos asociados.</p>";

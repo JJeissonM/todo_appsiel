@@ -66,6 +66,9 @@ class TurnoAssignmentResolver
             $this->lastSource = 'EXPLICIT_FK';
             $turno = TurnoOperativo::find((int)$model->turno_operativo_id);
             $this->validateIdentity($turno, $empresaId, $descriptor);
+            if (!is_null($originTurn) && (int)$originTurn->id !== (int)$turno->id) {
+                throw new TurnoIntegrityException('El turno explícito de la operación contradice el turno persistido en su documento origen.');
+            }
             if ($turno->estaAbierto() || $this->isAuthorizedHistorical($turno, $originTurn) || $this->modelAllowsHistoricalAssignment($model)) {
                 return $model->turno_operativo_id;
             }

@@ -36,6 +36,38 @@ return array(
         ),
     ),
 
+    // Sólo estos modelos representan una nueva operación que puede recibir un
+    // turno explícito desde el formulario. Los derivados técnicos conservan el
+    // turno de su origen y por eso no aparecen aquí.
+    'manual_assignment_models' => array(
+        'App\\VentasPos\\FacturaPos' => 'ventas_pos',
+        'App\\Ventas\\VtasDocEncabezado' => 'ventas',
+        'App\\Ventas\\VtasPedido' => 'ventas',
+        'App\\Ventas\\VtasCotizacion' => 'ventas',
+        'App\\Ventas\\VtasFacturaMedica' => 'ventas',
+        'App\\Ventas\\NotaCreditoDirecta' => 'ventas',
+        'App\\Matriculas\\FacturaEstudiante' => 'ventas',
+        'App\\FacturacionElectronica\\Factura' => 'facturacion_electronica',
+        'App\\FacturacionElectronica\\FacturaContingencia' => 'facturacion_electronica',
+        'App\\Inventarios\\InvDocEncabezado' => 'inventarios',
+        'App\\Inventarios\\InvFisico' => 'inventarios',
+        'App\\Inventarios\\InvMovimiento' => 'inventarios',
+        'App\\Inventarios\\InvEntradaAlmacen' => 'inventarios',
+        'App\\Inventarios\\InvSalidaAlmacen' => 'inventarios',
+        'App\\Inventarios\\InvTransferenciaMercancia' => 'inventarios',
+        'App\\Inventarios\\InvFabricacion' => 'inventarios',
+        'App\\Inventarios\\InvAjuste' => 'inventarios',
+        'App\\Tesoreria\\TesoDocEncabezadoRecaudo' => 'tesoreria',
+        'App\\Tesoreria\\TesoDocEncabezadoPago' => 'tesoreria',
+        'App\\Tesoreria\\TesoDocEncabezadoPagoCxp' => 'tesoreria',
+        'App\\Tesoreria\\TesoDocEncabezadoRecaudoCxc' => 'tesoreria',
+        'App\\Tesoreria\\TesoDocEncabezadoTraslado' => 'tesoreria',
+        'App\\Tesoreria\\ComprobanteEgreso' => 'tesoreria',
+        'App\\Tesoreria\\ReciboCaja' => 'tesoreria',
+        'App\\Tesoreria\\TesoMovimiento' => 'tesoreria',
+        'App\\Hotel\\HotelOrderHeader' => 'hotel',
+    ),
+
     // Fuentes revisadas por el diagnóstico previo al piloto. Si una tabla no
     // conserva el contexto directamente, el conteo se reporta a nivel empresa.
     'diagnostic_sources' => array(

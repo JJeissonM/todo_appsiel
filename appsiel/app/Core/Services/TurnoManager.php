@@ -265,6 +265,9 @@ class TurnoManager
 
             $createdAt = $movement->getAttribute('created_at');
             $movement->setAttribute('turno_operativo_id', $lockedTurn->id);
+            if (method_exists($movement, 'authorizeTurnoAssignmentMutation')) {
+                $movement->authorizeTurnoAssignmentMutation();
+            }
             $manager->context->runFromOrigin($lockedTurn, 'turno_ajuste', $lockedTurn->id, function () use ($movement) {
                 $movement->save();
             });

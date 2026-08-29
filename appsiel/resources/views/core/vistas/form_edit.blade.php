@@ -14,7 +14,7 @@
 			  	if (isset($url_cancelar)) {
 					$url = $url_cancelar;
 				}else{
-					$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
+					$url = htmlspecialchars(request()->headers->get('referer', url('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))));
 				}
 			  	echo '<div class="row" style="margin: 5px;">'.Form::bsButtonsForm($url).'</div>';
 			  }else{

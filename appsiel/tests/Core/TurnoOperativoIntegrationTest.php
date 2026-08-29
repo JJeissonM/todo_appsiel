@@ -263,6 +263,24 @@ class TurnoOperativoIntegrationTest extends TestCase
         });
     }
 
+    public function test_turno_explicito_no_puede_contradecir_documento_origen_persistido()
+    {
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
+        $manager = app(TurnoManager::class);
+        $first = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 920053), 3);
+        $origin = $this->posInvoice(920053);
+        $manager->closeFromLegacy($this->closing('2026-08-22', '2026-08-22 10:00:00', 920053), 3);
+        $second = $manager->openFromLegacy($this->opening('2026-08-22', '2026-08-22 11:00:00', 920054), 3);
+        app(TurnoContext::class)->clear();
+
+        $derived = $this->newStandardInvoice(920055);
+        $derived->ventas_doc_relacionado_id = $origin->id;
+        $derived->turno_operativo_id = $second->id;
+
+        $this->setExpectedException(TurnoIntegrityException::class, 'documento origen');
+        $derived->save();
+    }
+
     public function test_sobre_diferido_conserva_turno_cerrado_en_reintentos()
     {
         $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);

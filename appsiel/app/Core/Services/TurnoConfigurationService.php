@@ -7,6 +7,7 @@ use App\Core\TurnoConfiguracion;
 use App\Core\TurnoOperativo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
 
 class TurnoConfigurationService
 {
@@ -46,6 +47,31 @@ class TurnoConfigurationService
         });
 
         return $result;
+    }
+
+    public function remove(TurnoConfiguracion $configuration, $userId = null)
+    {
+        $service = $this;
+        return DB::transaction(function () use ($configuration, $userId, $service) {
+            $service->lockCompany((int)$configuration->core_empresa_id);
+            $locked = TurnoConfiguracion::where('id', (int)$configuration->id)->lockForUpdate()->first();
+            if (is_null($locked)) {
+                return false;
+            }
+            $service->assertCanDelete($locked, true);
+            $snapshot = $locked->getAttributes();
+            $locked->delete();
+            $service->resolver->clearCache();
+            Log::info('turnos.configuration_deleted', array(
+                'empresa_id' => (int)$snapshot['core_empresa_id'],
+                'modulo' => $snapshot['modulo'],
+                'contexto_tipo' => $snapshot['contexto_tipo'],
+                'contexto_id' => (int)$snapshot['contexto_id'],
+                'modo' => $snapshot['modo'],
+                'usuario_id' => is_null($userId) ? null : (int)$userId,
+            ));
+            return true;
+        });
     }
 
     public function validateShape(array $data)

@@ -75,6 +75,14 @@ class DatabaseSeeder extends Seeder
                 'tables' => ['vtas_pos_puntos_de_ventas', 'sys_modelos', 'sys_campos', 'sys_modelo_tiene_campos'],
             ],
             [
+                'class' => TurnosAdminCrudSeeder::class,
+                'tables' => [
+                    'core_turno_configuraciones', 'core_turnos_operativos', 'core_turno_eventos',
+                    'sys_modelos', 'sys_campos', 'sys_modelo_tiene_campos',
+                    'sys_aplicaciones', 'permissions', 'roles', 'role_has_permissions',
+                ],
+            ],
+            [
                 'class' => AcademicInclusionFieldsSeeder::class,
                 'tables' => ['sys_modelos', 'sys_campos', 'sys_modelo_tiene_campos'],
             ],

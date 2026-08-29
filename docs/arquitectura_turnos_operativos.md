@@ -157,6 +157,47 @@ continúa tradicional. Un módulo marcado `integrated=false` no puede activarse 
 `TURNOS`. Para un flujo futuro basta declarar el módulo/grupo, añadir la FK y el
 trait/resolver, y propagar el contexto.
 
+### Catálogos administrativos
+
+El seeder `TurnosAdminCrudSeeder` registra en la aplicación **Configuración** tres
+catálogos basados en el CRUD genérico:
+
+- **Configuración de turnos operativos**: permite crear, modificar y eliminar
+  alcances. Las escrituras usan `TurnoConfigurationService`, están limitadas a la
+  empresa activa y exigen el permiso `turnos.configuraciones.gestionar`.
+- **Turnos operativos**: consulta de sólo lectura con el permiso
+  `turnos.operativos.consultar`. Abrir, cerrar, auditar o reabrir nunca se hace por
+  CRUD; continúa siendo responsabilidad de `TurnoManager` y de los flujos POS.
+- **Auditoría de turnos**: consulta inmutable de `core_turno_eventos` con el permiso
+  `turnos.eventos.consultar`.
+
+El seeder es idempotente y concede los permisos a `SuperAdmin` y `Administrador`.
+Puede ejecutarse aisladamente después de las migraciones:
+
+```bash
+composer dump-autoload
+php artisan db:seed --class=TurnosAdminCrudSeeder
+```
+
+La identidad del alcance (empresa, módulo y contexto) queda bloqueada al editar;
+para cambiarla se crea otro alcance. Desactivar o eliminar sigue siendo rechazado
+si cambia el modo efectivo de un turno abierto o de una apertura tradicional.
+
+### Selector de turno en transacciones
+
+`TurnoFormService` extiende los campos del CRUD genérico sin agregar el campo a
+instalaciones tradicionales. En `create`, sólo los modelos declarados en
+`turnos.manual_assignment_models` muestran turnos abiertos de la empresa para los
+que el módulo tiene modo efectivo `TURNOS`. En `edit`, el turno persistido se muestra
+deshabilitado e inmutable.
+
+El selector es una ayuda de captura, no la garantía de integridad: al guardar,
+`HasTurnoOperativo` y `TurnoAssignmentResolver` vuelven a validar empresa, contexto,
+estado y origen. Un turno de otro PDV, cerrado o contradictorio con el documento
+origen se rechaza. Los errores web vuelven al formulario con un mensaje funcional y
+los errores AJAX responden `422`. Los derivados técnicos no se declaran como
+selección manual y heredan el turno del origen.
+
 ## Matriz de módulos
 
 | Módulo | Estado | Alcance actual |
