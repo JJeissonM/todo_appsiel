@@ -191,12 +191,20 @@ instalaciones tradicionales. En `create`, sólo los modelos declarados en
 que el módulo tiene modo efectivo `TURNOS`. En `edit`, el turno persistido se muestra
 deshabilitado e inmutable.
 
+Los usuarios con `turnos.ajustes.registrar` también pueden seleccionar turnos
+`CERRADO` o `AUDITADO` al crear una corrección. En ese caso el formulario exige
+`turno_ajuste_motivo`, conserva el `created_at` real de la nueva operación y genera
+un evento `AJUSTE_POSTERIOR` con usuario, motivo y entidad afectada. El permiso se
+concede inicialmente sólo a `SuperAdmin` y `Administrador`. Los perfiles de caja
+no ven históricos y reciben automáticamente el único turno abierto de su PDV.
+
 El selector es una ayuda de captura, no la garantía de integridad: al guardar,
 `HasTurnoOperativo` y `TurnoAssignmentResolver` vuelven a validar empresa, contexto,
-estado y origen. Un turno de otro PDV, cerrado o contradictorio con el documento
-origen se rechaza. Los errores web vuelven al formulario con un mensaje funcional y
-los errores AJAX responden `422`. Los derivados técnicos no se declaran como
-selección manual y heredan el turno del origen.
+estado y origen. Un turno de otro PDV o contradictorio con el documento origen se
+rechaza; un turno cerrado sólo se acepta mediante el flujo explícito de ajuste. Los
+errores web vuelven al formulario con un mensaje funcional y los errores AJAX
+responden `422`. Los derivados técnicos no se declaran como selección manual y
+heredan el turno del origen.
 
 ## Matriz de módulos
 

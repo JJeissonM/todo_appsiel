@@ -21,6 +21,7 @@ class TurnosAdminCrudSeeder extends Seeder
                 $this->seedFields($modelId, $definition['fields']);
                 $this->seedPermission($modelId, $definition['permission']);
             }
+            $this->seedAdjustmentPermission();
         });
     }
 
@@ -239,6 +240,34 @@ class TurnosAdminCrudSeeder extends Seeder
         $permission->orden = $definition['order'];
         $permission->enabled = 0;
         $permission->fa_icon = $definition['icon'];
+        $permission->save();
+
+        foreach (array('SuperAdmin', 'Administrador') as $roleName) {
+            $role = Role::firstOrCreate(array('name' => $roleName));
+            $exists = DB::table('role_has_permissions')
+                ->where('role_id', $role->id)->where('permission_id', $permission->id)->exists();
+            if (!$exists) {
+                $role->givePermissionTo($permission);
+            }
+        }
+    }
+
+    protected function seedAdjustmentPermission()
+    {
+        $appId = (int)DB::table('sys_aplicaciones')->where('descripcion', 'Configuración')->value('id');
+        if ($appId === 0) {
+            $appId = (int)DB::table('sys_aplicaciones')->where('descripcion', 'Configuracion')->value('id');
+        }
+        $permission = Permission::firstOrNew(array('name' => 'turnos.ajustes.registrar'));
+        $permission->core_app_id = $appId ?: 7;
+        $permission->modelo_id = (int)DB::table('sys_modelos')
+            ->where('name_space', 'App\\Core\\TurnoOperativo')->value('id');
+        $permission->descripcion = 'Registrar ajustes sobre turnos cerrados';
+        $permission->url = '';
+        $permission->parent = 0;
+        $permission->orden = 87;
+        $permission->enabled = 0;
+        $permission->fa_icon = 'wrench';
         $permission->save();
 
         foreach (array('SuperAdmin', 'Administrador') as $roleName) {

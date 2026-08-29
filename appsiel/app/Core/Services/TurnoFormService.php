@@ -42,6 +42,7 @@ class TurnoFormService
         $isEdit = $accion === 'edit';
         $allowsManualCreate = isset($manualModels[$modelo->name_space]);
         $selectionLocked = !$isEdit && $this->selectionLockedForCurrentUser();
+        $allowsClosedAdjustment = !$isEdit && !$selectionLocked && $this->canRegisterAdjustment();
 
         if (!$isEdit && (!$allowsManualCreate || !$this->hasTurnosScope($empresaId, $module))) {
             return $campos;
@@ -50,11 +51,18 @@ class TurnoFormService
             return $campos;
         }
 
-        $options = $this->options($empresaId, $module, $persistedTurnId, $isEdit);
+        $options = $this->options($empresaId, $module, $persistedTurnId, $isEdit, $allowsClosedAdjustment);
         if ($selectionLocked) {
             $options = $this->lockedOptionsForRequest($options, $empresaId, $module);
         }
         $value = $persistedTurnId > 0 ? $persistedTurnId : $this->singleOptionValue($options);
+        if ($persistedTurnId <= 0 && $allowsClosedAdjustment) {
+            // Los históricos quedan disponibles, pero el valor predeterminado debe
+            // seguir siendo el único turno abierto para evitar ajustes accidentales.
+            $value = $this->singleOptionValue(
+                $this->options($empresaId, $module, 0, false, false)
+            );
+        }
         $field = array(
             'tipo' => 'select',
             'name' => 'turno_operativo_id',
@@ -74,14 +82,43 @@ class TurnoFormService
             'unico' => 0,
         );
 
+        $fieldReplaced = false;
         foreach ($campos as $key => $campo) {
             if (isset($campo['name']) && $campo['name'] === 'turno_operativo_id') {
                 $campos[$key] = array_merge($campo, $field);
-                return $campos;
+                $fieldReplaced = true;
+                break;
             }
         }
-        $campos[] = $field;
+        if (!$fieldReplaced) {
+            $campos[] = $field;
+        }
+
+        if ($allowsClosedAdjustment) {
+            $campos[] = $this->adjustmentReasonField();
+        }
         return $campos;
+    }
+
+    protected function canRegisterAdjustment()
+    {
+        return Auth::check() && Auth::user()->can('turnos.ajustes.registrar');
+    }
+
+    protected function adjustmentReasonField()
+    {
+        return array(
+            'tipo' => 'bsTextArea',
+            'name' => 'turno_ajuste_motivo',
+            'descripcion' => 'Motivo de ajuste sobre turno cerrado',
+            'opciones' => array(),
+            'value' => null,
+            'atributos' => array('class' => 'form-control', 'rows' => 2),
+            'definicion' => 'Obligatorio únicamente cuando se selecciona un turno CERRADO o AUDITADO.',
+            'requerido' => 0,
+            'editable' => 1,
+            'unico' => 0,
+        );
     }
 
     protected function selectionLockedForCurrentUser()
@@ -140,12 +177,18 @@ class TurnoFormService
             ->exists();
     }
 
-    protected function options($empresaId, $module, $persistedTurnId, $isEdit)
+    protected function options($empresaId, $module, $persistedTurnId, $isEdit, $includeHistorical = false)
     {
         $options = array('' => 'Seleccione un turno operativo');
         $query = TurnoOperativo::where('core_empresa_id', $empresaId);
         if ($isEdit && $persistedTurnId > 0) {
             $query->where('id', $persistedTurnId);
+        } elseif ($includeHistorical) {
+            $query->whereIn('estado', array(
+                TurnoOperativo::ESTADO_ABIERTO,
+                TurnoOperativo::ESTADO_CERRADO,
+                TurnoOperativo::ESTADO_AUDITADO,
+            ));
         } else {
             $query->abiertos();
         }

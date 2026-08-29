@@ -11,6 +11,7 @@ use App\Tesoreria\TesoMovimiento;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TurnoAdminCrudTest extends TestCase
 {
@@ -39,10 +40,11 @@ class TurnoAdminCrudTest extends TestCase
                 ->where('core_modelo_id', $models[0]->id)->count());
         }
 
-        $this->assertSame(3, DB::table('permissions')->whereIn('name', array(
+        $this->assertSame(4, DB::table('permissions')->whereIn('name', array(
             'turnos.configuraciones.gestionar',
             'turnos.operativos.consultar',
             'turnos.eventos.consultar',
+            'turnos.ajustes.registrar',
         ))->count());
 
         $configurationModelId = (int)DB::table('sys_modelos')
@@ -55,6 +57,18 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertSame('select', $configurationContextField->tipo);
         $this->assertSame('bsText', $turnContextField->tipo);
         $this->assertNotSame((int)$configurationContextField->id, (int)$turnContextField->id);
+
+        foreach ((array)config('turnos.manual_assignment_models', array()) as $class => $module) {
+            $instance = new $class();
+            if (Schema::hasTable($instance->getTable())
+                && Schema::hasColumn($instance->getTable(), 'turno_operativo_id')) {
+                $this->assertContains(
+                    'turno_operativo_id',
+                    $instance->getFillable(),
+                    $class . ' debe aceptar la FK explícita del turno desde el formulario.'
+                );
+            }
+        }
     }
 
     public function test_formulario_configuracion_muestra_label_de_empresa_y_tipo_de_contexto_select()
@@ -257,6 +271,76 @@ class TurnoAdminCrudTest extends TestCase
 
         $this->setExpectedException(TurnoIntegrityException::class, 'inmutable');
         $movement->save();
+    }
+
+    public function test_administrador_puede_registrar_ajuste_motivado_sobre_turno_cerrado()
+    {
+        (new TurnosAdminCrudSeeder())->run();
+        $user = $this->authenticateCompanyUser();
+        $this->assertTrue($user->can('turnos.ajustes.registrar'));
+        DB::table('core_turnos_operativos')->where('core_empresa_id', 1)
+            ->where('estado', TurnoOperativo::ESTADO_ABIERTO)
+            ->update(array('estado' => TurnoOperativo::ESTADO_CERRADO, 'cerrado_en' => '2026-08-28 07:59:59'));
+        DB::table('vtas_pos_puntos_de_ventas')->where('id', 1)->update(array('estado' => 'Cerrado'));
+        app(TurnoConfigurationService::class)->configure(array(
+            'core_empresa_id' => 1, 'modulo' => 'tesoreria', 'contexto_tipo' => 'pdv',
+            'contexto_id' => 1, 'modo' => TurnoConfiguracion::MODO_TURNOS,
+        ));
+        $manager = app(TurnoManager::class);
+        $turn = $manager->openContext(
+            1, 'tesoreria', 'pdv', 1, '2026-08-28', $user->id, 0, '2026-08-28 08:00:00'
+        );
+        $manager->close($turn, $user->id, 0, 'Cierre de prueba', '2026-08-28 18:00:00');
+
+        app('request')->merge(array('pdv_id' => 1, 'turno_ajuste_motivo' => ''));
+        $model = (object)array('name_space' => 'App\\Tesoreria\\TesoMovimiento');
+        $fields = app(TurnoFormService::class)->decorate($model, null, 'create', array());
+        $this->assertArrayHasKey($turn->id, $this->turnField($fields)['opciones']);
+        $this->assertNotNull($this->fieldNamed($fields, 'turno_ajuste_motivo'));
+
+        app('request')->merge(array('pdv_id' => 999999, 'turno_ajuste_motivo' => 'Corrección inválida'));
+        $wrongContextHeader = new \App\Tesoreria\TesoDocEncabezadoPago(array(
+            'core_empresa_id' => 1, 'turno_operativo_id' => $turn->id,
+        ));
+        try {
+            app(\App\Core\Services\TurnoAssignmentResolver::class)
+                ->assign($wrongContextHeader, 'tesoreria');
+            $this->fail('Debió rechazarse el turno de otro PDV en el encabezado de Tesorería.');
+        } catch (TurnoIntegrityException $e) {
+            $this->assertContains('otro contexto', $e->getMessage());
+        }
+
+        $attributes = array(
+            'fecha' => '2026-08-29', 'core_empresa_id' => 1, 'core_tercero_id' => 1,
+            'core_tipo_transaccion_id' => 47, 'core_tipo_doc_app_id' => 45,
+            'consecutivo' => 998878, 'turno_operativo_id' => $turn->id,
+            'teso_medio_recaudo_id' => 1, 'teso_motivo_id' => 1,
+            'teso_caja_id' => 1, 'pdv_id' => 1, 'valor_movimiento' => 10,
+            'descripcion' => 'Corrección posterior', 'estado' => 'Activo',
+        );
+        app('request')->merge(array('pdv_id' => 1, 'turno_ajuste_motivo' => ''));
+        try {
+            TesoMovimiento::create($attributes);
+            $this->fail('Debió exigir motivo para usar un turno cerrado.');
+        } catch (TurnoIntegrityException $e) {
+            $this->assertContains('motivo del ajuste', $e->getMessage());
+        }
+
+        app('request')->merge(array(
+            'pdv_id' => 1,
+            'turno_ajuste_motivo' => 'Corrección autorizada de pago omitido',
+        ));
+        $movement = TesoMovimiento::create($attributes);
+
+        $this->assertSame((int)$turn->id, (int)$movement->turno_operativo_id);
+        $this->seeInDatabase('core_turno_eventos', array(
+            'turno_operativo_id' => $turn->id,
+            'tipo' => 'AJUSTE_POSTERIOR',
+            'entidad_tipo' => TesoMovimiento::class,
+            'entidad_id' => $movement->id,
+            'usuario_id' => $user->id,
+            'motivo' => 'Corrección autorizada de pago omitido',
+        ));
     }
 
     protected function authenticateCompanyUser()

@@ -148,7 +148,12 @@ class TurnoAssignmentResolver
         if (!is_null($contextType) && (int)$contextId > 0) {
             return array('type' => (string)$contextType, 'id' => (int)$contextId);
         }
-        $pdvId = (int)($contextId ?: $model->getAttribute('pdv_id'));
+        // Algunos encabezados heredados (p. ej. Tesorería) no tienen columna
+        // pdv_id aunque su formulario sí captura el PDV. El request completa el
+        // descriptor sólo durante esa operación; jobs y derivados deben seguir
+        // usando atributos persistidos, TurnoContext u origen.
+        $requestPdvId = request() ? (int)request()->input('pdv_id') : 0;
+        $pdvId = (int)($contextId ?: $model->getAttribute('pdv_id') ?: $requestPdvId);
         return $pdvId > 0 ? array('type' => 'pdv', 'id' => $pdvId) : null;
     }
 
