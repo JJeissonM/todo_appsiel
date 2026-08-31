@@ -6,10 +6,14 @@ use App\Core\Services\TurnoFormService;
 use App\Core\Services\TurnoManager;
 use App\Core\Services\TurnoModeResolver;
 use App\Core\TurnoConfiguracion;
+use App\Core\TurnoEvento;
 use App\Core\TurnoOperativo;
+use App\Core\Empresa;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoDocEncabezado;
 use App\User;
+use App\VentasPos\Pdv;
+use App\VentasPos\Services\FacturaPosService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -19,10 +23,37 @@ class TurnoAdminCrudTest extends TestCase
 {
     use DatabaseTransactions;
 
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->isolateTurnState();
+    }
+
     protected function tearDown()
     {
         app(TurnoModeResolver::class)->clearCache();
         parent::tearDown();
+    }
+
+    protected function isolateTurnState()
+    {
+        if (Schema::hasTable('core_turno_configuraciones')) {
+            DB::table('core_turno_configuraciones')->where('core_empresa_id', 1)->delete();
+        }
+        if (Schema::hasTable('core_turnos_operativos')) {
+            DB::table('core_turnos_operativos')->where('core_empresa_id', 1)
+                ->where('estado', TurnoOperativo::ESTADO_ABIERTO)
+                ->update(array(
+                    'estado' => TurnoOperativo::ESTADO_CERRADO,
+                    'cerrado_en' => DB::raw('COALESCE(cerrado_en, NOW())'),
+                    'clave_contexto_abierto' => null,
+                ));
+        }
+        if (Schema::hasTable('vtas_pos_puntos_de_ventas')) {
+            DB::table('vtas_pos_puntos_de_ventas')->where('core_empresa_id', 1)
+                ->update(array('estado' => 'Cerrado'));
+        }
+        app(TurnoModeResolver::class)->clearCache();
     }
 
     public function test_seeder_registra_catalogos_campos_y_permisos_de_forma_idempotente()
@@ -361,6 +392,19 @@ class TurnoAdminCrudTest extends TestCase
             'usuario_id' => $user->id,
             'motivo' => 'Corrección autorizada de pago omitido',
         ));
+
+        $listedAdjustment = null;
+        foreach (TurnoEvento::consultar_registros(100, $turn->codigo) as $event) {
+            if ($event->campo3 === 'Ajuste posterior' && (string)$event->campo8 === 'Corrección autorizada de pago omitido') {
+                $listedAdjustment = $event;
+                break;
+            }
+        }
+        $this->assertNotNull($listedAdjustment);
+        $this->assertNotEmpty((string)$listedAdjustment->campo2);
+        $this->assertNotSame('—', $listedAdjustment->campo6);
+
+        $this->assertGreaterThan(0, TurnoEvento::consultar_registros(100, 'Ajuste posterior')->count());
     }
 
     public function test_busqueda_ajax_de_turnos_es_limitada_y_no_serializa_el_historico_en_el_formulario()
@@ -432,6 +476,23 @@ class TurnoAdminCrudTest extends TestCase
             ->update(array('turno_operativo_id' => null));
         $withoutTurn = TesoDocEncabezado::select('id', 'core_empresa_id')->find($document->id);
         $this->assertSame('', trim(View::make('core.turnos.reference', array('documento' => $withoutTurn))->render()));
+    }
+
+    public function test_plantilla_de_creacion_pos_renderiza_sin_documento_persistido()
+    {
+        $empresa = Empresa::find(1);
+        $pdv = Pdv::where('core_empresa_id', 1)->first();
+
+        $this->assertNotNull($empresa);
+        $this->assertNotNull($pdv);
+
+        // La pantalla create todavía no tiene encabezado persistido. El turno se
+        // selecciona en el formulario y sólo se imprime después de guardar.
+        $pdv->plantilla_factura_pos_default = 'plantilla_factura_3';
+        $html = (new FacturaPosService())->generar_plantilla_factura($pdv, $empresa);
+
+        $this->assertContains('<html', $html);
+        $this->assertNotContains('Turno operativo:', $html);
     }
 
     protected function authenticateCompanyUser()

@@ -4,6 +4,7 @@ namespace App\Core;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TurnoEvento extends Model
 {
@@ -18,7 +19,8 @@ class TurnoEvento extends Model
 
     public $encabezado_tabla = array(
         '<i style="font-size: 20px;" class="fa fa-check-square-o"></i>',
-        'Turno', 'Evento', 'Estado anterior', 'Estado nuevo', 'Usuario', 'Motivo', 'Fecha'
+        'Turno', 'Fecha', 'Evento', 'Estado anterior', 'Estado nuevo',
+        'Usuario', 'Responsable del turno', 'Motivo'
     );
 
     public function turno()
@@ -40,13 +42,14 @@ class TurnoEvento extends Model
     {
         $query = static::baseQuery()->select(
             'core_turnos_operativos.codigo AS campo1',
-            'core_turno_eventos.tipo AS campo2',
-            'core_turno_eventos.estado_anterior AS campo3',
-            'core_turno_eventos.estado_nuevo AS campo4',
-            'users.name AS campo5',
-            'core_turno_eventos.motivo AS campo6',
-            'core_turno_eventos.created_at AS campo7',
-            'core_turno_eventos.id AS campo8'
+            'core_turno_eventos.created_at AS campo2',
+            DB::raw(static::eventTypeSql() . ' AS campo3'),
+            'core_turno_eventos.estado_anterior AS campo4',
+            'core_turno_eventos.estado_nuevo AS campo5',
+            DB::raw("COALESCE(NULLIF(users.name, ''), '—') AS campo6"),
+            DB::raw("COALESCE(NULLIF(" . static::responsibleSql() . ", ''), '—') AS campo7"),
+            DB::raw("COALESCE(NULLIF(core_turno_eventos.motivo, ''), '—') AS campo8"),
+            'core_turno_eventos.id AS campo9'
         );
         static::applySearch($query, $search);
         return $query->orderBy('core_turno_eventos.id', 'DESC')->paginate($nroRegistros);
@@ -56,12 +59,13 @@ class TurnoEvento extends Model
     {
         $query = static::baseQuery()->select(
             'core_turnos_operativos.codigo AS TURNO',
-            'core_turno_eventos.tipo AS EVENTO',
+            'core_turno_eventos.created_at AS FECHA_EVENTO',
+            DB::raw(static::eventTypeSql() . ' AS EVENTO'),
             'core_turno_eventos.estado_anterior AS ESTADO_ANTERIOR',
             'core_turno_eventos.estado_nuevo AS ESTADO_NUEVO',
-            'users.name AS USUARIO',
-            'core_turno_eventos.motivo AS MOTIVO',
-            'core_turno_eventos.created_at AS FECHA'
+            DB::raw("COALESCE(NULLIF(users.name, ''), '—') AS USUARIO_EJECUTOR"),
+            DB::raw("COALESCE(NULLIF(" . static::responsibleSql() . ", ''), '—') AS RESPONSABLE_TURNO"),
+            DB::raw("COALESCE(NULLIF(core_turno_eventos.motivo, ''), '—') AS MOTIVO")
         );
         static::applySearch($query, $search);
         return static::interpolate($query->orderBy('core_turno_eventos.id', 'DESC'));
@@ -93,11 +97,35 @@ class TurnoEvento extends Model
             $like = '%' . $search . '%';
             $inner->where('core_turnos_operativos.codigo', 'LIKE', $like)
                 ->orWhere('core_turno_eventos.tipo', 'LIKE', $like)
+                ->orWhere(DB::raw(static::eventTypeSql()), 'LIKE', $like)
                 ->orWhere('core_turno_eventos.estado_anterior', 'LIKE', $like)
                 ->orWhere('core_turno_eventos.estado_nuevo', 'LIKE', $like)
                 ->orWhere('users.name', 'LIKE', $like)
+                ->orWhere(DB::raw(static::responsibleSql()), 'LIKE', $like)
                 ->orWhere('core_turno_eventos.motivo', 'LIKE', $like);
         });
+    }
+
+    protected static function responsibleSql()
+    {
+        return "(SELECT turno_apertura.responsable
+            FROM vtas_pos_apertura_encabezados AS turno_apertura
+            WHERE turno_apertura.turno_operativo_id = core_turnos_operativos.id
+            ORDER BY turno_apertura.id DESC
+            LIMIT 1)";
+    }
+
+    protected static function eventTypeSql()
+    {
+        return "CASE core_turno_eventos.tipo
+            WHEN 'APERTURA' THEN 'Apertura'
+            WHEN 'CIERRE' THEN 'Cierre'
+            WHEN 'REAPERTURA' THEN 'Reapertura'
+            WHEN 'AJUSTE_POSTERIOR' THEN 'Ajuste posterior'
+            WHEN 'INICIO_AUDITORIA' THEN 'Inicio de auditoría'
+            WHEN 'FIN_AUDITORIA' THEN 'Finalización de auditoría'
+            ELSE core_turno_eventos.tipo
+        END";
     }
 
     protected static function interpolate($query)

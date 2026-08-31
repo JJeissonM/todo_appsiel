@@ -26,16 +26,44 @@ use App\VentasPos\CierreEncabezado;
 use App\VentasPos\FacturaPos;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TurnoOperativoIntegrationTest extends TestCase
 {
     use DatabaseTransactions;
+
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->isolateTurnState();
+    }
 
     protected function tearDown()
     {
         app(TurnoContext::class)->clear();
         app(TurnoModeResolver::class)->clearCache();
         parent::tearDown();
+    }
+
+    protected function isolateTurnState()
+    {
+        if (Schema::hasTable('core_turno_configuraciones')) {
+            DB::table('core_turno_configuraciones')->where('core_empresa_id', 1)->delete();
+        }
+        if (Schema::hasTable('core_turnos_operativos')) {
+            DB::table('core_turnos_operativos')->where('core_empresa_id', 1)
+                ->where('estado', TurnoOperativo::ESTADO_ABIERTO)
+                ->update(array(
+                    'estado' => TurnoOperativo::ESTADO_CERRADO,
+                    'cerrado_en' => DB::raw('COALESCE(cerrado_en, NOW())'),
+                    'clave_contexto_abierto' => null,
+                ));
+        }
+        if (Schema::hasTable('vtas_pos_puntos_de_ventas')) {
+            DB::table('vtas_pos_puntos_de_ventas')->where('core_empresa_id', 1)
+                ->update(array('estado' => 'Cerrado'));
+        }
+        app(TurnoModeResolver::class)->clearCache();
     }
 
     public function test_ciclo_transversal_turnos_cruce_medianoche_y_multiples_en_un_dia()
@@ -420,6 +448,8 @@ class TurnoOperativoIntegrationTest extends TestCase
             } catch (TurnoIntegrityException $e) {
                 $this->assertContains((string)$turno->id, $e->getMessage());
                 $this->assertContains('ABIERTO', $e->getMessage());
+                $this->assertContains('configuración efectiva', $e->getMessage());
+                $this->assertSame(1, substr_count($e->getMessage(), $turno->codigo));
             }
         }
 
@@ -436,6 +466,72 @@ class TurnoOperativoIntegrationTest extends TestCase
             'contexto_id' => 0, 'modo' => TurnoConfiguracion::MODO_TRADICIONAL,
         ));
         $this->assertSame(TurnoConfiguracion::MODO_TRADICIONAL, $result['configuration']->modo);
+    }
+
+    public function test_catalogos_muestran_contexto_usuarios_responsable_fecha_y_motivo()
+    {
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
+        $manager = app(TurnoManager::class);
+        $turno = $manager->openFromLegacy(
+            $this->opening('2026-08-22', '2026-08-22 08:00:00', 930101),
+            3
+        );
+        $manager->close($turno, 3, 100, 'Cierre verificado por QA', '2026-08-22 12:00:00');
+
+        $turnRow = null;
+        foreach (TurnoOperativo::consultar_registros(500, $turno->codigo) as $row) {
+            if ((int)$row->campo8 === (int)$turno->id) {
+                $turnRow = $row;
+                break;
+            }
+        }
+        $this->assertNotNull($turnRow);
+        $this->assertContains('Responsable QA', $turnRow->campo4);
+        $this->assertContains('Responsable QA', $turnRow->campo6);
+
+        $exportRows = DB::select(TurnoOperativo::sqlString($turno->codigo));
+        $this->assertNotEmpty($exportRows);
+        $this->assertContains('Responsable QA', $exportRows[0]->ABIERTO_POR);
+        $this->assertContains('Responsable QA', $exportRows[0]->CERRADO_POR);
+
+        $eventRow = null;
+        foreach (TurnoEvento::consultar_registros(500, $turno->codigo) as $row) {
+            if ($row->campo3 === 'Cierre') {
+                $eventRow = $row;
+                break;
+            }
+        }
+        $this->assertNotNull($eventRow);
+        $this->assertNotEmpty((string)$eventRow->campo2);
+        $this->assertNotSame('—', $eventRow->campo6);
+        $this->assertSame('Responsable QA', $eventRow->campo7);
+        $this->assertSame('Cierre verificado por QA', $eventRow->campo8);
+
+        $exportedClosure = null;
+        foreach (DB::select(TurnoEvento::sqlString($turno->codigo)) as $exportedEvent) {
+            if ($exportedEvent->EVENTO === 'Cierre') {
+                $exportedClosure = $exportedEvent;
+                break;
+            }
+        }
+        $this->assertNotNull($exportedClosure);
+        $this->assertNotSame('—', $exportedClosure->USUARIO_EJECUTOR);
+        $this->assertSame('Responsable QA', $exportedClosure->RESPONSABLE_TURNO);
+
+        $manager->reopen($turno, 'Reapertura visible para QA', 3);
+        $reopenRow = null;
+        foreach (TurnoEvento::consultar_registros(500, $turno->codigo) as $row) {
+            if ($row->campo3 === 'Reapertura') {
+                $reopenRow = $row;
+                break;
+            }
+        }
+        $this->assertNotNull($reopenRow);
+        $this->assertSame('CERRADO', $reopenRow->campo4);
+        $this->assertSame('ABIERTO', $reopenRow->campo5);
+        $this->assertNotSame('—', $reopenRow->campo6);
+        $this->assertSame('Responsable QA', $reopenRow->campo7);
+        $this->assertSame('Reapertura visible para QA', $reopenRow->campo8);
     }
 
     public function test_identidad_y_fecha_operativa_son_inmutables_durante_todo_el_ciclo()
@@ -668,6 +764,7 @@ class TurnoOperativoIntegrationTest extends TestCase
             'cajero_id' => 3,
             'pdv_id' => 1,
             'efectivo_base' => 50000,
+            'responsable' => 'Responsable QA',
             'detalle' => 'Apertura de prueba de turnos',
             'creado_por' => 'test@appsiel.com',
             'modificado_por' => 'test@appsiel.com',

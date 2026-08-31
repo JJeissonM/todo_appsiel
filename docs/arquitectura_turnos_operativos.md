@@ -171,6 +171,17 @@ catálogos basados en el CRUD genérico:
 - **Auditoría de turnos**: consulta inmutable de `core_turno_eventos` con el permiso
   `turnos.eventos.consultar`.
 
+Los listados no exponen el ID técnico del contexto como información principal. Para
+PDV concatenan el responsable operacional a los usuarios de apertura/cierre
+(`Usuario, Responsable`) cuando proviene de una apertura POS. En auditoría se
+mantienen separados **usuario ejecutor** y **responsable del turno**, porque pueden
+ser personas diferentes. La columna **Motivo** se conserva aunque
+esté vacía en apertura/cierre, porque es obligatoria para `REAPERTURA` y
+`AJUSTE_POSTERIOR`; los valores vacíos se presentan como `—`.
+En pantalla y exportaciones, los códigos internos se traducen a etiquetas legibles,
+por ejemplo **Reapertura**, **Ajuste posterior**, **Inicio de auditoría** y
+**Finalización de auditoría**.
+
 El seeder es idempotente y concede los permisos a `SuperAdmin` y `Administrador`.
 Puede ejecutarse aisladamente después de las migraciones:
 

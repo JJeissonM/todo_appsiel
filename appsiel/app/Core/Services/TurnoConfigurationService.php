@@ -169,6 +169,7 @@ class TurnoConfigurationService
             if ($hasCoreTurn) {
                 continue;
             }
+            $changes = array();
             foreach ($this->integratedModules() as $module) {
                 $current = $this->effectiveModeAt($empresaId, $module, 'pdv', $pdv->id);
                 $proposed = $this->effectiveModeAt(
@@ -176,9 +177,13 @@ class TurnoConfigurationService
                     is_null($ignored) ? null : $ignored->id
                 );
                 if ($current !== $proposed) {
-                    $errors[] = 'El PDV ' . $pdv->id . ' figura ABIERTO bajo el modelo tradicional e impide cambiar el modo efectivo de '
-                        . $module . ' de ' . $current . ' a ' . $proposed . '. Cierre primero la apertura tradicional.';
+                    $this->addModeChange($changes, $current, $proposed, $module);
                 }
+            }
+            foreach ($changes as $change) {
+                $errors[] = 'El PDV ' . $pdv->id . ' figura ABIERTO bajo el modelo tradicional e impide cambiar la configuración efectiva de '
+                    . $this->formatAffectedModules($change['modules']) . ' de ' . $change['current'] . ' a ' . $change['proposed']
+                    . '. Cierre primero la apertura tradicional.';
             }
         }
         return array_values(array_unique($errors));
@@ -204,6 +209,7 @@ class TurnoConfigurationService
 
         $errors = array();
         foreach ($turnos as $turno) {
+            $changes = array();
             foreach ($this->integratedModules() as $module) {
                 $current = $this->effectiveModeAt($empresaId, $module, $turno->contexto_tipo, $turno->contexto_id);
                 $proposed = $this->effectiveModeAt(
@@ -215,13 +221,38 @@ class TurnoConfigurationService
                     is_null($ignored) ? null : $ignored->id
                 );
                 if ($current !== $proposed) {
-                    $errors[] = 'El turno ' . $turno->id . ' (' . $turno->codigo . ') está ABIERTO para '
-                        . $turno->contexto_tipo . ' ' . $turno->contexto_id . ' e impide cambiar el modo efectivo de '
-                        . $module . ' de ' . $current . ' a ' . $proposed . '.';
+                    $this->addModeChange($changes, $current, $proposed, $module);
                 }
+            }
+            foreach ($changes as $change) {
+                $errors[] = 'El turno ' . $turno->id . ' (' . $turno->codigo . ') está ABIERTO para '
+                    . $turno->contexto_tipo . ' ' . $turno->contexto_id . ' e impide cambiar la configuración efectiva de '
+                    . $this->formatAffectedModules($change['modules']) . ' de ' . $change['current'] . ' a ' . $change['proposed'] . '.';
             }
         }
         return array_values(array_unique($errors));
+    }
+
+    protected function addModeChange(array &$changes, $current, $proposed, $module)
+    {
+        $key = $current . '>' . $proposed;
+        if (!isset($changes[$key])) {
+            $changes[$key] = array(
+                'current' => $current,
+                'proposed' => $proposed,
+                'modules' => array(),
+            );
+        }
+        $changes[$key]['modules'][] = $module;
+    }
+
+    protected function formatAffectedModules(array $modules)
+    {
+        $labels = array();
+        foreach (array_values(array_unique($modules)) as $module) {
+            $labels[] = str_replace('_', ' ', $module);
+        }
+        return (count($labels) === 1 ? 'el módulo ' : 'los módulos ') . implode(', ', $labels);
     }
 
     protected function integratedModules()

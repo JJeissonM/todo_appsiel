@@ -29,7 +29,8 @@ class TurnoOperativo extends Model
 
     public $encabezado_tabla = array(
         '<i style="font-size: 20px;" class="fa fa-check-square-o"></i>',
-        'Código', 'Fecha operativa', 'Contexto', 'ID contexto', 'Apertura', 'Cierre', 'Estado'
+        'Código', 'Fecha operativa', 'Apertura',
+        'Abierto por', 'Cierre', 'Cerrado por', 'Estado'
     );
 
     protected static function boot()
@@ -97,13 +98,20 @@ class TurnoOperativo extends Model
 
     public static function consultar_registros($nroRegistros, $search)
     {
-        $query = static::queryForCurrentCompany()->select(
+        $query = static::queryForCurrentCompany()
+            ->leftJoin('vtas_pos_puntos_de_ventas AS turno_contexto_pdv', function ($join) {
+                $join->on('turno_contexto_pdv.id', '=', 'core_turnos_operativos.contexto_id')
+                    ->on('turno_contexto_pdv.core_empresa_id', '=', 'core_turnos_operativos.core_empresa_id');
+            })
+            ->leftJoin('users AS turno_usuario_apertura', 'turno_usuario_apertura.id', '=', 'core_turnos_operativos.abierto_por')
+            ->leftJoin('users AS turno_usuario_cierre', 'turno_usuario_cierre.id', '=', 'core_turnos_operativos.cerrado_por')
+            ->select(
             'core_turnos_operativos.codigo AS campo1',
             'core_turnos_operativos.fecha_operativa AS campo2',
-            'core_turnos_operativos.contexto_tipo AS campo3',
-            'core_turnos_operativos.contexto_id AS campo4',
-            'core_turnos_operativos.abierto_en AS campo5',
-            'core_turnos_operativos.cerrado_en AS campo6',
+            'core_turnos_operativos.abierto_en AS campo3',
+            DB::raw(static::userWithResponsibleSql('turno_usuario_apertura') . ' AS campo4'),
+            'core_turnos_operativos.cerrado_en AS campo5',
+            DB::raw(static::userWithResponsibleSql('turno_usuario_cierre') . ' AS campo6'),
             'core_turnos_operativos.estado AS campo7',
             'core_turnos_operativos.id AS campo8'
         );
@@ -113,13 +121,21 @@ class TurnoOperativo extends Model
 
     public static function sqlString($search)
     {
-        $query = static::queryForCurrentCompany()->select(
+        $query = static::queryForCurrentCompany()
+            ->leftJoin('vtas_pos_puntos_de_ventas AS turno_contexto_pdv', function ($join) {
+                $join->on('turno_contexto_pdv.id', '=', 'core_turnos_operativos.contexto_id')
+                    ->on('turno_contexto_pdv.core_empresa_id', '=', 'core_turnos_operativos.core_empresa_id');
+            })
+            ->leftJoin('users AS turno_usuario_apertura', 'turno_usuario_apertura.id', '=', 'core_turnos_operativos.abierto_por')
+            ->leftJoin('users AS turno_usuario_cierre', 'turno_usuario_cierre.id', '=', 'core_turnos_operativos.cerrado_por')
+            ->select(
             'core_turnos_operativos.codigo AS CODIGO',
             'core_turnos_operativos.fecha_operativa AS FECHA_OPERATIVA',
-            'core_turnos_operativos.contexto_tipo AS CONTEXTO',
-            'core_turnos_operativos.contexto_id AS CONTEXTO_ID',
+            DB::raw(static::contextDescriptionSql() . ' AS CONTEXTO_OPERATIVO'),
             'core_turnos_operativos.abierto_en AS APERTURA',
+            DB::raw(static::userWithResponsibleSql('turno_usuario_apertura') . ' AS ABIERTO_POR'),
             'core_turnos_operativos.cerrado_en AS CIERRE',
+            DB::raw(static::userWithResponsibleSql('turno_usuario_cierre') . ' AS CERRADO_POR'),
             'core_turnos_operativos.estado AS ESTADO'
         );
         static::applySearch($query, $search);
@@ -163,8 +179,44 @@ class TurnoOperativo extends Model
                 ->orWhere('core_turnos_operativos.fecha_operativa', 'LIKE', $like)
                 ->orWhere('core_turnos_operativos.contexto_tipo', 'LIKE', $like)
                 ->orWhere('core_turnos_operativos.contexto_id', 'LIKE', $like)
+                ->orWhere('turno_contexto_pdv.descripcion', 'LIKE', $like)
+                ->orWhere('turno_usuario_apertura.name', 'LIKE', $like)
+                ->orWhere('turno_usuario_cierre.name', 'LIKE', $like)
+                ->orWhere(DB::raw(static::responsibleSql()), 'LIKE', $like)
                 ->orWhere('core_turnos_operativos.estado', 'LIKE', $like);
         });
+    }
+
+    protected static function contextDescriptionSql()
+    {
+        return "CASE
+            WHEN core_turnos_operativos.contexto_tipo = 'pdv' THEN
+                COALESCE(
+                    CONCAT('PDV ', turno_contexto_pdv.id, ' - ', turno_contexto_pdv.descripcion),
+                    CONCAT('PDV ', core_turnos_operativos.contexto_id, ' - No encontrado')
+                )
+            ELSE CONCAT(core_turnos_operativos.contexto_tipo, ' ', core_turnos_operativos.contexto_id)
+        END";
+    }
+
+    protected static function responsibleSql()
+    {
+        return "(SELECT turno_apertura.responsable
+            FROM vtas_pos_apertura_encabezados AS turno_apertura
+            WHERE turno_apertura.turno_operativo_id = core_turnos_operativos.id
+            ORDER BY turno_apertura.id DESC
+            LIMIT 1)";
+    }
+
+    protected static function userWithResponsibleSql($userAlias)
+    {
+        return "COALESCE(
+            NULLIF(
+                CONCAT_WS(', ', NULLIF(" . $userAlias . ".name, ''), NULLIF(" . static::responsibleSql() . ", '')),
+                ''
+            ),
+            '—'
+        )";
     }
 
     protected static function interpolate($query)
