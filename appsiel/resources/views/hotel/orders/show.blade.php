@@ -5,15 +5,6 @@
     <?php $form_create = array('campos' => array(array('tipo' => 'cliente_autocomplete'))); ?>
     <?php $roomBodegaId = $order->stay && $order->stay->room ? (int)$order->stay->room->inv_bodega_id : 0; ?>
     <?php $roomBodegaLabel = $order->stay && $order->stay->room && $order->stay->room->bodega ? $order->stay->room->bodega->descripcion : ''; ?>
-    <?php
-        $showOrderLineTurns = false;
-        foreach ($order->lines as $orderLine) {
-            if (!empty($orderLine->turno_operativo_id)) {
-                $showOrderLineTurns = true;
-                break;
-            }
-        }
-    ?>
     {{ Form::bsMigaPan($miga_pan) }}
     @include('layouts.mensajes')
 
@@ -72,7 +63,6 @@
                             <th>Cantidad</th>
                             <th>Vlr. Dcto. ($)</th>
                             <th>Impuesto</th>
-                            @if($showOrderLineTurns)<th>Turno</th>@endif
                             <th>Total</th>
                             <th>Acciones</th>
                         </tr>
@@ -100,7 +90,6 @@
                                 <td class="text-right">
                                     ${{ number_format($line->tax_value, 2, ',', '.') }}
                                 </td>
-                                @if($showOrderLineTurns)<td>@include('core.turnos.reference', ['documento' => $line, 'compacto' => true])</td>@endif
                                 <td class="text-right">
                                     ${{ number_format($line->line_total, 2, ',', '.') }}
                                 </td>
@@ -118,7 +107,7 @@
                             </tr>
                         @endforeach
                         <tr id="hotel_order_total_row">
-                            <th colspan="{{ $showOrderLineTurns ? 7 : 6 }}" class="text-right">Total</th>
+                            <th colspan="6" class="text-right">Total</th>
                             <th class="text-right">{{ number_format($total, 2, ',', '.') }}</th>
                             <th></th>
                         </tr>
