@@ -117,31 +117,33 @@ class CompraController extends TransaccionController
             $request->merge(['lineas_registros' => json_encode($lineas_registros_originales)]);
         }
 
-        // 1ro. Crear documento de ENTRADA de inventarios (REMISIÓN)
-        // WARNING. HECHO MANUALMENTE
-        $request['entrada_almacen_id'] = $this->crear_entrada_almacen($request);
+        $doc_encabezado = DB::transaction(function () use ($request, $lineas_registros_originales) {
+            // La FK seleccionada en la factura viaja intacta a la entrada de
+            // almacén y a sus movimientos. El resolver valida empresa, contexto
+            // y estado al crear cada encabezado.
+            $request['entrada_almacen_id'] = $this->crear_entrada_almacen($request);
 
-        // 2do. Crear encabezado del documento
-        $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
+            $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
+            $request['creado_por'] = Auth::user()->email;
 
-        // 3ro. Crear líneas de registros del documento
-        $request['creado_por'] = Auth::user()->email;
+            $total_documento = $this->get_total_documento_desde_lineas_registros($lineas_registros_originales);
+            $total_retenciones = $this->get_total_retenciones_desde_lineas_registros($lineas_registros_originales, $request->fecha, $request->proveedor_id);
+            $request['valor_total_retefuente'] = $total_retenciones;
 
-        $total_documento = $this->get_total_documento_desde_lineas_registros($lineas_registros_originales);
-        $total_retenciones = $this->get_total_retenciones_desde_lineas_registros($lineas_registros_originales, $request->fecha, $request->proveedor_id);
-        $request['valor_total_retefuente'] = $total_retenciones;
+            if ($total_retenciones != 0) {
+                $total_documento -= $total_retenciones;
+            }
 
-        if ($total_retenciones != 0) {
-            $total_documento -= $total_retenciones;
-        }
+            $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids($request->all()['lineas_registros_medios_recaudo'], $lineas_registros_originales, $total_documento, 'compras');
 
-        $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids($request->all()['lineas_registros_medios_recaudo'], $lineas_registros_originales, $total_documento, 'compras');
+            CompraController::crear_registros_documento($request, $doc_encabezado);
 
-        CompraController::crear_registros_documento($request, $doc_encabezado);
+            if ($total_retenciones != 0) {
+                (new ContabilidadService())->aplicar_retenciones_por_linea_compras($doc_encabezado);
+            }
 
-        if ($total_retenciones != 0) {
-            (new ContabilidadService())->aplicar_retenciones_por_linea_compras($doc_encabezado);
-        }
+            return $doc_encabezado;
+        });
 
         return redirect('compras/' . $doc_encabezado->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
     }

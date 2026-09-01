@@ -12,9 +12,12 @@ use App\Ventas\ResolucionFacturacion;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Traits\HasTurnoOperativo;
 
 class ComprasDocEncabezado extends Model
 {
+    use HasTurnoOperativo;
+
     //protected $table = 'compras_doc_encabezados';
     protected $fillable = [
         'core_tipo_transaccion_id',
@@ -40,8 +43,28 @@ class ComprasDocEncabezado extends Model
         'valor_total',
         'cufe',
         'sincronizado_bot',
+        'turno_operativo_id',
     ];
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Proveedor', 'Fact. Proveedor', 'Detalle', 'Valor total',  'Forma de pago', 'Estado'];
+
+    /**
+     * Compras aún es una integración parcial: el hecho que exige turno es la
+     * entrada de inventario originada por la factura. La compra conserva esa
+     * misma identidad para poder propagarla y reanudar procesos diferidos.
+     */
+    protected function turnoModuleName()
+    {
+        return 'inventarios';
+    }
+
+    /**
+     * La sincronización BOT sólo importa un documento pendiente; la operación
+     * de inventario sucede posteriormente al confirmarlo de forma explícita.
+     */
+    public function deferTurnoAssignment()
+    {
+        return (bool)$this->sincronizado_bot && empty($this->turno_operativo_id);
+    }
 
     public function tipo_transaccion()
     {

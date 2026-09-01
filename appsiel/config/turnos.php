@@ -57,6 +57,10 @@ return array(
         'App\\Inventarios\\InvTransferenciaMercancia' => 'inventarios',
         'App\\Inventarios\\InvFabricacion' => 'inventarios',
         'App\\Inventarios\\InvAjuste' => 'inventarios',
+        // La factura de compra origina una entrada de almacén. Mientras Compras
+        // continúa como integración parcial, ambos documentos comparten el
+        // alcance operativo de Inventarios y la misma FK de turno.
+        'App\\Compras\\ComprasDocEncabezado' => 'inventarios',
         'App\\Tesoreria\\TesoDocEncabezadoRecaudo' => 'tesoreria',
         'App\\Tesoreria\\TesoDocEncabezadoPago' => 'tesoreria',
         'App\\Tesoreria\\TesoDocEncabezadoPagoCxp' => 'tesoreria',
@@ -85,6 +89,7 @@ return array(
         array('module' => 'tesoreria', 'label' => 'Movimientos de tesorería', 'table' => 'teso_movimientos', 'company_column' => 'core_empresa_id', 'context_type' => 'pdv', 'context_column' => 'pdv_id'),
         array('module' => 'inventarios', 'label' => 'Documentos de inventario', 'table' => 'inv_doc_encabezados', 'company_column' => 'core_empresa_id'),
         array('module' => 'inventarios', 'label' => 'Movimientos de inventario', 'table' => 'inv_movimientos', 'company_column' => 'core_empresa_id'),
+        array('module' => 'inventarios', 'label' => 'Facturas de compras con efecto en inventario', 'table' => 'compras_doc_encabezados', 'company_column' => 'core_empresa_id'),
         array('module' => 'hotel', 'label' => 'Pedidos hoteleros', 'table' => 'hotel_order_headers', 'company_column' => 'empresa_id', 'context_type' => 'pdv', 'context_column' => 'pdv_id'),
         array('module' => 'hotel', 'label' => 'Cargos hoteleros', 'table' => 'hotel_order_lines', 'company_column' => 'empresa_id'),
     ),

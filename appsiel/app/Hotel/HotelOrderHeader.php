@@ -142,7 +142,7 @@ class HotelOrderHeader extends Model
                 DB::raw('CONCAT("#", hotel_stays.id) AS campo4'),
                 'hotel_rooms.room_number AS campo5',
                 'core_terceros.descripcion AS campo6',
-                DB::raw('CASE WHEN hotel_order_headers.invoice_type = "POS" AND hotel_order_headers.pos_doc_id IS NOT NULL THEN CONCAT(IFNULL(pos_tipo_doc.prefijo, ""), " ", IFNULL(pos_doc.consecutivo, hotel_order_headers.pos_doc_id), IF(IFNULL(pos_creator.name, "") <> "", CONCAT(", ", pos_creator.name), IF(IFNULL(pos_doc.creado_por, "") <> "", CONCAT(", ", pos_doc.creado_por), ""))) WHEN hotel_order_headers.invoice_type = "STANDARD" AND hotel_order_headers.sales_doc_id IS NOT NULL THEN CONCAT("Ventas ", IFNULL(sales_tipo_doc.prefijo, ""), " ", IFNULL(sales_doc.consecutivo, hotel_order_headers.sales_doc_id), IF(IFNULL(sales_creator.name, "") <> "", CONCAT(", ", sales_creator.name), IF(IFNULL(sales_doc.creado_por, "") <> "", CONCAT(", ", sales_doc.creado_por), ""))) ELSE "" END AS campo7'),
+                DB::raw('CASE WHEN hotel_order_headers.pos_doc_id IS NOT NULL AND hotel_order_headers.pos_doc_id > 0 THEN CONCAT(IFNULL(pos_tipo_doc.prefijo, ""), " ", IFNULL(pos_doc.consecutivo, hotel_order_headers.pos_doc_id), IF(IFNULL(pos_creator.name, "") <> "", CONCAT(", ", pos_creator.name), IF(IFNULL(pos_doc.creado_por, "") <> "", CONCAT(", ", pos_doc.creado_por), ""))) WHEN hotel_order_headers.sales_doc_id IS NOT NULL AND hotel_order_headers.sales_doc_id > 0 THEN CONCAT("Ventas ", IFNULL(sales_tipo_doc.prefijo, ""), " ", IFNULL(sales_doc.consecutivo, hotel_order_headers.sales_doc_id), IF(IFNULL(sales_creator.name, "") <> "", CONCAT(", ", sales_creator.name), IF(IFNULL(sales_doc.creado_por, "") <> "", CONCAT(", ", sales_doc.creado_por), ""))) ELSE "" END AS campo7'),
                 'hotel_order_headers.status AS campo8',
                 'hotel_order_headers.id AS campo9'
             )
@@ -161,7 +161,7 @@ class HotelOrderHeader extends Model
                 'core_terceros.descripcion AS CLIENTE',
                 'hotel_order_headers.order_date AS FECHA',
                 'hotel_order_headers.status AS ESTADO',
-                DB::raw('CASE WHEN hotel_order_headers.invoice_type = "POS" AND hotel_order_headers.pos_doc_id IS NOT NULL THEN CONCAT(IFNULL(pos_tipo_doc.prefijo, ""), " ", IFNULL(pos_doc.consecutivo, hotel_order_headers.pos_doc_id), IF(IFNULL(pos_creator.name, "") <> "", CONCAT(", ", pos_creator.name), IF(IFNULL(pos_doc.creado_por, "") <> "", CONCAT(", ", pos_doc.creado_por), ""))) WHEN hotel_order_headers.invoice_type = "STANDARD" AND hotel_order_headers.sales_doc_id IS NOT NULL THEN CONCAT("Ventas ", IFNULL(sales_tipo_doc.prefijo, ""), " ", IFNULL(sales_doc.consecutivo, hotel_order_headers.sales_doc_id), IF(IFNULL(sales_creator.name, "") <> "", CONCAT(", ", sales_creator.name), IF(IFNULL(sales_doc.creado_por, "") <> "", CONCAT(", ", sales_doc.creado_por), ""))) ELSE "" END AS FACTURA')
+                DB::raw('CASE WHEN hotel_order_headers.pos_doc_id IS NOT NULL AND hotel_order_headers.pos_doc_id > 0 THEN CONCAT(IFNULL(pos_tipo_doc.prefijo, ""), " ", IFNULL(pos_doc.consecutivo, hotel_order_headers.pos_doc_id), IF(IFNULL(pos_creator.name, "") <> "", CONCAT(", ", pos_creator.name), IF(IFNULL(pos_doc.creado_por, "") <> "", CONCAT(", ", pos_doc.creado_por), ""))) WHEN hotel_order_headers.sales_doc_id IS NOT NULL AND hotel_order_headers.sales_doc_id > 0 THEN CONCAT("Ventas ", IFNULL(sales_tipo_doc.prefijo, ""), " ", IFNULL(sales_doc.consecutivo, hotel_order_headers.sales_doc_id), IF(IFNULL(sales_creator.name, "") <> "", CONCAT(", ", sales_creator.name), IF(IFNULL(sales_doc.creado_por, "") <> "", CONCAT(", ", sales_doc.creado_por), ""))) ELSE "" END AS FACTURA')
             )
             ->toSql();
     }
@@ -199,7 +199,10 @@ class HotelOrderHeader extends Model
 
     public function invoiceLabel()
     {
-        if ($this->invoice_type == self::INVOICE_POS && !empty($this->pos_doc_id)) {
+        // Las FK son la fuente de verdad de la relación. invoice_type se conserva
+        // como dato descriptivo, pero no debe ocultar una factura ya vinculada si
+        // quedó vacío o desactualizado en un flujo histórico/derivado.
+        if (!empty($this->pos_doc_id)) {
             $doc = $this->posInvoice;
             if (is_null($doc)) {
                 $doc = FacturaPos::find($this->pos_doc_id);
@@ -213,7 +216,7 @@ class HotelOrderHeader extends Model
             return $this->pos_doc_id;
         }
 
-        if ($this->invoice_type == self::INVOICE_STANDARD && !empty($this->sales_doc_id)) {
+        if (!empty($this->sales_doc_id)) {
             $doc = $this->salesInvoice;
             if (is_null($doc)) {
                 $doc = VtasDocEncabezado::find($this->sales_doc_id);
@@ -290,7 +293,7 @@ class HotelOrderHeader extends Model
 
     public function invoiceUrl()
     {
-        if ($this->invoice_type == self::INVOICE_POS && !empty($this->pos_doc_id)) {
+        if (!empty($this->pos_doc_id)) {
             $doc = $this->posInvoice;
             if (is_null($doc)) {
                 $doc = FacturaPos::find($this->pos_doc_id);
@@ -306,7 +309,7 @@ class HotelOrderHeader extends Model
             return url('pos_factura/' . $this->pos_doc_id . '?id=20&id_modelo=230&id_transaccion=47');
         }
 
-        if ($this->invoice_type == self::INVOICE_STANDARD && !empty($this->sales_doc_id)) {
+        if (!empty($this->sales_doc_id)) {
             return url('ventas/' . $this->sales_doc_id . '?id=13&id_modelo=' . config('ventas.factura_ventas_modelo_id', 139) . '&id_transaccion=' . config('ventas.factura_ventas_tipo_transaccion_id', 23));
         }
 

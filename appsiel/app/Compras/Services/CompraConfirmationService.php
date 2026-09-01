@@ -11,6 +11,8 @@ use App\Http\Controllers\Compras\CompraController;
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvMotivo;
 use App\Tesoreria\TesoMovimiento;
+use App\Core\Services\TurnoAssignmentResolver;
+use App\Core\Services\TurnoContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -35,40 +37,60 @@ class CompraConfirmationService
             throw new \Exception('El documento ya tiene contabilizaciones o registros financieros generados. Revise el estado antes de confirmar.');
         }
 
-        DB::transaction(function () use ($documento, $registros_medio_pago) {
-            $documento->load([
-                'lineas_registros' => function ($query) {
-                    $query->where('estado', 'Activo');
-                },
-                'proveedor'
-            ]);
+        $operation = function () use ($documento, $registros_medio_pago) {
+            return DB::transaction(function () use ($documento, $registros_medio_pago) {
+                $documento->load([
+                    'lineas_registros' => function ($query) {
+                        $query->where('estado', 'Activo');
+                    },
+                    'proveedor'
+                ]);
 
-            $this->ensureLinesHaveMotives($documento);
+                $this->ensureLinesHaveMotives($documento);
 
-            $request = $this->buildRequestFromDocument($documento);
-            $request['registros_medio_pago'] = $registros_medio_pago;
+                $request = $this->buildRequestFromDocument($documento);
+                $request['registros_medio_pago'] = $registros_medio_pago;
 
-            if ($documento->forma_pago == 'contado' && empty($registros_medio_pago)) {
-                throw new \Exception('Debe ingresar un medio de pago para confirmar una factura de contado.');
-            }
+                if ($documento->forma_pago == 'contado' && empty($registros_medio_pago)) {
+                    throw new \Exception('Debe ingresar un medio de pago para confirmar una factura de contado.');
+                }
 
-            if (!$this->hasLinkedWarehouseEntryIds($documento)) {
-                $request['entrada_almacen_id'] = app(CompraController::class)->crear_entrada_almacen($request);
-                $documento->entrada_almacen_id = $request['entrada_almacen_id'];
-                $documento->save();
-            } else {
-                $this->ensureWarehouseEntriesExist($documento);
-            }
+                if (!$this->hasLinkedWarehouseEntryIds($documento)) {
+                    $request['entrada_almacen_id'] = app(CompraController::class)->crear_entrada_almacen($request);
+                    $documento->entrada_almacen_id = $request['entrada_almacen_id'];
+                    $documento->save();
+                } else {
+                    $this->ensureWarehouseEntriesExist($documento);
+                }
 
-            $this->markWarehouseEntriesAsBilled($documento->entrada_almacen_id);
-            $this->createPurchaseMovementsAndFinancialRecords($documento, $request->all());
+                $this->markWarehouseEntriesAsBilled($documento->entrada_almacen_id);
+                $this->createPurchaseMovementsAndFinancialRecords($documento, $request->all());
 
-            if ((float)$documento->lineas_registros->sum('valor_retencion') > 0) {
-                (new ContabilidadService())->aplicar_retenciones_por_linea_compras($documento);
-            }
+                if ((float)$documento->lineas_registros->sum('valor_retencion') > 0) {
+                    (new ContabilidadService())->aplicar_retenciones_por_linea_compras($documento);
+                }
 
-            $this->ensureAccountingIsBalanced($documento);
-        });
+                $this->ensureAccountingIsBalanced($documento);
+            });
+        };
+
+        if (!empty($documento->turno_operativo_id)) {
+            $turno = app(TurnoAssignmentResolver::class)->recoverFromOrigin(
+                get_class($documento),
+                (int)$documento->id
+            );
+
+            // Confirmar una compra importada o diferida es procesamiento técnico
+            // del hecho original: conserva su turno aunque éste ya haya cerrado.
+            return app(TurnoContext::class)->runFromOrigin(
+                $turno,
+                get_class($documento),
+                (int)$documento->id,
+                $operation
+            );
+        }
+
+        return $operation();
     }
 
     protected function buildRequestFromDocument(ComprasDocEncabezado $documento)
@@ -147,10 +169,11 @@ class CompraConfirmationService
             'clase_proveedor_id' => (int)$proveedor->clase_proveedor_id,
             'liquida_impuestos' => (int)$proveedor->liquida_impuestos,
             'inv_bodega_id' => $inv_bodega_id,
-            'creado_por' => Auth::user()->email,
+            'creado_por' => Auth::check() ? Auth::user()->email : $documento->creado_por,
             'estado' => 'Activo',
             'lineas_registros' => json_encode($lineas_registros),
-            'registros_medio_pago' => []
+            'registros_medio_pago' => [],
+            'turno_operativo_id' => $documento->turno_operativo_id
         ]);
     }
 

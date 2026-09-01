@@ -902,10 +902,35 @@ class ContratoTransporteController extends Controller
                 }
             }
         }
+        
+        $contratante = null;
+        if ($c->contratante_id != null) {
+            $contratante = $c->contratante;
+        }
+
+        $representante_legal_contratante = '';
+        if ( !is_null($contratante) )
+        {
+            $representante_legal_contratante = $contratante->tercero;
+            if ( $contratante->tercero->representante_legal() != null )
+            {
+                $representante_legal_contratante = $contratante->tercero->representante_legal();
+            }
+        } elseif ( !empty( trim( (string)$c->contratanteText ) ) ) {
+            $representante_legal_contratante = (object)[
+                'descripcion' => $c->contratanteText,
+                'numero_identificacion' => $c->contratanteIdentificacion,
+                'direccion1' => $c->contratanteDireccion,
+                'telefono1' => $c->contratanteTelefono,
+                'tipo' => 'Persona natural',
+                'digito_verificacion' => ''
+            ];
+        }
+
         $empresa = null;
         $empresa = Empresa::find(1);
         $url = route('cte_contratos.planillaverificar', $p->id);
-        $documento_vista =  View::make('contratos_transporte.contratos.print2', compact('p', 'url', 'conductores', 'v', 'c', 'fi', 'ff', 'to', 'empresa'))->render();
+        $documento_vista =  View::make('contratos_transporte.contratos.print2', compact('p', 'url', 'conductores', 'v', 'c', 'fi', 'ff', 'to', 'empresa','representante_legal_contratante'))->render();
 
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');

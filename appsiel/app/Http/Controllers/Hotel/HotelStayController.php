@@ -329,12 +329,24 @@ class HotelStayController extends Controller
             ->where('pos_doc_id', '>', 0)
             ->lists('pos_doc_id')
             ->toArray();
-        $dateFrom = substr((string)$stay->check_in_at, 0, 10);
-        $dateTo = !empty($stay->check_out_at) ? substr((string)$stay->check_out_at, 0, 10) : date('Y-m-d');
+        $checkInAt = (string)$stay->check_in_at;
+        $checkOutAt = !empty($stay->check_out_at) ? (string)$stay->check_out_at : date('Y-m-d H:i:s');
+        $legacyDateFrom = substr($checkInAt, 0, 10);
+        $legacyDateTo = substr($checkOutAt, 0, 10);
 
         $query = FacturaPos::where('core_empresa_id', $stay->empresa_id)
-            ->where('fecha', '>=', $dateFrom)
-            ->where('fecha', '<=', $dateTo)
+            // Una factura POS directa pertenece al huésped por el momento real
+            // en que fue creada durante la estadía. `fecha` puede representar la
+            // fecha operativa del turno y no es confiable al cruzar medianoche.
+            // El fallback conserva documentos históricos sin created_at.
+            ->where(function ($query) use ($checkInAt, $checkOutAt, $legacyDateFrom, $legacyDateTo) {
+                $query->whereBetween('created_at', array($checkInAt, $checkOutAt))
+                    ->orWhere(function ($legacyQuery) use ($legacyDateFrom, $legacyDateTo) {
+                        $legacyQuery->whereNull('created_at')
+                            ->where('fecha', '>=', $legacyDateFrom)
+                            ->where('fecha', '<=', $legacyDateTo);
+                    });
+            })
             ->where(function ($query) use ($clientIds, $terceroIds) {
                 if (count($clientIds) > 0) {
                     $query->whereIn('cliente_id', $clientIds);
