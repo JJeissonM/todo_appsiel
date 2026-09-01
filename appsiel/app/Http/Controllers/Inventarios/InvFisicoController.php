@@ -138,12 +138,16 @@ class InvFisicoController extends TransaccionController
         if ($shiftService->isEnabled()) {
             $turnoPdv = $this->buscarTurnoPdvDelUsuario($request);
             if (!is_null($turnoPdv)) {
-                // La fuente autoritativa es el turno POS, no el tiempo empleado
-                // por el usuario diligenciando el Inventario Fisico.
                 $request->merge([
+                    'fecha' => isset($turnoPdv['fecha_operativa']) ? $turnoPdv['fecha_operativa'] : $turnoPdv['fecha'],
                     'hora_inicio' => $turnoPdv['hora_inicio'],
                     'hora_finalizacion' => $turnoPdv['hora_finalizacion']
                 ]);
+            } elseif ((int)$request->input('turno_operativo_id') > 0) {
+                return redirect()->back()->withInput()->with(
+                    'mensaje_error',
+                    'El turno seleccionado no tiene un cierre válido o no corresponde a la empresa del Inventario Físico.'
+                );
             }
         }
 
@@ -170,16 +174,21 @@ class InvFisicoController extends TransaccionController
 
         $turno = $this->buscarTurnoPdvDelUsuario($request);
         if (is_null($turno)) {
+            $message = (int)$request->input('turno_operativo_id') > 0
+                ? 'El turno seleccionado no tiene un cierre válido o no corresponde a la empresa.'
+                : 'No se encontró un turno cerrado para esta fecha y bodega. Puede ingresar las horas manualmente en modo tradicional.';
             return response()->json([
                 'encontrado' => false,
-                'mensaje' => 'No se encontro un turno PDV cerrado para este usuario, fecha y bodega. Puede ingresar las horas manualmente.'
+                'mensaje' => $message
             ]);
         }
 
         return response()->json([
             'encontrado' => true,
             'turno' => $turno,
-            'mensaje' => 'Horas tomadas automaticamente de la apertura y cierre del PDV ' . $turno['pdv'] . '.'
+            'mensaje' => isset($turno['codigo_turno'])
+                ? 'Fecha y horas tomadas del turno operativo ' . $turno['codigo_turno'] . ' (' . $turno['pdv'] . ').'
+                : 'Horas tomadas automáticamente de la apertura y cierre histórico del PDV ' . $turno['pdv'] . '.'
         ]);
     }
 
@@ -190,7 +199,16 @@ class InvFisicoController extends TransaccionController
             return null;
         }
 
-        return (new InventoryPhysicalPdvShiftService())->findForUserWarehouseDate(
+        $service = new InventoryPhysicalPdvShiftService();
+        $turnId = (int)$request->input('turno_operativo_id');
+        if ($turnId > 0) {
+            return $service->findForTurn(
+                $user->empresa_id,
+                $turnId
+            );
+        }
+
+        return $service->findForUserWarehouseDate(
             $user->empresa_id,
             $user->id,
             $user->email,

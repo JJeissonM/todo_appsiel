@@ -15,6 +15,11 @@ use App\Core\Exceptions\TurnoRequiredException;
 use App\Core\Exceptions\TurnoStateException;
 use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelOrderLine;
+use App\Hotel\HotelRoom;
+use App\Hotel\HotelStay;
+use App\Hotel\Services\HotelService;
+use App\Inventarios\InvProducto;
+use App\Inventarios\Services\InventoryPhysicalPdvShiftService;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvDocEncabezado;
 use App\Tesoreria\TesoMovimiento;
@@ -373,6 +378,70 @@ class TurnoOperativoIntegrationTest extends TestCase
         $this->assertSame((int)$first->id, (int)$firstLine->turno_operativo_id);
         $this->assertSame((int)$second->id, (int)$secondLine->turno_operativo_id);
         $this->assertNotSame($firstLine->turno_operativo_id, $secondLine->turno_operativo_id);
+    }
+
+    public function test_stock_de_consumo_hotelero_se_resuelve_desde_bodega_minibar_de_habitacion()
+    {
+        $product = InvProducto::where('core_empresa_id', 1)
+            ->where('estado', 'Activo')
+            ->where('tipo', '<>', 'servicio')
+            ->first();
+        $warehouse = DB::table('inv_bodegas')->where('core_empresa_id', 1)->first();
+
+        $this->assertNotNull($product);
+        $this->assertNotNull($warehouse);
+
+        $room = new HotelRoom(array(
+            'empresa_id' => 1,
+            'room_number' => 'TEST-STOCK',
+            'room_type' => HotelRoom::TYPE_SENCILLA,
+            'inv_producto_id' => $product->id,
+            'inv_bodega_id' => $warehouse->id,
+        ));
+        $room->id = 987654;
+
+        $stay = new HotelStay(array('empresa_id' => 1, 'room_id' => $room->id));
+        $stay->setRelation('room', $room);
+
+        $order = new HotelOrderHeader(array('empresa_id' => 1, 'cliente_id' => 1));
+        $order->setRelation('stay', $stay);
+
+        $date = '2026-08-31';
+        $expectedStock = DB::table('inv_movimientos')
+            ->where('core_empresa_id', $order->empresa_id)
+            ->where('inv_bodega_id', $warehouse->id)
+            ->where('inv_producto_id', $product->id)
+            ->where('fecha', '<=', $date)
+            ->sum('cantidad');
+
+        $data = (new HotelService())->productDataForOrder($order, $product->id, $date);
+
+        $this->assertSame((int)$warehouse->id, (int)$data['bodega_id']);
+        $this->assertSame('HABITACION_MINIBAR', $data['fuente_bodega']);
+        $this->assertSame(round((float)$expectedStock, 2), (float)$data['stock']);
+    }
+
+    public function test_inventario_fisico_hereda_fecha_y_horas_del_turno_explicito()
+    {
+        $this->configure('inventarios', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
+        $manager = app(TurnoManager::class);
+        $turn = $manager->openContext(
+            1, 'inventarios', 'pdv', 1, '2026-08-30', 1, 0, '2026-08-30 22:00:00'
+        );
+        $manager->close($turn, 1, 0, 'Cierre para inventario físico', '2026-08-31 06:15:00');
+
+        // El turno aporta el rango temporal, pero no determina la bodega del
+        // documento de Inventario Físico.
+        $range = (new InventoryPhysicalPdvShiftService())->findForTurn(1, $turn->id);
+
+        $this->assertNotNull($range);
+        $this->assertSame((int)$turn->id, (int)$range['turno_operativo_id']);
+        $this->assertArrayNotHasKey('inv_bodega_id', $range);
+        $this->assertSame('TURNO_OPERATIVO', $range['fuente']);
+        $this->assertSame('2026-08-30', $range['fecha_operativa']);
+        $this->assertSame('22:00:00', $range['hora_inicio']);
+        $this->assertSame('06:15:00', $range['hora_finalizacion']);
+        $this->assertSame('2026-08-31 06:15:00', $range['fecha_hora_cierre']);
     }
 
     public function test_configuracion_advierte_modos_mixtos_e_impide_modulo_no_integrado()

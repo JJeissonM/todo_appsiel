@@ -5,6 +5,7 @@ namespace App\Core;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Core\Tercero;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class Empresa extends Model
@@ -61,6 +62,40 @@ class Empresa extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Opciones seguras para los campos empresa del CRUD genérico.
+     * Las transacciones siempre operan dentro de la empresa autenticada.
+     */
+    public static function opciones_campo_select()
+    {
+        $options = array('' => '');
+        if (!Auth::check()) {
+            return $options;
+        }
+
+        $empresa = self::find((int)Auth::user()->empresa_id);
+        if (is_null($empresa)) {
+            return $options;
+        }
+
+        $naturalName = trim(implode(' ', array_filter(array(
+            $empresa->nombre1,
+            $empresa->otros_nombres,
+            $empresa->apellido1,
+            $empresa->apellido2,
+        ))));
+        $label = trim((string)$empresa->razon_social);
+        if ($label === '') {
+            $label = $naturalName;
+        }
+        if ($label === '') {
+            $label = trim((string)$empresa->descripcion);
+        }
+
+        $options[$empresa->id] = $label === '' ? 'Empresa ' . $empresa->id : $label;
+        return $options;
     }
 
     public static function consultar_registros($nro_registros, $search)

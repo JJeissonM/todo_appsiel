@@ -14,6 +14,8 @@ use App\Tesoreria\TesoDocEncabezado;
 use App\User;
 use App\VentasPos\Pdv;
 use App\VentasPos\Services\FacturaPosService;
+use App\Sistema\Modelo;
+use App\Sistema\Services\ModeloService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -86,10 +88,17 @@ class TurnoAdminCrudTest extends TestCase
             ->where('name_space', 'App\\Core\\TurnoOperativo')->value('id');
         $configurationContextField = $this->relatedField($configurationModelId, 'contexto_tipo');
         $turnContextField = $this->relatedField($turnModelId, 'contexto_tipo');
+        $turnCompanyField = $this->relatedField($turnModelId, 'core_empresa_id');
+        $inventoryModelId = (int)DB::table('sys_modelos')
+            ->where('name_space', 'App\\Inventarios\\InvEntradaAlmacen')->value('id');
+        $inventoryCompanyField = $this->relatedField($inventoryModelId, 'core_empresa_id');
 
         $this->assertSame('select', $configurationContextField->tipo);
         $this->assertSame('bsText', $turnContextField->tipo);
         $this->assertNotSame((int)$configurationContextField->id, (int)$turnContextField->id);
+        $this->assertSame('bsLabel', $turnCompanyField->tipo);
+        $this->assertSame('Empresa del turno', $turnCompanyField->descripcion);
+        $this->assertNotSame((int)$inventoryCompanyField->id, (int)$turnCompanyField->id);
 
         foreach ((array)config('turnos.manual_assignment_models', array()) as $class => $module) {
             $instance = new $class();
@@ -102,6 +111,25 @@ class TurnoAdminCrudTest extends TestCase
                 );
             }
         }
+    }
+
+    public function test_transaccion_generica_carga_empresa_autenticada_en_el_selector()
+    {
+        $user = $this->authenticateCompanyUser();
+        $options = Empresa::opciones_campo_select();
+
+        $this->assertArrayHasKey((int)$user->empresa_id, $options);
+        $this->assertNotEmpty($options[(int)$user->empresa_id]);
+
+        $model = Modelo::find(248); // Entrada de almacén
+        $this->assertNotNull($model);
+        $fields = (new ModeloService())->get_campos_modelo($model, '', 'create');
+        $companyField = $this->fieldNamed($fields, 'core_empresa_id');
+
+        $this->assertNotNull($companyField);
+        $this->assertSame((int)$user->empresa_id, (int)$companyField['value']);
+        $this->assertArrayHasKey((int)$user->empresa_id, $companyField['opciones']);
+        $this->assertNotEmpty($companyField['opciones'][(int)$user->empresa_id]);
     }
 
     public function test_formulario_configuracion_muestra_label_de_empresa_y_tipo_de_contexto_select()
@@ -255,6 +283,9 @@ class TurnoAdminCrudTest extends TestCase
             ->value('user.id');
         $this->assertGreaterThan(0, (int)$cashierId);
         $this->be(User::find($cashierId));
+        DB::table('core_turnos_operativos')->where('id', $turn->id)
+            ->update(array('abierto_por' => (int)$cashierId));
+        $turn = $turn->fresh();
         app('request')->merge(array('pdv_id' => 1));
 
         $cashierField = $this->turnField(app(TurnoFormService::class)->decorate($model, null, 'create', array()));
@@ -278,6 +309,51 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertSame(0, $editField['editable']);
         $this->assertArrayHasKey('disabled', $editField['atributos']);
         $this->assertSame((int)$turn->id, (int)$editField['value']);
+    }
+
+    public function test_cajero_recibe_su_turno_abierto_en_transaccion_sin_pdv_y_el_valor_se_envia()
+    {
+        $this->authenticateCompanyUser();
+        $cashierId = DB::table('users as user')
+            ->join('user_has_roles as assigned_role', 'assigned_role.user_id', '=', 'user.id')
+            ->join('roles as role', 'role.id', '=', 'assigned_role.role_id')
+            ->where('user.empresa_id', 1)
+            ->whereIn('role.name', (array)config('turnos.turn_selection_locked_roles', array()))
+            ->value('user.id');
+
+        $this->assertGreaterThan(0, (int)$cashierId);
+        app(TurnoConfigurationService::class)->configure(array(
+            'core_empresa_id' => 1,
+            'modulo' => 'tesoreria',
+            'contexto_tipo' => 'pdv',
+            'contexto_id' => 1,
+            'modo' => TurnoConfiguracion::MODO_TURNOS,
+        ));
+        $turn = app(TurnoManager::class)->openContext(
+            1, 'tesoreria', 'pdv', 1, '2026-09-01', (int)$cashierId, 100, '2026-09-01 08:00:00'
+        );
+
+        $this->be(User::find($cashierId));
+        app('request')->replace(array());
+        $model = (object)array('name_space' => 'App\\Tesoreria\\TesoDocEncabezadoRecaudoCxc');
+        $field = $this->turnField(app(TurnoFormService::class)->decorate($model, null, 'create', array()));
+
+        $this->assertNotNull($field);
+        $this->assertSame('select', $field['tipo']);
+        $this->assertSame((int)$turn->id, (int)$field['value']);
+        $this->assertSame(array($turn->id), array_keys($field['opciones']));
+        $this->assertArrayHasKey('disabled', $field['atributos']);
+
+        $html = View::make('components.form.select', array(
+            'name' => $field['name'],
+            'opciones' => $field['opciones'],
+            'value' => $field['value'],
+            'attributes' => $field['atributos'],
+            'lbl' => $field['descripcion'],
+        ))->render();
+        $this->assertContains('type="hidden"', $html);
+        $this->assertContains('name="turno_operativo_id"', $html);
+        $this->assertContains('value="' . $turn->id . '"', $html);
     }
 
     public function test_turno_persistido_no_se_puede_reasignar_desde_una_edicion_ordinaria()
@@ -529,7 +605,7 @@ class TurnoAdminCrudTest extends TestCase
             ->join('sys_campos as field', 'field.id', '=', 'relation.core_campo_id')
             ->where('relation.core_modelo_id', $modelId)
             ->where('field.name', $name)
-            ->select('field.id', 'field.tipo')
+            ->select('field.id', 'field.tipo', 'field.descripcion')
             ->first();
     }
 }

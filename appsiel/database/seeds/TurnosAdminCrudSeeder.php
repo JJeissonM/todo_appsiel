@@ -75,7 +75,9 @@ class TurnosAdminCrudSeeder extends Seeder
                     '', '', 'web/id_fila', '', ''
                 ),
                 'fields' => array(
-                    $this->field(1, 'Empresa', 'select', 'core_empresa_id', 'model_App\\Core\\Empresa', 'null', 1, 0),
+                    // Campo exclusivo del catálogo de turnos. No reutilizar el
+                    // campo global de Empresa empleado por las transacciones.
+                    $this->field(1, 'Empresa del turno', 'bsLabel', 'core_empresa_id', '', 'null', 0, 0),
                     $this->field(2, 'Código', 'bsText', 'codigo', '', 'null', 1, 0),
                     // sys_campos es global. Esta descripción debe ser distinta de
                     // la usada por la configuración, donde el mismo nombre es un select.

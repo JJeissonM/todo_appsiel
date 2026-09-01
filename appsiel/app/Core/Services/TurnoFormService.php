@@ -147,11 +147,17 @@ class TurnoFormService
 
     protected function lockedOptionsForRequest($empresaId, $module)
     {
+        $userId = Auth::check() ? (int)Auth::user()->id : 0;
+        if ($userId <= 0) {
+            return array();
+        }
+
         $pdvId = (int)request()->input('pdv_id');
         if ($pdvId > 0) {
             $turno = TurnoOperativo::where('core_empresa_id', (int)$empresaId)
                 ->where('contexto_tipo', 'pdv')
                 ->where('contexto_id', $pdvId)
+                ->where('abierto_por', $userId)
                 ->abiertos()
                 ->orderBy('id', 'DESC')
                 ->first();
@@ -159,6 +165,29 @@ class TurnoFormService
                 return array($turno->id => $this->optionLabel($turno));
             }
             return array();
+        }
+
+        // Algunos formularios de transacciones (por ejemplo, recaudos de CxC)
+        // no exponen un PDV. En esos casos el contexto inequívoco del cajero es
+        // la apertura vigente que quedó registrada a su nombre. Se recorren las
+        // aperturas más recientes porque un mismo usuario puede operar contextos
+        // distintos, pero sólo se acepta uno habilitado para el módulo actual.
+        $turnos = TurnoOperativo::where('core_empresa_id', (int)$empresaId)
+            ->where('abierto_por', $userId)
+            ->abiertos()
+            ->orderBy('abierto_en', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        foreach ($turnos as $turno) {
+            if ($this->modeResolver->enabled(
+                $empresaId,
+                $module,
+                $turno->contexto_tipo,
+                (int)$turno->contexto_id
+            )) {
+                return array($turno->id => $this->optionLabel($turno));
+            }
         }
 
         return array();

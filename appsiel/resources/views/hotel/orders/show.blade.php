@@ -119,7 +119,6 @@
                 <h4>Agregar consumo</h4>
                     <div id="hotel_deleted_lines"></div>
                     <input type="hidden" name="room_id" value="{{ $order->stay ? $order->stay->room_id : '' }}">
-                    <input type="hidden" id="hotel_inv_bodega_id" value="{{ $roomBodegaId }}">
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -300,7 +299,6 @@
             var $descripcion = $('#hotel_line_description');
             var $cantidad = $('#hotel_quantity');
             var $stock = $('#hotel_stock');
-            var $bodega = $('#hotel_inv_bodega_id');
             var hotelRoomId = "{{ $order->stay ? $order->stay->room_id : '' }}";
             var hotelBodegaLabel = {!! json_encode($roomBodegaLabel) !!};
             var hotelNewLineIndex = 0;
@@ -409,13 +407,9 @@
                 $precio.attr('placeholder', 'Consultando...');
                 $stock.attr('placeholder', 'Consultando...');
 
-                $.get("{{ url('inv_consultar_productos') }}", {
+                $.get("{{ url($hotelUrl::url('hotel/orders/'.$order->id.'/product-data')) }}", {
                     producto_id: productoId,
-                    cliente_id: "{{ $order->cliente_id }}",
-                    lista_precios_id: "{{ $order->cliente ? $order->cliente->lista_precios_id : '' }}",
-                    fecha: "{{ date('Y-m-d') }}",
-                    cantidad: $cantidad.val(),
-                    bodega_id: $bodega.val()
+                    fecha: "{{ date('Y-m-d') }}"
                 }).done(function(respuesta) {
                     respuesta = normalizarRespuesta(respuesta);
 

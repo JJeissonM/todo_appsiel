@@ -2,6 +2,7 @@
 
 namespace App\Inventarios\Services;
 
+use App\Core\TurnoOperativo;
 use App\VentasPos\AperturaEncabezado;
 use App\VentasPos\CierreEncabezado;
 use App\VentasPos\Pdv;
@@ -9,6 +10,54 @@ use Carbon\Carbon;
 
 class InventoryPhysicalPdvShiftService
 {
+    /**
+     * Resuelve el rango desde la entidad de turno explícita. El usuario que
+     * ejecuta el inventario no interviene en la pertenencia del rango.
+     */
+    public function findForTurn($companyId, $turnId)
+    {
+        $companyId = (int)$companyId;
+        $turnId = (int)$turnId;
+        if ($companyId <= 0 || $turnId <= 0) {
+            return null;
+        }
+
+        $turn = TurnoOperativo::where('core_empresa_id', $companyId)
+            ->where('id', $turnId)
+            ->where('contexto_tipo', 'pdv')
+            ->first();
+        if (is_null($turn) || empty($turn->abierto_en) || empty($turn->cerrado_en)) {
+            return null;
+        }
+
+        $pdv = Pdv::where('core_empresa_id', $companyId)
+            ->where('id', (int)$turn->contexto_id)
+            ->first();
+        if (is_null($pdv)) {
+            return null;
+        }
+
+        $openingAt = Carbon::parse($turn->abierto_en);
+        $closingAt = Carbon::parse($turn->cerrado_en);
+        if ($closingAt->lt($openingAt)) {
+            return null;
+        }
+
+        return array(
+            'fecha' => $turn->fecha_operativa,
+            'fecha_operativa' => $turn->fecha_operativa,
+            'hora_inicio' => $openingAt->format('H:i:s'),
+            'hora_finalizacion' => $closingAt->format('H:i:s'),
+            'fecha_hora_apertura' => $openingAt->format('Y-m-d H:i:s'),
+            'fecha_hora_cierre' => $closingAt->format('Y-m-d H:i:s'),
+            'pdv_id' => (int)$pdv->id,
+            'pdv' => $pdv->descripcion,
+            'turno_operativo_id' => (int)$turn->id,
+            'codigo_turno' => $turn->codigo,
+            'fuente' => 'TURNO_OPERATIVO',
+        );
+    }
+
     public function findForUserWarehouseDate($companyId, $userId, $userEmail, $warehouseId, $date)
     {
         $companyId = (int)$companyId;

@@ -28,6 +28,7 @@ Route::group(array('middleware' => array('auth'), 'prefix' => 'hotel'), function
     Route::post('reservations/{id}/cancel', 'Hotel\HotelReservationController@cancel');
 
     Route::get('orders/{id}', 'Hotel\HotelOrderController@show');
+    Route::get('orders/{id}/product-data', 'Hotel\HotelOrderController@productData');
     Route::post('orders/{id}/save-lines', 'Hotel\HotelOrderController@saveLines');
     Route::post('orders/{id}/lines', 'Hotel\HotelOrderController@addLine');
     Route::post('orders/{id}/lines/{lineId}/update', 'Hotel\HotelOrderController@updateLine');

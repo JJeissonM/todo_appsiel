@@ -40,6 +40,27 @@ class HotelOrderController extends Controller
         return view('hotel.orders.show', compact('order', 'products', 'anticipos', 'miga_pan', 'electronicResolutionValidation', 'canEditHotelOrderPrice', 'canCancelHotelOrder') + $paymentData);
     }
 
+    public function productData(Request $request, $id)
+    {
+        $order = $this->findOrder($id);
+        $this->validate($request, array(
+            'producto_id' => 'required|integer',
+            'fecha' => 'date',
+        ));
+
+        try {
+            $data = (new HotelService())->productDataForOrder(
+                $order,
+                (int)$request->producto_id,
+                $request->fecha
+            );
+        } catch (\Exception $e) {
+            return response()->json(array('error' => $e->getMessage()), 422);
+        }
+
+        return response()->json($data);
+    }
+
     public function addLine(Request $request, $id)
     {
         $order = $this->findOrder($id);

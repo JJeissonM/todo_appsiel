@@ -470,6 +470,57 @@ class HotelService
         ));
     }
 
+    /**
+     * Datos comerciales y existencia del producto para un pedido hotelero.
+     * La bodega se obtiene siempre de la habitacion del pedido; nunca del
+     * usuario autenticado ni de un valor enviado por el navegador.
+     */
+    public function productDataForOrder(HotelOrderHeader $order, $productoId, $date = null)
+    {
+        $producto = InvProducto::where('id', (int)$productoId)
+            ->where('core_empresa_id', $order->empresa_id)
+            ->where('estado', 'Activo')
+            ->first();
+
+        if (is_null($producto)) {
+            throw new \Exception('El producto no existe o no pertenece a la empresa del pedido.');
+        }
+
+        $roomId = $this->orderRoomId($order);
+        $bodegaId = $this->roomBodegaIdForOrder($order, $roomId);
+        $date = empty($date) ? date('Y-m-d') : \Carbon\Carbon::parse($date)->format('Y-m-d');
+        $stock = 0;
+
+        if ($this->productConsumesStock($producto)) {
+            $stock = DB::table('inv_movimientos')
+                ->where('core_empresa_id', $order->empresa_id)
+                ->where('inv_bodega_id', $bodegaId)
+                ->where('inv_producto_id', $producto->id)
+                ->where('fecha', '<=', $date)
+                ->sum('cantidad');
+        }
+
+        $price = $this->getProductPrice($producto->id, $order->cliente_id);
+        $cost = (float)InvCostoPromProducto::get_costo_promedio($bodegaId, $producto->id);
+
+        return array(
+            'id' => (int)$producto->id,
+            'descripcion' => $producto->descripcion,
+            'tipo' => $producto->tipo,
+            'precio_venta' => $price,
+            'unit_price' => $price,
+            'precio_unitario' => $price,
+            'costo_promedio' => $cost,
+            'precio_compra' => $cost,
+            'tasa_impuesto' => (float)InvProducto::get_tasa_impuesto($producto->id),
+            'stock' => round((float)$stock, 2),
+            'existencia_actual' => round((float)$stock, 2),
+            'bodega_id' => $bodegaId,
+            'bodega' => $this->warehouseDescription($bodegaId),
+            'fuente_bodega' => 'HABITACION_MINIBAR',
+        );
+    }
+
     public function updateLine(HotelOrderHeader $order, HotelOrderLine $line, $data)
     {
         if (!$order->canEditLines()) {

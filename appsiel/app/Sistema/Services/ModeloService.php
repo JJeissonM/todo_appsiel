@@ -219,6 +219,7 @@ class ModeloService
                         $lista_campos[$i]['value'] = $user_id;
                         break;
                     case 'core_empresa_id':
+                    case 'empresa_id':
                         $lista_campos[$i]['value'] = Auth::user()->empresa_id;
                         break;
                     default:

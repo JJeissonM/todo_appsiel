@@ -33,11 +33,11 @@
 				@if( (int)config('inventarios.usar_inventario_fisico_por_horas', 0) )
 					<div class="row" style="margin: 5px;">
 						<div class="col-md-6">
-							{{ Form::label('hora_inicio', 'Hora de apertura del turno') }}
+							{{ Form::label('hora_inicio', 'Hora de apertura del turno', ['id' => 'label_hora_inicio']) }}
 							{{ Form::input('time', 'hora_inicio', null, ['id'=>'hora_inicio', 'class'=>'form-control', 'step'=>'1', 'required'=>'required']) }}
 						</div>
 						<div class="col-md-6">
-							{{ Form::label('hora_finalizacion', 'Hora de cierre del turno') }}
+							{{ Form::label('hora_finalizacion', 'Hora de cierre del turno', ['id' => 'label_hora_finalizacion']) }}
 							{{ Form::input('time', 'hora_finalizacion', null, ['id'=>'hora_finalizacion', 'class'=>'form-control', 'step'=>'1', 'required'=>'required']) }}
 							<small>Si el cierre es menor que la apertura, se tomará como cierre del día siguiente.</small>
 						</div>
@@ -151,9 +151,11 @@
 				{
 					var fecha = $('#fecha').val();
 					var bodegaId = $('#inv_bodega_id').val();
+					var turnoId = $('input[type="hidden"][name="turno_operativo_id"]').val()
+						|| $('select[name="turno_operativo_id"]').val();
 					var mensaje = $('#mensaje_turno_pdv');
 
-					if (!fecha || !bodegaId) {
+					if (!turnoId && (!fecha || !bodegaId)) {
 						return;
 					}
 
@@ -165,9 +167,19 @@
 
 					$.get("{{ url('inv_fisico_rango_turno_pdv') }}", {
 						fecha: fecha,
-						inv_bodega_id: bodegaId
+						inv_bodega_id: bodegaId,
+						turno_operativo_id: turnoId
 					}).done(function(respuesta){
 						if (respuesta.encontrado) {
+							if (respuesta.turno.fecha_operativa) {
+								$('#fecha').val(respuesta.turno.fecha_operativa);
+							}
+							if (respuesta.turno.fecha_hora_apertura) {
+								$('#label_hora_inicio').text('Hora de apertura del turno (' + respuesta.turno.fecha_hora_apertura.substring(0, 10) + ')');
+							}
+							if (respuesta.turno.fecha_hora_cierre) {
+								$('#label_hora_finalizacion').text('Hora de cierre del turno (' + respuesta.turno.fecha_hora_cierre.substring(0, 10) + ')');
+							}
 							$('#hora_inicio').val(respuesta.turno.hora_inicio).prop('readonly', true);
 							$('#hora_finalizacion').val(respuesta.turno.hora_finalizacion).prop('readonly', true);
 							mensaje.removeClass('alert-info alert-warning alert-danger')
@@ -190,6 +202,14 @@
 							.show();
 					});
 				}
+
+				window.ejecutar_acciones_con_item_sugerencia = function(item_sugerencia, obj_text_input) {
+					if (obj_text_input.hasClass('turno-operativo-ajax')) {
+						consultar_turno_pdv();
+					}
+				};
+
+				$(document).on('change', 'select[name="turno_operativo_id"]', consultar_turno_pdv);
 			@endif
 			
 
