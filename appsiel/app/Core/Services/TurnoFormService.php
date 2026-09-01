@@ -239,16 +239,38 @@ class TurnoFormService
     protected function defaultOpenTurnForRequest($empresaId, $module)
     {
         $pdvId = (int)request()->input('pdv_id');
-        if ($pdvId <= 0 || !$this->modeResolver->enabled($empresaId, $module, 'pdv', $pdvId)) {
-            return null;
+        if ($pdvId > 0) {
+            if (!$this->modeResolver->enabled($empresaId, $module, 'pdv', $pdvId)) {
+                return null;
+            }
+
+            return TurnoOperativo::where('core_empresa_id', (int)$empresaId)
+                ->where('contexto_tipo', 'pdv')
+                ->where('contexto_id', $pdvId)
+                ->abiertos()
+                ->orderBy('id', 'DESC')
+                ->first();
         }
 
-        return TurnoOperativo::where('core_empresa_id', (int)$empresaId)
-            ->where('contexto_tipo', 'pdv')
-            ->where('contexto_id', $pdvId)
+        // Inventarios y varios encabezados de Tesorería no tienen PDV en el
+        // formulario. Si sólo existe un turno abierto habilitado para el módulo,
+        // su identidad es inequívoca y puede preseleccionarse. Con dos o más se
+        // conserva el selector manual para exigir el contexto explícito.
+        $turnos = TurnoOperativo::where('core_empresa_id', (int)$empresaId)
             ->abiertos()
+            ->orderBy('abierto_en', 'DESC')
             ->orderBy('id', 'DESC')
-            ->first();
+            ->get()
+            ->filter(function ($turno) use ($empresaId, $module) {
+                return $this->modeResolver->enabled(
+                    $empresaId,
+                    $module,
+                    $turno->contexto_tipo,
+                    (int)$turno->contexto_id
+                );
+            });
+
+        return $turnos->count() === 1 ? $turnos->first() : null;
     }
 
     protected function optionLabel(TurnoOperativo $turno)

@@ -2,6 +2,8 @@
 
 namespace App\VentasPos\Services;
 
+use App\Core\Exceptions\TurnoIntegrityException;
+use App\Core\TurnoOperativo;
 use App\CxC\CxcMovimiento;
 use App\Http\Controllers\Tesoreria\RecaudoCxcController;
 use App\Tesoreria\TesoMotivo;
@@ -20,8 +22,33 @@ class TreasuryService
         if ( $aux_object->valor_abono == 0) {
             return false;
         }
-        
-        (new RecaudoCxcController())->store( $this->build_request_object($doc_encabezado_factura, $aux_object) );
+
+        $request = $this->build_request_object($doc_encabezado_factura, $aux_object);
+        $operation = function () use ($request) {
+            return $this->storeReceivablePayment($request);
+        };
+
+        $turnoId = (int)$doc_encabezado_factura->turno_operativo_id;
+        if ($turnoId <= 0) {
+            return $operation();
+        }
+
+        $turno = TurnoOperativo::find($turnoId);
+        if (is_null($turno) || (int)$turno->core_empresa_id !== (int)$doc_encabezado_factura->core_empresa_id) {
+            throw new TurnoIntegrityException('La factura origen contiene una relación de turno inconsistente para generar el recaudo.');
+        }
+
+        return app(\App\Core\Services\TurnoContext::class)->runFromOrigin(
+            $turno,
+            get_class($doc_encabezado_factura),
+            (int)$doc_encabezado_factura->id,
+            $operation
+        );
+    }
+
+    protected function storeReceivablePayment(Request $request)
+    {
+        return (new RecaudoCxcController())->store($request);
     }
 
     /**
@@ -32,6 +59,8 @@ class TreasuryService
         $request = new Request();
 
         $request["core_empresa_id"] = $doc_encabezado_factura->core_empresa_id;
+        $request["turno_operativo_id"] = $doc_encabezado_factura->turno_operativo_id;
+        $request["pdv_id"] = $doc_encabezado_factura->pdv_id;
         $request["core_tipo_doc_app_id"] = config('tesoreria.recaudos_cxc_tipo_doc_app_id');
         $request["fecha"] = $doc_encabezado_factura->fecha;
         $request["core_tercero_id"] = $doc_encabezado_factura->core_tercero_id;

@@ -276,6 +276,13 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertSame('pdv_id', $field['atributos']['data-ajax-fields']);
         $this->assertSame(1, $field['editable']);
 
+        app('request')->replace(array());
+        $adminFieldWithoutPdv = $this->turnField(
+            app(TurnoFormService::class)->decorate($model, null, 'create', array())
+        );
+        $this->assertSame((int)$turn->id, (int)$adminFieldWithoutPdv['value'][1]);
+        $this->assertContains($turn->codigo, $adminFieldWithoutPdv['value'][0]);
+
         $cashierId = DB::table('users as user')
             ->join('user_has_roles as assigned_role', 'assigned_role.user_id', '=', 'user.id')
             ->join('roles as role', 'role.id', '=', 'assigned_role.role_id')

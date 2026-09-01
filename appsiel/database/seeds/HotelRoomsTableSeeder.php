@@ -53,6 +53,35 @@ class HotelRoomsTableSeeder extends Seeder
                 continue;
             }
 
+            $existingRoom = DB::table('hotel_rooms')
+                ->where('empresa_id', $empresaId)
+                ->where('room_number', $room[0])
+                ->first();
+
+            // El seeder puede ejecutarse sobre instalaciones que ya tienen
+            // habitaciones operativas. No debe reemplazar su configuración ni
+            // crear una bodega minibar paralela sin movimientos.
+            if (!is_null($existingRoom)) {
+                if (Schema::hasColumn('hotel_rooms', 'inv_bodega_id')) {
+                    $currentWarehouseId = isset($existingRoom->inv_bodega_id)
+                        ? (int)$existingRoom->inv_bodega_id
+                        : 0;
+                    $warehouseId = $this->getOrCreateRoomWarehouse(
+                        $empresaId,
+                        $room[0],
+                        $currentWarehouseId
+                    );
+
+                    if ($warehouseId > 0 && $warehouseId !== $currentWarehouseId) {
+                        DB::table('hotel_rooms')->where('id', $existingRoom->id)->update(array(
+                            'inv_bodega_id' => $warehouseId,
+                            'updated_at' => date('Y-m-d H:i:s'),
+                        ));
+                    }
+                }
+                continue;
+            }
+
             $roomData = array(
                 'empresa_id' => $empresaId,
                 'room_number' => $room[0],
@@ -212,17 +241,29 @@ class HotelRoomsTableSeeder extends Seeder
         return $serviceId;
     }
 
-    private function getOrCreateRoomWarehouse($empresaId, $roomNumber)
+    private function getOrCreateRoomWarehouse($empresaId, $roomNumber, $currentWarehouseId = 0)
     {
         if (!Schema::hasTable('inv_bodegas')) {
             return null;
         }
 
         $description = 'MINIBAR HAB. ' . $roomNumber;
-        $warehouseId = (int)DB::table('inv_bodegas')
+        $aliases = array(
+            $description,
+            $roomNumber . ' MINIBAR',
+            'MINIBAR ' . $roomNumber,
+        );
+        $warehouses = DB::table('inv_bodegas')
             ->where('core_empresa_id', $empresaId)
-            ->where('descripcion', $description)
-            ->value('id');
+            ->whereIn('descripcion', $aliases)
+            ->orderBy('id')
+            ->get();
+
+        $warehouseId = $this->bestRoomWarehouse(
+            $warehouses,
+            (int)$currentWarehouseId,
+            $empresaId
+        );
 
         $now = date('Y-m-d H:i:s');
         $data = array(
@@ -235,7 +276,14 @@ class HotelRoomsTableSeeder extends Seeder
         $data = $this->onlyExistingColumns('inv_bodegas', $data);
 
         if ($warehouseId > 0) {
-            DB::table('inv_bodegas')->where('id', $warehouseId)->update($data);
+            // Se conserva el nombre histórico de una bodega existente. Puede
+            // estar referenciado en reportes, integraciones y movimientos.
+            DB::table('inv_bodegas')->where('id', $warehouseId)->update(
+                $this->onlyExistingColumns('inv_bodegas', array(
+                    'estado' => 'Activo',
+                    'updated_at' => $now,
+                ))
+            );
             return $warehouseId;
         }
 
@@ -243,6 +291,60 @@ class HotelRoomsTableSeeder extends Seeder
         $data = $this->onlyExistingColumns('inv_bodegas', $data);
 
         return (int)DB::table('inv_bodegas')->insertGetId($data);
+    }
+
+    private function bestRoomWarehouse($warehouses, $currentWarehouseId, $empresaId)
+    {
+        if (count($warehouses) === 0) {
+            return 0;
+        }
+
+        $warehouseIds = array();
+        foreach ($warehouses as $warehouse) {
+            $warehouseIds[] = (int)$warehouse->id;
+        }
+
+        $movementCounts = array();
+        if (Schema::hasTable('inv_movimientos')) {
+            $rows = DB::table('inv_movimientos')
+                ->where('core_empresa_id', (int)$empresaId)
+                ->whereIn('inv_bodega_id', $warehouseIds)
+                ->select('inv_bodega_id', DB::raw('COUNT(*) AS movements'))
+                ->groupBy('inv_bodega_id')
+                ->get();
+            foreach ($rows as $row) {
+                $movementCounts[(int)$row->inv_bodega_id] = (int)$row->movements;
+            }
+        }
+
+        // Una bodega ya configurada y con historia siempre prevalece. Sólo se
+        // corrige automáticamente cuando la asociación actual está vacía.
+        if ($currentWarehouseId > 0
+            && in_array($currentWarehouseId, $warehouseIds)
+            && isset($movementCounts[$currentWarehouseId])
+            && $movementCounts[$currentWarehouseId] > 0) {
+            return $currentWarehouseId;
+        }
+
+        $bestWarehouseId = 0;
+        $bestMovementCount = 0;
+        foreach ($warehouseIds as $warehouseId) {
+            $count = isset($movementCounts[$warehouseId]) ? $movementCounts[$warehouseId] : 0;
+            if ($count > $bestMovementCount) {
+                $bestWarehouseId = $warehouseId;
+                $bestMovementCount = $count;
+            }
+        }
+
+        if ($bestWarehouseId > 0) {
+            return $bestWarehouseId;
+        }
+
+        if ($currentWarehouseId > 0 && in_array($currentWarehouseId, $warehouseIds)) {
+            return $currentWarehouseId;
+        }
+
+        return (int)$warehouseIds[0];
     }
 
     private function getTaxId()

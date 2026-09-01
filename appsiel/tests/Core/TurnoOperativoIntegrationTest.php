@@ -13,6 +13,7 @@ use App\Core\TurnoOperativo;
 use App\Core\Exceptions\TurnoIntegrityException;
 use App\Core\Exceptions\TurnoRequiredException;
 use App\Core\Exceptions\TurnoStateException;
+use App\CxC\CxcMovimiento;
 use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelOrderLine;
 use App\Hotel\HotelRoom;
@@ -29,6 +30,8 @@ use App\Ventas\VtasDocEncabezado;
 use App\VentasPos\AperturaEncabezado;
 use App\VentasPos\CierreEncabezado;
 use App\VentasPos\FacturaPos;
+use App\VentasPos\Services\TreasuryService;
+use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -207,6 +210,126 @@ class TurnoOperativoIntegrationTest extends TestCase
             $this->assertContains('Debe realizar la apertura', $e->getMessage());
             $this->assertSame('OPEN_CONTEXT', $resolver->lastResolutionSource());
         }
+    }
+
+    public function test_create_inventarios_y_tesoreria_resuelve_unico_turno_abierto_sin_pdv()
+    {
+        $this->be(User::find(1));
+        $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
+        $manager = app(TurnoManager::class);
+        $turno = $manager->openContext(
+            1, 'inventarios', 'pdv', 1, '2026-09-01', 1, 0, '2026-09-01 05:56:50'
+        );
+        app(TurnoContext::class)->clear();
+        app('request')->replace(array());
+
+        $resolver = app(TurnoAssignmentResolver::class);
+        $inventory = new InvDocEncabezado(array('core_empresa_id' => 1));
+        $resolver->assign($inventory, 'inventarios');
+        $this->assertSame((int)$turno->id, (int)$inventory->turno_operativo_id);
+
+        $treasury = new TesoDocEncabezado(array('core_empresa_id' => 1));
+        $resolver->assign($treasury, 'tesoreria');
+        $this->assertSame((int)$turno->id, (int)$treasury->turno_operativo_id);
+        $this->assertSame('OPEN_CONTEXT', $resolver->lastResolutionSource());
+    }
+
+    public function test_create_sin_pdv_no_elige_silenciosamente_entre_varios_turnos_abiertos()
+    {
+        $this->be(User::find(1));
+        $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
+        $manager = app(TurnoManager::class);
+        $manager->openContext(1, 'inventarios', 'pdv', 1, '2026-09-01', 1, 0, '2026-09-01 06:00:00');
+        $manager->openContext(1, 'inventarios', 'caja', 987654, '2026-09-01', 1, 0, '2026-09-01 06:01:00');
+        app(TurnoContext::class)->clear();
+        app('request')->replace(array());
+
+        try {
+            app(TurnoAssignmentResolver::class)->assign(
+                new InvDocEncabezado(array('core_empresa_id' => 1)),
+                'inventarios'
+            );
+            $this->fail('No debe seleccionar un turno ambiguo sin contexto.');
+        } catch (TurnoRequiredException $e) {
+            $this->assertContains('varios turnos abiertos', $e->getMessage());
+        }
+    }
+
+    public function test_recaudo_por_saldo_de_factura_hotelera_propaga_turno_y_pdv_del_origen()
+    {
+        $this->be(User::find(1));
+        $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
+        $turno = app(TurnoManager::class)->openContext(
+            1, 'ventas_pos', 'pdv', 1, '2026-09-01', 1, 0, '2026-09-01 07:00:00'
+        );
+        app(TurnoContext::class)->clear();
+
+        $consecutivo = 'HOT-TURNO-' . uniqid();
+        CxcMovimiento::create(array(
+            'core_tipo_transaccion_id' => 47,
+            'core_tipo_doc_app_id' => 18,
+            'consecutivo' => $consecutivo,
+            'core_empresa_id' => 1,
+            'core_tercero_id' => 1,
+            'modelo_referencia_tercero_index' => 'App\\Ventas\\Cliente',
+            'referencia_tercero_id' => 1,
+            'fecha' => '2026-09-01',
+            'fecha_vencimiento' => '2026-09-01',
+            'valor_documento' => 100,
+            'valor_pagado' => 0,
+            'saldo_pendiente' => 100,
+            'estado' => 'Pendiente',
+            'detalle' => 'Factura hotelera con anticipo y saldo',
+            'creado_por' => 'test@appsiel.com',
+            'modificado_por' => 'test@appsiel.com',
+        ));
+
+        $invoice = new FacturaPos(array(
+            'core_empresa_id' => 1,
+            'core_tipo_transaccion_id' => 47,
+            'core_tipo_doc_app_id' => 18,
+            'consecutivo' => $consecutivo,
+            'fecha' => '2026-09-01',
+            'core_tercero_id' => 1,
+            'cliente_id' => 1,
+            'pdv_id' => 1,
+            'turno_operativo_id' => $turno->id,
+            'creado_por' => 'test@appsiel.com',
+        ));
+        $payments = json_encode(array(array(
+            'teso_medio_recaudo_id' => '1-Efectivo',
+            'teso_motivo_id' => '1-Recaudo clientes',
+            'teso_caja_id' => '1-Caja general',
+            'teso_cuenta_bancaria_id' => '0-',
+            'valor' => '$40',
+        )));
+
+        $service = new InspectableHotelTreasuryService();
+        $service->crear_abonos_documento($invoice, $payments);
+
+        $this->assertSame((int)$turno->id, (int)$service->capturedTurnContextId);
+        $this->assertSame((int)$turno->id, (int)$service->capturedRequest->turno_operativo_id);
+        $this->assertSame(1, (int)$service->capturedRequest->pdv_id);
+        $this->assertNull(app(TurnoContext::class)->current());
+
+        (new TreasuryService())->crear_abonos_documento($invoice, $payments);
+        $treasuryHeader = TesoDocEncabezado::where(
+            'core_tipo_transaccion_id',
+            (int)config('tesoreria.recaudos_cxc_tipo_transaccion_id')
+        )->orderBy('id', 'DESC')->first();
+        $this->assertNotNull($treasuryHeader);
+        $this->assertSame((int)$turno->id, (int)$treasuryHeader->turno_operativo_id);
+
+        $treasuryMovement = TesoMovimiento::where('core_empresa_id', 1)
+            ->where('core_tipo_transaccion_id', $treasuryHeader->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $treasuryHeader->core_tipo_doc_app_id)
+            ->where('consecutivo', $treasuryHeader->consecutivo)
+            ->orderBy('id', 'DESC')
+            ->first();
+        $this->assertNotNull($treasuryMovement);
+        $this->assertSame((int)$turno->id, (int)$treasuryMovement->turno_operativo_id);
+        $this->assertSame(1, (int)$treasuryMovement->pdv_id);
+        $this->assertNull(app(TurnoContext::class)->current());
     }
 
     public function test_rechaza_turno_de_otra_empresa()
@@ -419,6 +542,45 @@ class TurnoOperativoIntegrationTest extends TestCase
         $this->assertSame((int)$warehouse->id, (int)$data['bodega_id']);
         $this->assertSame('HABITACION_MINIBAR', $data['fuente_bodega']);
         $this->assertSame(round((float)$expectedStock, 2), (float)$data['stock']);
+    }
+
+    public function test_seeder_hotel_reutiliza_bodega_minibar_con_movimientos_y_no_una_duplicada_vacia()
+    {
+        $suffix = 'QA-' . uniqid();
+        $now = date('Y-m-d H:i:s');
+        $emptyWarehouseId = DB::table('inv_bodegas')->insertGetId(array(
+            'core_empresa_id' => 1,
+            'descripcion' => 'MINIBAR HAB. ' . $suffix,
+            'estado' => 'Activo',
+            'created_at' => $now,
+            'updated_at' => $now,
+        ));
+        $warehouseWithStockId = DB::table('inv_bodegas')->insertGetId(array(
+            'core_empresa_id' => 1,
+            'descripcion' => $suffix . ' MINIBAR',
+            'estado' => 'Activo',
+            'created_at' => $now,
+            'updated_at' => $now,
+        ));
+
+        $movement = DB::table('inv_movimientos')->where('core_empresa_id', 1)->first();
+        $this->assertNotNull($movement);
+        $movementData = (array)$movement;
+        unset($movementData['id']);
+        $movementData['inv_bodega_id'] = $warehouseWithStockId;
+        $movementData['consecutivo'] = 990000 + (int)$warehouseWithStockId;
+        DB::table('inv_movimientos')->insert($movementData);
+
+        $method = new \ReflectionMethod('HotelRoomsTableSeeder', 'getOrCreateRoomWarehouse');
+        $method->setAccessible(true);
+        $resolvedWarehouseId = $method->invoke(
+            new \HotelRoomsTableSeeder(),
+            1,
+            $suffix,
+            $emptyWarehouseId
+        );
+
+        $this->assertSame((int)$warehouseWithStockId, (int)$resolvedWarehouseId);
     }
 
     public function test_inventario_fisico_hereda_fecha_y_horas_del_turno_explicito()
@@ -1003,5 +1165,18 @@ class TurnoOperativoIntegrationTest extends TestCase
             'modo' => $mode,
         ));
         app(TurnoModeResolver::class)->clearCache();
+    }
+}
+
+class InspectableHotelTreasuryService extends TreasuryService
+{
+    public $capturedRequest;
+    public $capturedTurnContextId;
+
+    protected function storeReceivablePayment(\Illuminate\Http\Request $request)
+    {
+        $this->capturedRequest = $request;
+        $this->capturedTurnContextId = app(TurnoContext::class)->id();
+        return true;
     }
 }

@@ -10,6 +10,7 @@ use App\Inventarios\InvDocEncabezado;
 use App\Ventas\VtasDocEncabezado;
 use App\VentasPos\FacturaPos;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
 
@@ -88,11 +89,63 @@ class TurnoAssignmentResolver
 
         if (is_null($descriptor) && $this->modeResolver->enabledForModule($empresaId, $module)) {
             $this->lastSource = 'OPEN_CONTEXT';
-            throw new TurnoRequiredException('El módulo ' . $module . ' opera en modo TURNOS. Debe propagar un turno o un contexto operativo válido antes de crear la operación.');
+            $turnos = $this->openTurnsForAuthenticatedOperation($empresaId, $module);
+            if ($turnos->count() === 1) {
+                $turno = $turnos->first();
+                return $model->turno_operativo_id = $turno->id;
+            }
+            if ($turnos->count() === 0) {
+                throw new TurnoRequiredException(
+                    'El módulo ' . $module . ' opera en modo TURNOS. No existe un turno abierto válido para el usuario y la operación.'
+                );
+            }
+            throw new TurnoRequiredException(
+                'El módulo ' . $module . ' opera en modo TURNOS y existen varios turnos abiertos. Debe indicar el contexto operativo antes de crear la operación.'
+            );
         }
 
         $this->lastSource = 'TRADITIONAL';
         return null;
+    }
+
+    protected function openTurnsForAuthenticatedOperation($empresaId, $module)
+    {
+        if (!Auth::check()) {
+            return collect(array());
+        }
+
+        $query = TurnoOperativo::where('core_empresa_id', (int)$empresaId)->abiertos();
+        if ($this->selectionLockedForCurrentUser()) {
+            $query->where('abierto_por', (int)Auth::user()->id);
+        }
+
+        return $query->orderBy('abierto_en', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->get()
+            ->filter(function ($turno) use ($empresaId, $module) {
+                return $this->modeResolver->enabled(
+                    $empresaId,
+                    $module,
+                    $turno->contexto_tipo,
+                    (int)$turno->contexto_id
+                );
+            })
+            ->values();
+    }
+
+    protected function selectionLockedForCurrentUser()
+    {
+        $user = Auth::user();
+        if (is_null($user) || !method_exists($user, 'hasRole')) {
+            return false;
+        }
+
+        foreach ((array)config('turnos.turn_selection_locked_roles', array()) as $role) {
+            if ($user->hasRole($role)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function lastResolutionSource()
