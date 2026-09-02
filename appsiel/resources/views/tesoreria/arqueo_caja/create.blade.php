@@ -275,7 +275,9 @@
                 $('#btn_get_mov_entrada, #btn_get_mov_salida').addClass('disabled');
                 $.get('../tesoreria/get_turnos_pdv_fecha', {
                     pdv_id: $('#pdv_id').val(),
-                    fecha: fecha
+                    teso_caja_id: $('#teso_caja_id').val(),
+                    fecha: fecha,
+                    preferir_ultimo_cerrado: recalcularSaldoInicial ? 0 : 1
                 }).done(function (response) {
                     configurarTurnosOperativos(response);
                     aplicarRangoPdv(response.range, response.message, response.pdv_description);
@@ -325,8 +327,8 @@
                 });
                 $('#turno_operativo_group').show();
                 $('#fecha_hora_apertura, #fecha_hora_cierre').prop('readonly', true);
-                if (turnosOperativos.length === 1) {
-                    $select.val(turnosOperativos[0].id);
+                if (response.range && response.range.id) {
+                    $select.val(response.range.id);
                 }
             }
 
@@ -338,6 +340,9 @@
                     $('#fecha_hora_apertura, #fecha_hora_cierre').val('');
                     $('#rango_pdv_mensaje').text(message).show();
                 } else {
+                    if (range.operational_date) {
+                        $('#fecha').val(range.operational_date);
+                    }
                     $('#base').val(range.cash_base || 0);
                     $('#fecha_hora_apertura').val(formatearFechaHoraInput(range.opening_at));
                     $('#fecha_hora_cierre').val(formatearFechaHoraInput(range.closing_at));

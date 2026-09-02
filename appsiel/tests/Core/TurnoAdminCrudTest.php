@@ -12,6 +12,7 @@ use App\Core\Empresa;
 use App\Inventarios\Services\InventoryPhysicalPdvShiftService;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoDocEncabezado;
+use App\Tesoreria\Services\CashCountTurnService;
 use App\User;
 use App\VentasPos\Pdv;
 use App\VentasPos\Services\FacturaPosService;
@@ -595,6 +596,56 @@ class TurnoAdminCrudTest extends TestCase
             'turno_operativo_id' => $turn->id,
         ));
         $this->assertResponseStatus(422);
+    }
+
+    public function test_arqueo_carga_el_ultimo_turno_cerrado_de_la_caja_y_pdv_aunque_sea_de_otra_fecha()
+    {
+        $user = $this->authenticateCompanyUser();
+        $pdv = Pdv::where('core_empresa_id', 1)->whereNotNull('caja_default_id')->first();
+        $this->assertNotNull($pdv);
+
+        app(TurnoConfigurationService::class)->configure(array(
+            'core_empresa_id' => 1,
+            'modulo' => 'tesoreria',
+            'contexto_tipo' => 'pdv',
+            'contexto_id' => $pdv->id,
+            'modo' => TurnoConfiguracion::MODO_TURNOS,
+        ));
+        $manager = app(TurnoManager::class);
+        $turn = $manager->openContext(
+            1,
+            'tesoreria',
+            'pdv',
+            (int)$pdv->id,
+            '2099-09-01',
+            (int)$user->id,
+            50000,
+            '2099-09-01 22:00:00'
+        );
+        DB::table('core_turnos_operativos')->where('id', $turn->id)
+            ->update(array('teso_caja_id' => (int)$pdv->caja_default_id));
+        $manager->close($turn, (int)$user->id, 75000, 'Cierre para arqueo', '2099-09-02 06:00:00');
+
+        $resolved = app(CashCountTurnService::class)->latestClosed(
+            1,
+            (int)$pdv->id,
+            (int)$pdv->caja_default_id
+        );
+        $this->assertNotNull($resolved);
+        $this->assertSame((int)$turn->id, (int)$resolved->id);
+
+        $this->call('GET', '/tesoreria/get_turnos_pdv_fecha', array(
+            'pdv_id' => $pdv->id,
+            'teso_caja_id' => $pdv->caja_default_id,
+            'fecha' => '2099-09-02',
+            'preferir_ultimo_cerrado' => 1,
+        ));
+        $this->assertResponseOk();
+        $payload = json_decode($this->response->getContent(), true);
+        $this->assertSame('TURNOS', $payload['mode']);
+        $this->assertSame((int)$turn->id, (int)$payload['range']['id']);
+        $this->assertSame('2099-09-01', $payload['range']['operational_date']);
+        $this->assertSame('2099-09-02 06:00:00', $payload['range']['closing_at']);
     }
 
     public function test_referencia_visual_muestra_turno_persistido_y_oculta_fk_nula()

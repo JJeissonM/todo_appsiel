@@ -11,6 +11,7 @@ use App\Sistema\TipoTransaccion;
 use App\Tesoreria\ArqueoCaja;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\Services\CashCountTurnService;
 use App\User;
 use App\VentasPos\Pdv;
 use App\VentasPos\Services\CashRegisterShiftService;
@@ -58,17 +59,32 @@ class ArqueoCajaController extends ModeloController
 
         $turnoManager = app(TurnoManager::class);
         if ($turnoManager->enabledForPdv(Auth::user()->empresa_id, $pdv->id, 'tesoreria')) {
-            $turnos = TurnoOperativo::where('core_empresa_id', Auth::user()->empresa_id)
-                ->where('contexto_tipo', 'pdv')
-                ->where('contexto_id', $pdv->id)
-                ->where('fecha_operativa', Input::get('fecha'))
-                ->orderBy('abierto_en')
-                ->get()
+            $cashBoxId = (int)Input::get('teso_caja_id');
+            $service = app(CashCountTurnService::class);
+            $cashierId = $this->turnSelectionLockedForCurrentUser() ? (int)Auth::id() : null;
+            $preferLatest = (int)Input::get('preferir_ultimo_cerrado', 0) === 1;
+            $latest = $service->latestClosed(
+                Auth::user()->empresa_id,
+                $pdv->id,
+                $cashBoxId,
+                $cashierId
+            );
+            $operationalDate = $preferLatest && !is_null($latest)
+                ? $latest->fecha_operativa
+                : Input::get('fecha');
+            $turnos = $service->closedForOperationalDate(
+                Auth::user()->empresa_id,
+                $pdv->id,
+                $cashBoxId,
+                $operationalDate,
+                $cashierId
+            )
                 ->map(function ($turno) {
                     return array(
                         'id' => $turno->id,
                         'code' => $turno->codigo,
                         'state' => $turno->estado,
+                        'operational_date' => $turno->fecha_operativa,
                         'opening_at' => is_null($turno->abierto_en) ? null : $turno->abierto_en->format('Y-m-d H:i:s'),
                         'closing_at' => is_null($turno->cerrado_en) ? null : $turno->cerrado_en->format('Y-m-d H:i:s'),
                         'cash_base' => (float)$turno->saldo_inicial,
@@ -80,10 +96,12 @@ class ArqueoCajaController extends ModeloController
                 'mode' => 'TURNOS',
                 'pdv_description' => $pdv->descripcion,
                 'shifts' => $turnos,
-                'range' => $turnos->count() === 1 ? $turnos->first() : null,
+                'range' => $turnos->isEmpty() ? null : $turnos->first(),
                 'message' => $turnos->isEmpty()
-                    ? 'No existen turnos operativos para la fecha seleccionada.'
-                    : ($turnos->count() === 1 ? 'Se seleccionó el único turno operativo de la fecha.' : 'Seleccione el turno operativo que se va a arquear.')
+                    ? 'No existe un turno cerrado de esta caja y punto de venta para la fecha seleccionada.'
+                    : ($preferLatest
+                        ? 'Se seleccionó el último turno cerrado de la caja y punto de venta.'
+                        : 'Se seleccionó el último turno cerrado de la fecha; puede escoger otro turno cerrado de ese día.')
             ));
         }
 
@@ -142,11 +160,13 @@ class ArqueoCajaController extends ModeloController
         $pdvId = (int)$request->input('pdv_id');
         $turnoManager = app(TurnoManager::class);
         if ($pdvId > 0 && $turnoManager->enabledForPdv($user->empresa_id, $pdvId, 'tesoreria')) {
-            $turno = TurnoOperativo::where('id', (int)$request->input('turno_operativo_id'))
-                ->where('core_empresa_id', $user->empresa_id)
-                ->where('contexto_tipo', 'pdv')
-                ->where('contexto_id', $pdvId)
-                ->first();
+            $turno = app(CashCountTurnService::class)->findEligible(
+                $user->empresa_id,
+                $pdvId,
+                $teso_caja_id,
+                (int)$request->input('turno_operativo_id'),
+                $this->turnSelectionLockedForCurrentUser() ? (int)$user->id : null
+            );
             if (is_null($turno)) {
                 return response()->json(array('status' => 'error', 'message' => 'Seleccione un turno operativo válido antes de recalcular el saldo inicial.'), 422);
             }
@@ -422,6 +442,20 @@ class ArqueoCajaController extends ModeloController
         if ($registro->creado_por != $user->email) {
             abort(403, 'No tiene permiso para consultar este arqueo de caja.');
         }
+    }
+
+    protected function turnSelectionLockedForCurrentUser()
+    {
+        $user = Auth::user();
+        if (is_null($user)) {
+            return false;
+        }
+        foreach ((array)config('turnos.turn_selection_locked_roles', array()) as $role) {
+            if ($user->hasRole($role)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

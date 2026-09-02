@@ -10,6 +10,7 @@ use App\Sistema\TipoTransaccion;
 use App\Traits\FiltraRegistrosPorUsuario;
 use App\VentasPos\Pdv;
 use App\VentasPos\Services\CashRegisterShiftService;
+use App\Tesoreria\Services\CashCountTurnService;
 use App\Traits\HasTurnoOperativo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -213,18 +214,20 @@ class ArqueoCaja extends Model
         $turnoManager = app(TurnoManager::class);
 
         if ($pdvId > 0 && $turnoManager->enabledForPdv($empresaId, $pdvId, 'tesoreria')) {
-            $turno = TurnoOperativo::where('id', (int)$request->turno_operativo_id)
-                ->where('core_empresa_id', $empresaId)
-                ->where('contexto_tipo', 'pdv')
-                ->where('contexto_id', $pdvId)
-                ->first();
+            $turno = app(CashCountTurnService::class)->findEligible(
+                $empresaId,
+                $pdvId,
+                (int)$request->teso_caja_id,
+                (int)$request->turno_operativo_id,
+                static::turnSelectionLockedForCurrentUser() ? (int)Auth::id() : null
+            );
 
             if (is_null($turno)) {
                 $controller->validate($request, array(
                     'turno_operativo_id' => 'required|integer|in:__turno_invalido__'
                 ), array(
                     'turno_operativo_id.required' => 'Debe seleccionar el turno operativo que se va a arquear.',
-                    'turno_operativo_id.in' => 'El turno seleccionado no existe o no corresponde a la empresa y PDV del arqueo.'
+                    'turno_operativo_id.in' => 'El turno no está cerrado o no corresponde a la empresa, caja y PDV del arqueo.'
                 ));
                 return;
             }
@@ -290,6 +293,20 @@ class ArqueoCaja extends Model
             return null;
         }
         return method_exists($value, 'format') ? $value->format('Y-m-d H:i:s') : substr((string)$value, 0, 19);
+    }
+
+    protected static function turnSelectionLockedForCurrentUser()
+    {
+        $user = Auth::user();
+        if (is_null($user)) {
+            return false;
+        }
+        foreach ((array)config('turnos.turn_selection_locked_roles', array()) as $role) {
+            if ($user->hasRole($role)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function get_datos_adicionales( $datos )
