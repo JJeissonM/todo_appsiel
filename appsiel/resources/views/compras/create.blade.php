@@ -718,19 +718,8 @@
 
 				var valor_total_recaudos = $('#total_valor_total').text();
 
-				if($('#forma_pago').val() == 'contado'){
-					if( parseFloat( valor_total_recaudos.substring(1) ) === 0 )
-					{
-						if ( parseInt($('#compras_teso_caja_id_default').val()) === 0 )
-						{
-							Swal.fire({
-								icon: 'warning',
-								title: '¡Atención!',
-								text: 'Debe ingresar un medio de pago cuando la factura es de contado.'
-							});
-							return false;
-						}
-					}
+				if (!validar_medio_pago_factura_contado()) {
+					return false;
 				}
 				
 				// Se reemplaza varias veces el "." por vacio, y luego la coma por punto
@@ -778,6 +767,34 @@
 		 		// Se envía el formulario
 				$('#form_create').submit();
 			});
+
+			function validar_medio_pago_factura_contado()
+			{
+				if ($('#forma_pago').val() != 'contado') {
+					return true;
+				}
+				if (parseInt($('#compras_teso_caja_id_default').val(), 10) > 0) {
+					return true;
+				}
+
+				var cantidad_lineas = $('#ingreso_registros_medios_recaudo tbody tr').length;
+				var total_medios_pago = parseFloat(
+					$('#total_valor_total').text().replace('$', '').replace(/\s/g, '').replace(',', '.')
+				);
+
+				if (cantidad_lineas === 0 || !$.isNumeric(total_medios_pago) || total_medios_pago <= 0) {
+					Swal.fire({
+						icon: 'warning',
+						title: '¡Atención!',
+						text: 'Debe ingresar un medio de pago cuando la factura es de contado.'
+					}).then(function () {
+						$('#btn_nuevo').focus();
+					});
+					return false;
+				}
+
+				return true;
+			}
 
 			function setCookie(cname, cvalue, exdays) {
 			  var d = new Date();

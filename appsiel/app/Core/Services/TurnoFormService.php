@@ -101,6 +101,11 @@ class TurnoFormService
             'editable' => ($isEdit || $selectionLocked) ? 0 : 1,
             'unico' => 0,
         );
+        if (!$isEdit) {
+            $field['atributos']['data-turno-validation'] = '1';
+            $field['atributos']['data-turno-validation-url'] = url('turnos/operativos/validar-seleccion');
+            $field['atributos']['data-turno-module'] = $module;
+        }
 
         $fieldReplaced = false;
         foreach ($campos as $key => $campo) {

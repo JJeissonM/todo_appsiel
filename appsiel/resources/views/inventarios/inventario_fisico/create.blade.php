@@ -154,9 +154,16 @@
 					var turnoId = $('input[type="hidden"][name="turno_operativo_id"]').val()
 						|| $('select[name="turno_operativo_id"]').val();
 					var mensaje = $('#mensaje_turno_pdv');
+					var turnoControl = $('[data-turno-validation="1"]').first();
 
 					if (!turnoId && (!fecha || !bodegaId)) {
+						turnoControl.removeAttr('data-turno-domain-validating data-turno-domain-valid data-turno-domain-message');
 						return;
+					}
+					if (turnoId) {
+						turnoControl.attr('data-turno-domain-validating', '1');
+					} else {
+						turnoControl.removeAttr('data-turno-domain-validating data-turno-domain-valid data-turno-domain-message');
 					}
 
 					$('#hora_inicio, #hora_finalizacion').val('').prop('readonly', true);
@@ -170,7 +177,9 @@
 						inv_bodega_id: bodegaId,
 						turno_operativo_id: turnoId
 					}).done(function(respuesta){
+						turnoControl.removeAttr('data-turno-domain-validating');
 						if (respuesta.encontrado) {
+							turnoControl.attr('data-turno-domain-valid', '1').removeAttr('data-turno-domain-message');
 							if (respuesta.turno.fecha_operativa) {
 								$('#fecha').val(respuesta.turno.fecha_operativa);
 							}
@@ -188,6 +197,12 @@
 								.show();
 							return;
 						}
+						if (turnoId) {
+							turnoControl.attr('data-turno-domain-valid', '0')
+								.attr('data-turno-domain-message', respuesta.mensaje);
+						} else {
+							turnoControl.removeAttr('data-turno-domain-valid data-turno-domain-message');
+						}
 
 						$('#hora_inicio, #hora_finalizacion').prop('readonly', false);
 						mensaje.removeClass('alert-info alert-success alert-danger')
@@ -195,6 +210,11 @@
 							.text(respuesta.mensaje)
 							.show();
 					}).fail(function(){
+						turnoControl.removeAttr('data-turno-domain-validating');
+						if (turnoId) {
+							turnoControl.attr('data-turno-domain-valid', '0')
+								.attr('data-turno-domain-message', 'No fue posible validar el turno seleccionado para el Inventario Físico.');
+						}
 						$('#hora_inicio, #hora_finalizacion').prop('readonly', false);
 						mensaje.removeClass('alert-info alert-success alert-warning')
 							.addClass('alert-danger')

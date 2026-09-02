@@ -78,6 +78,58 @@ class TurnoOperativoLookupController extends Controller
         return response($this->renderSuggestions($turns));
     }
 
+    public function validateSelection(Request $request)
+    {
+        $module = trim((string)$request->input('modulo'));
+        if (!$this->isIntegratedModule($module)) {
+            return $this->validationError('El módulo indicado no admite turnos operativos.');
+        }
+
+        $companyId = (int)Auth::user()->empresa_id;
+        $turnId = (int)$request->input('turno_operativo_id');
+        $locked = $this->selectionLockedForCurrentUser();
+
+        if ($turnId <= 0) {
+            if (!$locked && config('turnos.simple_company_mode', false)) {
+                return response()->json(array('ok' => true, 'turno_operativo_id' => null));
+            }
+            $current = $this->openTurnForCurrentCashier($companyId);
+            if (is_null($current)) {
+                return $this->validationError('No existe un turno abierto asignado al usuario cajero. Debe realizar la apertura antes de continuar.');
+            }
+            return response()->json(array('ok' => true, 'turno_operativo_id' => (int)$current->id, 'estado' => $current->estado));
+        }
+
+        $turn = TurnoOperativo::where('id', $turnId)
+            ->where('core_empresa_id', $companyId)
+            ->first();
+        if (is_null($turn)) {
+            return $this->validationError('El turno seleccionado no existe o pertenece a otra empresa.');
+        }
+
+        if ($locked) {
+            $current = $this->openTurnForCurrentCashier($companyId);
+            if (is_null($current) || (int)$current->id !== (int)$turn->id) {
+                return $this->validationError('El turno asignado al cajero ya no está abierto o no corresponde al usuario actual.');
+            }
+        }
+
+        if ($turn->estado === TurnoOperativo::ESTADO_ABIERTO) {
+            return response()->json(array('ok' => true, 'turno_operativo_id' => (int)$turn->id, 'estado' => $turn->estado));
+        }
+        if (in_array($turn->estado, array(TurnoOperativo::ESTADO_CERRADO, TurnoOperativo::ESTADO_AUDITADO), true)) {
+            if (!Auth::user()->can('turnos.ajustes.registrar')) {
+                return $this->validationError('No tiene permiso para registrar operaciones sobre un turno cerrado o auditado.');
+            }
+            if (trim((string)$request->input('turno_ajuste_motivo')) === '') {
+                return $this->validationError('Debe indicar el motivo del ajuste para utilizar un turno cerrado o auditado.', 'turno_ajuste_motivo');
+            }
+            return response()->json(array('ok' => true, 'turno_operativo_id' => (int)$turn->id, 'estado' => $turn->estado));
+        }
+
+        return $this->validationError('El turno seleccionado está en estado ' . $turn->estado . ' y no admite nuevas operaciones.');
+    }
+
     protected function allowedStates()
     {
         if (Auth::user()->can('turnos.ajustes.registrar')) {
@@ -108,6 +160,7 @@ class TurnoOperativoLookupController extends Controller
             $label = $turn->codigo . ' | ' . $turn->fecha_operativa . ' | ' . $context . ' | ' . $turn->estado;
             $html .= '<a class="list-group-item list-group-item-sugerencia' . ($index === 0 ? ' active' : '') . '"'
                 . ' data-registro_id="' . (int)$turn->id . '"'
+                . ' data-turno-estado="' . e($turn->estado) . '"'
                 . ' data-primer_item="' . ($index === 0 ? 1 : 0) . '"'
                 . ' data-ultimo_item="' . ($index === $last ? 1 : 0) . '"'
                 . ' data-accion="na">' . e($label) . '</a>';
@@ -117,4 +170,29 @@ class TurnoOperativoLookupController extends Controller
         }
         return $html . '</div>';
     }
+
+    protected function selectionLockedForCurrentUser()
+    {
+        foreach ((array)config('turnos.turn_selection_locked_roles', array()) as $role) {
+            if (Auth::user()->hasRole($role)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected function openTurnForCurrentCashier($companyId)
+    {
+        return TurnoOperativo::where('core_empresa_id', (int)$companyId)
+            ->where('abierto_por', (int)Auth::id())
+            ->abiertos()
+            ->orderBy('id', 'DESC')
+            ->first();
+    }
+
+    protected function validationError($message, $field = 'turno_operativo_id')
+    {
+        return response()->json(array('ok' => false, 'message' => $message, 'field' => $field), 422);
+    }
+
 }

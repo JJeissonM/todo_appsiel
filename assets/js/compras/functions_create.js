@@ -861,6 +861,8 @@ function calcular_precio_total()
 function validar_todo()
 {
     if ( validar_documento_proveedor() ) { return false; }
+
+    if ( !validar_bodega_compra() ) { return false; }
     
     if ( !validar_requeridos() ) { return false; }
 
@@ -869,6 +871,30 @@ function validar_todo()
         alert('No ha ingresado productos.');
         reset_linea_ingreso_default();
         return false;		  			
+    }
+
+    return true;
+}
+
+function validar_bodega_compra()
+{
+    var campo_bodega = $('#inv_bodega_id');
+    var bodega_id = parseInt(campo_bodega.val(), 10);
+
+    if (campo_bodega.length && (!$.isNumeric(bodega_id) || bodega_id <= 0)) {
+        Swal.fire({
+            icon: 'warning',
+            title: '¡Atención!',
+            text: 'Debe seleccionar la bodega donde ingresará la mercancía.'
+        }).then(function () {
+            var input_combobox = campo_bodega.next('.custom-combobox').find('.custom-combobox-input');
+            if (input_combobox.length) {
+                input_combobox.focus();
+            } else {
+                campo_bodega.focus();
+            }
+        });
+        return false;
     }
 
     return true;

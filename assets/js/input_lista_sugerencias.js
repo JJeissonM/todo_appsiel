@@ -84,6 +84,7 @@ $(document).ready( function(){
 					return false;
 				}
 				obj_input.removeAttr('data-registro_id');
+				obj_input.removeAttr('data-turno-state');
 				hidden_input.val('');
 				obj_input.attr('data-selected-label', '');
 
@@ -163,6 +164,9 @@ $(document).ready( function(){
 		obj_text_input.attr( 'data-registro_id', item_sugerencia.attr( 'data-registro_id' ) );
 		obj_text_input.val(selected_label);
 		obj_text_input.attr('data-selected-label', selected_label);
+		if (obj_text_input.hasClass('turno-operativo-ajax')) {
+			obj_text_input.attr('data-turno-state', item_sugerencia.attr('data-turno-estado') || '');
+		}
         obj_text_input.css( 'background-color','white' );
 
         $('#lista_sugerencias').remove();
@@ -191,6 +195,7 @@ $(document).ready( function(){
 	$(document).on('change', '[name="pdv_id"]', function() {
 		$('.turno-operativo-ajax').each(function() {
 			$(this).val('').removeAttr('data-registro_id').attr('data-selected-label', '');
+			$(this).removeAttr('data-turno-state');
 			$(this).next('input[type="hidden"]').val('');
 		});
 	});

@@ -93,6 +93,7 @@ Route::put('turnos/configuraciones/{id}', 'Core\TurnoConfiguracionController@upd
 Route::patch('turnos/configuraciones/{id}', 'Core\TurnoConfiguracionController@update');
 Route::get('turnos/configuraciones/{id}/eliminar', 'Core\TurnoConfiguracionController@destroy');
 Route::get('turnos/operativos/sugerencias', 'Core\TurnoOperativoLookupController@suggestions');
+Route::post('turnos/operativos/validar-seleccion', 'Core\TurnoOperativoLookupController@validateSelection');
 
 
 

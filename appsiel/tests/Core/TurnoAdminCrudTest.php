@@ -359,6 +359,14 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertContains('type="hidden"', $html);
         $this->assertContains('name="turno_operativo_id"', $html);
         $this->assertContains('value="' . $turn->id . '"', $html);
+
+        $this->call('POST', '/turnos/operativos/validar-seleccion', array(
+            'modulo' => 'tesoreria',
+            'turno_operativo_id' => '',
+        ));
+        $this->assertResponseOk();
+        $this->assertContains('"turno_operativo_id":' . $turn->id, $this->response->getContent());
+
     }
 
     public function test_turno_persistido_no_se_puede_reasignar_desde_una_edicion_ordinaria()
@@ -417,6 +425,8 @@ class TurnoAdminCrudTest extends TestCase
         $turnField = $this->turnField($fields);
         $this->assertSame('input_lista_sugerencias', $turnField['tipo']);
         $this->assertSame(array(), $turnField['opciones']);
+        $this->assertSame('1', $turnField['atributos']['data-turno-validation']);
+        $this->assertContains('/turnos/operativos/validar-seleccion', $turnField['atributos']['data-turno-validation-url']);
         $this->assertNotNull($this->fieldNamed($fields, 'turno_ajuste_motivo'));
 
         $this->call('GET', '/turnos/operativos/sugerencias', array(
@@ -429,6 +439,23 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertContains('data-registro_id="' . $turn->id . '"', $suggestions);
         $this->assertContains($turn->codigo, $suggestions);
         $this->assertContains('CERRADO', $suggestions);
+        $this->assertContains('data-turno-estado="CERRADO"', $suggestions);
+
+        $this->call('POST', '/turnos/operativos/validar-seleccion', array(
+            'modulo' => 'tesoreria',
+            'turno_operativo_id' => $turn->id,
+            'turno_ajuste_motivo' => '',
+        ));
+        $this->assertResponseStatus(422);
+        $this->assertContains('motivo del ajuste', $this->response->getContent());
+
+        $this->call('POST', '/turnos/operativos/validar-seleccion', array(
+            'modulo' => 'tesoreria',
+            'turno_operativo_id' => $turn->id,
+            'turno_ajuste_motivo' => 'Corrección autorizada desde la transacción',
+        ));
+        $this->assertResponseOk();
+        $this->assertContains('"ok":true', $this->response->getContent());
 
         $attributes = array(
             'fecha' => '2026-08-29', 'core_empresa_id' => 1, 'core_tercero_id' => 1,
@@ -562,6 +589,20 @@ class TurnoAdminCrudTest extends TestCase
 
         $this->assertContains('<html', $html);
         $this->assertNotContains('Turno operativo:', $html);
+    }
+
+    public function test_validacion_ajax_de_turnos_preserva_los_manejadores_y_lineas_del_formulario()
+    {
+        $script = file_get_contents(dirname(base_path()) . '/assets/js/core/turno_transacciones.js');
+        $inventoryView = file_get_contents(resource_path('views/inventarios/inventario_fisico/create.blade.php'));
+
+        $this->assertContains("button.id !== 'bs_boton_guardar'", $script);
+        $this->assertContains("button.id !== 'btn_guardar'", $script);
+        $this->assertContains("triggerHandler('click')", $script);
+        $this->assertContains("event.stopImmediatePropagation()", $script);
+        $this->assertNotContains("addClass('disabled')", $script);
+        $this->assertContains('data-turno-domain-valid', $inventoryView);
+        $this->assertContains('data-turno-domain-message', $inventoryView);
     }
 
     protected function authenticateCompanyUser()

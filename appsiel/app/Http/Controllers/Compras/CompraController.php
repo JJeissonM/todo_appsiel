@@ -24,6 +24,7 @@ use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
 use App\Inventarios\InvMotivo;
 use App\Inventarios\InvCostoPromProducto;
+use App\Inventarios\InvBodega;
 
 use App\Compras\ComprasTransaccion;
 use App\Compras\ComprasDocEncabezado;
@@ -107,6 +108,14 @@ class CompraController extends TransaccionController
      */
     public function store(Request $request)
     {
+        $bodegaValida = InvBodega::where('id', (int)$request->input('inv_bodega_id'))
+            ->where('core_empresa_id', (int)Auth::user()->empresa_id)
+            ->where('estado', 'Activo')
+            ->exists();
+        if (!$bodegaValida) {
+            return redirect()->back()->withInput()
+                ->with('mensaje_error', 'Debe seleccionar una bodega activa de la empresa para registrar la factura de compra.');
+        }
         $lineas_registros_originales = json_decode($request->all()['lineas_registros']);
         if (is_array($lineas_registros_originales)) {
             $lineas_registros_originales = (new RetencionFuenteService())->liquidar_lineas_request(
@@ -147,7 +156,6 @@ class CompraController extends TransaccionController
 
         return redirect('compras/' . $doc_encabezado->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
     }
-
 
     public function get_total_documento_desde_lineas_registros(array $lineas_registros)
     {
