@@ -62,6 +62,36 @@ class HotelDirectPosInvoicePeriodTest extends TestCase
         $thirdDirectInvoiceId = $this->insertPosInvoice($referenceInvoice, $client, 990003, '2035-01-03 01:00:00', '2035-01-02', $thirdTurnId);
         $orderInvoiceId = $this->insertPosInvoice($referenceInvoice, $client, 990004, '2035-01-02 02:00:00', '2035-01-01', $secondTurnId);
         $laterInvoiceId = $this->insertPosInvoice($referenceInvoice, $client, 990005, '2035-01-05 10:00:00', '2035-01-05', $laterTurnId);
+
+        $staleStayId = DB::table('hotel_stays')->insertGetId(array(
+            'empresa_id' => $client->core_empresa_id,
+            'main_cliente_id' => $client->id,
+            'room_id' => $room->id,
+            'check_in_at' => '2034-01-01 08:00:00',
+            'expected_check_out_at' => '2034-01-02 10:00:00',
+            'check_out_at' => '2034-01-02 10:00:00',
+            'adults_count' => 1,
+            'children_count' => 0,
+            'total_guests' => 1,
+            'status' => HotelStay::STATUS_CERRADA,
+            'created_at' => '2034-01-01 08:00:00',
+            'updated_at' => '2034-01-02 10:00:00',
+        ));
+        // Simula una relación antigua después de reutilizarse el ID de una
+        // factura eliminada. No puede ocultar la nueva factura POS pagada.
+        DB::table('hotel_order_headers')->insert(array(
+            'empresa_id' => $client->core_empresa_id,
+            'stay_id' => $staleStayId,
+            'cliente_id' => $client->id,
+            'pdv_id' => $referenceInvoice->pdv_id,
+            'document_number' => 'HOT-STALE-POS-ID',
+            'order_date' => '2034-01-01 08:30:00',
+            'status' => 'FACTURADO',
+            'invoice_type' => 'POS',
+            'pos_doc_id' => $firstDirectInvoiceId,
+            'created_at' => '2034-01-01 08:30:00',
+            'updated_at' => '2034-01-02 09:00:00',
+        ));
         DB::table('hotel_order_headers')->insert(array(
             'empresa_id' => $client->core_empresa_id,
             'stay_id' => $stayId,
@@ -73,16 +103,24 @@ class HotelDirectPosInvoicePeriodTest extends TestCase
             'invoice_type' => 'POS',
             'pos_doc_id' => $orderInvoiceId,
             'created_at' => '2035-01-01 00:45:00',
-            'updated_at' => '2035-01-01 01:10:00',
+            // El pedido se actualiza al persistir la factura generada.
+            'updated_at' => '2035-01-02 02:01:00',
         ));
 
         $stay = HotelStay::with('mainGuest.tercero', 'guests.cliente.tercero')->find($stayId);
         $controller = new HotelStayController();
         $method = new ReflectionMethod($controller, 'directPosInvoicesForStayGuests');
         $method->setAccessible(true);
-        $invoiceIds = $method->invoke($controller, $stay)->pluck('id')->all();
+        $invoices = $method->invoke($controller, $stay);
+        $invoiceIds = $invoices->pluck('id')->all();
 
         $this->assertContains($firstDirectInvoiceId, $invoiceIds);
+        $this->assertSame(
+            'PAGADO',
+            $invoices->first(function ($key, $invoice) use ($firstDirectInvoiceId) {
+                return (int)$invoice->id === (int)$firstDirectInvoiceId;
+            })->hotel_status_label
+        );
         $this->assertContains($secondDirectInvoiceId, $invoiceIds);
         $this->assertContains($thirdDirectInvoiceId, $invoiceIds);
         $this->assertNotContains($orderInvoiceId, $invoiceIds);

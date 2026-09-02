@@ -324,10 +324,26 @@ class HotelStayController extends Controller
 
         $clientIds = array_values(array_unique(array_filter($clientIds)));
         $terceroIds = array_values(array_unique(array_filter($terceroIds)));
-        $hotelOrderPosInvoiceIds = HotelOrderHeader::where('empresa_id', $stay->empresa_id)
-            ->whereNotNull('pos_doc_id')
-            ->where('pos_doc_id', '>', 0)
-            ->lists('pos_doc_id')
+        $hotelOrderPosInvoiceIds = HotelOrderHeader::join(
+                'vtas_pos_doc_encabezados AS hotel_order_pos_invoice',
+                'hotel_order_pos_invoice.id',
+                '=',
+                'hotel_order_headers.pos_doc_id'
+            )
+            ->where('hotel_order_headers.empresa_id', $stay->empresa_id)
+            ->whereRaw('hotel_order_pos_invoice.core_empresa_id = hotel_order_headers.empresa_id')
+            ->whereNotNull('hotel_order_headers.pos_doc_id')
+            ->where('hotel_order_headers.pos_doc_id', '>', 0)
+            // Al facturar un pedido, éste se actualiza después de crear la
+            // factura. Si updated_at es anterior al created_at de la factura,
+            // se trata de una relación histórica obsoleta cuyo ID fue
+            // reutilizado y no debe ocultar una factura POS directa actual.
+            ->where(function ($query) {
+                $query->whereNull('hotel_order_pos_invoice.created_at')
+                    ->orWhereNull('hotel_order_headers.updated_at')
+                    ->orWhereRaw('hotel_order_headers.updated_at >= hotel_order_pos_invoice.created_at');
+            })
+            ->lists('hotel_order_headers.pos_doc_id')
             ->toArray();
         $checkInAt = (string)$stay->check_in_at;
         $checkOutAt = !empty($stay->check_out_at) ? (string)$stay->check_out_at : date('Y-m-d H:i:s');
