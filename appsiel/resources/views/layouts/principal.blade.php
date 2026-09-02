@@ -737,7 +737,7 @@
 	</script>
 
 	<script src="{{ asset('assets/js/input_lista_sugerencias.js') }}?v=2026090203"></script> <!-- -->
-	<script src="{{ asset('assets/js/core/turno_transacciones.js') }}?v=2026090203"></script>
+	<script src="{{ asset('assets/js/core/turno_transacciones.js') }}?v=2026090204"></script>
 
 	@yield('scripts')
 	@yield('scripts1')

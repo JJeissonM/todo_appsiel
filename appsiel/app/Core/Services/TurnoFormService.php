@@ -4,6 +4,7 @@ namespace App\Core\Services;
 
 use App\Core\TurnoConfiguracion;
 use App\Core\TurnoOperativo;
+use App\Inventarios\Services\InventoryPhysicalPdvShiftService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 
@@ -41,6 +42,7 @@ class TurnoFormService
         $persistedTurnId = is_object($registro) ? (int)$registro->getAttribute('turno_operativo_id') : 0;
         $isEdit = $accion === 'edit';
         $allowsManualCreate = isset($manualModels[$modelo->name_space]);
+        $isInventoryPhysical = $modelo->name_space === 'App\\Inventarios\\InvFisico';
         $selectionLocked = !$isEdit && $this->selectionLockedForCurrentUser();
         $administrativeOptional = !$isEdit
             && !$selectionLocked
@@ -60,7 +62,7 @@ class TurnoFormService
             $options = $this->options($empresaId, $module, $persistedTurnId, true);
             $value = $persistedTurnId;
         } elseif ($selectionLocked) {
-            $options = $this->lockedOptionsForRequest($empresaId, $module);
+            $options = $this->lockedOptionsForRequest($empresaId, $module, $isInventoryPhysical);
             $value = $this->singleOptionValue($options);
         } elseif ($administrativeOptional) {
             // El administrador decide explícitamente si la transacción pertenece
@@ -105,6 +107,10 @@ class TurnoFormService
             $field['atributos']['data-turno-validation'] = '1';
             $field['atributos']['data-turno-validation-url'] = url('turnos/operativos/validar-seleccion');
             $field['atributos']['data-turno-module'] = $module;
+            if ($isInventoryPhysical && $selectionLocked) {
+                $field['atributos']['data-turno-operation'] = InventoryPhysicalPdvShiftService::CLOSING_CONTROL_OPERATION;
+                $field['definicion'] = 'Si el cajero ya cerró su turno, se asigna su último turno cerrado para documentar el control físico de entrega.';
+            }
         }
 
         $fieldReplaced = false;
@@ -160,7 +166,7 @@ class TurnoFormService
         return false;
     }
 
-    protected function lockedOptionsForRequest($empresaId, $module)
+    protected function lockedOptionsForRequest($empresaId, $module, $allowLastClosedForPhysicalControl = false)
     {
         $userId = Auth::check() ? (int)Auth::user()->id : 0;
         if ($userId <= 0) {
@@ -179,7 +185,9 @@ class TurnoFormService
             if (!is_null($turno) && $this->modeResolver->enabled($empresaId, $module, 'pdv', $pdvId)) {
                 return array($turno->id => $this->optionLabel($turno));
             }
-            return array();
+            return $allowLastClosedForPhysicalControl
+                ? $this->lastClosedPhysicalControlOption($empresaId, $module, $userId, $pdvId)
+                : array();
         }
 
         // Algunos formularios de transacciones (por ejemplo, recaudos de CxC)
@@ -205,7 +213,25 @@ class TurnoFormService
             }
         }
 
-        return array();
+        return $allowLastClosedForPhysicalControl
+            ? $this->lastClosedPhysicalControlOption($empresaId, $module, $userId)
+            : array();
+    }
+
+    protected function lastClosedPhysicalControlOption($empresaId, $module, $userId, $pdvId = null)
+    {
+        $turno = app(InventoryPhysicalPdvShiftService::class)
+            ->lastClosedTurnForCashier($empresaId, $userId, $pdvId);
+        if (is_null($turno) || !$this->modeResolver->enabled(
+            $empresaId,
+            $module,
+            $turno->contexto_tipo,
+            (int)$turno->contexto_id
+        )) {
+            return array();
+        }
+
+        return array($turno->id => $this->optionLabel($turno));
     }
 
     protected function companyId($registro)

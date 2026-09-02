@@ -44,9 +44,12 @@
 
     function localValidation(form, marker) {
         var turnId = selectedTurnId(form);
+        var isPhysicalClosingControl = marker.attr('data-turno-operation') === 'inventory_physical_closing_control';
         if (marker.attr('data-turno-locked') === '1' && turnId === '') {
             return {
-                message: 'No existe un turno abierto asignado al usuario cajero. Debe realizar la apertura antes de continuar.',
+                message: isPhysicalClosingControl
+                    ? 'No existe un último turno cerrado válido del cajero para realizar el control físico de entrega.'
+                    : 'No existe un turno abierto asignado al usuario cajero. Debe realizar la apertura antes de continuar.',
                 field: 'turno_operativo_id'
             };
         }
@@ -63,7 +66,7 @@
 
         var state = selectedState(form);
         var reason = $.trim(form.find('[name="turno_ajuste_motivo"]').first().val() || '');
-        if ((state === 'CERRADO' || state === 'AUDITADO') && reason === '') {
+        if ((state === 'CERRADO' || state === 'AUDITADO') && reason === '' && !isPhysicalClosingControl) {
             return {
                 message: 'Debe indicar el motivo del ajuste para utilizar un turno cerrado o auditado.',
                 field: 'turno_ajuste_motivo'
@@ -96,12 +99,20 @@
             data: {
                 _token: $('meta[name="csrf-token"]').attr('content'),
                 modulo: marker.attr('data-turno-module'),
+                operacion_turno: marker.attr('data-turno-operation') || '',
                 turno_operativo_id: selectedTurnId(form),
                 turno_ajuste_motivo: $.trim(form.find('[name="turno_ajuste_motivo"]').first().val() || '')
             }
         }).done(function (response) {
             if (response.turno_operativo_id && !selectedTurnId(form)) {
-                form.find('input[type="hidden"][name="turno_operativo_id"]').first().val(response.turno_operativo_id);
+                var hiddenTurn = form.find('input[type="hidden"][name="turno_operativo_id"]').first();
+                if (!hiddenTurn.length) {
+                    hiddenTurn = $('<input>', {
+                        type: 'hidden',
+                        name: 'turno_operativo_id'
+                    }).appendTo(form);
+                }
+                hiddenTurn.val(response.turno_operativo_id);
             }
             form.removeData('turno-validating');
             $('#div_cargando').hide();

@@ -10,6 +10,43 @@ use Carbon\Carbon;
 
 class InventoryPhysicalPdvShiftService
 {
+    const CLOSING_CONTROL_OPERATION = 'inventory_physical_closing_control';
+
+    /**
+     * Último turno efectivamente cerrado por el cajero. Se usa únicamente para
+     * el conteo físico de entrega posterior al cierre; no habilita operaciones
+     * comerciales ordinarias sobre turnos históricos.
+     */
+    public function lastClosedTurnForCashier($companyId, $userId, $pdvId = null)
+    {
+        $companyId = (int)$companyId;
+        $userId = (int)$userId;
+        $pdvId = (int)$pdvId;
+        if ($companyId <= 0 || $userId <= 0) {
+            return null;
+        }
+
+        $query = TurnoOperativo::where('core_empresa_id', $companyId)
+            ->where('abierto_por', $userId)
+            ->where('estado', TurnoOperativo::ESTADO_CERRADO)
+            ->whereNotNull('abierto_en')
+            ->whereNotNull('cerrado_en');
+
+        if ($pdvId > 0) {
+            $query->where('contexto_tipo', 'pdv')->where('contexto_id', $pdvId);
+        }
+
+        // Se validan también el PDV y el orden cronológico para no ofrecer un
+        // turno incompleto aunque existan datos históricos defectuosos.
+        foreach ($query->orderBy('cerrado_en', 'DESC')->orderBy('id', 'DESC')->limit(20)->get() as $turn) {
+            if (!is_null($this->findForTurn($companyId, $turn->id))) {
+                return $turn;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Resuelve el rango desde la entidad de turno explícita. El usuario que
      * ejecuta el inventario no interviene en la pertenencia del rango.

@@ -30,6 +30,7 @@ use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\AjustarSaldosBodegaService;
 use App\Inventarios\Services\InventoryPhysicalPdvShiftService;
 use App\Inventarios\Services\InventoryPhysicalShiftService;
+use App\Core\Services\TurnoContext;
 use App\Ventas\RestauranteCocina;
 use App\Ventas\VtasMovimiento;
 use App\Compras\Proveedor;
@@ -141,6 +142,9 @@ class InvFisicoController extends TransaccionController
         );
         $simpleCompanyMode = (bool)config('turnos.simple_company_mode', false);
         $cashierWithAutomaticTurn = $turnosEnabled && $this->turnSelectionLockedForCurrentUser();
+        $closingControlTurn = $cashierWithAutomaticTurn
+            ? $this->closedTurnForPhysicalControl($request)
+            : null;
 
         if ($shiftService->isEnabled()) {
             $turnoPdv = $this->buscarTurnoPdvDelUsuario($request);
@@ -179,7 +183,29 @@ class InvFisicoController extends TransaccionController
 
         $lineas_registros = $this->preparar_array_lineas_registros( $request->movimiento );
         
-        $doc_encabezado_id = InvFisicoController::crear_documento( $request, $lineas_registros, $request->url_id_modelo );
+        if (!is_null($closingControlTurn)) {
+            // El inventario de entrega es un nuevo documento creado después del
+            // cierre, pero describe el stock resultante de ese turno. El contexto
+            // histórico autoriza únicamente esa FK y la propaga a sus registros.
+            $doc_encabezado_id = app(TurnoContext::class)->runFromOrigin(
+                $closingControlTurn,
+                'INVENTARIO_FISICO_ENTREGA_TURNO',
+                (int)$closingControlTurn->id,
+                function () use ($request, $lineas_registros) {
+                    return InvFisicoController::crear_documento(
+                        $request,
+                        $lineas_registros,
+                        $request->url_id_modelo
+                    );
+                }
+            );
+        } else {
+            $doc_encabezado_id = InvFisicoController::crear_documento(
+                $request,
+                $lineas_registros,
+                $request->url_id_modelo
+            );
+        }
 
         return redirect('inv_fisico/'.$doc_encabezado_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
     }
@@ -223,6 +249,25 @@ class InvFisicoController extends TransaccionController
         $service = new InventoryPhysicalPdvShiftService();
         $turnId = (int)$request->input('turno_operativo_id');
         if ($turnId > 0) {
+            if ($this->turnSelectionLockedForCurrentUser()) {
+                $open = \App\Core\TurnoOperativo::where('core_empresa_id', (int)$user->empresa_id)
+                    ->where('abierto_por', (int)$user->id)
+                    ->abiertos()
+                    ->orderBy('id', 'DESC')
+                    ->first();
+                if (!is_null($open) && (int)$open->id !== $turnId) {
+                    return null;
+                }
+                if (is_null($open)) {
+                    $closed = $service->lastClosedTurnForCashier(
+                        (int)$user->empresa_id,
+                        (int)$user->id
+                    );
+                    if (is_null($closed) || (int)$closed->id !== $turnId) {
+                        return null;
+                    }
+                }
+            }
             return $service->findForTurn(
                 $user->empresa_id,
                 $turnId
@@ -244,6 +289,33 @@ class InvFisicoController extends TransaccionController
             $request->input('inv_bodega_id'),
             $request->input('fecha')
         );
+    }
+
+    /**
+     * Autoriza al cajero a asociar el inventario físico de entrega con su último
+     * turno cerrado. No sirve para escoger otro turno ni para crear otro tipo de
+     * transacción sobre un turno histórico.
+     */
+    private function closedTurnForPhysicalControl(Request $request)
+    {
+        $user = Auth::user();
+        $turnId = (int)$request->input('turno_operativo_id');
+        if (is_null($user) || $turnId <= 0) {
+            return null;
+        }
+
+        $ownOpenTurnExists = \App\Core\TurnoOperativo::where('core_empresa_id', (int)$user->empresa_id)
+            ->where('abierto_por', (int)$user->id)
+            ->abiertos()
+            ->exists();
+        if ($ownOpenTurnExists) {
+            return null;
+        }
+
+        $turn = app(InventoryPhysicalPdvShiftService::class)
+            ->lastClosedTurnForCashier((int)$user->empresa_id, (int)$user->id);
+
+        return !is_null($turn) && (int)$turn->id === $turnId ? $turn : null;
     }
 
     private function turnSelectionLockedForCurrentUser()

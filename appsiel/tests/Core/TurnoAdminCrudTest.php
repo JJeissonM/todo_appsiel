@@ -9,6 +9,7 @@ use App\Core\TurnoConfiguracion;
 use App\Core\TurnoEvento;
 use App\Core\TurnoOperativo;
 use App\Core\Empresa;
+use App\Inventarios\Services\InventoryPhysicalPdvShiftService;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoDocEncabezado;
 use App\User;
@@ -539,6 +540,61 @@ class TurnoAdminCrudTest extends TestCase
         ));
         $this->assertResponseOk();
         $this->assertSame(20, substr_count($this->response->getContent(), 'data-registro_id='));
+    }
+
+    public function test_inventario_fisico_de_entrega_asigna_el_ultimo_turno_cerrado_del_cajero()
+    {
+        $this->authenticateCompanyUser();
+        $cashierId = DB::table('users as user')
+            ->join('user_has_roles as assigned_role', 'assigned_role.user_id', '=', 'user.id')
+            ->join('roles as role', 'role.id', '=', 'assigned_role.role_id')
+            ->where('user.empresa_id', 1)
+            ->whereIn('role.name', (array)config('turnos.turn_selection_locked_roles', array()))
+            ->value('user.id');
+        $this->assertGreaterThan(0, (int)$cashierId);
+
+        app(TurnoConfigurationService::class)->configure(array(
+            'core_empresa_id' => 1,
+            'modulo' => 'inventarios',
+            'contexto_tipo' => 'pdv',
+            'contexto_id' => 1,
+            'modo' => TurnoConfiguracion::MODO_TURNOS,
+        ));
+        $manager = app(TurnoManager::class);
+        $turn = $manager->openContext(
+            1, 'inventarios', 'pdv', 1, '2026-09-02', (int)$cashierId, 0, '2026-09-02 06:00:00'
+        );
+        $manager->close($turn, (int)$cashierId, 0, 'Entrega de turno', '2026-09-02 14:00:00');
+
+        $this->be(User::find($cashierId));
+        app('request')->replace(array());
+        $model = (object)array('name_space' => 'App\\Inventarios\\InvFisico');
+        $field = $this->turnField(app(TurnoFormService::class)->decorate($model, null, 'create', array()));
+
+        $this->assertNotNull($field);
+        $this->assertSame('select', $field['tipo']);
+        $this->assertSame((int)$turn->id, (int)$field['value']);
+        $this->assertSame(array($turn->id), array_keys($field['opciones']));
+        $this->assertArrayHasKey('disabled', $field['atributos']);
+        $this->assertSame(
+            InventoryPhysicalPdvShiftService::CLOSING_CONTROL_OPERATION,
+            $field['atributos']['data-turno-operation']
+        );
+
+        $this->call('POST', '/turnos/operativos/validar-seleccion', array(
+            'modulo' => 'inventarios',
+            'turno_operativo_id' => $turn->id,
+            'operacion_turno' => InventoryPhysicalPdvShiftService::CLOSING_CONTROL_OPERATION,
+        ));
+        $this->assertResponseOk();
+        $this->assertContains('LAST_CLOSED_CASHIER', $this->response->getContent());
+
+        // La misma FK cerrada continúa prohibida para cualquier otra operación.
+        $this->call('POST', '/turnos/operativos/validar-seleccion', array(
+            'modulo' => 'inventarios',
+            'turno_operativo_id' => $turn->id,
+        ));
+        $this->assertResponseStatus(422);
     }
 
     public function test_referencia_visual_muestra_turno_persistido_y_oculta_fk_nula()
