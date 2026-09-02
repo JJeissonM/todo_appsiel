@@ -1,6 +1,11 @@
 <?php
 
 return array(
+    // Implementación inicial simplificada: una sola configuración y un solo
+    // turno abierto para toda la empresa. El PDV se conserva únicamente como
+    // dato descriptivo de la apertura histórica.
+    'simple_company_mode' => true,
+
     'modules' => array(
         'ventas_pos' => array('integrated' => true),
         'ventas' => array('integrated' => true),

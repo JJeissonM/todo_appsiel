@@ -20,6 +20,11 @@ class TurnoConfigurationService
 
     public function configure(array $data)
     {
+        if (config('turnos.simple_company_mode', false)) {
+            $data['modulo'] = '*';
+            $data['contexto_tipo'] = '*';
+            $data['contexto_id'] = 0;
+        }
         $shapeErrors = $this->validateShape($data);
         if (!empty($shapeErrors)) {
             throw new TurnoIntegrityException(implode(' ', $shapeErrors));

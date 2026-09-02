@@ -124,6 +124,7 @@ class TurnoConfiguracion extends Model
     protected static function prepareAdminFields($campos, $registro, $editing)
     {
         $empresaId = Auth::check() ? (int)Auth::user()->empresa_id : 0;
+        $simpleMode = (bool)config('turnos.simple_company_mode', false);
         foreach ($campos as $key => $campo) {
             if ($campo['name'] === 'core_empresa_id') {
                 // bsLabel muestra la empresa activa y conserva su identificador en
@@ -143,13 +144,31 @@ class TurnoConfiguracion extends Model
                     'pdv' => 'PDV',
                     '*' => 'Empresa / todos',
                 );
+                if ($simpleMode) {
+                    $campos[$key]['tipo'] = 'hidden';
+                    $campos[$key]['value'] = '*';
+                    $campos[$key]['editable'] = 0;
+                    $campos[$key]['atributos'] = array();
+                }
             }
             if ($campo['name'] === 'contexto_id') {
                 $campos[$key]['opciones'] = static::contextOptions($empresaId);
+                if ($simpleMode) {
+                    $campos[$key]['tipo'] = 'hidden';
+                    $campos[$key]['value'] = 0;
+                    $campos[$key]['editable'] = 0;
+                    $campos[$key]['atributos'] = array();
+                }
+            }
+            if ($simpleMode && $campo['name'] === 'modulo') {
+                $campos[$key]['tipo'] = 'hidden';
+                $campos[$key]['value'] = '*';
+                $campos[$key]['editable'] = 0;
+                $campos[$key]['atributos'] = array();
             }
             if ($editing && in_array($campo['name'], array('core_empresa_id', 'modulo', 'contexto_tipo', 'contexto_id'), true)) {
                 $campos[$key]['editable'] = 0;
-                if ($campo['name'] !== 'core_empresa_id') {
+                if (!$simpleMode && $campo['name'] !== 'core_empresa_id') {
                     $campos[$key]['atributos'] = array_merge((array)$campos[$key]['atributos'], array('disabled' => 'disabled'));
                 }
             }
@@ -176,6 +195,11 @@ class TurnoConfiguracion extends Model
         $query = static::query();
         if (Auth::check()) {
             $query->where('core_turno_configuraciones.core_empresa_id', (int)Auth::user()->empresa_id);
+        }
+        if (config('turnos.simple_company_mode', false)) {
+            $query->where('core_turno_configuraciones.modulo', '*')
+                ->where('core_turno_configuraciones.contexto_tipo', '*')
+                ->where('core_turno_configuraciones.contexto_id', 0);
         }
         return $query;
     }

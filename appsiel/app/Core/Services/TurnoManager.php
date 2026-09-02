@@ -39,10 +39,13 @@ class TurnoManager
     public function currentForContext($empresaId, $contextType, $contextId, $lock = false)
     {
         $query = TurnoOperativo::where('core_empresa_id', (int)$empresaId)
-            ->where('contexto_tipo', (string)$contextType)
-            ->where('contexto_id', (int)$contextId)
             ->abiertos()
             ->orderBy('id', 'DESC');
+
+        if (!config('turnos.simple_company_mode', false)) {
+            $query->where('contexto_tipo', (string)$contextType)
+                ->where('contexto_id', (int)$contextId);
+        }
 
         if ($lock) {
             $query->lockForUpdate();
@@ -56,7 +59,9 @@ class TurnoManager
         if ((int)$turno->core_empresa_id !== (int)$empresaId) {
             throw new TurnoIntegrityException('El turno operativo pertenece a otra empresa.');
         }
-        if (!is_null($contextType) && ($turno->contexto_tipo !== (string)$contextType || (int)$turno->contexto_id !== (int)$contextId)) {
+        if (!config('turnos.simple_company_mode', false)
+            && !is_null($contextType)
+            && ($turno->contexto_tipo !== (string)$contextType || (int)$turno->contexto_id !== (int)$contextId)) {
             throw new TurnoIntegrityException('El turno operativo no corresponde al contexto donde se intenta operar.');
         }
         if (!$turno->estaAbierto()) {
@@ -372,6 +377,9 @@ class TurnoManager
 
     protected function contextKey($empresaId, $contextType, $contextId)
     {
+        if (config('turnos.simple_company_mode', false)) {
+            return 'empresa:' . (int)$empresaId;
+        }
         return (string)$contextType . ':' . (int)$empresaId . ':' . (int)$contextId;
     }
 

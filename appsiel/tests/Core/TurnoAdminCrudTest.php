@@ -152,7 +152,8 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertSame('bsLabel', $empresaField['tipo']);
         $this->assertSame(1, (int)$empresaField['value']);
         $this->assertSame(array(), $empresaField['atributos']);
-        $this->assertSame('select', $contextField['tipo']);
+        $this->assertSame('hidden', $contextField['tipo']);
+        $this->assertSame('*', $contextField['value']);
         $this->assertSame(array('pdv' => 'PDV', '*' => 'Empresa / todos'), $contextField['opciones']);
     }
 
@@ -187,15 +188,14 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertResponseStatus(302);
         $this->seeInDatabase('core_turno_configuraciones', array(
             'core_empresa_id' => 1,
-            'modulo' => 'ventas_pos',
-            'contexto_tipo' => 'pdv',
-            'contexto_id' => 1,
+            'modulo' => '*',
+            'contexto_tipo' => '*',
+            'contexto_id' => 0,
             'modo' => TurnoConfiguracion::MODO_TURNOS,
         ));
 
         $configuration = TurnoConfiguracion::where('core_empresa_id', 1)
-            ->where('modulo', 'ventas_pos')->where('contexto_tipo', 'pdv')->where('contexto_id', 1)->first();
-        $pdvDescription = DB::table('vtas_pos_puntos_de_ventas')->where('id', 1)->value('descripcion');
+            ->where('modulo', '*')->where('contexto_tipo', '*')->where('contexto_id', 0)->first();
         $listedConfiguration = null;
         foreach (TurnoConfiguracion::consultar_registros(100, '') as $listed) {
             if ((int)$listed->campo7 === (int)$configuration->id) {
@@ -204,7 +204,7 @@ class TurnoAdminCrudTest extends TestCase
             }
         }
         $this->assertNotNull($listedConfiguration);
-        $this->assertSame('PDV 1 - ' . $pdvDescription, $listedConfiguration->campo4);
+        $this->assertSame('Empresa / todos los contextos', $listedConfiguration->campo4);
 
         $this->call('GET', '/web/' . $configuration->id . '/edit', array('id' => 7, 'id_modelo' => $modelId));
         $this->assertResponseOk();
@@ -217,9 +217,9 @@ class TurnoAdminCrudTest extends TestCase
         $this->seeInDatabase('core_turno_configuraciones', array(
             'id' => $configuration->id,
             'core_empresa_id' => 1,
-            'modulo' => 'ventas_pos',
-            'contexto_tipo' => 'pdv',
-            'contexto_id' => 1,
+            'modulo' => '*',
+            'contexto_tipo' => '*',
+            'contexto_id' => 0,
             'modo' => TurnoConfiguracion::MODO_TRADICIONAL,
         ));
         $this->call(
@@ -269,8 +269,7 @@ class TurnoAdminCrudTest extends TestCase
         $field = $this->turnField($createFields);
         $this->assertNotNull($field);
         $this->assertSame('input_lista_sugerencias', $field['tipo']);
-        $this->assertSame((int)$turn->id, (int)$field['value'][1]);
-        $this->assertContains($pdvName, $field['value'][0]);
+        $this->assertSame(array('', ''), $field['value']);
         $this->assertSame(array(), $field['opciones']);
         $this->assertContains('/turnos/operativos/sugerencias?modulo=ventas_pos', $field['atributos']['data-url_busqueda']);
         $this->assertSame('pdv_id', $field['atributos']['data-ajax-fields']);
@@ -280,8 +279,7 @@ class TurnoAdminCrudTest extends TestCase
         $adminFieldWithoutPdv = $this->turnField(
             app(TurnoFormService::class)->decorate($model, null, 'create', array())
         );
-        $this->assertSame((int)$turn->id, (int)$adminFieldWithoutPdv['value'][1]);
-        $this->assertContains($turn->codigo, $adminFieldWithoutPdv['value'][0]);
+        $this->assertSame(array('', ''), $adminFieldWithoutPdv['value']);
 
         $cashierId = DB::table('users as user')
             ->join('user_has_roles as assigned_role', 'assigned_role.user_id', '=', 'user.id')
@@ -431,18 +429,6 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertContains('data-registro_id="' . $turn->id . '"', $suggestions);
         $this->assertContains($turn->codigo, $suggestions);
         $this->assertContains('CERRADO', $suggestions);
-
-        app('request')->merge(array('pdv_id' => 999999, 'turno_ajuste_motivo' => 'Corrección inválida'));
-        $wrongContextHeader = new \App\Tesoreria\TesoDocEncabezadoPago(array(
-            'core_empresa_id' => 1, 'turno_operativo_id' => $turn->id,
-        ));
-        try {
-            app(\App\Core\Services\TurnoAssignmentResolver::class)
-                ->assign($wrongContextHeader, 'tesoreria');
-            $this->fail('Debió rechazarse el turno de otro PDV en el encabezado de Tesorería.');
-        } catch (TurnoIntegrityException $e) {
-            $this->assertContains('otro contexto', $e->getMessage());
-        }
 
         $attributes = array(
             'fecha' => '2026-08-29', 'core_empresa_id' => 1, 'core_tercero_id' => 1,

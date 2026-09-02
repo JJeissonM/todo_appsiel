@@ -33,12 +33,12 @@
 				@if( (int)config('inventarios.usar_inventario_fisico_por_horas', 0) )
 					<div class="row" style="margin: 5px;">
 						<div class="col-md-6">
-							{{ Form::label('hora_inicio', 'Hora de apertura del turno', ['id' => 'label_hora_inicio']) }}
-							{{ Form::input('time', 'hora_inicio', null, ['id'=>'hora_inicio', 'class'=>'form-control', 'step'=>'1', 'required'=>'required']) }}
+							{{ Form::label('hora_inicio', 'Hora inicial (opcional)', ['id' => 'label_hora_inicio']) }}
+							{{ Form::input('time', 'hora_inicio', null, ['id'=>'hora_inicio', 'class'=>'form-control', 'step'=>'1']) }}
 						</div>
 						<div class="col-md-6">
-							{{ Form::label('hora_finalizacion', 'Hora de cierre del turno', ['id' => 'label_hora_finalizacion']) }}
-							{{ Form::input('time', 'hora_finalizacion', null, ['id'=>'hora_finalizacion', 'class'=>'form-control', 'step'=>'1', 'required'=>'required']) }}
+							{{ Form::label('hora_finalizacion', 'Hora final (opcional)', ['id' => 'label_hora_finalizacion']) }}
+							{{ Form::input('time', 'hora_finalizacion', null, ['id'=>'hora_finalizacion', 'class'=>'form-control', 'step'=>'1']) }}
 							<small>Si el cierre es menor que la apertura, se tomará como cierre del día siguiente.</small>
 						</div>
 					</div>

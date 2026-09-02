@@ -135,6 +135,13 @@ class InvFisicoController extends TransaccionController
     public function store(Request $request)
     {
         $shiftService = new InventoryPhysicalShiftService();
+        $turnosEnabled = app(\App\Core\Services\TurnoModeResolver::class)->enabledForModule(
+            (int)Auth::user()->empresa_id,
+            'inventarios'
+        );
+        $simpleCompanyMode = (bool)config('turnos.simple_company_mode', false);
+        $cashierWithAutomaticTurn = $turnosEnabled && $this->turnSelectionLockedForCurrentUser();
+
         if ($shiftService->isEnabled()) {
             $turnoPdv = $this->buscarTurnoPdvDelUsuario($request);
             if (!is_null($turnoPdv)) {
@@ -143,17 +150,31 @@ class InvFisicoController extends TransaccionController
                     'hora_inicio' => $turnoPdv['hora_inicio'],
                     'hora_finalizacion' => $turnoPdv['hora_finalizacion']
                 ]);
-            } elseif ((int)$request->input('turno_operativo_id') > 0) {
+            } elseif ((int)$request->input('turno_operativo_id') > 0 || $cashierWithAutomaticTurn) {
                 return redirect()->back()->withInput()->with(
                     'mensaje_error',
-                    'El turno seleccionado no tiene un cierre válido o no corresponde a la empresa del Inventario Físico.'
+                    'No existe un turno válido para asociar al Inventario Físico.'
                 );
+            } elseif ($turnosEnabled && $simpleCompanyMode) {
+                // Inventario físico administrativo sin turno: la estructura
+                // histórica exige horas, por lo que se usa un corte instantáneo
+                // real, no una apertura/cierre ficticios.
+                $cutoff = Carbon::now()->format('H:i:s');
+                $request->merge(array(
+                    'hora_inicio' => $request->input('hora_inicio') ?: $cutoff,
+                    'hora_finalizacion' => $request->input('hora_finalizacion') ?: $cutoff,
+                ));
             }
         }
 
         $this->validarYNormalizarHorasMovimiento(
             $request,
-            $shiftService->isEnabled()
+            $shiftService->isEnabled() && (
+                !$turnosEnabled
+                || !$simpleCompanyMode
+                || $cashierWithAutomaticTurn
+                || (int)$request->input('turno_operativo_id') > 0
+            )
         );
 
         $lineas_registros = $this->preparar_array_lineas_registros( $request->movimiento );
@@ -208,6 +229,14 @@ class InvFisicoController extends TransaccionController
             );
         }
 
+        $turnosEnabled = app(\App\Core\Services\TurnoModeResolver::class)
+            ->enabledForModule((int)$user->empresa_id, 'inventarios');
+        if (config('turnos.simple_company_mode', false)
+            && $turnosEnabled
+            && !$this->turnSelectionLockedForCurrentUser()) {
+            return null;
+        }
+
         return $service->findForUserWarehouseDate(
             $user->empresa_id,
             $user->id,
@@ -215,6 +244,20 @@ class InvFisicoController extends TransaccionController
             $request->input('inv_bodega_id'),
             $request->input('fecha')
         );
+    }
+
+    private function turnSelectionLockedForCurrentUser()
+    {
+        $user = Auth::user();
+        if (is_null($user)) {
+            return false;
+        }
+        foreach ((array)config('turnos.turn_selection_locked_roles', array()) as $role) {
+            if ($user->hasRole($role)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function preparar_array_lineas_registros( $request_registros )

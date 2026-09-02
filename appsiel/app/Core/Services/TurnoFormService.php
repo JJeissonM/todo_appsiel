@@ -42,6 +42,9 @@ class TurnoFormService
         $isEdit = $accion === 'edit';
         $allowsManualCreate = isset($manualModels[$modelo->name_space]);
         $selectionLocked = !$isEdit && $this->selectionLockedForCurrentUser();
+        $administrativeOptional = !$isEdit
+            && !$selectionLocked
+            && config('turnos.simple_company_mode', false);
         $allowsClosedAdjustment = !$isEdit && !$selectionLocked && $this->canRegisterAdjustment();
 
         if (!$isEdit && (!$allowsManualCreate || !$this->hasTurnosScope($empresaId, $module))) {
@@ -59,6 +62,11 @@ class TurnoFormService
         } elseif ($selectionLocked) {
             $options = $this->lockedOptionsForRequest($empresaId, $module);
             $value = $this->singleOptionValue($options);
+        } elseif ($administrativeOptional) {
+            // El administrador decide explícitamente si la transacción pertenece
+            // o no a un turno; no se preselecciona uno de forma silenciosa.
+            $defaultTurn = null;
+            $value = array('', '');
         } else {
             $defaultTurn = $this->defaultOpenTurnForRequest($empresaId, $module);
             $value = is_null($defaultTurn)
@@ -86,7 +94,9 @@ class TurnoFormService
                 ),
             'definicion' => ($isEdit || $selectionLocked)
                 ? 'El turno identifica el hecho operativo original y no puede reasignarse desde la edición.'
-                : 'Busque por código, PDV o fecha. La consulta se realiza bajo demanda y sólo devuelve turnos válidos para la empresa, módulo, contexto y permisos actuales.',
+                : ($administrativeOptional
+                    ? 'Opcional para usuarios administrativos. Busque por código o fecha únicamente cuando la transacción pertenezca a un turno.'
+                    : 'Busque por código, PDV o fecha para asociar la operación al turno vigente.'),
             'requerido' => 0,
             'editable' => ($isEdit || $selectionLocked) ? 0 : 1,
             'unico' => 0,
@@ -153,7 +163,7 @@ class TurnoFormService
         }
 
         $pdvId = (int)request()->input('pdv_id');
-        if ($pdvId > 0) {
+        if ($pdvId > 0 && !config('turnos.simple_company_mode', false)) {
             $turno = TurnoOperativo::where('core_empresa_id', (int)$empresaId)
                 ->where('contexto_tipo', 'pdv')
                 ->where('contexto_id', $pdvId)

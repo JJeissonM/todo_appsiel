@@ -17,6 +17,30 @@ class TurnoModeResolver
             return false;
         }
 
+        if (config('turnos.simple_company_mode', false)) {
+            $key = 'empresa|' . $empresaId;
+            if (array_key_exists($key, $this->cache)) {
+                return $this->cache[$key];
+            }
+
+            $global = TurnoConfiguracion::where('core_empresa_id', $empresaId)
+                ->where('modulo', '*')
+                ->where('contexto_tipo', '*')
+                ->where('contexto_id', 0)
+                ->orderBy('id', 'DESC')
+                ->first();
+            if (!is_null($global)) {
+                return $this->cache[$key] = $global->modo === TurnoConfiguracion::MODO_TURNOS;
+            }
+
+            // Compatibilidad con la configuración granular creada durante QA:
+            // si aún no existe la fila global, cualquier activación previa
+            // mantiene encendido el modo hasta guardar la configuración simple.
+            return $this->cache[$key] = TurnoConfiguracion::where('core_empresa_id', $empresaId)
+                ->where('modo', TurnoConfiguracion::MODO_TURNOS)
+                ->exists();
+        }
+
         $key = implode('|', array($empresaId, $modulo, $contextoTipo, $contextoId));
         if (array_key_exists($key, $this->cache)) {
             return $this->cache[$key];

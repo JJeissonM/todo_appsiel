@@ -212,7 +212,7 @@ class TurnoOperativoIntegrationTest extends TestCase
         }
     }
 
-    public function test_create_inventarios_y_tesoreria_resuelve_unico_turno_abierto_sin_pdv()
+    public function test_administrador_puede_escoger_o_no_un_turno_en_inventarios_y_tesoreria()
     {
         $this->be(User::find(1));
         $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
@@ -226,33 +226,29 @@ class TurnoOperativoIntegrationTest extends TestCase
         $resolver = app(TurnoAssignmentResolver::class);
         $inventory = new InvDocEncabezado(array('core_empresa_id' => 1));
         $resolver->assign($inventory, 'inventarios');
-        $this->assertSame((int)$turno->id, (int)$inventory->turno_operativo_id);
+        $this->assertNull($inventory->turno_operativo_id);
+        $this->assertSame('OPTIONAL', $resolver->lastResolutionSource());
 
         $treasury = new TesoDocEncabezado(array('core_empresa_id' => 1));
         $resolver->assign($treasury, 'tesoreria');
+        $this->assertNull($treasury->turno_operativo_id);
+        $this->assertSame('OPTIONAL', $resolver->lastResolutionSource());
+
+        $treasury->turno_operativo_id = $turno->id;
+        $resolver->assign($treasury, 'tesoreria');
         $this->assertSame((int)$turno->id, (int)$treasury->turno_operativo_id);
-        $this->assertSame('OPEN_CONTEXT', $resolver->lastResolutionSource());
+        $this->assertSame('EXPLICIT_FK', $resolver->lastResolutionSource());
     }
 
-    public function test_create_sin_pdv_no_elige_silenciosamente_entre_varios_turnos_abiertos()
+    public function test_empresa_no_puede_tener_dos_turnos_abiertos_aunque_cambie_el_contexto_descriptivo()
     {
         $this->be(User::find(1));
         $this->configure('*', '*', 0, TurnoConfiguracion::MODO_TURNOS);
         $manager = app(TurnoManager::class);
         $manager->openContext(1, 'inventarios', 'pdv', 1, '2026-09-01', 1, 0, '2026-09-01 06:00:00');
-        $manager->openContext(1, 'inventarios', 'caja', 987654, '2026-09-01', 1, 0, '2026-09-01 06:01:00');
-        app(TurnoContext::class)->clear();
-        app('request')->replace(array());
 
-        try {
-            app(TurnoAssignmentResolver::class)->assign(
-                new InvDocEncabezado(array('core_empresa_id' => 1)),
-                'inventarios'
-            );
-            $this->fail('No debe seleccionar un turno ambiguo sin contexto.');
-        } catch (TurnoRequiredException $e) {
-            $this->assertContains('varios turnos abiertos', $e->getMessage());
-        }
+        $this->setExpectedException(TurnoStateException::class, 'Ya existe un turno abierto');
+        $manager->openContext(1, 'inventarios', 'caja', 987654, '2026-09-01', 1, 0, '2026-09-01 06:01:00');
     }
 
     public function test_recaudo_por_saldo_de_factura_hotelera_propaga_turno_y_pdv_del_origen()
@@ -344,16 +340,19 @@ class TurnoOperativoIntegrationTest extends TestCase
         $invoice->save();
     }
 
-    public function test_rechaza_turno_de_otro_contexto()
+    public function test_modo_simple_acepta_turno_de_la_empresa_aunque_el_pdv_sea_distinto()
     {
         $this->configure('*', 'pdv', 1, TurnoConfiguracion::MODO_TURNOS);
         $turno = app(TurnoManager::class)->openFromLegacy($this->opening('2026-08-22', '2026-08-22 08:00:00', 920003), 3);
         $invoice = $this->newPosInvoice(920003);
-        $invoice->pdv_id = 999999;
+        $otherPdvId = DB::table('vtas_pos_puntos_de_ventas')
+            ->where('core_empresa_id', 1)->where('id', '<>', 1)->value('id');
+        $this->assertGreaterThan(0, (int)$otherPdvId);
+        $invoice->pdv_id = (int)$otherPdvId;
         $invoice->turno_operativo_id = $turno->id;
 
-        $this->setExpectedException(TurnoIntegrityException::class, 'otro contexto');
         $invoice->save();
+        $this->assertSame((int)$turno->id, (int)$invoice->fresh()->turno_operativo_id);
     }
 
     public function test_rechaza_turno_cerrado_para_operacion_normal_y_cambio_directo_de_estado()
@@ -606,7 +605,7 @@ class TurnoOperativoIntegrationTest extends TestCase
         $this->assertSame('2026-08-31 06:15:00', $range['fecha_hora_cierre']);
     }
 
-    public function test_configuracion_advierte_modos_mixtos_e_impide_modulo_no_integrado()
+    public function test_configuracion_simple_normaliza_el_alcance_a_toda_la_empresa()
     {
         $service = app(TurnoConfigurationService::class);
         $analysis = $service->analyzeCandidate(array(
@@ -615,11 +614,15 @@ class TurnoOperativoIntegrationTest extends TestCase
         ));
         $this->assertNotEmpty($analysis['warnings']);
 
-        $this->setExpectedException(TurnoIntegrityException::class, 'todavía no persiste turnos');
-        $service->configure(array(
+        $result = $service->configure(array(
             'core_empresa_id' => 1, 'modulo' => 'compras', 'contexto_tipo' => 'pdv',
             'contexto_id' => 1, 'modo' => TurnoConfiguracion::MODO_TURNOS,
         ));
+        $configuration = $result['configuration'];
+        $this->assertSame('*', $configuration->modulo);
+        $this->assertSame('*', $configuration->contexto_tipo);
+        $this->assertSame(0, (int)$configuration->contexto_id);
+        $this->assertSame(TurnoConfiguracion::MODO_TURNOS, $configuration->modo);
     }
 
     public function test_nucleo_soporta_contexto_distinto_de_pdv()

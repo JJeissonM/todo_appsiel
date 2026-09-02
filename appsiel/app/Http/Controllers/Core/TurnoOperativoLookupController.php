@@ -42,7 +42,7 @@ class TurnoOperativoLookupController extends Controller
             ->whereIn('core_turnos_operativos.estado', $states)
             ->select('core_turnos_operativos.*', 'turno_pdv.descripcion AS pdv_descripcion');
 
-        if ($pdvId > 0) {
+        if ($pdvId > 0 && !config('turnos.simple_company_mode', false)) {
             $query->where('core_turnos_operativos.contexto_tipo', 'pdv')
                 ->where('core_turnos_operativos.contexto_id', $pdvId);
         }

@@ -81,6 +81,17 @@ class TurnoAssignmentResolver
             return $model->turno_operativo_id = $originTurn->id;
         }
 
+        // En el modo simplificado el selector es opcional para usuarios
+        // administrativos. Los cajeros continúan sujetos a asignación automática
+        // y a la existencia de un turno abierto propio.
+        if (config('turnos.simple_company_mode', false)
+            && Auth::check()
+            && !$this->selectionLockedForCurrentUser()) {
+            $this->lastSource = 'OPTIONAL';
+            $model->setAttribute('turno_operativo_id', null);
+            return null;
+        }
+
         if (!is_null($descriptor) && $this->manager->enabledForContext($empresaId, $module, $descriptor['type'], $descriptor['id'])) {
             $this->lastSource = 'OPEN_CONTEXT';
             $turno = $this->manager->requireCurrent($empresaId, $module, $descriptor['type'], $descriptor['id']);
@@ -177,7 +188,9 @@ class TurnoAssignmentResolver
         if ((int)$turno->core_empresa_id !== (int)$empresaId) {
             throw new TurnoIntegrityException('El turno operativo pertenece a otra empresa.');
         }
-        if (!is_null($descriptor) && ($turno->contexto_tipo !== $descriptor['type'] || (int)$turno->contexto_id !== (int)$descriptor['id'])) {
+        if (!config('turnos.simple_company_mode', false)
+            && !is_null($descriptor)
+            && ($turno->contexto_tipo !== $descriptor['type'] || (int)$turno->contexto_id !== (int)$descriptor['id'])) {
             throw new TurnoIntegrityException('El turno operativo pertenece a otro contexto operativo.');
         }
     }
