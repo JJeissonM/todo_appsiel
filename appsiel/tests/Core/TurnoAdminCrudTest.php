@@ -10,8 +10,11 @@ use App\Core\TurnoEvento;
 use App\Core\TurnoOperativo;
 use App\Core\Empresa;
 use App\Inventarios\Services\InventoryPhysicalPdvShiftService;
+use App\Inventarios\InvDocEncabezado;
+use App\Inventarios\InvDocumentoRelacionado;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoDocEncabezado;
+use App\Tesoreria\TesoDocEncabezadoTraslado;
 use App\Tesoreria\Services\CashCountTurnService;
 use App\User;
 use App\VentasPos\Pdv;
@@ -402,6 +405,106 @@ class TurnoAdminCrudTest extends TestCase
         $movement->save();
     }
 
+    public function test_edicion_de_inventario_fisico_construye_el_formulario_con_el_turno_persistido()
+    {
+        $controller = file_get_contents(app_path('Http/Controllers/Inventarios/InvFisicoController.php'));
+
+        $recordLoad = '$registro = InvDocEncabezado::get_registro_impresion( $id );';
+        $fieldBuild = "ModeloController::get_campos_modelo(\$modelo, \$registro, 'edit')";
+        $fieldCustomization = "ModeloController::personalizar_campos(\$id_transaccion,\$tipo_transaccion,\$lista_campos,\$cantidad_campos,'edit' )";
+
+        $this->assertContains($recordLoad, $controller);
+        $this->assertContains($fieldBuild, $controller);
+        $this->assertContains($fieldCustomization, $controller);
+        $this->assertLessThan(strpos($controller, $fieldBuild), strpos($controller, $recordLoad));
+    }
+
+    public function test_ajuste_de_inventario_fisico_muestra_y_conserva_el_turno_del_documento_origen()
+    {
+        $this->authenticateCompanyUser();
+        DB::table('vtas_pos_puntos_de_ventas')->where('id', 1)->update(array('estado' => 'Cerrado'));
+        app(TurnoConfigurationService::class)->configure(array(
+            'core_empresa_id' => 1, 'modulo' => 'inventarios', 'contexto_tipo' => 'pdv',
+            'contexto_id' => 1, 'modo' => TurnoConfiguracion::MODO_TURNOS,
+        ));
+        $turn = app(TurnoManager::class)->openContext(
+            1, 'inventarios', 'pdv', 1, '2026-09-01', 1, 0, '2026-09-01 06:00:00'
+        );
+
+        $origin = new InvDocEncabezado(array(
+            'core_empresa_id' => 1,
+            'turno_operativo_id' => $turn->id,
+        ));
+        $model = (object)array('name_space' => 'App\\Inventarios\\InvAjuste');
+        $fields = array(
+            array('name' => 'turno_operativo_id', 'tipo' => 'input_lista_sugerencias'),
+            array('name' => 'turno_ajuste_motivo', 'tipo' => 'bsTextArea'),
+        );
+
+        $fields = app(TurnoFormService::class)->lockToOrigin($model, $origin, $fields);
+        $turnField = $this->turnField($fields);
+
+        $this->assertSame('select', $turnField['tipo']);
+        $this->assertSame((int)$turn->id, (int)$turnField['value']);
+        $this->assertArrayHasKey($turn->id, $turnField['opciones']);
+        $this->assertArrayHasKey('disabled', $turnField['atributos']);
+        $this->assertNotNull($this->fieldNamed($fields, 'turno_ajuste_motivo'));
+
+        $controller = file_get_contents(app_path('Http/Controllers/Inventarios/InventarioController.php'));
+        $this->assertContains("request->merge(array('turno_operativo_id' => \$inventarioFisico->turno_operativo_id))", $controller);
+    }
+
+    public function test_relacion_de_ajuste_ignora_origen_obsoleto_que_no_es_inventario_fisico()
+    {
+        $template = DB::table('inv_doc_encabezados')->where('core_empresa_id', 1)->first();
+        $this->assertNotNull($template);
+
+        $createDocument = function ($transactionId, $consecutive) use ($template) {
+            $data = (array)$template;
+            unset($data['id']);
+            $data['core_tipo_transaccion_id'] = $transactionId;
+            $data['consecutivo'] = $consecutive;
+            $data['turno_operativo_id'] = null;
+            $data['created_at'] = date('Y-m-d H:i:s');
+            $data['updated_at'] = date('Y-m-d H:i:s');
+            return DB::table('inv_doc_encabezados')->insertGetId($data);
+        };
+
+        $notPhysicalInventoryId = $createDocument(35, 979901);
+        $physicalInventoryId = $createDocument(
+            InvDocumentoRelacionado::TIPO_TRANSACCION_INVENTARIO_FISICO,
+            979902
+        );
+        $adjustmentId = $createDocument(28, 979903);
+        $now = date('Y-m-d H:i:s');
+
+        DB::table('inv_documentos_relacionados')->insert(array(
+            array(
+                'inv_doc_encabezado_origen_id' => $notPhysicalInventoryId,
+                'inv_doc_encabezado_relacionado_id' => $adjustmentId,
+                'tipo_relacion' => InvDocumentoRelacionado::TIPO_IF_AJUSTE,
+                'creado_por' => 'test@appsiel.com.co', 'modificado_por' => null,
+                'created_at' => $now, 'updated_at' => $now,
+            ),
+            array(
+                'inv_doc_encabezado_origen_id' => $physicalInventoryId,
+                'inv_doc_encabezado_relacionado_id' => $adjustmentId,
+                'tipo_relacion' => InvDocumentoRelacionado::TIPO_IF_AJUSTE,
+                'creado_por' => 'test@appsiel.com.co', 'modificado_por' => null,
+                'created_at' => $now, 'updated_at' => $now,
+            ),
+        ));
+
+        $relation = InvDocumentoRelacionado::ajusteValidoParaDocumento($adjustmentId, 1);
+
+        $this->assertNotNull($relation);
+        $this->assertSame((int)$physicalInventoryId, (int)$relation->inv_doc_encabezado_origen_id);
+        $this->assertSame(
+            InvDocumentoRelacionado::TIPO_TRANSACCION_INVENTARIO_FISICO,
+            (int)$relation->documento_origen->core_tipo_transaccion_id
+        );
+    }
+
     public function test_administrador_puede_registrar_ajuste_motivado_sobre_turno_cerrado()
     {
         (new TurnosAdminCrudSeeder())->run();
@@ -598,6 +701,67 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertResponseStatus(422);
     }
 
+    public function test_traslado_de_efectivo_asigna_el_ultimo_turno_cerrado_del_cajero()
+    {
+        $this->authenticateCompanyUser();
+        $cashierId = DB::table('users as user')
+            ->join('user_has_roles as assigned_role', 'assigned_role.user_id', '=', 'user.id')
+            ->join('roles as role', 'role.id', '=', 'assigned_role.role_id')
+            ->where('user.empresa_id', 1)
+            ->whereIn('role.name', (array)config('turnos.turn_selection_locked_roles', array()))
+            ->value('user.id');
+        $this->assertGreaterThan(0, (int)$cashierId);
+
+        app(TurnoConfigurationService::class)->configure(array(
+            'core_empresa_id' => 1,
+            'modulo' => 'tesoreria',
+            'contexto_tipo' => 'pdv',
+            'contexto_id' => 1,
+            'modo' => TurnoConfiguracion::MODO_TURNOS,
+        ));
+        $manager = app(TurnoManager::class);
+        $closed = $manager->openContext(
+            1, 'tesoreria', 'pdv', 1, '2099-09-02', (int)$cashierId, 0, '2099-09-02 06:00:00'
+        );
+        $manager->close($closed, (int)$cashierId, 0, 'Traslado de efectivo', '2099-09-02 14:00:00');
+
+        // Aunque haya comenzado otro turno, el traslado pertenece al último
+        // cerrado, no a la nueva operación de caja.
+        $manager->openContext(
+            1, 'tesoreria', 'pdv', 1, '2099-09-02', (int)$cashierId, 0, '2099-09-02 14:05:00'
+        );
+
+        $this->be(User::find($cashierId));
+        app('request')->replace(array());
+        $model = (object)array('name_space' => TesoDocEncabezadoTraslado::class);
+        $field = $this->turnField(app(TurnoFormService::class)->decorate($model, null, 'create', array()));
+
+        $this->assertNotNull($field);
+        $this->assertSame('select', $field['tipo']);
+        $this->assertSame((int)$closed->id, (int)$field['value']);
+        $this->assertSame(array($closed->id), array_keys($field['opciones']));
+        $this->assertArrayHasKey('disabled', $field['atributos']);
+        $this->assertSame(
+            TesoDocEncabezadoTraslado::POST_CLOSING_OPERATION,
+            $field['atributos']['data-turno-operation']
+        );
+
+        $this->call('POST', '/turnos/operativos/validar-seleccion', array(
+            'modulo' => 'tesoreria',
+            'turno_operativo_id' => $closed->id,
+            'operacion_turno' => TesoDocEncabezadoTraslado::POST_CLOSING_OPERATION,
+        ));
+        $this->assertResponseOk();
+        $this->assertContains('LAST_CLOSED_CASHIER', $this->response->getContent());
+
+        app('request')->replace(array('turno_operativo_id' => $closed->id));
+        $document = new TesoDocEncabezadoTraslado(array(
+            'core_empresa_id' => 1,
+            'turno_operativo_id' => $closed->id,
+        ));
+        $this->assertTrue($document->allowsHistoricalTurnoAssignment());
+    }
+
     public function test_arqueo_carga_el_ultimo_turno_cerrado_de_la_caja_y_pdv_aunque_sea_de_otra_fecha()
     {
         $user = $this->authenticateCompanyUser();
@@ -706,6 +870,7 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertContains("button.id !== 'bs_boton_guardar'", $script);
         $this->assertContains("button.id !== 'btn_guardar'", $script);
         $this->assertContains("triggerHandler('click')", $script);
+        $this->assertContains('cash_transfer_after_closing', $script);
         $this->assertContains("event.stopImmediatePropagation()", $script);
         $this->assertNotContains("addClass('disabled')", $script);
         $this->assertContains('data-turno-domain-valid', $inventoryView);

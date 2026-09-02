@@ -6,6 +6,9 @@ use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Traits\FiltraRegistrosPorUsuario;
+use App\Inventarios\Services\InventoryPhysicalPdvShiftService;
+use App\Core\Services\TurnoContext;
+use App\Core\TurnoOperativo;
 
 use App\Contabilidad\ContabMovimiento;
 
@@ -16,6 +19,8 @@ use Illuminate\Support\Facades\DB;
 class TesoDocEncabezadoTraslado extends TesoDocEncabezado
 {
     use FiltraRegistrosPorUsuario;
+
+    const POST_CLOSING_OPERATION = 'cash_transfer_after_closing';
 
     // Apunta a la misma tabla del modelo de Recaudos
     protected $table = 'teso_doc_encabezados';
@@ -32,18 +37,84 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
      */
     public function validar_datos_creacion($request, $controller)
     {
-        if (!self::punto_venta_es_requerido($request)) {
+        if (self::punto_venta_es_requerido($request)) {
+            $controller->validate($request, [
+                'pdv_id' => 'required|integer|min:1|exists:vtas_pos_puntos_de_ventas,id'
+            ], [
+                'pdv_id.required' => 'El campo Punto de Ventas es obligatorio.',
+                'pdv_id.integer' => 'El Punto de Ventas seleccionado no es válido.',
+                'pdv_id.min' => 'El Punto de Ventas seleccionado no es válido.',
+                'pdv_id.exists' => 'El Punto de Ventas seleccionado no existe.'
+            ]);
+        }
+
+        $this->validateClosedCashierTurn($request);
+    }
+
+    /**
+     * El traslado posterior al cierre sólo puede usar el último turno cerrado
+     * que fue abierto por el cajero autenticado. La comprobación en el modelo
+     * evita que se sustituya la FK manipulando el formulario.
+     */
+    protected function validateClosedCashierTurn($request)
+    {
+        if (!$this->selectionLockedForCurrentUser()
+            || !app(\App\Core\Services\TurnoModeResolver::class)->enabledForModule(
+                (int)Auth::user()->empresa_id,
+                'tesoreria'
+            )) {
             return;
         }
 
-        $controller->validate($request, [
-            'pdv_id' => 'required|integer|min:1|exists:vtas_pos_puntos_de_ventas,id'
-        ], [
-            'pdv_id.required' => 'El campo Punto de Ventas es obligatorio.',
-            'pdv_id.integer' => 'El Punto de Ventas seleccionado no es válido.',
-            'pdv_id.min' => 'El Punto de Ventas seleccionado no es válido.',
-            'pdv_id.exists' => 'El Punto de Ventas seleccionado no existe.'
-        ]);
+        $turnId = (int)$request->input('turno_operativo_id');
+        $expected = app(InventoryPhysicalPdvShiftService::class)->lastClosedTurnForCashier(
+            (int)Auth::user()->empresa_id,
+            (int)Auth::id(),
+            (int)$request->input('pdv_id')
+        );
+        if ($turnId <= 0 || is_null($expected) || (int)$expected->id !== $turnId) {
+            throw new \App\Core\Exceptions\TurnoIntegrityException(
+                'El traslado de efectivo sólo puede asociarse al último turno cerrado por el cajero actual.'
+            );
+        }
+    }
+
+    /**
+     * Excepción acotada para que HasTurnoOperativo acepte el turno histórico
+     * verificado por validar_datos_creacion().
+     */
+    public function allowsHistoricalTurnoAssignment()
+    {
+        $turnId = (int)$this->getAttribute('turno_operativo_id');
+        if ($turnId <= 0
+            || !$this->selectionLockedForCurrentUser()
+            || !app(\App\Core\Services\TurnoModeResolver::class)->enabledForModule(
+                (int)$this->getAttribute('core_empresa_id'),
+                'tesoreria'
+            )) {
+            return false;
+        }
+
+        $expected = app(InventoryPhysicalPdvShiftService::class)->lastClosedTurnForCashier(
+            (int)$this->getAttribute('core_empresa_id'),
+            (int)Auth::id(),
+            (int)request()->input('pdv_id')
+        );
+
+        return !is_null($expected) && (int)$expected->id === $turnId;
+    }
+
+    protected function selectionLockedForCurrentUser()
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+        foreach ((array)config('turnos.turn_selection_locked_roles', array()) as $role) {
+            if (Auth::user()->hasRole($role)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected static function punto_venta_es_requerido($request)
@@ -364,7 +435,25 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
                 $movimiento->consecutivo = $registro->consecutivo;
                 $movimiento->estado = 'Activo';
                 $movimiento->creado_por = $registro->creado_por;
-                $movimiento->save();
+                $movimiento->turno_operativo_id = $registro->turno_operativo_id;
+
+                $turno = (int)$registro->turno_operativo_id > 0
+                    ? TurnoOperativo::find((int)$registro->turno_operativo_id)
+                    : null;
+                if (is_null($turno)) {
+                    $movimiento->save();
+                } else {
+                    // El movimiento es un derivado técnico del traslado y debe
+                    // conservar su turno aunque éste ya se encuentre cerrado.
+                    app(TurnoContext::class)->runFromOrigin(
+                        $turno,
+                        get_class($registro),
+                        (int)$registro->id,
+                        function () use ($movimiento) {
+                            $movimiento->save();
+                        }
+                    );
+                }
             }
 
             /*

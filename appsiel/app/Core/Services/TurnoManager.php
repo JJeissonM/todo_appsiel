@@ -404,15 +404,15 @@ class TurnoManager
         if ($suffix === '') {
             $suffix = str_replace('.', '', uniqid('', true));
         }
-        $timestamp = date('YmdHis', strtotime($openedAt));
-        $tail = '-' . (int)$empresaId . '-' . (int)$contextId . '-' . $timestamp . '-' . $suffix;
+        $timestamp = date('Ymd-H:i', strtotime($openedAt));
+        $tail = '-' . $timestamp . '-' . $suffix;
 
         // codigo tiene una longitud máxima de 80. Se recorta solamente el nombre
         // descriptivo; empresa, contexto, fecha y sufijo de unicidad se conservan.
-        $maxLabelLength = 80 - strlen('TUR-') - strlen($tail);
+        $maxLabelLength = 80 - strlen($tail);
         $label = rtrim(substr($label, 0, max(1, $maxLabelLength)), '-');
 
-        return 'TUR-' . $label . $tail;
+        return $label . $tail;
     }
 
     protected function lockCompany($empresaId)

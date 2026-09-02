@@ -29,6 +29,7 @@ use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\AjustarSaldosBodegaService;
 use App\Inventarios\Services\InventoryPhysicalPdvShiftService;
+use App\Core\Services\TurnoFormService;
 use App\Inventarios\Services\InventoryPhysicalShiftService;
 use App\Core\Services\TurnoContext;
 use App\Ventas\RestauranteCocina;
@@ -222,7 +223,7 @@ class InvFisicoController extends TransaccionController
         $turno = $this->buscarTurnoPdvDelUsuario($request);
         if (is_null($turno)) {
             $message = (int)$request->input('turno_operativo_id') > 0
-                ? 'El turno seleccionado no tiene un cierre válido o no corresponde a la empresa.'
+                ? 'Debe cerrar el turno antes de realizar el inventario.'
                 : 'No se encontró un turno cerrado para esta fecha y bodega. Puede ingresar las horas manualmente en modo tradicional.';
             return response()->json([
                 'encontrado' => false,
@@ -731,12 +732,21 @@ class InvFisicoController extends TransaccionController
         // Se obtiene el modelo según la variable modelo_id  de la url
         $modelo = Modelo::find(Input::get('id_modelo'));
 
+        // El ajuste es un derivado del Inventario Físico: conserva su turno y
+        // nunca resuelve uno nuevo con la fecha o con el contexto actual.
+        $doc_encabezado = InvDocEncabezado::get_registro_impresion(Input::get('doc_inv_fisico_id'));
+        if (is_null($doc_encabezado)
+            || (int)$doc_encabezado->core_empresa_id !== (int)Auth::user()->empresa_id) {
+            abort(404, 'No se encontró el Inventario Físico origen para esta empresa.');
+        }
+
         $lista_campos = ModeloController::get_campos_modelo($modelo,'','create');
         $cantidad_campos = count($lista_campos);
 
         $tipo_transaccion = TipoTransaccion::find($id_transaccion);
 
         $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create' );
+        $lista_campos = app(TurnoFormService::class)->lockToOrigin($modelo, $doc_encabezado, $lista_campos);
 
         $productos = $this->get_productos('r');
         $servicios = $this->get_productos('servicio');
@@ -751,7 +761,6 @@ class InvFisicoController extends TransaccionController
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = '';
 
-        $doc_encabezado = InvDocEncabezado::get_registro_impresion( Input::get('doc_inv_fisico_id') );
         $doc_registros = InvDocRegistro::get_registros_impresion( $doc_encabezado->id );
 
         foreach ($doc_registros as $fila)
@@ -815,15 +824,18 @@ class InvFisicoController extends TransaccionController
         // Se obtiene el modelo según la variable modelo_id  de la url
         $modelo = Modelo::find(Input::get('id_modelo'));
 
-        $lista_campos = ModeloController::get_campos_modelo($modelo,'','edit');
+        // El registro debe estar disponible antes de construir los campos. En
+        // particular, TurnoFormService necesita la FK persistida para mostrar el
+        // turno original como dato inmutable durante la edición.
+        $registro = InvDocEncabezado::get_registro_impresion( $id );
+
+        $lista_campos = ModeloController::get_campos_modelo($modelo, $registro, 'edit');
 
         $cantidad_campos = count($lista_campos);
 
         $tipo_transaccion = TipoTransaccion::find($id_transaccion);
 
-        $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create' );
-
-        $registro = InvDocEncabezado::get_registro_impresion( $id );
+        $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'edit' );
 
         foreach ($lista_campos as $key => $value)
         {

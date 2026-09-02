@@ -741,6 +741,9 @@ class InvMovimiento extends Model
                                         'inv_movimientos.hora_inicio',
                                         'inv_movimientos.hora_finalizacion',
                                         'inv_movimientos.created_at',
+                                        'inv_movimientos.turno_operativo_id',
+                                        'kardex_turno_operativo.cerrado_en AS turno_cerrado_en',
+                                        DB::raw(self::cierreTurnoAjusteOrigenSql() . ' AS turno_origen_ajuste_cerrado_en'),
                                         'inv_motivos.movimiento',
                                         'inv_movimientos.inv_doc_encabezado_id',
                                         'inv_movimientos.inv_producto_id',
@@ -753,9 +756,54 @@ class InvMovimiento extends Model
                                         DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS documento'),
                                         DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero'),
                                         'sys_tipos_transacciones.core_modelo_id')
-                                ->orderBy('inv_movimientos.fecha')
-                                ->orderBy('inv_movimientos.created_at')
+                                ->ordenCronologicoKardex()
                                 ->get();
+    }
+
+    /**
+     * Orden operacional del kardex.
+     *
+     * Los ajustes creados después del cierre conservan el turno del hecho que
+     * corrigen, por lo que deben quedar antes de los movimientos del turno
+     * siguiente. Los movimientos tradicionales o administrativos sin turno
+     * mantienen su cronología real mediante created_at.
+     */
+    public function scopeOrdenCronologicoKardex($query)
+    {
+        return $query
+            ->leftJoin('core_turnos_operativos AS kardex_turno_operativo', function ($join) {
+                $join->on('kardex_turno_operativo.id', '=', 'inv_movimientos.turno_operativo_id')
+                    ->on('kardex_turno_operativo.core_empresa_id', '=', 'inv_movimientos.core_empresa_id');
+            })
+            ->orderByRaw(
+                'CASE WHEN inv_movimientos.turno_operativo_id IS NOT NULL '
+                . 'THEN COALESCE(kardex_turno_operativo.cerrado_en, inv_movimientos.created_at) '
+                . 'ELSE COALESCE(' . self::cierreTurnoAjusteOrigenSql() . ', inv_movimientos.created_at) END ASC'
+            )
+            ->orderBy('inv_movimientos.created_at', 'ASC')
+            ->orderBy('inv_movimientos.id', 'ASC');
+    }
+
+    /**
+     * Recuperación histórica inequívoca para ajustes creados antes de persistir
+     * correctamente turno_operativo_id. La subconsulta escalar evita que una
+     * relación huérfana multiplique las filas del kardex.
+     */
+    protected static function cierreTurnoAjusteOrigenSql()
+    {
+        return '(SELECT turno_origen.cerrado_en '
+            . 'FROM inv_documentos_relacionados relacion_origen '
+            . 'INNER JOIN inv_doc_encabezados inventario_fisico_origen '
+            . 'ON inventario_fisico_origen.id = relacion_origen.inv_doc_encabezado_origen_id '
+            . 'AND inventario_fisico_origen.core_tipo_transaccion_id = '
+            . InvDocumentoRelacionado::TIPO_TRANSACCION_INVENTARIO_FISICO . ' '
+            . 'INNER JOIN core_turnos_operativos turno_origen '
+            . 'ON turno_origen.id = inventario_fisico_origen.turno_operativo_id '
+            . 'AND turno_origen.core_empresa_id = inventario_fisico_origen.core_empresa_id '
+            . 'WHERE relacion_origen.inv_doc_encabezado_relacionado_id = inv_movimientos.inv_doc_encabezado_id '
+            . "AND relacion_origen.tipo_relacion = '" . InvDocumentoRelacionado::TIPO_IF_AJUSTE . "' "
+            . 'AND inventario_fisico_origen.core_empresa_id = inv_movimientos.core_empresa_id '
+            . 'ORDER BY relacion_origen.id DESC LIMIT 1)';
     }
 
     public static function get_movimiento_transacciones_ventas( $fecha_inicial, $fecha_final )

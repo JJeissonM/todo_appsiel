@@ -175,6 +175,18 @@ class InventarioController extends TransaccionController
 
     public function store( Request $request )
     {
+        // Un ajuste originado desde un Inventario Físico hereda siempre la FK
+        // persistida del documento origen. No se confía en el valor recibido
+        // desde el formulario, pues el campo deshabilitado también puede ser
+        // manipulado fuera de la interfaz.
+        if ((int)$request->doc_inv_fisico_id > 0) {
+            $inventarioFisico = InvDocEncabezado::findOrFail((int)$request->doc_inv_fisico_id);
+            if ((int)$inventarioFisico->core_empresa_id !== (int)Auth::user()->empresa_id) {
+                abort(403, 'El Inventario Físico origen no pertenece a la empresa del usuario.');
+            }
+            $request->merge(array('turno_operativo_id' => $inventarioFisico->turno_operativo_id));
+        }
+
         $this->validarYNormalizarHorasMovimiento($request);
 
         $lineas_registros = self::preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
@@ -746,10 +758,10 @@ class InventarioController extends TransaccionController
         }
 
         $enlace3 = '';
-        $relacion_if = InvDocumentoRelacionado::where('inv_doc_encabezado_relacionado_id', $doc_encabezado->id)
-                        ->where('tipo_relacion', InvDocumentoRelacionado::TIPO_IF_AJUSTE)
-                        ->with('documento_origen.tipo_documento_app')
-                        ->first();
+        $relacion_if = InvDocumentoRelacionado::ajusteValidoParaDocumento(
+            $doc_encabezado->id,
+            $doc_encabezado->core_empresa_id
+        );
         if ( $relacion_if != null && $relacion_if->documento_origen != null )
         {
             $documento_if = $relacion_if->documento_origen;

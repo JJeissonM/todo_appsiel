@@ -137,4 +137,24 @@ class InvMovimientoReporteHoraFiltroTest extends TestCase
             501
         ], $query->getBindings());
     }
+
+    public function test_kardex_ordena_movimientos_con_turno_por_su_cierre_y_los_normales_por_created_at()
+    {
+        $query = InvMovimiento::whereRaw('1 = 1');
+        $query->ordenCronologicoKardex();
+
+        $sql = strtolower($query->toSql());
+
+        $this->assertContains(
+            'order by case when inv_movimientos.turno_operativo_id is not null '
+            . 'then coalesce(kardex_turno_operativo.cerrado_en, inv_movimientos.created_at) '
+            . 'else coalesce((select turno_origen.cerrado_en',
+            $sql
+        );
+        $this->assertContains('inventario_fisico_origen.core_tipo_transaccion_id = 27', $sql);
+        $this->assertContains('order by relacion_origen.id desc limit 1', $sql);
+        $this->assertNotContains('left join `inv_documentos_relacionados`', $sql);
+        $this->assertContains('`inv_movimientos`.`created_at` asc', $sql);
+        $this->assertContains('`inv_movimientos`.`id` asc', $sql);
+    }
 }

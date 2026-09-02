@@ -5,6 +5,7 @@ namespace App\Core\Services;
 use App\Core\TurnoConfiguracion;
 use App\Core\TurnoOperativo;
 use App\Inventarios\Services\InventoryPhysicalPdvShiftService;
+use App\Tesoreria\TesoDocEncabezadoTraslado;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 
@@ -43,6 +44,7 @@ class TurnoFormService
         $isEdit = $accion === 'edit';
         $allowsManualCreate = isset($manualModels[$modelo->name_space]);
         $isInventoryPhysical = $modelo->name_space === 'App\\Inventarios\\InvFisico';
+        $isCashTransfer = $modelo->name_space === TesoDocEncabezadoTraslado::class;
         $selectionLocked = !$isEdit && $this->selectionLockedForCurrentUser();
         $administrativeOptional = !$isEdit
             && !$selectionLocked
@@ -62,7 +64,10 @@ class TurnoFormService
             $options = $this->options($empresaId, $module, $persistedTurnId, true);
             $value = $persistedTurnId;
         } elseif ($selectionLocked) {
-            $options = $this->lockedOptionsForRequest($empresaId, $module, $isInventoryPhysical);
+            $closedCashierOperation = $isInventoryPhysical
+                ? InventoryPhysicalPdvShiftService::CLOSING_CONTROL_OPERATION
+                : ($isCashTransfer ? TesoDocEncabezadoTraslado::POST_CLOSING_OPERATION : null);
+            $options = $this->lockedOptionsForRequest($empresaId, $module, $closedCashierOperation);
             $value = $this->singleOptionValue($options);
         } elseif ($administrativeOptional) {
             // El administrador decide explícitamente si la transacción pertenece
@@ -110,6 +115,9 @@ class TurnoFormService
             if ($isInventoryPhysical && $selectionLocked) {
                 $field['atributos']['data-turno-operation'] = InventoryPhysicalPdvShiftService::CLOSING_CONTROL_OPERATION;
                 $field['definicion'] = 'Si el cajero ya cerró su turno, se asigna su último turno cerrado para documentar el control físico de entrega.';
+            } elseif ($isCashTransfer && $selectionLocked) {
+                $field['atributos']['data-turno-operation'] = TesoDocEncabezadoTraslado::POST_CLOSING_OPERATION;
+                $field['definicion'] = 'El traslado de efectivo se asocia automáticamente al último turno cerrado por el cajero.';
             }
         }
 
@@ -128,6 +136,64 @@ class TurnoFormService
         if ($allowsClosedAdjustment) {
             $campos[] = $this->adjustmentReasonField();
         }
+        return $campos;
+    }
+
+    /**
+     * Fija en un formulario de creación el turno de un documento origen.
+     *
+     * Se usa en operaciones derivadas que no constituyen un nuevo hecho
+     * operativo (por ejemplo, el ajuste de un inventario físico). El campo se
+     * muestra para trazabilidad, pero no puede ser reasignado por el usuario.
+     */
+    public function lockToOrigin($modelo, $origin, array $campos)
+    {
+        if (is_null($modelo) || !is_object($origin) || !class_exists($modelo->name_space)) {
+            return $campos;
+        }
+
+        $turnId = (int)$origin->getAttribute('turno_operativo_id');
+        $companyId = $this->companyId($origin);
+        if ($turnId <= 0 || $companyId <= 0) {
+            return $campos;
+        }
+
+        $instance = app($modelo->name_space);
+        if (!method_exists($instance, 'getTurnoModuleName')) {
+            return $campos;
+        }
+        $manualModels = (array)config('turnos.manual_assignment_models', array());
+        $module = isset($manualModels[$modelo->name_space])
+            ? $manualModels[$modelo->name_space]
+            : $instance->getTurnoModuleName();
+        $options = $this->options($companyId, $module, $turnId, true);
+
+        foreach ($campos as $key => $campo) {
+            if (!isset($campo['name']) || $campo['name'] !== 'turno_operativo_id') {
+                continue;
+            }
+
+            $campos[$key] = array_merge($campo, array(
+                'tipo' => 'select',
+                'descripcion' => 'Turno operativo (heredado del inventario físico)',
+                'opciones' => $options,
+                'value' => $turnId,
+                'atributos' => array(
+                    'disabled' => 'disabled',
+                    'class' => 'form-control',
+                    'data-turno-locked' => '1',
+                    'data-turno-validation' => '1',
+                    'data-turno-validation-url' => url('turnos/operativos/validar-seleccion'),
+                    'data-turno-module' => $module,
+                ),
+                'definicion' => 'El ajuste conserva el turno del Inventario Físico origen y no puede reasignarse.',
+                'requerido' => 0,
+                'editable' => 0,
+                'unico' => 0,
+            ));
+            break;
+        }
+
         return $campos;
     }
 
@@ -166,7 +232,7 @@ class TurnoFormService
         return false;
     }
 
-    protected function lockedOptionsForRequest($empresaId, $module, $allowLastClosedForPhysicalControl = false)
+    protected function lockedOptionsForRequest($empresaId, $module, $closedCashierOperation = null)
     {
         $userId = Auth::check() ? (int)Auth::user()->id : 0;
         if ($userId <= 0) {
@@ -174,6 +240,13 @@ class TurnoFormService
         }
 
         $pdvId = (int)request()->input('pdv_id');
+        // El traslado documenta la entrega del efectivo del turno que acaba de
+        // finalizar. Debe conservar ese turno incluso si posteriormente el
+        // cajero abrió uno nuevo.
+        if ($closedCashierOperation === TesoDocEncabezadoTraslado::POST_CLOSING_OPERATION) {
+            return $this->lastClosedCashierOption($empresaId, $module, $userId, $pdvId);
+        }
+
         if ($pdvId > 0 && !config('turnos.simple_company_mode', false)) {
             $turno = TurnoOperativo::where('core_empresa_id', (int)$empresaId)
                 ->where('contexto_tipo', 'pdv')
@@ -185,8 +258,8 @@ class TurnoFormService
             if (!is_null($turno) && $this->modeResolver->enabled($empresaId, $module, 'pdv', $pdvId)) {
                 return array($turno->id => $this->optionLabel($turno));
             }
-            return $allowLastClosedForPhysicalControl
-                ? $this->lastClosedPhysicalControlOption($empresaId, $module, $userId, $pdvId)
+            return !is_null($closedCashierOperation)
+                ? $this->lastClosedCashierOption($empresaId, $module, $userId, $pdvId)
                 : array();
         }
 
@@ -213,12 +286,12 @@ class TurnoFormService
             }
         }
 
-        return $allowLastClosedForPhysicalControl
-            ? $this->lastClosedPhysicalControlOption($empresaId, $module, $userId)
+        return !is_null($closedCashierOperation)
+            ? $this->lastClosedCashierOption($empresaId, $module, $userId)
             : array();
     }
 
-    protected function lastClosedPhysicalControlOption($empresaId, $module, $userId, $pdvId = null)
+    protected function lastClosedCashierOption($empresaId, $module, $userId, $pdvId = null)
     {
         $turno = app(InventoryPhysicalPdvShiftService::class)
             ->lastClosedTurnForCashier($empresaId, $userId, $pdvId);

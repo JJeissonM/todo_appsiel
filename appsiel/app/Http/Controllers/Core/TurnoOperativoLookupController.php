@@ -6,6 +6,7 @@ use App\Core\Services\TurnoModeResolver;
 use App\Core\TurnoOperativo;
 use App\Http\Controllers\Controller;
 use App\Inventarios\Services\InventoryPhysicalPdvShiftService;
+use App\Tesoreria\TesoDocEncabezadoTraslado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -92,15 +93,31 @@ class TurnoOperativoLookupController extends Controller
         $physicalClosingControl = $locked
             && $module === 'inventarios'
             && $request->input('operacion_turno') === InventoryPhysicalPdvShiftService::CLOSING_CONTROL_OPERATION;
+        $cashTransferAfterClosing = $locked
+            && $module === 'tesoreria'
+            && $request->input('operacion_turno') === TesoDocEncabezadoTraslado::POST_CLOSING_OPERATION;
+        $closedCashierOperation = $physicalClosingControl || $cashTransferAfterClosing;
 
         if ($turnId <= 0) {
             if (!$locked && config('turnos.simple_company_mode', false)) {
                 return response()->json(array('ok' => true, 'turno_operativo_id' => null));
             }
+            $closed = $cashTransferAfterClosing
+                ? $this->lastClosedCashierTurn($companyId, $module)
+                : null;
+            if (!is_null($closed)) {
+                return response()->json(array(
+                    'ok' => true,
+                    'turno_operativo_id' => (int)$closed->id,
+                    'estado' => $closed->estado,
+                    'fuente' => 'LAST_CLOSED_CASHIER',
+                ));
+            }
+
             $current = $this->openTurnForCurrentCashier($companyId);
             if (is_null($current)) {
-                if ($physicalClosingControl) {
-                    $closed = $this->lastClosedPhysicalControlTurn($companyId, $module);
+                if ($closedCashierOperation) {
+                    $closed = $this->lastClosedCashierTurn($companyId, $module);
                     if (!is_null($closed)) {
                         return response()->json(array(
                             'ok' => true,
@@ -110,8 +127,10 @@ class TurnoOperativoLookupController extends Controller
                         ));
                     }
                 }
-                return $this->validationError($physicalClosingControl
-                    ? 'No existe un último turno cerrado válido del cajero para realizar el control físico de entrega.'
+                return $this->validationError($closedCashierOperation
+                    ? ($cashTransferAfterClosing
+                        ? 'No existe un último turno cerrado válido del cajero para realizar el traslado de efectivo.'
+                        : 'No existe un último turno cerrado válido del cajero para realizar el control físico de entrega.')
                     : 'No existe un turno abierto asignado al usuario cajero. Debe realizar la apertura antes de continuar.');
             }
             return response()->json(array('ok' => true, 'turno_operativo_id' => (int)$current->id, 'estado' => $current->estado));
@@ -126,9 +145,9 @@ class TurnoOperativoLookupController extends Controller
 
         if ($locked) {
             $current = $this->openTurnForCurrentCashier($companyId);
-            if (is_null($current) || (int)$current->id !== (int)$turn->id) {
-                $closed = $physicalClosingControl && is_null($current)
-                    ? $this->lastClosedPhysicalControlTurn($companyId, $module)
+            if ($cashTransferAfterClosing || is_null($current) || (int)$current->id !== (int)$turn->id) {
+                $closed = $closedCashierOperation
+                    ? $this->lastClosedCashierTurn($companyId, $module)
                     : null;
                 if (is_null($closed) || (int)$closed->id !== (int)$turn->id) {
                     return $this->validationError('El turno asignado al cajero ya no está abierto o no corresponde al usuario actual.');
@@ -185,7 +204,7 @@ class TurnoOperativoLookupController extends Controller
             if ($turn->contexto_tipo === 'pdv' && !empty($turn->pdv_descripcion)) {
                 $context = 'PDV ' . $turn->contexto_id . ' - ' . $turn->pdv_descripcion;
             }
-            $label = $turn->codigo . ' | ' . $turn->fecha_operativa . ' | ' . $context . ' | ' . $turn->estado;
+            $label = $turn->codigo . ' | ' . $turn->estado;
             $html .= '<a class="list-group-item list-group-item-sugerencia' . ($index === 0 ? ' active' : '') . '"'
                 . ' data-registro_id="' . (int)$turn->id . '"'
                 . ' data-turno-estado="' . e($turn->estado) . '"'
@@ -218,7 +237,7 @@ class TurnoOperativoLookupController extends Controller
             ->first();
     }
 
-    protected function lastClosedPhysicalControlTurn($companyId, $module)
+    protected function lastClosedCashierTurn($companyId, $module)
     {
         $turn = app(InventoryPhysicalPdvShiftService::class)
             ->lastClosedTurnForCashier($companyId, (int)Auth::id());

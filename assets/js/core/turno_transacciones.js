@@ -44,11 +44,16 @@
 
     function localValidation(form, marker) {
         var turnId = selectedTurnId(form);
-        var isPhysicalClosingControl = marker.attr('data-turno-operation') === 'inventory_physical_closing_control';
+        var operation = marker.attr('data-turno-operation') || '';
+        var isPhysicalClosingControl = operation === 'inventory_physical_closing_control';
+        var isCashTransferAfterClosing = operation === 'cash_transfer_after_closing';
+        var isPostClosingCashierOperation = isPhysicalClosingControl || isCashTransferAfterClosing;
         if (marker.attr('data-turno-locked') === '1' && turnId === '') {
             return {
-                message: isPhysicalClosingControl
-                    ? 'No existe un último turno cerrado válido del cajero para realizar el control físico de entrega.'
+                message: isPostClosingCashierOperation
+                    ? (isCashTransferAfterClosing
+                        ? 'No existe un último turno cerrado válido del cajero para realizar el traslado de efectivo.'
+                        : 'No existe un último turno cerrado válido del cajero para realizar el control físico de entrega.')
                     : 'No existe un turno abierto asignado al usuario cajero. Debe realizar la apertura antes de continuar.',
                 field: 'turno_operativo_id'
             };
@@ -66,7 +71,7 @@
 
         var state = selectedState(form);
         var reason = $.trim(form.find('[name="turno_ajuste_motivo"]').first().val() || '');
-        if ((state === 'CERRADO' || state === 'AUDITADO') && reason === '' && !isPhysicalClosingControl) {
+        if ((state === 'CERRADO' || state === 'AUDITADO') && reason === '' && !isPostClosingCashierOperation) {
             return {
                 message: 'Debe indicar el motivo del ajuste para utilizar un turno cerrado o auditado.',
                 field: 'turno_ajuste_motivo'

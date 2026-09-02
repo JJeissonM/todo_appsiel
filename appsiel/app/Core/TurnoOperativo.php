@@ -93,7 +93,7 @@ class TurnoOperativo extends Model
 
     public function getDescripcionAttribute()
     {
-        return $this->codigo . ' - ' . $this->fecha_operativa . ' - ' . $this->estado;
+        return $this->codigo . ' - ' . $this->estado;
     }
 
     public static function consultar_registros($nroRegistros, $search)
@@ -152,8 +152,7 @@ class TurnoOperativo extends Model
         $options = array('' => '');
         $query = static::queryForCurrentCompany()->orderBy('id', 'DESC')->limit(250);
         foreach ($query->get() as $turno) {
-            $options[$turno->id] = $turno->codigo . ' | ' . $turno->fecha_operativa . ' | '
-                . $turno->contexto_tipo . ' ' . $turno->contexto_id . ' | ' . $turno->estado;
+            $options[$turno->id] = $turno->codigo . ' | ' . $turno->estado;
         }
         return $options;
     }
