@@ -389,18 +389,7 @@ class TurnoFormService
 
     protected function optionLabel(TurnoOperativo $turno)
     {
-        $contextLabel = $turno->contexto_tipo . ' ' . $turno->contexto_id;
-        if ($turno->contexto_tipo === 'pdv') {
-            $pdvName = \DB::table('vtas_pos_puntos_de_ventas')
-                ->where('core_empresa_id', (int)$turno->core_empresa_id)
-                ->where('id', (int)$turno->contexto_id)
-                ->value('descripcion');
-            if (!empty($pdvName)) {
-                $contextLabel = 'PDV ' . $turno->contexto_id . ' - ' . $pdvName;
-            }
-        }
-        return $turno->codigo . ' | ' . $turno->fecha_operativa . ' | '
-            . $contextLabel . ' | ' . $turno->estado;
+        return $turno->codigo . ' | ' . $turno->estado;
     }
 
     protected function singleOptionValue(array $options)

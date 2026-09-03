@@ -42,6 +42,7 @@
             <select id="turno_operativo_id" name="turno_operativo_id" class="form-control">
                 <option value="">Seleccione un turno</option>
             </select>
+            <input type="hidden" id="turno_operativo_id_locked" name="turno_operativo_id" value="" disabled="disabled">
             <span class="help-block">El arqueo y sus consultas utilizarán la identidad del turno, no un rango horario estimado.</span>
         </div>
 
@@ -249,6 +250,7 @@
             var usarMovimientosTesoreriaPorHora = {{ $usarMovimientosTesoreriaPorHora ? 'true' : 'false' }};
             var modoTurnos = false;
             var turnosOperativos = [];
+            var seleccionTurnoBloqueada = false;
 
             $('#fecha').on('change', function () {
                 cargarRangoPdvPorFecha($(this).val(), true);
@@ -287,6 +289,7 @@
                     }
                 }).fail(function () {
                     turnosOperativos = [];
+                    configurarBloqueoSelectorTurno(false, '');
                     $('#turno_operativo_id').html('<option value="">Seleccione un turno</option>');
                     aplicarRangoPdv(null, 'No fue posible consultar las aperturas y cierres para la fecha seleccionada.', '');
                 }).always(function () {
@@ -312,17 +315,19 @@
             function configurarTurnosOperativos(response) {
                 modoTurnos = response.mode === 'TURNOS';
                 turnosOperativos = response.shifts || [];
+                seleccionTurnoBloqueada = modoTurnos && response.selection_locked === true;
                 var $select = $('#turno_operativo_id');
                 $select.html('<option value="">Seleccione un turno</option>');
 
                 if (!modoTurnos) {
+                    configurarBloqueoSelectorTurno(false, '');
                     $('#turno_operativo_group').hide();
                     $('#fecha_hora_apertura, #fecha_hora_cierre').prop('readonly', false);
                     return;
                 }
 
                 $.each(turnosOperativos, function (index, turno) {
-                    var label = (turno.code || ('Turno ' + turno.id)) + ' - ' + turno.state + ' (' + (turno.opening_at || '') + ' / ' + (turno.closing_at || 'sin cierre') + ')';
+                    var label = (turno.code || ('Turno ' + turno.id)) + ' - ' + turno.state;
                     $('<option>').val(turno.id).text(label).appendTo($select);
                 });
                 $('#turno_operativo_group').show();
@@ -330,6 +335,21 @@
                 if (response.range && response.range.id) {
                     $select.val(response.range.id);
                 }
+                configurarBloqueoSelectorTurno(seleccionTurnoBloqueada, $select.val());
+            }
+
+            function configurarBloqueoSelectorTurno(bloqueada, turnoId) {
+                var $select = $('#turno_operativo_id');
+                var $hidden = $('#turno_operativo_id_locked');
+
+                if (bloqueada) {
+                    $select.prop('disabled', true).removeAttr('name');
+                    $hidden.val(turnoId || '').prop('disabled', false);
+                    return;
+                }
+
+                $select.prop('disabled', false).attr('name', 'turno_operativo_id');
+                $hidden.val('').prop('disabled', true);
             }
 
             function aplicarRangoPdv(range, message, pdvDescription) {

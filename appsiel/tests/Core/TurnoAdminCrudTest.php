@@ -812,6 +812,66 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertSame('2099-09-02 06:00:00', $payload['range']['closing_at']);
     }
 
+    public function test_arqueo_de_cajero_bloquea_y_normaliza_al_ultimo_turno_que_cerro()
+    {
+        $this->authenticateCompanyUser();
+        $cashierId = DB::table('users as user')
+            ->join('user_has_roles as assigned_role', 'assigned_role.user_id', '=', 'user.id')
+            ->join('roles as role', 'role.id', '=', 'assigned_role.role_id')
+            ->where('user.empresa_id', 1)
+            ->whereIn('role.name', (array)config('turnos.turn_selection_locked_roles', array()))
+            ->value('user.id');
+        $this->assertGreaterThan(0, (int)$cashierId);
+
+        $pdv = Pdv::where('core_empresa_id', 1)->whereNotNull('caja_default_id')->first();
+        $this->assertNotNull($pdv);
+        app(TurnoConfigurationService::class)->configure(array(
+            'core_empresa_id' => 1,
+            'modulo' => 'tesoreria',
+            'contexto_tipo' => 'pdv',
+            'contexto_id' => $pdv->id,
+            'modo' => TurnoConfiguracion::MODO_TURNOS,
+        ));
+
+        $manager = app(TurnoManager::class);
+        $anterior = $manager->openContext(
+            1, 'tesoreria', 'pdv', (int)$pdv->id, '2099-09-03', (int)$cashierId, 0, '2099-09-03 06:00:00'
+        );
+        DB::table('core_turnos_operativos')->where('id', $anterior->id)
+            ->update(array('teso_caja_id' => (int)$pdv->caja_default_id));
+        $manager->close($anterior, (int)$cashierId, 0, 'Primer cierre', '2099-09-03 14:00:00');
+
+        $ultimo = $manager->openContext(
+            1, 'tesoreria', 'pdv', (int)$pdv->id, '2099-09-04', (int)$cashierId, 0, '2099-09-04 06:00:00'
+        );
+        DB::table('core_turnos_operativos')->where('id', $ultimo->id)
+            ->update(array('teso_caja_id' => (int)$pdv->caja_default_id));
+        $manager->close($ultimo, (int)$cashierId, 0, 'Último cierre', '2099-09-04 14:00:00');
+
+        $this->be(User::find($cashierId));
+        $this->call('GET', '/tesoreria/get_turnos_pdv_fecha', array(
+            'pdv_id' => $pdv->id,
+            'teso_caja_id' => $pdv->caja_default_id,
+            'fecha' => '2099-09-03',
+        ));
+        $this->assertResponseOk();
+        $payload = json_decode($this->response->getContent(), true);
+        $this->assertTrue($payload['selection_locked']);
+        $this->assertCount(1, $payload['shifts']);
+        $this->assertSame((int)$ultimo->id, (int)$payload['range']['id']);
+
+        // Aunque el navegador envíe otro turno, el servidor conserva como
+        // autoridad el último cierre del cajero para esta caja y PDV.
+        $request = \Illuminate\Http\Request::create('/', 'POST', array(
+            'pdv_id' => $pdv->id,
+            'teso_caja_id' => $pdv->caja_default_id,
+            'turno_operativo_id' => $anterior->id,
+        ));
+        (new \App\Tesoreria\ArqueoCaja())->validar_datos_creacion($request, new \stdClass());
+        $this->assertSame((int)$ultimo->id, (int)$request->input('turno_operativo_id'));
+        $this->assertSame('2099-09-04', $request->input('fecha'));
+    }
+
     public function test_referencia_visual_muestra_turno_persistido_y_oculta_fk_nula()
     {
         $user = $this->authenticateCompanyUser();

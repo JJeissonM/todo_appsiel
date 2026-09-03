@@ -199,35 +199,48 @@ class ArqueoCaja extends Model
 
     public function validar_datos_creacion($request, $controller)
     {
-        $this->validateAndNormalizeShift($request, $controller);
+        $this->validateAndNormalizeShift($request, $controller, true);
     }
 
     public function validar_datos_actualizacion($request, $controller, $id)
     {
-        $this->validateAndNormalizeShift($request, $controller);
+        $this->validateAndNormalizeShift($request, $controller, false);
     }
 
-    protected function validateAndNormalizeShift($request, $controller)
+    protected function validateAndNormalizeShift($request, $controller, $forceLatestForCashier = false)
     {
         $empresaId = (int)Auth::user()->empresa_id;
         $pdvId = (int)$request->pdv_id;
         $turnoManager = app(TurnoManager::class);
 
         if ($pdvId > 0 && $turnoManager->enabledForPdv($empresaId, $pdvId, 'tesoreria')) {
-            $turno = app(CashCountTurnService::class)->findEligible(
-                $empresaId,
-                $pdvId,
-                (int)$request->teso_caja_id,
-                (int)$request->turno_operativo_id,
-                static::turnSelectionLockedForCurrentUser() ? (int)Auth::id() : null
-            );
+            $selectionLocked = static::turnSelectionLockedForCurrentUser();
+            $service = app(CashCountTurnService::class);
+            $turno = $selectionLocked && $forceLatestForCashier
+                ? $service->latestClosed(
+                    $empresaId,
+                    $pdvId,
+                    (int)$request->teso_caja_id,
+                    (int)Auth::id()
+                )
+                : $service->findEligible(
+                    $empresaId,
+                    $pdvId,
+                    (int)$request->teso_caja_id,
+                    (int)$request->turno_operativo_id,
+                    $selectionLocked ? (int)Auth::id() : null
+                );
 
             if (is_null($turno)) {
                 $controller->validate($request, array(
                     'turno_operativo_id' => 'required|integer|in:__turno_invalido__'
                 ), array(
-                    'turno_operativo_id.required' => 'Debe seleccionar el turno operativo que se va a arquear.',
-                    'turno_operativo_id.in' => 'El turno no está cerrado o no corresponde a la empresa, caja y PDV del arqueo.'
+                    'turno_operativo_id.required' => $selectionLocked
+                        ? 'No existe un último turno cerrado por el cajero para esta caja y PDV.'
+                        : 'Debe seleccionar el turno operativo que se va a arquear.',
+                    'turno_operativo_id.in' => $selectionLocked
+                        ? 'No existe un último turno cerrado por el cajero para esta caja y PDV.'
+                        : 'El turno no está cerrado o no corresponde a la empresa, caja y PDV del arqueo.'
                 ));
                 return;
             }
