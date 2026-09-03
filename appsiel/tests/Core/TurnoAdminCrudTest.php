@@ -594,6 +594,23 @@ class TurnoAdminCrudTest extends TestCase
             'motivo' => 'Corrección autorizada de pago omitido',
         ));
 
+        // El traslado de efectivo conserva la misma autorización genérica de
+        // ajuste administrativo; su excepción especial para cajeros no debe
+        // ocultar el ajuste motivado preparado por HasTurnoOperativo.
+        $transfer = new TesoDocEncabezadoTraslado(array(
+            'core_empresa_id' => 1,
+            'turno_operativo_id' => $turn->id,
+        ));
+        $prepareAdjustment = new ReflectionMethod($transfer, 'prepareTurnoCreationAdjustment');
+        $prepareAdjustment->setAccessible(true);
+        $prepareAdjustment->invoke($transfer);
+        $this->assertTrue($transfer->allowsHistoricalTurnoAssignment());
+        $this->assertSame(
+            (int)$turn->id,
+            (int)app(\App\Core\Services\TurnoAssignmentResolver::class)
+                ->assign($transfer, 'tesoreria', 1, 'pdv')
+        );
+
         $listedAdjustment = null;
         foreach (TurnoEvento::consultar_registros(100, $turn->codigo) as $event) {
             if ($event->campo3 === 'Ajuste posterior' && (string)$event->campo8 === 'Corrección autorizada de pago omitido') {

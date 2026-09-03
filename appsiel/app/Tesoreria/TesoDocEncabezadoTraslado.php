@@ -80,11 +80,18 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
     }
 
     /**
-     * Excepción acotada para que HasTurnoOperativo acepte el turno histórico
-     * verificado por validar_datos_creacion().
+     * Excepciones acotadas para asociar el traslado a un turno histórico:
+     * el ajuste motivado y autorizado de un administrador, o el último turno
+     * cerrado que validar_datos_creacion() fijó para un cajero.
      */
     public function allowsHistoricalTurnoAssignment()
     {
+        // HasTurnoOperativo ya verificó permiso, estado y motivo, y conservará
+        // la auditoría AJUSTE_POSTERIOR después de crear el documento.
+        if (!is_null($this->turnoCreationAdjustment)) {
+            return true;
+        }
+
         $turnId = (int)$this->getAttribute('turno_operativo_id');
         if ($turnId <= 0
             || !$this->selectionLockedForCurrentUser()
