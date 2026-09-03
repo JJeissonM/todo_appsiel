@@ -223,9 +223,8 @@ class ArqueoCaja extends Model
                     (int)$request->teso_caja_id,
                     (int)Auth::id()
                 )
-                : $service->findEligible(
+                : $service->findEligibleForCashBox(
                     $empresaId,
-                    $pdvId,
                     (int)$request->teso_caja_id,
                     (int)$request->turno_operativo_id,
                     $selectionLocked ? (int)Auth::id() : null

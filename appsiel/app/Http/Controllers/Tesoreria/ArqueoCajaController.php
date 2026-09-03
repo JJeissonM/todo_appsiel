@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tesoreria;
 
 use App\Core\Empresa;
 use App\Core\Services\TurnoManager;
+use App\Core\Services\TurnoModeResolver;
 use App\Core\TurnoOperativo;
 use App\Hotel\Support\HotelCreatorLabel;
 use App\Sistema\Html\Boton;
@@ -44,32 +45,61 @@ class ArqueoCajaController extends ModeloController
 
     public function get_turnos_pdv_fecha()
     {
-        $pdv = Pdv::where('id', (int)Input::get('pdv_id'))
-            ->where('core_empresa_id', Auth::user()->empresa_id)
-            ->first();
+        $companyId = (int)Auth::user()->empresa_id;
+        $cashBoxId = (int)Input::get('teso_caja_id');
+        $pdvId = (int)Input::get('pdv_id');
 
-        if (is_null($pdv)) {
+        $pdvQuery = Pdv::where('core_empresa_id', $companyId);
+        if ($pdvId > 0) {
+            $pdvQuery->where('id', $pdvId);
+        } elseif ($cashBoxId > 0) {
+            // Los arqueos creados directamente desde Tesorería no reciben el
+            // PDV en la URL. La caja predeterminada permite recuperar su PDV.
+            $pdvQuery->where('caja_default_id', $cashBoxId);
+        } else {
+            $pdvQuery->whereRaw('1 = 0');
+        }
+        $pdv = $pdvQuery->orderBy('id')->first();
+
+        $selectionLocked = $this->turnSelectionLockedForCurrentUser();
+        if (is_null($pdv) && ($selectionLocked || $cashBoxId <= 0)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'El punto de venta no existe o no pertenece a la empresa.',
+                'message' => $cashBoxId > 0
+                    ? 'La caja seleccionada no tiene un punto de venta asociado en la empresa.'
+                    : 'El punto de venta no existe o no pertenece a la empresa.',
                 'shifts' => []
             ], 404);
         }
 
 
         $turnoManager = app(TurnoManager::class);
-        if ($turnoManager->enabledForPdv(Auth::user()->empresa_id, $pdv->id, 'tesoreria')) {
-            $cashBoxId = (int)Input::get('teso_caja_id');
+        $turnosEnabled = !is_null($pdv)
+            ? $turnoManager->enabledForPdv($companyId, $pdv->id, 'tesoreria')
+            : app(TurnoModeResolver::class)->enabledForModule($companyId, 'tesoreria');
+        if ($turnosEnabled) {
             $service = app(CashCountTurnService::class);
-            $selectionLocked = $this->turnSelectionLockedForCurrentUser();
             $cashierId = $selectionLocked ? (int)Auth::id() : null;
             $preferLatest = (int)Input::get('preferir_ultimo_cerrado', 0) === 1;
-            $latest = $service->latestClosed(
-                Auth::user()->empresa_id,
-                $pdv->id,
-                $cashBoxId,
-                $cashierId
-            );
+            if (is_null($pdv)) {
+                $candidates = $service->closedForCashBox($companyId, $cashBoxId, null, null, 20)
+                    ->filter(function ($turno) use ($companyId) {
+                        return app(TurnoModeResolver::class)->enabled(
+                            $companyId,
+                            'tesoreria',
+                            $turno->contexto_tipo,
+                            (int)$turno->contexto_id
+                        );
+                    })->values();
+                $latest = $candidates->isEmpty() ? null : $candidates->first();
+            } else {
+                $latest = $service->latestClosed(
+                    $companyId,
+                    $pdv->id,
+                    $cashBoxId,
+                    $cashierId
+                );
+            }
             if ($selectionLocked) {
                 // El arqueo del cajero siempre corresponde al último turno que él
                 // cerró en esta caja y PDV. No se expone el historial para elección.
@@ -78,17 +108,41 @@ class ArqueoCajaController extends ModeloController
                 $operationalDate = $preferLatest && !is_null($latest)
                     ? $latest->fecha_operativa
                     : Input::get('fecha');
-                $turnos = $service->closedForOperationalDate(
-                    Auth::user()->empresa_id,
-                    $pdv->id,
-                    $cashBoxId,
-                    $operationalDate,
-                    null
-                );
+                if (is_null($pdv)) {
+                    $turnos = $service->closedForCashBox($companyId, $cashBoxId, $operationalDate, null, 1)
+                        ->filter(function ($turno) use ($companyId) {
+                            return app(TurnoModeResolver::class)->enabled(
+                                $companyId,
+                                'tesoreria',
+                                $turno->contexto_tipo,
+                                (int)$turno->contexto_id
+                            );
+                        })->values();
+                } else {
+                    $turnos = $service->closedForOperationalDate(
+                        $companyId,
+                        $pdv->id,
+                        $cashBoxId,
+                        $operationalDate,
+                        null,
+                        1
+                    );
+                }
             }
 
+            $pdvDescriptions = Pdv::where('core_empresa_id', $companyId)
+                ->whereIn('id', $turnos->pluck('contexto_id')->all())
+                ->lists('descripcion', 'id')->toArray();
             $turnos = $turnos
-                ->map(function ($turno) {
+                ->map(function ($turno) use ($pdvDescriptions, $companyId, $cashBoxId) {
+                    $cashBase = (int)$turno->teso_caja_id === (int)$cashBoxId
+                        ? (float)$turno->saldo_inicial
+                        : TesoMovimiento::calcularSaldoInicialArqueo(
+                            $companyId,
+                            $cashBoxId,
+                            $turno->fecha_operativa,
+                            is_null($turno->abierto_en) ? null : $turno->abierto_en->format('Y-m-d H:i:s')
+                        );
                     return array(
                         'id' => $turno->id,
                         'code' => $turno->codigo,
@@ -96,16 +150,27 @@ class ArqueoCajaController extends ModeloController
                         'operational_date' => $turno->fecha_operativa,
                         'opening_at' => is_null($turno->abierto_en) ? null : $turno->abierto_en->format('Y-m-d H:i:s'),
                         'closing_at' => is_null($turno->cerrado_en) ? null : $turno->cerrado_en->format('Y-m-d H:i:s'),
-                        'cash_base' => (float)$turno->saldo_inicial,
+                        'cash_base' => $cashBase,
+                        'pdv_id' => $turno->contexto_tipo === 'pdv' ? (int)$turno->contexto_id : null,
+                        'pdv_description' => $turno->contexto_tipo === 'pdv' && isset($pdvDescriptions[$turno->contexto_id])
+                            ? $pdvDescriptions[$turno->contexto_id]
+                            : $turno->contexto_tipo . ' ' . $turno->contexto_id,
                     );
                 })->values();
+
+            $selectedRange = $turnos->isEmpty() ? null : $turnos->first();
+            $selectedPdvId = is_null($selectedRange) ? (is_null($pdv) ? null : (int)$pdv->id) : $selectedRange['pdv_id'];
+            $selectedPdvDescription = is_null($selectedRange)
+                ? (is_null($pdv) ? '' : $pdv->descripcion)
+                : $selectedRange['pdv_description'];
 
             return response()->json(array(
                 'status' => 'success',
                 'mode' => 'TURNOS',
-                'pdv_description' => $pdv->descripcion,
+                'pdv_id' => $selectedPdvId,
+                'pdv_description' => $selectedPdvDescription,
                 'shifts' => $turnos,
-                'range' => $turnos->isEmpty() ? null : $turnos->first(),
+                'range' => $selectedRange,
                 'selection_locked' => $selectionLocked,
                 'message' => $turnos->isEmpty()
                     ? ($selectionLocked
@@ -115,11 +180,13 @@ class ArqueoCajaController extends ModeloController
                         ? 'Se asignó el último turno cerrado por el cajero para esta caja y punto de venta.'
                         : ($preferLatest
                         ? 'Se seleccionó el último turno cerrado de la caja y punto de venta.'
-                        : 'Se seleccionó el último turno cerrado de la fecha; puede escoger otro turno cerrado de ese día.'))
+                        : 'Se seleccionó el último turno cerrado de la fecha; puede buscar otro turno cerrado de ese día.'))
             ));
         }
 
-        $range = (new CashRegisterShiftService())->getDayRange($pdv, Input::get('fecha'));
+        $range = is_null($pdv)
+            ? null
+            : (new CashRegisterShiftService())->getDayRange($pdv, Input::get('fecha'));
 
         $message = '';
         if (is_null($range) || !$range['has_opening']) {
@@ -131,11 +198,83 @@ class ArqueoCajaController extends ModeloController
         return response()->json([
             'status' => 'success',
             'mode' => 'TRADICIONAL',
-            'pdv_description' => $pdv->descripcion,
+            'pdv_id' => is_null($pdv) ? null : (int)$pdv->id,
+            'pdv_description' => is_null($pdv) ? '' : $pdv->descripcion,
             'range' => $range,
             'shifts' => [],
             'message' => $message
         ]);
+    }
+
+    /**
+     * Sugerencias remotas para el combobox de turnos del arqueo administrativo.
+     * Nunca entrega el catálogo completo: exige texto y limita el resultado.
+     */
+    public function buscar_turnos_caja()
+    {
+        if ($this->turnSelectionLockedForCurrentUser()) {
+            return response('La selección manual de turno no está disponible para este usuario.', 403);
+        }
+
+        $companyId = (int)Auth::user()->empresa_id;
+        $cashBoxId = (int)Input::get('teso_caja_id');
+        $search = trim((string)Input::get('texto_busqueda'));
+        $date = trim((string)Input::get('fecha'));
+        if ($cashBoxId <= 0 || $search === '') {
+            return response($this->emptyTurnSuggestions('Seleccione una caja y escriba para buscar un turno.'));
+        }
+
+        $service = app(CashCountTurnService::class);
+        $turns = $service->searchClosedForCashBox($companyId, $cashBoxId, $search, $date, 30)
+            ->filter(function ($turno) use ($companyId) {
+                return app(TurnoModeResolver::class)->enabled(
+                    $companyId,
+                    'tesoreria',
+                    $turno->contexto_tipo,
+                    (int)$turno->contexto_id
+                );
+            })->take(20)->values();
+
+        if ($turns->isEmpty()) {
+            return response($this->emptyTurnSuggestions('No se encontraron turnos cerrados para la caja y fecha seleccionadas.'));
+        }
+
+        $pdvDescriptions = Pdv::where('core_empresa_id', $companyId)
+            ->whereIn('id', $turns->pluck('contexto_id')->all())
+            ->lists('descripcion', 'id')->toArray();
+        $items = array();
+        foreach ($turns as $turn) {
+            $pdvId = $turn->contexto_tipo === 'pdv' ? (int)$turn->contexto_id : null;
+            $pdvDescription = !is_null($pdvId) && isset($pdvDescriptions[$pdvId])
+                ? $pdvDescriptions[$pdvId]
+                : $turn->contexto_tipo . ' ' . $turn->contexto_id;
+            $cashBase = (int)$turn->teso_caja_id === $cashBoxId
+                ? (float)$turn->saldo_inicial
+                : TesoMovimiento::calcularSaldoInicialArqueo(
+                    $companyId,
+                    $cashBoxId,
+                    $turn->fecha_operativa,
+                    is_null($turn->abierto_en) ? null : $turn->abierto_en->format('Y-m-d H:i:s')
+                );
+            $label = $turn->codigo . ' - ' . $turn->estado . ' | ' . $turn->fecha_operativa . ' | ' . $pdvDescription;
+            $items[] = '<a href="#" class="list-group-item list-group-item-sugerencia"'
+                . ' data-registro_id="' . e($turn->id) . '"'
+                . ' data-turno-estado="' . e($turn->estado) . '"'
+                . ' data-turno-operational-date="' . e($turn->fecha_operativa) . '"'
+                . ' data-turno-opening-at="' . e(is_null($turn->abierto_en) ? '' : $turn->abierto_en->format('Y-m-d H:i:s')) . '"'
+                . ' data-turno-closing-at="' . e(is_null($turn->cerrado_en) ? '' : $turn->cerrado_en->format('Y-m-d H:i:s')) . '"'
+                . ' data-turno-cash-base="' . e($cashBase) . '"'
+                . ' data-turno-pdv-id="' . e($pdvId) . '"'
+                . ' data-turno-pdv-description="' . e($pdvDescription) . '">'
+                . e($label) . '</a>';
+        }
+
+        return response('<div class="list-group">' . implode('', $items) . '</div>');
+    }
+
+    protected function emptyTurnSuggestions($message)
+    {
+        return '<div class="list-group"><div class="list-group-item">' . e($message) . '</div></div>';
     }
 
     public function recalcular_saldo_inicial(Request $request)
@@ -177,18 +316,25 @@ class ArqueoCajaController extends ModeloController
             $service = app(CashCountTurnService::class);
             $turno = $this->turnSelectionLockedForCurrentUser()
                 ? $service->latestClosed($user->empresa_id, $pdvId, $teso_caja_id, (int)$user->id)
-                : $service->findEligible(
+                : $service->findEligibleForCashBox(
                     $user->empresa_id,
-                    $pdvId,
                     $teso_caja_id,
                     (int)$request->input('turno_operativo_id')
                 );
             if (is_null($turno)) {
                 return response()->json(array('status' => 'error', 'message' => 'Seleccione un turno operativo válido antes de recalcular el saldo inicial.'), 422);
             }
+            $cashBase = (int)$turno->teso_caja_id === (int)$teso_caja_id
+                ? (float)$turno->saldo_inicial
+                : TesoMovimiento::calcularSaldoInicialArqueo(
+                    $user->empresa_id,
+                    $teso_caja_id,
+                    $turno->fecha_operativa,
+                    is_null($turno->abierto_en) ? null : $turno->abierto_en->format('Y-m-d H:i:s')
+                );
             return response()->json(array(
                 'status' => 'success',
-                'saldo_inicial' => (float)$turno->saldo_inicial,
+                'saldo_inicial' => $cashBase,
                 'message' => 'Saldo inicial tomado del turno operativo seleccionado.'
             ));
         }

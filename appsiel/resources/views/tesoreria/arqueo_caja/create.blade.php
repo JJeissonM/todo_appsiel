@@ -38,12 +38,22 @@
         <input type="hidden" id="pdv_id" name="pdv_id" value="{{ $pdvId }}">
 
         <div id="turno_operativo_group" class="form-group" style="display: none;">
-            <label for="turno_operativo_id">Turno operativo:</label>
-            <select id="turno_operativo_id" name="turno_operativo_id" class="form-control">
-                <option value="">Seleccione un turno</option>
-            </select>
-            <input type="hidden" id="turno_operativo_id_locked" name="turno_operativo_id" value="" disabled="disabled">
-            <span class="help-block">El arqueo y sus consultas utilizarán la identidad del turno, no un rango horario estimado.</span>
+            <label for="turno_operativo_busqueda">Turno operativo:</label>
+            <div id="turno_operativo_search_container">
+                <input type="text" id="turno_operativo_busqueda"
+                       class="form-control text_input_sugerencias turno-operativo-ajax"
+                       placeholder="Escriba el código, fecha o estado del turno"
+                       autocomplete="off"
+                       data-url_busqueda="{{ url('tesoreria/buscar_turnos_caja') }}"
+                       data-ajax-fields="teso_caja_id,fecha">
+                <input type="hidden" id="turno_operativo_id" name="turno_operativo_id" value="">
+            </div>
+            <div id="turno_operativo_locked_container" style="display: none;">
+                <select id="turno_operativo_id_select" class="form-control" disabled="disabled">
+                    <option value="">Seleccione un turno</option>
+                </select>
+            </div>
+            <span class="help-block">El administrador puede buscar un turno cerrado de la caja seleccionada. Al cajero se le asigna automáticamente el último que cerró.</span>
         </div>
 
         <div class="form-group" style="margin-top: 20px;">
@@ -252,8 +262,27 @@
             var turnosOperativos = [];
             var seleccionTurnoBloqueada = false;
 
+            $('#turno_operativo_busqueda').on('input', function () {
+                var selectedLabel = $(this).attr('data-selected-label') || '';
+                if ($(this).val() !== selectedLabel) {
+                    $('#turno_operativo_id').val('');
+                    $(this).removeAttr('data-registro_id').removeAttr('data-turno-state');
+                }
+            });
+
             $('#fecha').on('change', function () {
+                limpiarSeleccionTurnoBuscable();
                 cargarRangoPdvPorFecha($(this).val(), true);
+            });
+
+            $('#teso_caja_id').on('change', function () {
+                // En el acceso directo desde Tesorería el PDV se infiere de la
+                // caja. Se descarta el anterior antes de resolver la nueva caja.
+                if (getParameterByName('pdv_id') === '') {
+                    $('#pdv_id').val('');
+                }
+                limpiarSeleccionTurnoBuscable();
+                cargarRangoPdvPorFecha($('#fecha').val(), false);
             });
 
             if (usarMovimientosTesoreriaPorHora) {
@@ -267,7 +296,7 @@
             cargarRangoPdvPorFecha($('#fecha').val(), false);
 
             function cargarRangoPdvPorFecha(fecha, recalcularSaldoInicial) {
-                if ($('#pdv_id').val() === '' || fecha === '') {
+                if (($('#pdv_id').val() === '' && $('#teso_caja_id').val() === '') || fecha === '') {
                     if (recalcularSaldoInicial && typeof recalcularSaldoInicialArqueo === 'function') {
                         recalcularSaldoInicialArqueo();
                     }
@@ -281,6 +310,9 @@
                     fecha: fecha,
                     preferir_ultimo_cerrado: recalcularSaldoInicial ? 0 : 1
                 }).done(function (response) {
+                    if (response.pdv_id) {
+                        $('#pdv_id').val(response.pdv_id);
+                    }
                     configurarTurnosOperativos(response);
                     aplicarRangoPdv(response.range, response.message, response.pdv_description);
                     if (recalcularSaldoInicial && typeof recalcularSaldoInicialArqueo === 'function'
@@ -290,15 +322,17 @@
                 }).fail(function () {
                     turnosOperativos = [];
                     configurarBloqueoSelectorTurno(false, '');
-                    $('#turno_operativo_id').html('<option value="">Seleccione un turno</option>');
+                    $('#turno_operativo_id_select').html('<option value="">Seleccione un turno</option>');
+                    limpiarSeleccionTurnoBuscable();
                     aplicarRangoPdv(null, 'No fue posible consultar las aperturas y cierres para la fecha seleccionada.', '');
                 }).always(function () {
                     $('#btn_get_mov_entrada, #btn_get_mov_salida').removeClass('disabled');
                 });
             }
 
-            $('#turno_operativo_id').on('change', function () {
+            $('#turno_operativo_id_select').on('change', function () {
                 var turnoId = parseInt($(this).val(), 10);
+                $('#turno_operativo_id').val($(this).val());
                 var turno = null;
                 $.each(turnosOperativos, function (index, item) {
                     if (parseInt(item.id, 10) === turnoId) {
@@ -306,7 +340,14 @@
                         return false;
                     }
                 });
-                aplicarRangoPdv(turno, turno === null ? 'Debe seleccionar un turno operativo.' : '', $('#pdv_descripcion').text());
+                if (turno !== null && turno.pdv_id) {
+                    $('#pdv_id').val(turno.pdv_id);
+                }
+                aplicarRangoPdv(
+                    turno,
+                    turno === null ? 'Debe seleccionar un turno operativo.' : '',
+                    turno !== null ? turno.pdv_description : $('#pdv_descripcion').text()
+                );
                 if (typeof recalcularSaldoInicialArqueo === 'function' && turno !== null) {
                     recalcularSaldoInicialArqueo();
                 }
@@ -316,7 +357,7 @@
                 modoTurnos = response.mode === 'TURNOS';
                 turnosOperativos = response.shifts || [];
                 seleccionTurnoBloqueada = modoTurnos && response.selection_locked === true;
-                var $select = $('#turno_operativo_id');
+                var $select = $('#turno_operativo_id_select');
                 $select.html('<option value="">Seleccione un turno</option>');
 
                 if (!modoTurnos) {
@@ -336,21 +377,75 @@
                     $select.val(response.range.id);
                 }
                 configurarBloqueoSelectorTurno(seleccionTurnoBloqueada, $select.val());
+                if (!seleccionTurnoBloqueada && response.range && response.range.id) {
+                    var label = (response.range.code || ('Turno ' + response.range.id))
+                        + ' - ' + response.range.state
+                        + ' | ' + response.range.operational_date
+                        + ' | ' + response.range.pdv_description;
+                    $('#turno_operativo_busqueda')
+                        .val(label)
+                        .attr('data-registro_id', response.range.id)
+                        .attr('data-selected-label', label)
+                        .attr('data-turno-state', response.range.state || '');
+                    $('#turno_operativo_id').val(response.range.id);
+                }
             }
 
             function configurarBloqueoSelectorTurno(bloqueada, turnoId) {
-                var $select = $('#turno_operativo_id');
-                var $hidden = $('#turno_operativo_id_locked');
+                var $select = $('#turno_operativo_id_select');
+                var $hidden = $('#turno_operativo_id');
 
                 if (bloqueada) {
-                    $select.prop('disabled', true).removeAttr('name');
-                    $hidden.val(turnoId || '').prop('disabled', false);
+                    $('#turno_operativo_search_container').hide();
+                    $('#turno_operativo_locked_container').show();
+                    $select.prop('disabled', true);
+                    $hidden.val(turnoId || '');
                     return;
                 }
 
-                $select.prop('disabled', false).attr('name', 'turno_operativo_id');
-                $hidden.val('').prop('disabled', true);
+                $('#turno_operativo_locked_container').hide();
+                $('#turno_operativo_search_container').show();
+                $select.prop('disabled', true);
+                if (!turnoId) {
+                    $hidden.val('');
+                }
             }
+
+            function limpiarSeleccionTurnoBuscable() {
+                if (seleccionTurnoBloqueada) {
+                    return;
+                }
+                $('#turno_operativo_busqueda')
+                    .val('')
+                    .removeAttr('data-registro_id')
+                    .removeAttr('data-turno-state')
+                    .attr('data-selected-label', '');
+                $('#turno_operativo_id').val('');
+            }
+
+            window.ejecutar_acciones_con_item_sugerencia = function (item, input) {
+                if (!input || input.attr('id') !== 'turno_operativo_busqueda') {
+                    return;
+                }
+                var turno = {
+                    id: item.attr('data-registro_id'),
+                    state: item.attr('data-turno-estado'),
+                    operational_date: item.attr('data-turno-operational-date'),
+                    opening_at: item.attr('data-turno-opening-at'),
+                    closing_at: item.attr('data-turno-closing-at'),
+                    cash_base: item.attr('data-turno-cash-base'),
+                    pdv_id: item.attr('data-turno-pdv-id'),
+                    pdv_description: item.attr('data-turno-pdv-description')
+                };
+                turnosOperativos = [turno];
+                if (turno.pdv_id) {
+                    $('#pdv_id').val(turno.pdv_id);
+                }
+                aplicarRangoPdv(turno, '', turno.pdv_description);
+                if (typeof recalcularSaldoInicialArqueo === 'function') {
+                    recalcularSaldoInicialArqueo();
+                }
+            };
 
             function aplicarRangoPdv(range, message, pdvDescription) {
                 $('#pdv_descripcion').text(pdvDescription || {!! json_encode($pdvDescripcion) !!});
@@ -360,6 +455,9 @@
                     $('#fecha_hora_apertura, #fecha_hora_cierre').val('');
                     $('#rango_pdv_mensaje').text(message).show();
                 } else {
+                    if (range.pdv_id) {
+                        $('#pdv_id').val(range.pdv_id);
+                    }
                     if (range.operational_date) {
                         $('#fecha').val(range.operational_date);
                     }

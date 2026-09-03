@@ -851,6 +851,59 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertSame((int)$turn->id, (int)$payload['range']['id']);
         $this->assertSame('2099-09-01', $payload['range']['operational_date']);
         $this->assertSame('2099-09-02 06:00:00', $payload['range']['closing_at']);
+
+        // En el acceso directo desde Tesorería no viene pdv_id en la URL. El
+        // backend debe resolverlo mediante la caja para mostrar el selector.
+        $this->call('GET', '/tesoreria/get_turnos_pdv_fecha', array(
+            'teso_caja_id' => $pdv->caja_default_id,
+            'fecha' => '2099-09-02',
+            'preferir_ultimo_cerrado' => 1,
+        ));
+        $this->assertResponseOk();
+        $directPayload = json_decode($this->response->getContent(), true);
+        $this->assertSame((int)$pdv->id, (int)$directPayload['pdv_id']);
+        $this->assertFalse($directPayload['selection_locked']);
+        $this->assertSame((int)$turn->id, (int)$directPayload['range']['id']);
+
+        $pdvCashBoxIds = Pdv::where('core_empresa_id', 1)->whereNotNull('caja_default_id')
+            ->lists('caja_default_id')->toArray();
+        $generalCashBox = \App\Tesoreria\TesoCaja::where('core_empresa_id', 1)
+            ->whereNotIn('id', $pdvCashBoxIds)
+            ->first();
+        $movement = TesoMovimiento::where('core_empresa_id', 1)->first();
+        $this->assertNotNull($generalCashBox);
+        $this->assertNotNull($movement);
+        DB::table('teso_movimientos')->where('id', $movement->id)->update(array(
+            'teso_caja_id' => $generalCashBox->id,
+            'turno_operativo_id' => $turn->id,
+        ));
+
+        // Una caja receptora de traslados puede no ser caja predeterminada de
+        // ningún PDV. Sus turnos se determinan por los movimientos asociados.
+        $this->call('GET', '/tesoreria/get_turnos_pdv_fecha', array(
+            'teso_caja_id' => $generalCashBox->id,
+            'fecha' => '2099-09-02',
+            'preferir_ultimo_cerrado' => 1,
+        ));
+        $this->assertResponseOk();
+        $generalPayload = json_decode($this->response->getContent(), true);
+        $this->assertSame((int)$turn->id, (int)$generalPayload['range']['id']);
+        $this->assertSame((int)$pdv->id, (int)$generalPayload['range']['pdv_id']);
+
+        // El formulario administrativo sólo recibe el turno predeterminado;
+        // el resto del historial se consulta bajo demanda por el combobox.
+        $this->assertCount(1, $generalPayload['shifts']);
+        $this->call('GET', '/tesoreria/buscar_turnos_caja', array(
+            'teso_caja_id' => $generalCashBox->id,
+            'fecha' => '2099-09-01',
+            'texto_busqueda' => $turn->codigo,
+        ));
+        $this->assertResponseOk();
+        $suggestions = $this->response->getContent();
+        $this->assertContains('data-registro_id="' . $turn->id . '"', $suggestions);
+        $this->assertContains($turn->codigo, $suggestions);
+        $this->assertContains('data-turno-opening-at=', $suggestions);
+        $this->assertContains('data-turno-closing-at=', $suggestions);
     }
 
     public function test_arqueo_de_cajero_bloquea_y_normaliza_al_ultimo_turno_que_cerro()
@@ -900,6 +953,13 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertTrue($payload['selection_locked']);
         $this->assertCount(1, $payload['shifts']);
         $this->assertSame((int)$ultimo->id, (int)$payload['range']['id']);
+
+        $this->call('GET', '/tesoreria/buscar_turnos_caja', array(
+            'teso_caja_id' => $pdv->caja_default_id,
+            'fecha' => '2099-09-04',
+            'texto_busqueda' => $ultimo->codigo,
+        ));
+        $this->assertResponseStatus(403);
 
         // Aunque el navegador envíe otro turno, el servidor conserva como
         // autoridad el último cierre del cajero para esta caja y PDV.
