@@ -345,14 +345,21 @@ class TurnoAdminCrudTest extends TestCase
 
         $this->be(User::find($cashierId));
         app('request')->replace(array());
-        $model = (object)array('name_space' => 'App\\Tesoreria\\TesoDocEncabezadoRecaudoCxc');
-        $field = $this->turnField(app(TurnoFormService::class)->decorate($model, null, 'create', array()));
+        foreach (array(
+            'App\\Tesoreria\\TesoDocEncabezadoRecaudo',
+            'App\\Tesoreria\\TesoDocEncabezadoRecaudoCxc',
+            'App\\Tesoreria\\TesoDocEncabezadoPago',
+            'App\\Tesoreria\\TesoDocEncabezadoPagoCxp',
+        ) as $treasuryModel) {
+            $model = (object)array('name_space' => $treasuryModel);
+            $field = $this->turnField(app(TurnoFormService::class)->decorate($model, null, 'create', array()));
 
-        $this->assertNotNull($field);
-        $this->assertSame('select', $field['tipo']);
-        $this->assertSame((int)$turn->id, (int)$field['value']);
-        $this->assertSame(array($turn->id), array_keys($field['opciones']));
-        $this->assertArrayHasKey('disabled', $field['atributos']);
+            $this->assertNotNull($field);
+            $this->assertSame('select', $field['tipo']);
+            $this->assertSame((int)$turn->id, (int)$field['value']);
+            $this->assertSame(array($turn->id), array_keys($field['opciones']));
+            $this->assertArrayHasKey('disabled', $field['atributos']);
+        }
 
         $html = View::make('components.form.select', array(
             'name' => $field['name'],
@@ -718,7 +725,7 @@ class TurnoAdminCrudTest extends TestCase
         $this->assertResponseStatus(422);
     }
 
-    public function test_traslado_de_efectivo_asigna_el_ultimo_turno_cerrado_del_cajero()
+    public function test_traslado_de_efectivo_usa_el_turno_abierto_y_tras_el_cierre_el_ultimo_del_cajero()
     {
         $this->authenticateCompanyUser();
         $cashierId = DB::table('users as user')
@@ -737,15 +744,10 @@ class TurnoAdminCrudTest extends TestCase
             'modo' => TurnoConfiguracion::MODO_TURNOS,
         ));
         $manager = app(TurnoManager::class);
-        $closed = $manager->openContext(
+        // Primera activación: todavía no existe ningún cierre. Los traslados
+        // parciales (por ejemplo una consignación a banco) usan el turno abierto.
+        $open = $manager->openContext(
             1, 'tesoreria', 'pdv', 1, '2099-09-02', (int)$cashierId, 0, '2099-09-02 06:00:00'
-        );
-        $manager->close($closed, (int)$cashierId, 0, 'Traslado de efectivo', '2099-09-02 14:00:00');
-
-        // Aunque haya comenzado otro turno, el traslado pertenece al último
-        // cerrado, no a la nueva operación de caja.
-        $manager->openContext(
-            1, 'tesoreria', 'pdv', 1, '2099-09-02', (int)$cashierId, 0, '2099-09-02 14:05:00'
         );
 
         $this->be(User::find($cashierId));
@@ -755,8 +757,8 @@ class TurnoAdminCrudTest extends TestCase
 
         $this->assertNotNull($field);
         $this->assertSame('select', $field['tipo']);
-        $this->assertSame((int)$closed->id, (int)$field['value']);
-        $this->assertSame(array($closed->id), array_keys($field['opciones']));
+        $this->assertSame((int)$open->id, (int)$field['value']);
+        $this->assertSame(array($open->id), array_keys($field['opciones']));
         $this->assertArrayHasKey('disabled', $field['atributos']);
         $this->assertSame(
             TesoDocEncabezadoTraslado::POST_CLOSING_OPERATION,
@@ -765,16 +767,38 @@ class TurnoAdminCrudTest extends TestCase
 
         $this->call('POST', '/turnos/operativos/validar-seleccion', array(
             'modulo' => 'tesoreria',
-            'turno_operativo_id' => $closed->id,
+            'turno_operativo_id' => $open->id,
+            'operacion_turno' => TesoDocEncabezadoTraslado::POST_CLOSING_OPERATION,
+        ));
+        $this->assertResponseOk();
+        $this->assertNotContains('LAST_CLOSED_CASHIER', $this->response->getContent());
+
+        app('request')->replace(array('turno_operativo_id' => $open->id));
+        $openDocument = new TesoDocEncabezadoTraslado(array(
+            'core_empresa_id' => 1,
+            'turno_operativo_id' => $open->id,
+        ));
+        $openDocument->validar_datos_creacion(app('request'), new \stdClass());
+
+        // Después del cierre se mantiene el caso de entrega final: el mismo
+        // formulario recupera el último turno cerrado del cajero.
+        $manager->close($open, (int)$cashierId, 0, 'Cierre posterior', '2099-09-02 14:00:00');
+        app('request')->replace(array());
+        $field = $this->turnField(app(TurnoFormService::class)->decorate($model, null, 'create', array()));
+        $this->assertSame((int)$open->id, (int)$field['value']);
+
+        $this->call('POST', '/turnos/operativos/validar-seleccion', array(
+            'modulo' => 'tesoreria',
+            'turno_operativo_id' => $open->id,
             'operacion_turno' => TesoDocEncabezadoTraslado::POST_CLOSING_OPERATION,
         ));
         $this->assertResponseOk();
         $this->assertContains('LAST_CLOSED_CASHIER', $this->response->getContent());
 
-        app('request')->replace(array('turno_operativo_id' => $closed->id));
+        app('request')->replace(array('turno_operativo_id' => $open->id));
         $document = new TesoDocEncabezadoTraslado(array(
             'core_empresa_id' => 1,
-            'turno_operativo_id' => $closed->id,
+            'turno_operativo_id' => $open->id,
         ));
         $this->assertTrue($document->allowsHistoricalTurnoAssignment());
     }

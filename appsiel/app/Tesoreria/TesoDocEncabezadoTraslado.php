@@ -52,9 +52,9 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
     }
 
     /**
-     * El traslado posterior al cierre sólo puede usar el último turno cerrado
-     * que fue abierto por el cajero autenticado. La comprobación en el modelo
-     * evita que se sustituya la FK manipulando el formulario.
+     * Durante la jornada el traslado usa el turno abierto del cajero. Si ya lo
+     * cerró, puede usar su último turno cerrado para documentar la entrega.
+     * La comprobación evita sustituir la FK manipulando el formulario.
      */
     protected function validateClosedCashierTurn($request)
     {
@@ -67,14 +67,26 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
         }
 
         $turnId = (int)$request->input('turno_operativo_id');
+        $selected = TurnoOperativo::where('id', $turnId)
+            ->where('core_empresa_id', (int)Auth::user()->empresa_id)
+            ->first();
+        $pdvId = (int)$request->input('pdv_id');
+
+        if (!is_null($selected)
+            && $selected->estaAbierto()
+            && (int)$selected->abierto_por === (int)Auth::id()
+            && ($pdvId <= 0 || ($selected->contexto_tipo === 'pdv' && (int)$selected->contexto_id === $pdvId))) {
+            return;
+        }
+
         $expected = app(InventoryPhysicalPdvShiftService::class)->lastClosedTurnForCashier(
             (int)Auth::user()->empresa_id,
             (int)Auth::id(),
-            (int)$request->input('pdv_id')
+            $pdvId
         );
         if ($turnId <= 0 || is_null($expected) || (int)$expected->id !== $turnId) {
             throw new \App\Core\Exceptions\TurnoIntegrityException(
-                'El traslado de efectivo sólo puede asociarse al último turno cerrado por el cajero actual.'
+                'El traslado de efectivo sólo puede asociarse al turno abierto o al último turno cerrado del cajero actual.'
             );
         }
     }

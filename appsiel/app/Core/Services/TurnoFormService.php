@@ -117,7 +117,7 @@ class TurnoFormService
                 $field['definicion'] = 'Si el cajero ya cerró su turno, se asigna su último turno cerrado para documentar el control físico de entrega.';
             } elseif ($isCashTransfer && $selectionLocked) {
                 $field['atributos']['data-turno-operation'] = TesoDocEncabezadoTraslado::POST_CLOSING_OPERATION;
-                $field['definicion'] = 'El traslado de efectivo se asocia automáticamente al último turno cerrado por el cajero.';
+                $field['definicion'] = 'El traslado se asocia al turno abierto del cajero; si ya terminó, utiliza su último turno cerrado.';
             }
         }
 
@@ -240,13 +240,6 @@ class TurnoFormService
         }
 
         $pdvId = (int)request()->input('pdv_id');
-        // El traslado documenta la entrega del efectivo del turno que acaba de
-        // finalizar. Debe conservar ese turno incluso si posteriormente el
-        // cajero abrió uno nuevo.
-        if ($closedCashierOperation === TesoDocEncabezadoTraslado::POST_CLOSING_OPERATION) {
-            return $this->lastClosedCashierOption($empresaId, $module, $userId, $pdvId);
-        }
-
         if ($pdvId > 0 && !config('turnos.simple_company_mode', false)) {
             $turno = TurnoOperativo::where('core_empresa_id', (int)$empresaId)
                 ->where('contexto_tipo', 'pdv')
@@ -258,6 +251,8 @@ class TurnoFormService
             if (!is_null($turno) && $this->modeResolver->enabled($empresaId, $module, 'pdv', $pdvId)) {
                 return array($turno->id => $this->optionLabel($turno));
             }
+            // Traslados y controles de cierre usan el turno abierto mientras
+            // exista. El último cerrado sólo es el respaldo post-cierre.
             return !is_null($closedCashierOperation)
                 ? $this->lastClosedCashierOption($empresaId, $module, $userId, $pdvId)
                 : array();

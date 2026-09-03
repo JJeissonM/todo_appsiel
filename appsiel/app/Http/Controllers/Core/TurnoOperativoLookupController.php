@@ -102,18 +102,6 @@ class TurnoOperativoLookupController extends Controller
             if (!$locked && config('turnos.simple_company_mode', false)) {
                 return response()->json(array('ok' => true, 'turno_operativo_id' => null));
             }
-            $closed = $cashTransferAfterClosing
-                ? $this->lastClosedCashierTurn($companyId, $module)
-                : null;
-            if (!is_null($closed)) {
-                return response()->json(array(
-                    'ok' => true,
-                    'turno_operativo_id' => (int)$closed->id,
-                    'estado' => $closed->estado,
-                    'fuente' => 'LAST_CLOSED_CASHIER',
-                ));
-            }
-
             $current = $this->openTurnForCurrentCashier($companyId);
             if (is_null($current)) {
                 if ($closedCashierOperation) {
@@ -129,7 +117,7 @@ class TurnoOperativoLookupController extends Controller
                 }
                 return $this->validationError($closedCashierOperation
                     ? ($cashTransferAfterClosing
-                        ? 'No existe un último turno cerrado válido del cajero para realizar el traslado de efectivo.'
+                        ? 'No existe un turno abierto ni un último turno cerrado válido del cajero para realizar el traslado de efectivo.'
                         : 'No existe un último turno cerrado válido del cajero para realizar el control físico de entrega.')
                     : 'No existe un turno abierto asignado al usuario cajero. Debe realizar la apertura antes de continuar.');
             }
@@ -145,7 +133,7 @@ class TurnoOperativoLookupController extends Controller
 
         if ($locked) {
             $current = $this->openTurnForCurrentCashier($companyId);
-            if ($cashTransferAfterClosing || is_null($current) || (int)$current->id !== (int)$turn->id) {
+            if (is_null($current) || (int)$current->id !== (int)$turn->id) {
                 $closed = $closedCashierOperation
                     ? $this->lastClosedCashierTurn($companyId, $module)
                     : null;

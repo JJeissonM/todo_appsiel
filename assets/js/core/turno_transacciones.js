@@ -52,7 +52,7 @@
             return {
                 message: isPostClosingCashierOperation
                     ? (isCashTransferAfterClosing
-                        ? 'No existe un último turno cerrado válido del cajero para realizar el traslado de efectivo.'
+                        ? 'No existe un turno abierto ni un último turno cerrado válido del cajero para realizar el traslado de efectivo.'
                         : 'No existe un último turno cerrado válido del cajero para realizar el control físico de entrega.')
                     : 'No existe un turno abierto asignado al usuario cajero. Debe realizar la apertura antes de continuar.',
                 field: 'turno_operativo_id'
