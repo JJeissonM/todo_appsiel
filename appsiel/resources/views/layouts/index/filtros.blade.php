@@ -28,8 +28,10 @@
 								<label for="{{ $nombre }}">{{ $filtro['label'] }}</label>
 								@if($filtro['type'] === 'combobox')
 									{{ Form::select($nombre, $filtro['options'], Input::get($nombre), ['id' => $nombre, 'class' => 'combobox filtro-avanzado-index']) }}
+								@elseif($filtro['type'] === 'select')
+									{{ Form::select($nombre, $filtro['options'], Input::get($nombre), ['id' => $nombre, 'class' => 'form-control filtro-avanzado-index']) }}
 								@else
-									<input type="date" name="{{ $nombre }}" id="{{ $nombre }}" value="{{ Input::get($nombre) }}" class="form-control filtro-avanzado-index">
+									<input type="{{ $filtro['type'] === 'date' ? 'date' : 'text' }}" name="{{ $nombre }}" id="{{ $nombre }}" value="{{ Input::get($nombre) }}" class="form-control filtro-avanzado-index">
 								@endif
 							</div>
 						@endforeach
