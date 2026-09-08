@@ -295,12 +295,23 @@ class ContabilidadController extends TransaccionController
     // VISTA PARA MOSTRAR UN DOCUMENTO DE TRANSACCION
     public function show($id)
     {
+        $empresa_id = Auth::user()->empresa_id;
+        $doc_encabezado = ContabDocEncabezado::get_registro_impresion($id, $empresa_id);
+
+        if (is_null($doc_encabezado)) {
+            $variables_url = '?id=' . Input::get('id')
+                . '&id_modelo=' . Input::get('id_modelo')
+                . '&id_transaccion=' . Input::get('id_transaccion');
+
+            return redirect('web' . $variables_url)
+                ->with('mensaje_error', 'El documento contable no existe o no pertenece a la empresa actual.');
+        }
+
         $this->set_variables_globales();
 
-        $reg_anterior = ContabDocEncabezado::where('id', '<', $id)->where('core_empresa_id', Auth::user()->empresa_id)->max('id');
-        $reg_siguiente = ContabDocEncabezado::where('id', '>', $id)->where('core_empresa_id', Auth::user()->empresa_id)->min('id');
+        $reg_anterior = ContabDocEncabezado::where('id', '<', $id)->where('core_empresa_id', $empresa_id)->max('id');
+        $reg_siguiente = ContabDocEncabezado::where('id', '>', $id)->where('core_empresa_id', $empresa_id)->min('id');
 
-        $doc_encabezado = ContabDocEncabezado::get_registro_impresion( $id );
         $doc_registros = ContabDocRegistro::get_registros_impresion( $doc_encabezado->id );
 
         $doc_registros = $this->modificar_lineas_doc_registros( $doc_registros, 'show' );

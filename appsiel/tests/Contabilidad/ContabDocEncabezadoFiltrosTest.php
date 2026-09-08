@@ -1,6 +1,7 @@
 <?php
 
 use App\Contabilidad\ContabDocEncabezado;
+use App\Http\Controllers\Contabilidad\ContabilidadController;
 use App\User;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Auth;
@@ -104,6 +105,36 @@ class ContabDocEncabezadoFiltrosTest extends TestCase
         $this->assertSame(0, $registros->total());
     }
 
+    /** @test */
+    public function la_consulta_de_impresion_puede_restringirse_a_la_empresa_actual()
+    {
+        $this->assertNotNull(ContabDocEncabezado::get_registro_impresion(1, 1));
+        $this->assertNull(ContabDocEncabezado::get_registro_impresion(3, 1));
+        $this->assertNull(ContabDocEncabezado::get_registro_impresion(999, 1));
+    }
+
+    /** @test */
+    public function show_redirige_si_el_documento_no_pertenece_a_la_empresa_actual()
+    {
+        request()->replace([
+            'id' => 14,
+            'id_modelo' => 47,
+            'id_transaccion' => 9
+        ]);
+
+        $response = (new ContabilidadController())->show(3);
+
+        $this->assertInstanceOf('Illuminate\\Http\\RedirectResponse', $response);
+        $this->assertSame(
+            url('web?id=14&id_modelo=47&id_transaccion=9'),
+            $response->getTargetUrl()
+        );
+        $this->assertSame(
+            'El documento contable no existe o no pertenece a la empresa actual.',
+            $response->getSession()->get('mensaje_error')
+        );
+    }
+
     protected function crearEsquema()
     {
         Schema::create('core_tipos_docs_apps', function (Blueprint $table) {
@@ -123,6 +154,7 @@ class ContabDocEncabezadoFiltrosTest extends TestCase
         });
         Schema::create('contab_doc_encabezados', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('core_tipo_transaccion_id')->default(9);
             $table->integer('core_tipo_doc_app_id');
             $table->string('consecutivo');
             $table->string('fecha');
@@ -132,6 +164,7 @@ class ContabDocEncabezadoFiltrosTest extends TestCase
             $table->string('descripcion');
             $table->decimal('valor_total', 15, 2);
             $table->string('estado');
+            $table->string('creado_por')->nullable();
             $table->timestamps();
         });
     }

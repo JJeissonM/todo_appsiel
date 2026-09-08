@@ -259,10 +259,9 @@ class ContabDocEncabezado extends Model
     /*
         Obtener un registro de encabezado de documento con sus datos relacionados
     */
-    public static function get_registro_impresion($id)
+    public static function get_registro_impresion($id, $core_empresa_id = null)
     {
-
-        return ContabDocEncabezado::where('contab_doc_encabezados.id', $id)
+        $query = ContabDocEncabezado::where('contab_doc_encabezados.id', $id)
             ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'contab_doc_encabezados.core_tercero_id')
             ->select(
@@ -283,8 +282,12 @@ class ContabDocEncabezado extends Model
                 'contab_doc_encabezados.estado',
                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
                 'core_terceros.numero_identificacion'
-            )
-            ->get()
-            ->first();
+            );
+
+        if (!is_null($core_empresa_id)) {
+            $query->where('contab_doc_encabezados.core_empresa_id', $core_empresa_id);
+        }
+
+        return $query->first();
     }
 }
