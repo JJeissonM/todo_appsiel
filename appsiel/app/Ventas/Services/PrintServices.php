@@ -12,6 +12,7 @@ use App\Tesoreria\TesoMovimiento;
 use App\Ventas\ResolucionFacturacion;
 use App\Ventas\VtasDocEncabezado;
 use App\VentasPos\Services\DatafonoService;
+use App\VentasPos\Services\ElectronicInvoicePrintService;
 use App\VentasPos\Services\TipService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -92,6 +93,9 @@ class PrintServices
 
         $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $doc_encabezado );
 
+        $electronic_invoice = (new ElectronicInvoicePrintService())
+            ->resolveElectronicInvoice($doc_encabezado);
+
         $otroscampos = TransaccionOtrosCampos::where('core_tipo_transaccion_id',$this->doc_encabezado->core_tipo_transaccion_id)->get()->first();
 
         $datos_factura = '';
@@ -168,7 +172,7 @@ class PrintServices
             }  
         }
         
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados', 'otroscampos', 'datos_factura', 'cliente', 'tipo_doc_app', 'pdv_descripcion', 'medios_pago' ) )->render();
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados', 'otroscampos', 'datos_factura', 'cliente', 'tipo_doc_app', 'pdv_descripcion', 'medios_pago', 'electronic_invoice' ) )->render();
     }
 
     public function get_documento_transaccion_prefijo_consecutivo( $doc_encabezado )

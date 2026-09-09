@@ -48,8 +48,6 @@
 					<b>Razón social:</b>
 					@if( is_null($tercero) )
 						Sin tercero
-					@elseif( $tercero->razon_social == '' )
-						{{ $tercero->nombre1 }} {{ $tercero->otros_nombres }} {{ $tercero->apellido1 }} {{ $tercero->apellido2 }}
 					@else
 						{{ $tercero->razon_social }}
 					@endif

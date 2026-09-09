@@ -78,7 +78,6 @@
                 <td>@include('core.turnos.reference', ['documento' => $doc_encabezado])</td>
             </tr>
             
-
             @yield('fila_datos_adicionales')
 
     </table>

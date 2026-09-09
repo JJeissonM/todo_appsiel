@@ -43,6 +43,11 @@
     <?php
         $tamanino_fuente_2 = '0.9em';
     ?>
+
+    @include('core.turnos.reference', [
+                        'documento' => isset($doc_encabezado) ? $doc_encabezado : null
+                    ])
+                    
     <table border="0" style="margin-top: 12px !important; font-size: 11px;" width="100%">
         <tr>
             @yield('columnas_encabezado')
@@ -72,9 +77,6 @@
                 </td>
                 <td>
                     <b>Fecha:</b> <div id="lbl_fecha" style="display: inline;">{{$datos_factura->lbl_fecha}}</div>&nbsp;<div id="lbl_hora" style="display: inline;">{{$datos_factura->lbl_hora}}</div>
-                    @include('core.turnos.reference', [
-                        'documento' => isset($doc_encabezado) ? $doc_encabezado : null
-                    ])
                     
                     <div id="lbl_creado_por_fecha_y_hora" style="text-align: right; font-size: 1.1em; font-weight: 600;">{{$datos_factura->lbl_creado_por_fecha_y_hora}}</div>
                 </td>
@@ -98,27 +100,27 @@
         $json_dataico = (object)[];
         $errores_einvoice = '';
         $resultado_envio = null;
+        $electronic_invoice = isset($electronic_invoice) ? $electronic_invoice : null;
 
         if($datos_factura->core_tipo_transaccion_id == 52)
         {
             switch( config('facturacion_electronica.proveedor_tecnologico_default') )
             {
                 case 'DATAICO':
-                    $encabezado_doc = \App\FacturacionElectronica\Factura::find( $doc_encabezado->id );
-
-                    if( Input::get('id_transaccion') == 47 )
+                    if( !is_null($electronic_invoice) )
                     {
-                        $encabezado_doc = \App\VentasPos\FacturaPos::find( $doc_encabezado->id );
-                    }
-                    
-                    $object_dataico = (new \App\FacturacionElectronica\DATAICO\FacturaGeneral( $encabezado_doc, 'factura' ));
-                    $json_dataico =  $object_dataico->get_einvoice_in_dataico();
+                        $object_dataico = (new \App\FacturacionElectronica\DATAICO\FacturaGeneral( $electronic_invoice, 'factura' ));
+                        $json_dataico =  $object_dataico->get_einvoice_in_dataico();
 
-                    $errores_einvoice =  $object_dataico->get_errores($json_dataico);
+                        $errores_einvoice =  $object_dataico->get_errores($json_dataico);
+                    }
                 break;
 
                 case 'OSEI':
-                    $resultado_envio = (new \App\FacturacionElectronica\Services\SendingResultServices())->get_sending_result( $doc_encabezado->id );
+                    if( !is_null($electronic_invoice) )
+                    {
+                        $resultado_envio = (new \App\FacturacionElectronica\Services\SendingResultServices())->get_sending_result( $electronic_invoice->id );
+                    }
 
                     if( $resultado_envio != null )
                     {

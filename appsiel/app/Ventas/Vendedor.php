@@ -111,14 +111,14 @@ class Vendedor extends Model
 
         $vec['']='';
         $user =Auth::user();
-        
         foreach ($opciones as $opcion) {
-
             if ($user->hasRole('Vendedor') && ($opcion->user_id != $user->id)) {
                 continue;
             }
-
             if($opcion->descripcion == '' || is_null($opcion->descripcion)){
+                if(is_null($opcion->tercero)){
+                    continue;
+                }
                 $opcion->descripcion = $opcion->tercero->descripcion;
             }
             

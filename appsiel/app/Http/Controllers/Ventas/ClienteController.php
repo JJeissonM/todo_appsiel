@@ -236,7 +236,6 @@ class ClienteController extends ModeloController
      */
     public function update(Request $request, $id)
     {
-
         $modelo = Modelo::find($request->url_id_modelo);
         // Se obtinene el registro a modificar del modelo
         $registro = app($modelo->name_space)->find($id);
@@ -246,9 +245,9 @@ class ClienteController extends ModeloController
         
         // Modificar el datos tercero asociados
         $registro2 = Tercero::find( $registro->core_tercero_id );
-        
+        $datos = (new CustomerServices())->preparar_datos( $request->all() );
         $tercero = Tercero::find( $registro->core_tercero_id );
-        $tercero->fill( $request->all() );
+        $tercero->fill( $datos );
         $tercero->save();
 
         $this->almacenar_imagenes($request, $modelo->ruta_storage_imagen, $registro2, 'edit');

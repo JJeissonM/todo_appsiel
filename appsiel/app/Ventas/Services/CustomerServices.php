@@ -88,6 +88,8 @@ class CustomerServices
             {
                 $descripcion = $datos['razon_social'];
             }
+        }else{
+            $datos['razon_social'] = '';
         }
 
         $datos['descripcion'] = $descripcion;
