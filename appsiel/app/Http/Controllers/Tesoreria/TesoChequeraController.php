@@ -141,7 +141,7 @@ class TesoChequeraController extends Controller
         $chequeras = $this->service->get_disponibles($cuenta->id)->map(function ($chequera) {
             return [
                 'id' => (int)$chequera->id,
-                'text' => $chequera->descripcion . ' - próximo cheque: ' . $chequera->consecutivo_actual,
+                'text' => $chequera->descripcion . ' - último cheque emitido: ' . $chequera->consecutivo_actual,
                 'consecutivo' => (int)$chequera->consecutivo_actual,
                 'numero_final' => (int)$chequera->numero_final
             ];
