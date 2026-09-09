@@ -4,13 +4,18 @@
     @php
         use App\Http\Controllers\Sistema\VistaController;
 
-        $es_tarjeta_bancaria = $registro->comportamiento === 'Tarjeta bancaria';
-        $tab_relaciones_label = $es_tarjeta_bancaria ? 'Cuentas Bancarias' : 'Cajas';
+        $usa_cuenta_bancaria = $registro->usa_cuenta_bancaria_como_destino();
+        $es_cheque = $registro->comportamiento === 'Cheque';
+        $tab_relaciones_label = $usa_cuenta_bancaria ? 'Cuentas Bancarias' : 'Cajas';
 
-        $relaciones = $registro->destinos()
-            ->with(['caja', 'cuenta_bancaria.entidad_financiera'])
-            ->orderBy('id', 'DESC')
-            ->get();
+        $consulta_relaciones = $registro->destinos()
+            ->with(['caja', 'cuenta_bancaria.entidad_financiera']);
+        if ($usa_cuenta_bancaria) {
+            $consulta_relaciones->whereNotNull('teso_cuenta_bancaria_id');
+        } else {
+            $consulta_relaciones->whereNotNull('teso_caja_id');
+        }
+        $relaciones = $consulta_relaciones->orderBy('id', 'DESC')->get();
 
         $ids_cajas_relacionadas = $relaciones->pluck('teso_caja_id')->filter()->all();
         $ids_cuentas_relacionadas = $relaciones->pluck('teso_cuenta_bancaria_id')->filter()->all();
@@ -23,6 +28,9 @@
         $cuentas_disponibles = App\Tesoreria\TesoCuentaBancaria::get_cuentas_permitidas()
             ->reject(function ($cuenta) use ($ids_cuentas_relacionadas) {
                 return in_array($cuenta->id, $ids_cuentas_relacionadas);
+            })
+            ->filter(function ($cuenta) use ($es_cheque) {
+                return !$es_cheque || App\Tesoreria\TesoChequera::where('teso_cuenta_bancaria_id', $cuenta->id)->exists();
             });
     @endphp
 
@@ -96,7 +104,7 @@
                     <div class="row" style="margin-bottom: 15px;">
                         <div class="col-md-8">
                             {{ Form::open(['url' => 'teso_medios_recaudo/'.$registro->id.'/destinos?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 'class' => 'form-inline']) }}
-                                @if($es_tarjeta_bancaria)
+                                @if($usa_cuenta_bancaria)
                                     <div class="form-group">
                                         <label for="teso_cuenta_bancaria_id" style="margin-right: 10px;">Cuenta bancaria</label>
                                         <select name="teso_cuenta_bancaria_id" id="teso_cuenta_bancaria_id" class="form-control" required>
@@ -136,7 +144,7 @@
                                 @forelse($relaciones as $relacion)
                                     <tr>
                                         <td>
-                                            @if($es_tarjeta_bancaria)
+                                            @if($usa_cuenta_bancaria)
                                                 {{ $relacion->cuenta_bancaria && $relacion->cuenta_bancaria->entidad_financiera ? $relacion->cuenta_bancaria->entidad_financiera->descripcion : '' }} - {{ $relacion->cuenta_bancaria ? $relacion->cuenta_bancaria->descripcion : '' }}
                                             @else
                                                 {{ $relacion->caja ? $relacion->caja->descripcion : '' }}

@@ -5,12 +5,18 @@ namespace App\Http\Controllers\Tesoreria;
 use App\Http\Controllers\Controller;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
+use App\Tesoreria\TesoChequera;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMedioRecaudoDestino;
 use Illuminate\Http\Request;
 
 class TesoMedioRecaudoDestinoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function store(Request $request, $teso_medio_recaudo_id)
     {
         $medioRecaudo = TesoMedioRecaudo::find($teso_medio_recaudo_id);
@@ -18,14 +24,19 @@ class TesoMedioRecaudoDestinoController extends Controller
             return redirect()->back()->with('mensaje_error', 'El medio de recaudo no existe.');
         }
 
-        $esTarjetaBancaria = $medioRecaudo->comportamiento === 'Tarjeta bancaria';
+        $usaCuentaBancaria = $medioRecaudo->usa_cuenta_bancaria_como_destino();
         $tesoCajaId = null;
         $tesoCuentaBancariaId = null;
 
-        if ($esTarjetaBancaria) {
+        if ($usaCuentaBancaria) {
             $tesoCuentaBancariaId = (int)$request->get('teso_cuenta_bancaria_id');
-            if ($tesoCuentaBancariaId === 0 || is_null(TesoCuentaBancaria::find($tesoCuentaBancariaId))) {
+            if ($tesoCuentaBancariaId === 0 || !TesoCuentaBancaria::es_permitida_para_usuario($tesoCuentaBancariaId)) {
                 return redirect()->back()->with('mensaje_error', 'Debe seleccionar una cuenta bancaria válida.');
+            }
+
+            if ($medioRecaudo->comportamiento === 'Cheque'
+                && !TesoChequera::where('teso_cuenta_bancaria_id', $tesoCuentaBancariaId)->exists()) {
+                return redirect()->back()->with('mensaje_error', 'La cuenta bancaria debe tener una chequera asociada.');
             }
         } else {
             $tesoCajaId = (int)$request->get('teso_caja_id');

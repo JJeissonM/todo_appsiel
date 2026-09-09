@@ -142,10 +142,21 @@ class TesoDocEncabezado extends Model
 
     public function cheques_relacionados_pagos()
     {
-        return ControlCheque::where('core_tipo_transaccion_id_consumo', $this->core_tipo_transaccion_id)
-                                        ->where('core_tipo_doc_app_id_consumo', $this->core_tipo_doc_app_id)
-                                        ->where('consecutivo_doc_consumo', $this->consecutivo)
-                                        ->get();
+        return ControlCheque::where(function ($query) {
+                    $query->where('teso_doc_encabezado_id', $this->id)
+                        ->orWhere(function ($or) {
+                            $or->where('core_tipo_transaccion_id_consumo', $this->core_tipo_transaccion_id)
+                                ->where('core_tipo_doc_app_id_consumo', $this->core_tipo_doc_app_id)
+                                ->where('consecutivo_doc_consumo', $this->consecutivo);
+                        })
+                        ->orWhere(function ($or) {
+                            $or->where('fuente', 'propio')
+                                ->where('core_tipo_transaccion_id_origen', $this->core_tipo_transaccion_id)
+                                ->where('core_tipo_doc_app_id_origen', $this->core_tipo_doc_app_id)
+                                ->where('consecutivo', $this->consecutivo);
+                        });
+                })
+                ->get();
     }
 
     public function retenciones_relacionadas()

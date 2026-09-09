@@ -1,3 +1,8 @@
+<?php
+	$usar_chequera_pago = isset($id_transaccion)
+		&& (int)$id_transaccion === 33
+		&& App\Tesoreria\Services\ChequePaymentService::usaChequera();
+?>
 <!-- Formulario control cheque -->
 <br>
 <div class="row">
@@ -23,18 +28,51 @@
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-md-6">
-								<div class="row" style="padding:5px;">
-									{{ Form::bsSelect('caja_id_cheque', null, 'Caja', $cajas, []) }}
+							@if($usar_chequera_pago)
+								<div class="col-md-6">
+									<div class="row" style="padding:5px;">
+										{{ Form::bsSelect('teso_cuenta_bancaria_id_cheque', null, 'Cta. bancaria', $cuentas_bancarias, []) }}
+									</div>
 								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="row" style="padding:5px;">
-									{{ Form::bsText( 'detalle_cheque', null, 'Detalle', []) }}
+								<div class="col-md-6">
+									<div class="row" style="padding:5px;">
+										{{ Form::bsSelect('teso_chequera_id_cheque', null, 'Chequera', ['' => 'Seleccione una cuenta bancaria'], []) }}
+									</div>
 								</div>
-							</div>
+								{{ Form::hidden('caja_id_cheque', 0, ['id' => 'caja_id_cheque']) }}
+								{{ Form::hidden('entidad_financiera_id', 0, ['id' => 'entidad_financiera_id']) }}
+								{{ Form::hidden('detalle_cheque', '', ['id' => 'detalle_cheque']) }}
+								{{ Form::hidden('fecha_emision', '', ['id' => 'fecha_emision']) }}
+								{{ Form::hidden('fecha_cobro', '', ['id' => 'fecha_cobro']) }}
+								{{ Form::hidden('numero_cheque', '', ['id' => 'numero_cheque']) }}
+								{{ Form::hidden('referencia_cheque', '', ['id' => 'referencia_cheque']) }}
+							@else
+								<div class="col-md-6">
+									<div class="row" style="padding:5px;">
+										{{ Form::bsSelect('caja_id_cheque', null, 'Caja', $cajas, []) }}
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="row" style="padding:5px;">
+										{{ Form::bsText( 'detalle_cheque', null, 'Detalle', []) }}
+									</div>
+								</div>
+							@endif
 						</div>
+						@if($usar_chequera_pago)
+							<div class="row">
+								<div class="col-md-6">
+									<div class="row" style="padding:5px;">
+										{{ Form::bsText( 'valor_cheque', null, 'Valor', []) }}
+									</div>
+								</div>
+								<div class="col-md-6 text-center" style="padding-top: 12px;">
+									<button class="btn btn-primary" id="btn_agregar_cheque">Agregar</button>
+								</div>
+							</div>
+						@endif
 					</div>
+					@if(!$usar_chequera_pago)
 					<br><br>
 					<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
 						<h6 style="width: 100%; text-align: center;">CREAR NUEVO CHEQUE</h6>
@@ -54,7 +92,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsText( 'numero_cheque', null, 'N° Cheque', []) }}
+									{{ Form::bsText( 'numero_cheque', null, 'N° Cheque', $usar_chequera_pago ? ['readonly' => 'readonly'] : []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -64,11 +102,13 @@
 							</div>
 						</div>
 						<div class="row">
+							@if(!$usar_chequera_pago)
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
 									{{ Form::bsSelect('entidad_financiera_id', null, 'E. Financiera', $entidades_financieras, []) }}
 								</div>
-							</div>
+								</div>
+							@endif
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
 									{{ Form::bsText( 'valor_cheque', null, 'Valor', []) }}
@@ -79,7 +119,9 @@
 							<button class="btn btn-primary" id="btn_agregar_cheque"> Agregar </button>
 						</p>
 					</div>
+					@endif
 					<br><br>
+					@if(!$usar_chequera_pago)
 					<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
 						<h6 style="width: 100%; text-align: center;">USAR CHEQUES ALMACENADOS</h6>
 						<hr>
@@ -92,6 +134,7 @@
 							
 				        </div>
 					</div>
+					@endif
 					<br><br>
 				</div>
 				<div class="col-md-6">
@@ -107,13 +150,15 @@
 											<th style="display: none;">tipo_operacion_id_cheque</th>
 											<th style="display: none;">teso_motivo_id_cheque</th>
 											<th style="display: none;">detalle_cheque</th>
-											<th style="display: none;">caja_id_cheque</th>
+										<th style="display: none;">caja_id_cheque</th>
+										<th style="display: none;">teso_cuenta_bancaria_id_cheque</th>
+										<th style="display: none;">teso_chequera_id_cheque</th>
 											<th style="display: none;">entidad_financiera_id</th>
 											<th style="display: none;">valor_cheque</th>
-											<th data-override="fecha_emision">F. Emisión</th>
-											<th data-override="fecha_cobro">F. cobro</th>
-											<th data-override="numero_cheque">Núm.</th>
-											<th data-override="referencia_cheque">Ref.</th>
+										<th data-override="fecha_emision" @if($usar_chequera_pago) style="display: none;" @endif>F. Emisión</th>
+										<th data-override="fecha_cobro" @if($usar_chequera_pago) style="display: none;" @endif>F. cobro</th>
+										<th data-override="numero_cheque" @if($usar_chequera_pago) style="display: none;" @endif>Núm.</th>
+										<th data-override="referencia_cheque" @if($usar_chequera_pago) style="display: none;" @endif>Ref.</th>
 											<th>Banco</th>
 											<th>Valor</th>
 											<th></th>
@@ -123,7 +168,7 @@
 									</tbody>
 									<tfoot>
 										<tr>
-											<td colspan="5">&nbsp;</td>
+											<td colspan="{{ $usar_chequera_pago ? 1 : 5 }}">&nbsp;</td>
 											<td id="valor_total_cheques" align="right">$ 0</td>
 											<td><input type="hidden" name="input_valor_total_cheques" id="input_valor_total_cheques" value="0"></td>
 										</tr>
@@ -138,10 +183,56 @@
 	</div>
 </div>
 
-@section('scripts9')
-	<script type="text/javascript">
+	@section('scripts9')
+		<script type="text/javascript">
 
-		$(document).ready(function(){
+			$(document).ready(function(){
+				var usarChequeraPago = {{ $usar_chequera_pago ? 'true' : 'false' }};
+				var consecutivosInicialesChequera = {};
+
+				$(document).on('change', '#teso_cuenta_bancaria_id_cheque', function () {
+					if (!usarChequeraPago) { return; }
+
+					var cuentaId = $(this).val();
+					var chequera = $('#teso_chequera_id_cheque');
+					chequera.html('<option value="">Cargando...</option>');
+					$('#numero_cheque').val('');
+
+					if (cuentaId === '') {
+						chequera.html('<option value="">Seleccione una cuenta bancaria</option>');
+						return;
+					}
+
+					$.get("{{ url('teso_cuentas_bancarias') }}/" + cuentaId + '/chequeras/disponibles')
+						.done(function (respuesta) {
+							var opciones = '<option value="">Seleccione...</option>';
+							$.each(respuesta.chequeras, function (indice, item) {
+								var inicial = parseInt(item.consecutivo, 10);
+								var pendientes = $('.linea_registro_cheque td.teso_chequera_id_cheque').filter(function () {
+									return $.trim($(this).text()) == item.id;
+								}).length;
+								consecutivosInicialesChequera[item.id] = inicial;
+								opciones += '<option value="' + item.id + '" data-consecutivo="' + (inicial + pendientes) + '" data-numero-final="' + item.numero_final + '">' + item.text + '</option>';
+							});
+							chequera.html(opciones);
+							if (respuesta.chequeras.length === 0) {
+								alert('La cuenta bancaria no tiene chequeras activas con números disponibles.');
+							}
+						})
+						.fail(function (xhr) {
+							chequera.html('<option value="">No disponible</option>');
+							var mensaje = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'No fue posible consultar las chequeras.';
+							alert(mensaje);
+						});
+				});
+
+				$(document).on('change', '#teso_chequera_id_cheque', function () {
+					if (!usarChequeraPago) { return; }
+					var opcion = $(this).find('option:selected');
+					var consecutivo = parseInt(opcion.attr('data-consecutivo'), 10);
+					var numeroFinal = parseInt(opcion.attr('data-numero-final'), 10);
+					$('#numero_cheque').val(!isNaN(consecutivo) && consecutivo <= numeroFinal ? consecutivo : '');
+				});
 
 			$(document).on('change', '#tipo_operacion_id_cheque', function(event) 
 			{
@@ -174,9 +265,15 @@
 				
 				hay_cheques++;
 
-				calcular_totales_cheques( $('#tipo_operacion_id_cheque').val(), parseFloat( $('#valor_cheque').val() ) );
+					calcular_totales_cheques( $('#tipo_operacion_id_cheque').val(), parseFloat( $('#valor_cheque').val() ) );
 
-				resetear_campos_cheque();
+					if (usarChequeraPago) {
+						var opcion = $('#teso_chequera_id_cheque option:selected');
+						var siguiente = parseInt(opcion.attr('data-consecutivo'), 10) + 1;
+						opcion.attr('data-consecutivo', siguiente);
+					}
+
+					resetear_campos_cheque();
 
 				$('#numero_cheque').focus();
 			});
@@ -224,14 +321,39 @@
 			$(document).on('click', '.btn_eliminar_cheque', function(event) 
 			{
 				var fila = $(this).closest("tr");
+				var chequeraId = fila.find('td.teso_chequera_id_cheque').text();
 
 				fila.remove();
+				if (usarChequeraPago && chequeraId !== '') {
+					recalcular_consecutivos_chequera(chequeraId);
+				}
 				
 				hay_cheques--;
 
 				calcular_totales_cheques( fila.find('td.tipo_operacion_id_cheque').text(), parseFloat( fila.find('.valor_cheque').text() ) * -1 );
 
 			});
+
+			function recalcular_consecutivos_chequera(chequeraId)
+			{
+				var siguiente = consecutivosInicialesChequera[chequeraId];
+				if (typeof siguiente === 'undefined') { return; }
+
+				$('.linea_registro_cheque').each(function () {
+					var fila = $(this);
+					if ($.trim(fila.find('td.teso_chequera_id_cheque').text()) == chequeraId) {
+						fila.find('td.numero_cheque').text(siguiente);
+						siguiente++;
+					}
+				});
+
+				var opcion = $('#teso_chequera_id_cheque option[value="' + chequeraId + '"]');
+				opcion.attr('data-consecutivo', siguiente);
+				if ($('#teso_chequera_id_cheque').val() == chequeraId) {
+					var numeroFinal = parseInt(opcion.attr('data-numero-final'), 10);
+					$('#numero_cheque').val(siguiente <= numeroFinal ? siguiente : '');
+				}
+			}
 
 			$('#valor_cheque').on('keyup', function () {
 				var codigo_tecla_presionada = event.which || event.keyCode;
@@ -292,13 +414,22 @@
 				$('#lineas_registros_cheques').val( JSON.stringify(lineas_registros_cheques) );
 			}
 
-			function resetear_campos_cheque()
+				function resetear_campos_cheque()
 			{
 				$('#detalle_cheque').val('');
 				$('#valor_cheque').val('');
-				$('#numero_cheque').val('');
+					if (usarChequeraPago) {
+						var opcion = $('#teso_chequera_id_cheque option:selected');
+						var consecutivo = parseInt(opcion.attr('data-consecutivo'), 10);
+						var numeroFinal = parseInt(opcion.attr('data-numero-final'), 10);
+						$('#numero_cheque').val(!isNaN(consecutivo) && consecutivo <= numeroFinal ? consecutivo : '');
+					} else {
+						$('#numero_cheque').val('');
+					}
 				$('#referencia_cheque').val('');
-				$('#entidad_financiera_id').val('');
+					if (!usarChequeraPago) {
+						$('#entidad_financiera_id').val('');
+					}
 			}
 
 			function validar_requeridos()
@@ -317,14 +448,41 @@
 					return false;
 				}
 
-				if( $('#caja_id_cheque').val() == '' )
+					if (usarChequeraPago && $('#teso_cuenta_bancaria_id_cheque').val() == '')
+					{
+						alert('Debe seleccionar una cuenta bancaria.')
+						$('#teso_cuenta_bancaria_id_cheque').focus();
+						return false;
+					}
+
+					if (usarChequeraPago && $('#teso_chequera_id_cheque').val() == '')
+					{
+						alert('Debe seleccionar una chequera.')
+						$('#teso_chequera_id_cheque').focus();
+						return false;
+					}
+
+					if (usarChequeraPago)
+					{
+						var opcionChequera = $('#teso_chequera_id_cheque option:selected');
+						var consecutivoChequera = parseInt(opcionChequera.attr('data-consecutivo'), 10);
+						var numeroFinalChequera = parseInt(opcionChequera.attr('data-numero-final'), 10);
+						if (isNaN(consecutivoChequera) || consecutivoChequera > numeroFinalChequera)
+						{
+							alert('La chequera no tiene más números disponibles. El próximo consecutivo supera el número final.')
+							$('#teso_chequera_id_cheque').focus();
+							return false;
+						}
+					}
+
+					if( !usarChequeraPago && $('#caja_id_cheque').val() == '' )
 				{
 					alert('Debe seleccionar una Caja.')
 					$('#caja_id_cheque').focus();
 					return false;
 				}
 
-				if( $('#numero_cheque').val() == '' )
+				if( !usarChequeraPago && $('#numero_cheque').val() == '' )
 				{
 					alert('El número del cheque es obligatorio.')
 					$('#numero_cheque').focus();
@@ -393,9 +551,17 @@
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td style="display: none;">'+ $('#caja_id_cheque').val() +'</td>';
-				
-				num_celda++;
+					celdas[ num_celda ] = '<td style="display: none;">'+ $('#caja_id_cheque').val() +'</td>';
+
+					num_celda++;
+
+					celdas[ num_celda ] = '<td style="display: none;">'+ (usarChequeraPago ? $('#teso_cuenta_bancaria_id_cheque').val() : '') +'</td>';
+
+					num_celda++;
+
+					celdas[ num_celda ] = '<td style="display: none;" class="teso_chequera_id_cheque">'+ (usarChequeraPago ? $('#teso_chequera_id_cheque').val() : '') +'</td>';
+
+					num_celda++;
 
 				celdas[ num_celda ] = '<td style="display: none;">'+ $('#entidad_financiera_id').val() +'</td>';
 				
@@ -405,23 +571,26 @@
 				
 				num_celda++;
 				
-				celdas[ num_celda ] = '<td>'+ $('#fecha_emision').val() +'</td>';
+				celdas[ num_celda ] = '<td' + (usarChequeraPago ? ' style="display: none;"' : '') + '>'+ $('#fecha_emision').val() +'</td>';
 				
 				num_celda++;
 				
-				celdas[ num_celda ] = '<td>'+ $('#fecha_cobro').val() +'</td>';
+				celdas[ num_celda ] = '<td' + (usarChequeraPago ? ' style="display: none;"' : '') + '>'+ $('#fecha_cobro').val() +'</td>';
 				
 				num_celda++;
 				
-				celdas[ num_celda ] = '<td>'+ $('#numero_cheque').val() +'</td>';
+				celdas[ num_celda ] = '<td class="numero_cheque"' + (usarChequeraPago ? ' style="display: none;"' : '') + '>'+ $('#numero_cheque').val() +'</td>';
 				
 				num_celda++;
 				
-				celdas[ num_celda ] = '<td>'+ $('#referencia_cheque').val() +'</td>';
+				celdas[ num_celda ] = '<td' + (usarChequeraPago ? ' style="display: none;"' : '') + '>'+ $('#referencia_cheque').val() +'</td>';
 				
 				num_celda++;
 				
-				celdas[ num_celda ] = '<td>'+ $('#entidad_financiera_id option:selected').text() +'</td>';
+					var banco = usarChequeraPago
+						? $('#teso_cuenta_bancaria_id_cheque option:selected').text()
+						: $('#entidad_financiera_id option:selected').text();
+					celdas[ num_celda ] = '<td>'+ banco +'</td>';
 				
 				num_celda++;
 

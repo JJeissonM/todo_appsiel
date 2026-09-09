@@ -15,7 +15,7 @@ class ControlCheque extends Model
 
     // fuente = { propio | de_tercero }
     // estado = { Recibido | Emitido | Gastado | Anulado }
-    protected $fillable = [ 'fuente', 'tercero_id', 'fecha_emision', 'fecha_cobro', 'numero_cheque', 'referencia_cheque', 'entidad_financiera_id', 'valor', 'detalle', 'creado_por', 'modificado_por', 'core_tipo_transaccion_id_origen', 'core_tipo_doc_app_id_origen', 'consecutivo', 'core_tipo_transaccion_id_consumo', 'core_tipo_doc_app_id_consumo', 'consecutivo_doc_consumo', 'teso_caja_id', 'tipo', 'estado'];
+    protected $fillable = [ 'fuente', 'modalidad', 'tercero_id', 'fecha_emision', 'fecha_cobro', 'numero_cheque', 'referencia_cheque', 'entidad_financiera_id', 'valor', 'detalle', 'creado_por', 'modificado_por', 'core_tipo_transaccion_id_origen', 'core_tipo_doc_app_id_origen', 'consecutivo', 'core_tipo_transaccion_id_consumo', 'core_tipo_doc_app_id_consumo', 'consecutivo_doc_consumo', 'teso_caja_id', 'teso_chequera_id', 'teso_cuenta_bancaria_id', 'teso_doc_encabezado_id', 'tipo', 'estado'];
     
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Fecha emisión', 'Tercero', 'Fecha cobro', 'Número cheque', 'Referencia', 'Valor', 'Banco', 'Doc. Origen', 'Doc. Consumo', 'Estado'];		
 
@@ -28,6 +28,21 @@ class ControlCheque extends Model
     public function entidad_financiera()
     {
         return $this->belongsTo(TesoEntidadFinanciera::class, 'entidad_financiera_id');
+    }
+
+    public function chequera()
+    {
+        return $this->belongsTo(TesoChequera::class, 'teso_chequera_id');
+    }
+
+    public function cuenta_bancaria()
+    {
+        return $this->belongsTo(TesoCuentaBancaria::class, 'teso_cuenta_bancaria_id');
+    }
+
+    public function documento_tesoreria()
+    {
+        return $this->belongsTo(TesoDocEncabezado::class, 'teso_doc_encabezado_id');
     }
 
     public static function consultar_registros($nro_registros, $search)

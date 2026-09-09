@@ -12,7 +12,7 @@ class TesoMedioRecaudo extends Model
     public $vistas = '{"show":"tesoreria.medios_recaudo.show"}';
 
     /*
-        comportamiento: { Efectivo | Tarjeta bancaria | Otro }
+        comportamiento: { Efectivo | Tarjeta bancaria | Otro | Cheque }
     */
     protected $fillable = ['descripcion','comportamiento','por_defecto','maneja_puntos','estado'];
 
@@ -159,5 +159,43 @@ class TesoMedioRecaudo extends Model
     public function destinos()
     {
         return $this->hasMany(TesoMedioRecaudoDestino::class, 'teso_medio_recaudo_id');
+    }
+
+    public function usa_cuenta_bancaria_como_destino()
+    {
+        return in_array($this->comportamiento, ['Tarjeta bancaria', 'Cheque'], true);
+    }
+
+    public function cuentas_bancarias_destino_permitidas()
+    {
+        $idsDestinos = $this->destinos()
+            ->where('estado', 'Activo')
+            ->whereNotNull('teso_cuenta_bancaria_id')
+            ->pluck('teso_cuenta_bancaria_id')
+            ->toArray();
+
+        return TesoCuentaBancaria::get_cuentas_permitidas()
+            ->filter(function ($cuenta) use ($idsDestinos) {
+                return in_array((int)$cuenta->id, array_map('intval', $idsDestinos), true);
+            })
+            ->values();
+    }
+
+    public function opciones_cuentas_bancarias_destino()
+    {
+        $opciones = ['' => ''];
+        foreach ($this->cuentas_bancarias_destino_permitidas() as $cuenta) {
+            $opciones[$cuenta->id] = $cuenta->entidad_financiera . ' - ' . $cuenta->descripcion;
+        }
+
+        return $opciones;
+    }
+
+    public function tiene_cuenta_bancaria_destino($cuentaId)
+    {
+        return $this->destinos()
+            ->where('teso_cuenta_bancaria_id', (int)$cuentaId)
+            ->where('estado', 'Activo')
+            ->exists();
     }
 }

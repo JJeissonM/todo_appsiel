@@ -26,9 +26,9 @@ use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoDocEncabezadoPagoCxp;
 use App\Tesoreria\TesoDocRegistro;
 use App\Tesoreria\TesoMovimiento;
-use App\Tesoreria\ControlCheque;
 use App\Tesoreria\TesoEntidadFinanciera;
 use App\Tesoreria\Services\DaviviendaMassPaymentFileService;
+use App\Tesoreria\Services\ChequePaymentService;
 
 use App\Tesoreria\RegistroDeEfectivo;
 use App\Tesoreria\RegistroDeTransferenciaConsignacion;
@@ -53,6 +53,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\DB;
 use NumerosEnLetras;
 
 class PagoCxpController extends TransaccionController
@@ -98,6 +99,16 @@ class PagoCxpController extends TransaccionController
         $medios_recaudo = TesoMedioRecaudo::opciones_campo_select();
         $cajas = TesoCaja::opciones_campo_select();
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
+        if (ChequePaymentService::usaChequera()) {
+            try {
+                $medioCheque = TesoMedioRecaudo::findOrFail(
+                    TesoMedioRecaudo::get_id_por_tipo_registro('cheque_propio')
+                );
+                $cuentas_bancarias = $medioCheque->opciones_cuentas_bancarias_destino();
+            } catch (\Exception $e) {
+                $cuentas_bancarias = ['' => ''];
+            }
+        }
         $retenciones = Retencion::opciones_campo_select();
         $descuentos_pronto_pago = DescuentoProntoPago::opciones_campo_select();
 
@@ -126,41 +137,70 @@ class PagoCxpController extends TransaccionController
      */
     public function store(Request $request)
     {
-        // Crear encabezado desde TransaccionController
-        $doc_encabezado = $this->crear_encabezado_documento( $request, $request->url_id_modelo);
-
-        $total_abonos_cxc = $this->almacenar_registros_cxp( $request, $doc_encabezado );
-        
-        $retenciones = new RegistroRetencion();
-        $retenciones->almacenar_nuevos_registros( $request->lineas_registros_retenciones, $doc_encabezado, $total_abonos_cxc, 'practicada' );
-        
-        $descuentos_pronto_pago = new RegistroDescuentoProntoPago();
-        $descuentos_pronto_pago->almacenar_nuevos_registros( $request->lineas_registros_descuento_pronto_pagos, $doc_encabezado, 'recibido' );
-
-        $efectivo = new RegistroDeEfectivo();
-        $efectivo->almacenar_registros( $request->lineas_registros_efectivo, $doc_encabezado );
-
-        $transferencia_consignacion = new RegistroDeTransferenciaConsignacion();
-        $transferencia_consignacion->almacenar_registros( $request->lineas_registros_transferencia_consignacion, $doc_encabezado );
-
-        $tarjeta_debito = new RegistroDeTarjetaDebito();
-        $tarjeta_debito->almacenar_registros( $request->lineas_registros_tarjeta_debito, $doc_encabezado );
-
-        $tarjeta_credito = new RegistroDeTarjetaCredito();
-        $tarjeta_credito->almacenar_registros( $request->lineas_registros_tarjeta_credito, $doc_encabezado );
-
         try {
-            $cheques = new RegistroDeCheque();
-            $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 'cheque_propio', 'Emitido', 'propio' );
+            $doc_encabezado = DB::transaction(function () use ($request) {
+                $doc = $this->crear_encabezado_documento($request, $request->url_id_modelo);
+
+                $totalAbonos = $this->almacenar_registros_cxp($request, $doc);
+
+                (new RegistroRetencion())->almacenar_nuevos_registros(
+                    $request->lineas_registros_retenciones,
+                    $doc,
+                    $totalAbonos,
+                    'practicada'
+                );
+
+                (new RegistroDescuentoProntoPago())->almacenar_nuevos_registros(
+                    $request->lineas_registros_descuento_pronto_pagos,
+                    $doc,
+                    'recibido'
+                );
+
+                (new RegistroDeEfectivo())->almacenar_registros($request->lineas_registros_efectivo, $doc);
+                (new RegistroDeTransferenciaConsignacion())->almacenar_registros($request->lineas_registros_transferencia_consignacion, $doc);
+                (new RegistroDeTarjetaDebito())->almacenar_registros($request->lineas_registros_tarjeta_debito, $doc);
+                (new RegistroDeTarjetaCredito())->almacenar_registros($request->lineas_registros_tarjeta_credito, $doc);
+                (new RegistroDeCheque())->almacenar_registros(
+                    $request->lineas_registros_cheques,
+                    $doc,
+                    'cheque_propio',
+                    'Emitido',
+                    'propio'
+                );
+
+                $doc->actualizar_valor_total();
+
+                return $doc;
+            });
         } catch (\Exception $e) {
+            $mensaje = 'No fue posible registrar el pago: ' . $e->getMessage();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $mensaje
+                ], 422);
+            }
+
             return redirect('tesoreria/pagos_cxp/create?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)
-                ->with('mensaje_error', 'Error al registrar cheques: ' . $e->getMessage());
+                ->withInput()
+                ->with('mensaje_error', $mensaje);
         }
 
-        $doc_encabezado->actualizar_valor_total();
+        $urlDocumento = url('tesoreria/pagos_cxp/' . $doc_encabezado->id)
+            . '?id=' . $request->url_id
+            . '&id_modelo=' . $request->url_id_modelo
+            . '&id_transaccion=' . $request->url_id_transaccion;
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'ok',
+                'redirect' => $urlDocumento
+            ], 200);
+        }
 
         // se llama la vista de PagoCxpController@show
-        return redirect( 'tesoreria/pagos_cxp/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+        return redirect($urlDocumento);
     }
 
     public function almacenar_registros_cxp( Request $request, $doc_encabezado )
@@ -487,6 +527,11 @@ class PagoCxpController extends TransaccionController
     {        
         $pago = TesoDocEncabezado::find( $id );
 
+        if (is_null($pago)) {
+            return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))
+                ->with('mensaje_error', 'El pago no existe.');
+        }
+
         $array_wheres = ['core_empresa_id'=>$pago->core_empresa_id, 
                             'core_tipo_transaccion_id' => $pago->core_tipo_transaccion_id,
                             'core_tipo_doc_app_id' => $pago->core_tipo_doc_app_id,
@@ -503,7 +548,9 @@ class PagoCxpController extends TransaccionController
         {
             return redirect( 'tesoreria/pagos_cxp/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Pago NO puede ser anulado. Está en documento cruce de CxP.');
         }
-        
+
+        DB::beginTransaction();
+        try {
 
         // Se reversan los pagos hecho por este documento: aumenta el saldo_pendiente en el documento de CxP
 
@@ -603,40 +650,19 @@ class PagoCxpController extends TransaccionController
 
         $this->restablecer_cheque( $pago );
 
+        DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect('tesoreria/pagos_cxp/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))
+                ->with('mensaje_error', 'No fue posible anular el pago: ' . $e->getMessage());
+        }
+
         return redirect( 'tesoreria/pagos_cxp/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Pago de CxP ANULADO correctamente.'); 
     }
 
     public function restablecer_cheque( $pago )
     {
-        $cheque_gastado = ControlCheque::where([
-                                                'core_tipo_transaccion_id_consumo' => $pago->core_tipo_transaccion_id,
-                                                'core_tipo_doc_app_id_consumo' => $pago->core_tipo_doc_app_id,
-                                                'consecutivo_doc_consumo' => $pago->consecutivo
-                                            ])
-                                        ->get()
-                                        ->first();
-
-        if ( !is_null($cheque_gastado) )
-        {
-            $cheque_gastado->core_tipo_transaccion_id_consumo = 0;
-            $cheque_gastado->core_tipo_doc_app_id_consumo = 0;
-            $cheque_gastado->consecutivo_doc_consumo = 0;
-            $cheque_gastado->estado = 'Recibido';
-            $cheque_gastado->save();
-        }
-
-        $cheque_emitido = ControlCheque::where([
-                                                'core_tipo_transaccion_id_origen' => $pago->core_tipo_transaccion_id,
-                                                'core_tipo_doc_app_id_origen' => $pago->core_tipo_doc_app_id,
-                                                'consecutivo' => $pago->consecutivo
-                                            ])
-                                        ->get()
-                                        ->first();
-
-        if ( !is_null($cheque_emitido) )
-        {
-            $cheque_emitido->estado = 'Anulado';
-            $cheque_emitido->save();
-        }
+        (new ChequePaymentService())->anularDocumento($pago);
     }
 }

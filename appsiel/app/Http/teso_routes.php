@@ -101,6 +101,7 @@ Route::get('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/{id}/edit
 Route::put('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/{id}', 'Tesoreria\TesoChequeraController@update');
 Route::delete('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/{id}', 'Tesoreria\TesoChequeraController@destroy');
 Route::get('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/get_consecutivo', 'Tesoreria\TesoChequeraController@get_consecutivo');
+Route::get('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/disponibles', 'Tesoreria\TesoChequeraController@disponibles');
 Route::post('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/{id}/actualizar_consecutivo', 'Tesoreria\TesoChequeraController@actualizar_consecutivo');
 
 

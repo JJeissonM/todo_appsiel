@@ -21,4 +21,9 @@ class TesoChequera extends Model
     {
         return $this->belongsTo(TesoCuentaBancaria::class, 'teso_cuenta_bancaria_id');
     }
+
+    public function cheques()
+    {
+        return $this->hasMany(ControlCheque::class, 'teso_chequera_id');
+    }
 }

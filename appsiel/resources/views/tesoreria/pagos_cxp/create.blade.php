@@ -28,6 +28,10 @@
 		<div class="alert alert-warning" id="div_documento_descuadrado" style="display: none;">
 			<strong>¡Advertencia!</strong> Documento está descuadrado.
 		</div>
+		<div class="alert alert-danger" id="div_error_guardado_ajax" style="display: none;">
+			<button type="button" class="close" onclick="$('#div_error_guardado_ajax').hide();">&times;</button>
+			<strong id="mensaje_error_guardado_ajax"></strong>
+		</div>
 
 		{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
@@ -222,12 +226,35 @@
 					return false;
 				}
 
-				// Desactivar el click del botón
-				$( this ).off( event );
+				var botonGuardar = $(this);
+				botonGuardar.prop('disabled', true);
+				$('#div_error_guardado_ajax').hide();
 
-				// Enviar formulario
 				habilitar_campos_form_create();
-				$('#form_create').submit();					
+				var formulario = $('#form_create');
+
+				$.ajax({
+					url: formulario.attr('action'),
+					type: 'POST',
+					data: formulario.serialize(),
+					dataType: 'json'
+				})
+				.done(function(respuesta) {
+					if (respuesta.redirect) {
+						window.location.href = respuesta.redirect;
+					}
+				})
+				.fail(function(xhr) {
+					var mensaje = 'No fue posible registrar el pago.';
+					if (xhr.responseJSON && xhr.responseJSON.message) {
+						mensaje = xhr.responseJSON.message;
+					}
+
+					$('#mensaje_error_guardado_ajax').text(mensaje);
+					$('#div_error_guardado_ajax').show();
+					$('html, body').animate({ scrollTop: $('#div_error_guardado_ajax').offset().top - 20 }, 300);
+					botonGuardar.prop('disabled', false);
+				});
 			});
 
 

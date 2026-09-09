@@ -96,20 +96,11 @@
             ?>
             @foreach($doc_pagados as $linea )
 
-                <?php 
-            
-                    $el_documento = app( App\Sistema\TipoTransaccion::find( $linea->doc_cxp_transacc_id )->modelo_encabezados_documentos )->where('core_tipo_transaccion_id',$linea->doc_cxp_transacc_id)
-                    ->where('core_tipo_doc_app_id',$linea->doc_cxp_tipo_doc_id)
-                    ->where('consecutivo',$linea->doc_cxp_consecutivo)
-                    ->get()->first();
-
-                ?>
-
                 <tr>
                     <td> {{ $linea->tercero_nombre_completo }} </td>
                     <td class="text-center"> {{ $linea->documento_prefijo_consecutivo }} </td>
-                    <td> {{ $el_documento->fecha }} </td>
-                    <td> {{ $el_documento->descripcion }} </td>
+                    <td> {{ $linea->documento_fecha }} </td>
+                    <td> {{ $linea->documento_descripcion }} </td>
                     <td class="text-right"> {{ '$ '.number_format( $linea->abono, 0, ',', '.') }} </td>
                 </tr>
                 <?php 

@@ -6,6 +6,8 @@
             <th style="display: none;">teso_motivo_id_cheque</th>
             <th style="display: none;">detalle_cheque</th>
             <th style="display: none;">caja_id_cheque</th>
+            <th style="display: none;">teso_cuenta_bancaria_id_cheque</th>
+            <th style="display: none;">teso_chequera_id_cheque</th>
             <th style="display: none;">entidad_financiera_id</th>
             <th style="display: none;">valor_cheque</th>
             <th data-override="fecha_emision">F. Emisión</th>
@@ -33,6 +35,8 @@
                 <td style="display: none;">{{ $teso_motivo_id }}</td>
                 <td style="display: none;">&nbsp;</td>
                 <td style="display: none;">{{ $caja_id }}</td>
+                <td style="display: none;"></td>
+                <td style="display: none;"></td>
                 <td style="display: none;">{{ $cheque->entidad_financiera_id }}</td>
                 <td style="display: none;"> <div class="valor_cheque">{{ $cheque->valor }}</td>
                 <td> {{ $cheque->fecha_emision }} </td>

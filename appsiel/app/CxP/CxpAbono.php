@@ -219,6 +219,12 @@ class CxpAbono extends Model
                     ->where('cxp_abonos.consecutivo',$doc_encabezado->consecutivo)
                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_abonos.doc_cxp_tipo_doc_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxp_abonos.core_tercero_id')
+                    ->leftJoin('cxp_movimientos', function ($join) {
+                        $join->on('cxp_movimientos.core_empresa_id', '=', 'cxp_abonos.core_empresa_id')
+                            ->on('cxp_movimientos.core_tipo_transaccion_id', '=', 'cxp_abonos.doc_cxp_transacc_id')
+                            ->on('cxp_movimientos.core_tipo_doc_app_id', '=', 'cxp_abonos.doc_cxp_tipo_doc_id')
+                            ->on('cxp_movimientos.consecutivo', '=', 'cxp_abonos.doc_cxp_consecutivo');
+                    })
                     ->select(
                                 'cxp_abonos.id',
                                 'cxp_abonos.core_empresa_id',
@@ -229,6 +235,8 @@ class CxpAbono extends Model
                                 'cxp_abonos.doc_cxp_consecutivo',
                                 'cxp_abonos.fecha',
                                 'cxp_abonos.abono',
+                                DB::raw('COALESCE(cxp_movimientos.fecha, cxp_abonos.fecha) AS documento_fecha'),
+                                DB::raw("COALESCE(NULLIF(cxp_movimientos.detalle, ''), CONCAT('Documento de CxP ', core_tipos_docs_apps.prefijo, ' ', cxp_abonos.doc_cxp_consecutivo)) AS documento_descripcion"),
                                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",cxp_abonos.doc_cxp_consecutivo) AS documento_prefijo_consecutivo' ),
                                 'core_terceros.descripcion AS tercero_nombre_completo',

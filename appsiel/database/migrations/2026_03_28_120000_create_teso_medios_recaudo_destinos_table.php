@@ -89,7 +89,7 @@ class CreateTesoMediosRecaudoDestinosTable extends Migration
         $registros = [];
 
         foreach ($medios as $medio) {
-            if ($medio->comportamiento === 'Tarjeta bancaria') {
+            if (in_array($medio->comportamiento, ['Tarjeta bancaria', 'Cheque'], true)) {
                 foreach ($cuentas as $cuentaId) {
                     $registros[] = [
                         'teso_medio_recaudo_id' => $medio->id,

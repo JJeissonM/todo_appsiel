@@ -3,6 +3,8 @@
 namespace App\Tesoreria\Services;
 
 use App\Tesoreria\TesoChequera;
+use App\Tesoreria\ControlCheque;
+use Illuminate\Support\Facades\DB;
 
 class ChequeraService
 {
@@ -42,6 +44,56 @@ class ChequeraService
         return (int)$chequera->consecutivo_actual;
     }
 
+    /**
+     * Reserva un cheque dentro de la transacción que almacena el documento.
+     * El número esperado evita emitir silenciosamente un cheque distinto al
+     * que el usuario confirmó en pantalla cuando hay concurrencia.
+     */
+    public function reservar_consecutivo($teso_chequera_id, $teso_cuenta_bancaria_id, $numero_esperado = null)
+    {
+        $chequera = TesoChequera::where('id', (int)$teso_chequera_id)
+            ->lockForUpdate()
+            ->first();
+
+        if (is_null($chequera)) {
+            throw new \Exception('La chequera seleccionada no existe.');
+        }
+
+        if ((int)$chequera->teso_cuenta_bancaria_id !== (int)$teso_cuenta_bancaria_id) {
+            throw new \Exception('La chequera no pertenece a la cuenta bancaria seleccionada.');
+        }
+
+        $numero = (int)$chequera->consecutivo_actual;
+        if ($numero < (int)$chequera->numero_inicial || $numero > (int)$chequera->numero_final) {
+            throw new \Exception('No se puede generar el cheque: el consecutivo actual supera el número final de la chequera.');
+        }
+
+        if ($chequera->estado !== 'Activo') {
+            throw new \Exception('La chequera seleccionada no está activa.');
+        }
+
+        if (!is_null($numero_esperado) && (int)$numero_esperado !== $numero) {
+            throw new \Exception('El consecutivo de la chequera cambió. Actualice la selección y vuelva a guardar el documento.');
+        }
+
+        $chequera->consecutivo_actual = $numero + 1;
+        if ((int)$chequera->consecutivo_actual > (int)$chequera->numero_final) {
+            $chequera->estado = 'Agotada';
+        }
+        $chequera->save();
+
+        return $numero;
+    }
+
+    public function get_disponibles($teso_cuenta_bancaria_id)
+    {
+        return TesoChequera::where('teso_cuenta_bancaria_id', (int)$teso_cuenta_bancaria_id)
+            ->where('estado', 'Activo')
+            ->whereColumn('consecutivo_actual', '<=', 'numero_final')
+            ->orderBy('id', 'ASC')
+            ->get();
+    }
+
     public function actualizar_consecutivo($teso_chequera_id, $nuevo_consecutivo = null)
     {
         $chequera = TesoChequera::find((int)$teso_chequera_id);
@@ -53,6 +105,9 @@ class ChequeraService
         $consecutivo = (int)$chequera->consecutivo_actual + 1;
         if (!is_null($nuevo_consecutivo)) {
             $consecutivo = (int)$nuevo_consecutivo;
+            if ($consecutivo < (int)$chequera->consecutivo_actual) {
+                throw new \Exception('El consecutivo de una chequera no puede retroceder.');
+            }
         }
 
         if ($consecutivo > (int)$chequera->numero_final) {
@@ -106,6 +161,31 @@ class ChequeraService
 
         if ((int)$consecutivo_actual < (int)$numero_inicial || (int)$consecutivo_actual > (int)$numero_final + 1) {
             throw new \Exception('El consecutivo actual está fuera del rango de la chequera.');
+        }
+    }
+
+    public function validar_edicion(TesoChequera $chequera, $numero_inicial, $numero_final, $consecutivo_actual)
+    {
+        $this->validar_rango($numero_inicial, $numero_final, $consecutivo_actual);
+
+        $usados = ControlCheque::where('teso_chequera_id', $chequera->id)
+            ->select(
+                DB::raw('MIN(CAST(numero_cheque AS UNSIGNED)) AS minimo'),
+                DB::raw('MAX(CAST(numero_cheque AS UNSIGNED)) AS maximo')
+            )
+            ->first();
+
+        if (!is_null($usados) && !is_null($usados->minimo)) {
+            if ((int)$numero_inicial > (int)$usados->minimo || (int)$numero_final < (int)$usados->maximo) {
+                throw new \Exception('El nuevo rango no puede excluir cheques que ya fueron emitidos.');
+            }
+            if ((int)$consecutivo_actual <= (int)$usados->maximo) {
+                throw new \Exception('El consecutivo actual debe ser mayor al último cheque emitido.');
+            }
+        }
+
+        if ((int)$consecutivo_actual < (int)$chequera->consecutivo_actual) {
+            throw new \Exception('El consecutivo de una chequera no puede retroceder.');
         }
     }
 

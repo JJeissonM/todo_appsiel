@@ -9,6 +9,7 @@ use App\Tesoreria\TesoChequera;
 use App\Tesoreria\TesoCuentaBancaria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
 
 class TesoChequeraController extends Controller
 {
@@ -81,7 +82,7 @@ class TesoChequeraController extends Controller
                 return $this->redirect_show($teso_cuenta_bancaria_id, 'mensaje_error', 'Ya existe una chequera con rango solapado para esta cuenta.');
             }
 
-            $this->service->validar_rango($request->numero_inicial, $request->numero_final, $request->consecutivo_actual);
+            $this->service->validar_edicion($chequera, $request->numero_inicial, $request->numero_final, $request->consecutivo_actual);
         } catch (\Exception $e) {
             return $this->redirect_show($teso_cuenta_bancaria_id, 'mensaje_error', $e->getMessage());
         }
@@ -104,6 +105,10 @@ class TesoChequeraController extends Controller
             return $this->redirect_show($teso_cuenta_bancaria_id, 'mensaje_error', 'Chequera no encontrada.');
         }
 
+        if ($chequera->cheques()->exists()) {
+            return $this->redirect_show($teso_cuenta_bancaria_id, 'mensaje_error', 'La chequera no puede eliminarse porque tiene cheques emitidos. Puede cambiar su estado a Inactiva.');
+        }
+
         $chequera->delete();
         return $this->redirect_show($teso_cuenta_bancaria_id, 'flash_message', 'Chequera eliminada correctamente.');
     }
@@ -116,6 +121,33 @@ class TesoChequeraController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
         }
+    }
+
+    public function disponibles($teso_cuenta_bancaria_id)
+    {
+        $cuenta = TesoCuentaBancaria::where('id', (int)$teso_cuenta_bancaria_id)
+            ->where('core_empresa_id', Auth::user()->empresa_id)
+            ->where('estado', 'Activo')
+            ->first();
+
+        if (is_null($cuenta)) {
+            return response()->json(['status' => 'error', 'message' => 'Cuenta bancaria no disponible.'], 422);
+        }
+
+        if (!TesoCuentaBancaria::es_permitida_para_usuario($cuenta->id)) {
+            return response()->json(['status' => 'error', 'message' => 'No tiene permiso para usar esta cuenta bancaria.'], 403);
+        }
+
+        $chequeras = $this->service->get_disponibles($cuenta->id)->map(function ($chequera) {
+            return [
+                'id' => (int)$chequera->id,
+                'text' => $chequera->descripcion . ' - próximo cheque: ' . $chequera->consecutivo_actual,
+                'consecutivo' => (int)$chequera->consecutivo_actual,
+                'numero_final' => (int)$chequera->numero_final
+            ];
+        })->values();
+
+        return response()->json(['status' => 'ok', 'chequeras' => $chequeras], 200);
     }
 
     public function actualizar_consecutivo(Request $request, $teso_cuenta_bancaria_id, $id)

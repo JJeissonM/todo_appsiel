@@ -77,6 +77,22 @@
 
 				</div>
 
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$modalidad_cheques_pago = 'cheques_creados';
+								if (isset($parametros['modalidad_cheques_pago'])) {
+									$modalidad_cheques_pago = $parametros['modalidad_cheques_pago'];
+								}
+							?>
+							{{ Form::bsSelect('modalidad_cheques_pago', $modalidad_cheques_pago, 'Modalidad para pagos con cheque', ['cheques_creados' => 'Cheques creados (modalidad actual)', 'usar_chequera' => 'Usar chequera'], ['class'=>'form-control']) }}
+							<small class="help-block">Usar chequera asigna el siguiente número disponible y conserva la trazabilidad del cheque al anular.</small>
+						</div>
+					</div>
+					<div class="col-md-6">&nbsp;</div>
+				</div>
+
 				<h4> Parámetros para arqueos de caja </h4>
 				<hr>
 

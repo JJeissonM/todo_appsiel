@@ -122,6 +122,7 @@ class TesoCuentaBancaria extends Model
             {
                 $cuentas = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
                             ->where('teso_cuentas_bancarias.id',$acl->recurso_id)
+                            ->where('teso_cuentas_bancarias.core_empresa_id', Auth::user()->empresa_id)
                             ->where('teso_cuentas_bancarias.estado','Activo')
                             ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_entidades_financieras.descripcion AS entidad_financiera')
                             ->get();
@@ -129,12 +130,20 @@ class TesoCuentaBancaria extends Model
             
         }else{
             $cuentas = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
+                            ->where('teso_cuentas_bancarias.core_empresa_id', Auth::user()->empresa_id)
                             ->where('teso_cuentas_bancarias.estado','Activo')
                             ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_entidades_financieras.descripcion AS entidad_financiera')
                             ->get();
         }
         
         return $cuentas;
+    }
+
+    public static function es_permitida_para_usuario($cuenta_id)
+    {
+        return self::get_cuentas_permitidas()
+            ->pluck('id')
+            ->contains((int)$cuenta_id);
     }
 
     public static function get_cuenta_por_defecto()
