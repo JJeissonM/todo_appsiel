@@ -23,7 +23,7 @@
 
             <div class="row">
                 <div class="col-md-3">
-                    {{ Form::bsText('consecutivo_actual', null, 'Consecutivo actual', ['required' => 'required']) }}
+                    {{ Form::bsText('consecutivo_actual', null, 'Último cheque emitido', ['required' => 'required']) }}
                 </div>
                 <div class="col-md-3">
                     {{ Form::bsSelect('estado', null, 'Estado', ['Activo' => 'Activo', 'Inactiva' => 'Inactiva', 'Agotada' => 'Agotada'], ['required' => 'required']) }}

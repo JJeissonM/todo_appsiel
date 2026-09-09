@@ -34,6 +34,12 @@ class TesoChequeraController extends Controller
 
     public function store(Request $request, $teso_cuenta_bancaria_id)
     {
+        if ($request->get('consecutivo_actual') === '' || is_null($request->get('consecutivo_actual'))) {
+            $request->merge([
+                'consecutivo_actual' => max(0, (int)$request->get('numero_inicial') - 1)
+            ]);
+        }
+
         $this->validar_formulario($request);
 
         $data = $request->all();
@@ -88,7 +94,7 @@ class TesoChequeraController extends Controller
         }
 
         $chequera->fill($request->all());
-        if ((int)$chequera->consecutivo_actual > (int)$chequera->numero_final) {
+        if ((int)$chequera->consecutivo_actual >= (int)$chequera->numero_final) {
             $chequera->estado = 'Agotada';
         }
         $chequera->save();
@@ -139,10 +145,13 @@ class TesoChequeraController extends Controller
         }
 
         $chequeras = $this->service->get_disponibles($cuenta->id)->map(function ($chequera) {
+            $proximoCheque = (int)$chequera->consecutivo_actual + 1;
+
             return [
                 'id' => (int)$chequera->id,
-                'text' => $chequera->descripcion . ' - último cheque emitido: ' . $chequera->consecutivo_actual,
-                'consecutivo' => (int)$chequera->consecutivo_actual,
+                'text' => $chequera->descripcion . ' - próximo cheque: ' . $proximoCheque,
+                'consecutivo_actual' => (int)$chequera->consecutivo_actual,
+                'consecutivo' => $proximoCheque,
                 'numero_final' => (int)$chequera->numero_final
             ];
         })->values();
@@ -172,7 +181,7 @@ class TesoChequeraController extends Controller
             'descripcion' => 'required',
             'numero_inicial' => 'required|integer|min:1',
             'numero_final' => 'required|integer|min:1',
-            'consecutivo_actual' => 'required|integer|min:1',
+            'consecutivo_actual' => 'required|integer|min:0',
             'estado' => 'required'
         ]);
     }

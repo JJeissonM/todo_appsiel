@@ -13,8 +13,8 @@ class ChequeraService
         $data['numero_inicial'] = (int)$data['numero_inicial'];
         $data['numero_final'] = (int)$data['numero_final'];
 
-        if (!isset($data['consecutivo_actual']) || (int)$data['consecutivo_actual'] === 0) {
-            $data['consecutivo_actual'] = $data['numero_inicial'];
+        if (!isset($data['consecutivo_actual']) || $data['consecutivo_actual'] === '') {
+            $data['consecutivo_actual'] = $data['numero_inicial'] - 1;
         } else {
             $data['consecutivo_actual'] = (int)$data['consecutivo_actual'];
         }
@@ -28,7 +28,7 @@ class ChequeraService
     {
         return TesoChequera::where('teso_cuenta_bancaria_id', (int)$teso_cuenta_bancaria_id)
             ->where('estado', 'Activo')
-            ->whereColumn('consecutivo_actual', '<=', 'numero_final')
+            ->whereColumn('consecutivo_actual', '<', 'numero_final')
             ->orderBy('id', 'ASC')
             ->first();
     }
@@ -41,7 +41,7 @@ class ChequeraService
             throw new \Exception('No hay una chequera activa para la cuenta bancaria seleccionada.');
         }
 
-        return (int)$chequera->consecutivo_actual;
+        return (int)$chequera->consecutivo_actual + 1;
     }
 
     /**
@@ -63,9 +63,10 @@ class ChequeraService
             throw new \Exception('La chequera no pertenece a la cuenta bancaria seleccionada.');
         }
 
-        $numero = (int)$chequera->consecutivo_actual;
-        if ($numero < (int)$chequera->numero_inicial || $numero > (int)$chequera->numero_final) {
-            throw new \Exception('No se puede generar el cheque: el consecutivo actual supera el número final de la chequera.');
+        $ultimoEmitido = (int)$chequera->consecutivo_actual;
+        $numero = $ultimoEmitido + 1;
+        if ($ultimoEmitido < (int)$chequera->numero_inicial - 1 || $numero > (int)$chequera->numero_final) {
+            throw new \Exception('No se puede generar el cheque: el siguiente consecutivo supera el número final de la chequera.');
         }
 
         if ($chequera->estado !== 'Activo') {
@@ -76,8 +77,9 @@ class ChequeraService
             throw new \Exception('El consecutivo de la chequera cambió. Actualice la selección y vuelva a guardar el documento.');
         }
 
-        $chequera->consecutivo_actual = $numero + 1;
-        if ((int)$chequera->consecutivo_actual > (int)$chequera->numero_final) {
+        // consecutivo_actual representa siempre el último cheque emitido.
+        $chequera->consecutivo_actual = $numero;
+        if ((int)$chequera->consecutivo_actual >= (int)$chequera->numero_final) {
             $chequera->estado = 'Agotada';
         }
         $chequera->save();
@@ -89,7 +91,7 @@ class ChequeraService
     {
         return TesoChequera::where('teso_cuenta_bancaria_id', (int)$teso_cuenta_bancaria_id)
             ->where('estado', 'Activo')
-            ->whereColumn('consecutivo_actual', '<=', 'numero_final')
+            ->whereColumn('consecutivo_actual', '<', 'numero_final')
             ->orderBy('id', 'ASC')
             ->get();
     }
@@ -111,17 +113,17 @@ class ChequeraService
         }
 
         if ($consecutivo > (int)$chequera->numero_final) {
-            $chequera->consecutivo_actual = (int)$chequera->numero_final + 1;
-            $chequera->estado = 'Agotada';
-            $chequera->save();
-            return $chequera;
+            throw new \Exception('El consecutivo no puede superar el número final de la chequera.');
         }
 
-        if ($consecutivo < (int)$chequera->numero_inicial) {
-            throw new \Exception('El consecutivo no puede ser menor al número inicial de la chequera.');
+        if ($consecutivo < (int)$chequera->numero_inicial - 1) {
+            throw new \Exception('El último cheque emitido no puede ser menor al número inmediatamente anterior al inicial de la chequera.');
         }
 
         $chequera->consecutivo_actual = $consecutivo;
+        if ($consecutivo >= (int)$chequera->numero_final) {
+            $chequera->estado = 'Agotada';
+        }
         $chequera->save();
 
         return $chequera;
@@ -142,11 +144,11 @@ class ChequeraService
             throw new \Exception('El número de cheque no pertenece a una chequera activa de la cuenta bancaria seleccionada.');
         }
 
-        if ($numero_cheque < (int)$chequera->consecutivo_actual) {
-            throw new \Exception('El número de cheque es menor al consecutivo actual de la chequera.');
+        if ($numero_cheque <= (int)$chequera->consecutivo_actual) {
+            throw new \Exception('El número de cheque ya fue emitido o es menor al consecutivo actual de la chequera.');
         }
 
-        return $this->actualizar_consecutivo($chequera->id, $numero_cheque + 1);
+        return $this->actualizar_consecutivo($chequera->id, $numero_cheque);
     }
 
     public function validar_rango($numero_inicial, $numero_final, $consecutivo_actual)
@@ -159,8 +161,8 @@ class ChequeraService
             throw new \Exception('El número final no puede ser menor al número inicial.');
         }
 
-        if ((int)$consecutivo_actual < (int)$numero_inicial || (int)$consecutivo_actual > (int)$numero_final + 1) {
-            throw new \Exception('El consecutivo actual está fuera del rango de la chequera.');
+        if ((int)$consecutivo_actual < (int)$numero_inicial - 1 || (int)$consecutivo_actual > (int)$numero_final) {
+            throw new \Exception('El último cheque emitido está fuera del rango permitido para la chequera.');
         }
     }
 
@@ -179,8 +181,8 @@ class ChequeraService
             if ((int)$numero_inicial > (int)$usados->minimo || (int)$numero_final < (int)$usados->maximo) {
                 throw new \Exception('El nuevo rango no puede excluir cheques que ya fueron emitidos.');
             }
-            if ((int)$consecutivo_actual <= (int)$usados->maximo) {
-                throw new \Exception('El consecutivo actual debe ser mayor al último cheque emitido.');
+            if ((int)$consecutivo_actual < (int)$usados->maximo) {
+                throw new \Exception('El consecutivo actual no puede ser menor al último cheque emitido.');
             }
         }
 

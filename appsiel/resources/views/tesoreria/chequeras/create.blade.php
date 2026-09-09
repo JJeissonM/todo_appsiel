@@ -23,7 +23,8 @@
 
             <div class="row">
                 <div class="col-md-3">
-                    {{ Form::bsText('consecutivo_actual', null, 'Consecutivo actual', ['required' => 'required']) }}
+                    {{ Form::bsText('consecutivo_actual', null, 'Último cheque emitido', ['placeholder' => 'Se calcula si lo deja vacío']) }}
+                    <small>Si la chequera es nueva, se guardará el número inmediatamente anterior al inicial.</small>
                 </div>
                 <div class="col-md-3">
                     {{ Form::bsSelect('estado', 'Activo', 'Estado', ['Activo' => 'Activo', 'Inactiva' => 'Inactiva', 'Agotada' => 'Agotada'], ['required' => 'required']) }}

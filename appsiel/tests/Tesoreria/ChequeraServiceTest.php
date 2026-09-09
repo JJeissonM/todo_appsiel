@@ -33,7 +33,7 @@ class ChequeraServiceTest extends TestCase
             'descripcion' => 'Chequera prueba reserva',
             'numero_inicial' => $inicio,
             'numero_final' => $inicio,
-            'consecutivo_actual' => $inicio,
+            'consecutivo_actual' => $inicio - 1,
             'estado' => 'Activo'
         ]);
 
@@ -43,7 +43,7 @@ class ChequeraServiceTest extends TestCase
 
         $chequera = $chequera->fresh();
         $this->assertSame($inicio, $numero);
-        $this->assertSame($inicio + 1, (int)$chequera->consecutivo_actual);
+        $this->assertSame($inicio, (int)$chequera->consecutivo_actual);
         $this->assertSame('Agotada', $chequera->estado);
 
         try {
@@ -55,7 +55,7 @@ class ChequeraServiceTest extends TestCase
             $this->assertContains('supera el número final', $e->getMessage());
         }
 
-        $this->assertSame($inicio + 1, (int)$chequera->fresh()->consecutivo_actual);
+        $this->assertSame($inicio, (int)$chequera->fresh()->consecutivo_actual);
     }
 
     public function test_no_avanza_si_el_numero_mostrado_ya_no_es_el_actual()
@@ -67,7 +67,7 @@ class ChequeraServiceTest extends TestCase
             'descripcion' => 'Chequera prueba concurrencia',
             'numero_inicial' => $inicio,
             'numero_final' => $inicio + 10,
-            'consecutivo_actual' => $inicio,
+            'consecutivo_actual' => $inicio - 1,
             'estado' => 'Activo'
         ]);
 
@@ -80,7 +80,7 @@ class ChequeraServiceTest extends TestCase
             $this->assertContains('consecutivo de la chequera cambió', $e->getMessage());
         }
 
-        $this->assertSame($inicio, (int)$chequera->fresh()->consecutivo_actual);
+        $this->assertSame($inicio - 1, (int)$chequera->fresh()->consecutivo_actual);
     }
 
     public function test_anular_un_cheque_de_chequera_no_reutiliza_el_numero()
@@ -98,7 +98,7 @@ class ChequeraServiceTest extends TestCase
             'descripcion' => 'Chequera prueba anulación',
             'numero_inicial' => $inicio,
             'numero_final' => $inicio + 10,
-            'consecutivo_actual' => $inicio + 1,
+            'consecutivo_actual' => $inicio,
             'estado' => 'Activo'
         ]);
 
@@ -133,7 +133,7 @@ class ChequeraServiceTest extends TestCase
         (new ChequePaymentService())->anularDocumento($documento);
 
         $this->assertSame('Anulado', $cheque->fresh()->estado);
-        $this->assertSame($inicio + 1, (int)$chequera->fresh()->consecutivo_actual);
+        $this->assertSame($inicio, (int)$chequera->fresh()->consecutivo_actual);
     }
 
     public function test_emite_cheque_con_relacion_directa_al_documento_cuenta_y_chequera()
@@ -150,7 +150,7 @@ class ChequeraServiceTest extends TestCase
             'descripcion' => 'Chequera prueba emisión',
             'numero_inicial' => $inicio,
             'numero_final' => $inicio + 10,
-            'consecutivo_actual' => $inicio,
+            'consecutivo_actual' => $inicio - 1,
             'estado' => 'Activo'
         ]);
 
@@ -175,7 +175,7 @@ class ChequeraServiceTest extends TestCase
         $this->assertSame((int)$cuenta->id, (int)$cheque->teso_cuenta_bancaria_id);
         $this->assertSame((int)$chequera->id, (int)$cheque->teso_chequera_id);
         $this->assertSame('Emitido', $cheque->estado);
-        $this->assertSame($inicio + 1, (int)$chequera->fresh()->consecutivo_actual);
+        $this->assertSame($inicio, (int)$chequera->fresh()->consecutivo_actual);
         $this->assertTrue($documento->cheques_relacionados_pagos()->contains('id', $cheque->id));
     }
 
@@ -235,7 +235,7 @@ class ChequeraServiceTest extends TestCase
             'descripcion' => 'Chequera visible endpoint',
             'numero_inicial' => $inicio,
             'numero_final' => $inicio + 10,
-            'consecutivo_actual' => $inicio,
+            'consecutivo_actual' => $inicio - 1,
             'estado' => 'Activo'
         ]);
 
@@ -253,6 +253,8 @@ class ChequeraServiceTest extends TestCase
             }
         }
         $this->assertNotNull($registro);
+        $this->assertSame($inicio - 1, (int)$registro['consecutivo_actual']);
+        $this->assertSame($inicio, (int)$registro['consecutivo']);
         $this->assertSame((int)$chequera->numero_final, (int)$registro['numero_final']);
     }
 
@@ -289,7 +291,7 @@ class ChequeraServiceTest extends TestCase
             'descripcion' => 'Chequera prueba relación',
             'numero_inicial' => $inicio,
             'numero_final' => $inicio + 10,
-            'consecutivo_actual' => $inicio,
+            'consecutivo_actual' => $inicio - 1,
             'estado' => 'Activo'
         ]);
 

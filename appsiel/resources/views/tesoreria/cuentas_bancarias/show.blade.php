@@ -79,7 +79,7 @@
                             <th>Descripción</th>
                             <th>Número inicial</th>
                             <th>Número final</th>
-                            <th>Consecutivo actual</th>
+                            <th>Último cheque emitido</th>
                             <th>Estado</th>
                             <th style="width: 130px;">Acción</th>
                         </tr>

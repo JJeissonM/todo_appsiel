@@ -61,8 +61,8 @@ class ChequePaymentService
             throw new \Exception('Debe seleccionar una chequera.');
         }
 
-        // El número nunca se acepta desde el formulario: se reserva directamente
-        // desde consecutivo_actual bajo bloqueo de base de datos.
+        // El número nunca se acepta desde el formulario: bajo bloqueo de base de
+        // datos se incrementa el último emitido (consecutivo_actual) y se reserva.
         $numero = $this->chequeraService->reservar_consecutivo($chequeraId, $cuentaId);
         $usuario = Auth::check() ? Auth::user()->email : (string)$documento->creado_por;
 
