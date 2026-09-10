@@ -393,7 +393,7 @@ class PagoCxpController extends TransaccionController
                     'Number' => is_null($cheque) ? '' : (string) $cheque->numero_cheque,
                     'DateInfo' => $dateInfo,
                     'PayTo' => $receiverName,
-                    'AmountText' => strtoupper(trim(NumerosEnLetras::convertir((float) $encabezado->valor_total, 'pesos', false))),
+                    'AmountText' => strtoupper(trim(NumerosEnLetras::convertir((float) $encabezado->valor_total, 'pesos', false))) . ' MCTE.',
                     'Amount' => number_format((float) $encabezado->valor_total, 2, ',', '.'),
                     'City' => strtoupper($city)
                 ],

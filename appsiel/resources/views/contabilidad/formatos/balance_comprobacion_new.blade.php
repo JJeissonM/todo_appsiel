@@ -45,16 +45,16 @@
                             {{ $movimiento_cuenta->tercero->numero_identificacion }} {{ $movimiento_cuenta->tercero->descripcion }}
                         @endif
                     </td>
-                    <td>
+                    <td class="text-right">
                     {{ number_format($movimiento_cuenta->saldo_inicial, 0, ',', '.')}}
                     </td>
-                    <td>
+                    <td class="text-right">
                     {{ number_format($movimiento_cuenta->debitos, 0, ',', '.')}}
                     </td>
-                    <td>
+                    <td class="text-right">
                     {{ number_format($movimiento_cuenta->creditos, 0, ',', '.')}}
                     </td>
-                    <td>
+                    <td class="text-right">
                     {{ number_format( $movimiento_cuenta->saldo_final , 0, ',', '.')}}
                     </td>
                 </tr>

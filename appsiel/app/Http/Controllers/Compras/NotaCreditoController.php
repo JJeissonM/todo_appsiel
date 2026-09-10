@@ -404,10 +404,14 @@ class NotaCreditoController extends TransaccionController
         $datos['valor_impuesto'] = 0;
         $datos['inv_bodega_id'] = 0;
 
-        $cuenta_debito_id = Proveedor::get_cuenta_por_pagar( $datos['proveedor_id'] );
+        $proveedor_cuenta_id = $factura ? $factura->proveedor_id : $datos['proveedor_id'];
+        $cuenta_directa_id = $factura && $factura->forma_pago == 'credito' ? $factura->cta_x_pagar_id : null;
+        $empresa_cuenta_id = $factura ? $factura->core_empresa_id : $datos['core_empresa_id'];
+        $cuenta_debito_id = (new \App\Compras\Services\CuentaPorPagarService())->resolver(
+            $proveedor_cuenta_id, $cuenta_directa_id, $empresa_cuenta_id
+        );
         if ( $factura != null )
         {
-            $cuenta_debito_id = Proveedor::get_cuenta_por_pagar( $factura->proveedor_id );
             if ($forma_pago == 'contado' ) {
                 $contab_movim_factura = ContabMovimiento::where([
                     ['core_tipo_transaccion_id', '=', $factura->core_tipo_transaccion_id],

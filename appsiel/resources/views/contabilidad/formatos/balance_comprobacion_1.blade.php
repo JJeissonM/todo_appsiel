@@ -62,16 +62,16 @@
                 <td>
                    {{ $cuentas_con_movimiento[$i]['codigo']}} {{ $cuentas_con_movimiento[$i]['descripcion']}}
                 </td>
-                <td>
-                   {{ number_format($saldo_inicial, 0, ',', '.')}}
+                <td class="text-right">
+                  {{ number_format($saldo_inicial, 0, ',', '.')}}
                 </td>
-                <td>
+                <td class="text-right">
                    {{ number_format($debitos, 0, ',', '.')}}
                 </td>
-                <td>
+                <td class="text-right">
                    {{ number_format($creditos, 0, ',', '.')}}
                 </td>
-                <td>
+                <td class="text-right">
                    {{ number_format( $saldo_final , 0, ',', '.')}}
                 </td>
             </tr>

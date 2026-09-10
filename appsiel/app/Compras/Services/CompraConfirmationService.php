@@ -164,6 +164,7 @@ class CompraConfirmationService
             'proveedor_id' => $documento->proveedor_id,
             'comprador_id' => $documento->comprador_id,
             'forma_pago' => $documento->forma_pago,
+            'cta_x_pagar_id' => $documento->cta_x_pagar_id,
             'fecha_recepcion' => $documento->fecha_recepcion,
             'fecha_vencimiento' => $documento->fecha_vencimiento,
             'descripcion' => $documento->descripcion,

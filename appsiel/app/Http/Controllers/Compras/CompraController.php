@@ -108,6 +108,7 @@ class CompraController extends TransaccionController
      */
     public function store(Request $request)
     {
+        $this->validar_cuenta_por_pagar_directa($request);
         $this->validate($request, ['reteica_retencion_id' => 'integer|min:0']);
         try {
             (new \App\Compras\Services\ReteicaService())->validar_seleccion(
@@ -172,6 +173,21 @@ class CompraController extends TransaccionController
         });
 
         return $this->respuesta_compra_guardada($request, $doc_encabezado);
+    }
+
+    protected function validar_cuenta_por_pagar_directa(Request $request)
+    {
+        if ($request->forma_pago != 'credito' || $request->input('cta_x_pagar_id') === '' || $request->input('cta_x_pagar_id') === null) {
+            $request->merge(['cta_x_pagar_id' => null]);
+            return;
+        }
+        $this->validate($request, [
+            'cta_x_pagar_id' => 'integer|min:1|exists:contab_cuentas,id,estado,Activo,core_empresa_id,' . (int)Auth::user()->empresa_id,
+        ], [
+            'cta_x_pagar_id.integer' => 'Seleccione una cuenta por pagar directa válida.',
+            'cta_x_pagar_id.min' => 'Seleccione una cuenta por pagar directa válida.',
+            'cta_x_pagar_id.exists' => 'La cuenta por pagar directa debe estar activa y pertenecer a la empresa.',
+        ]);
     }
 
     protected function respuesta_error_guardado(Request $request, $mensaje)
@@ -590,7 +606,9 @@ class CompraController extends TransaccionController
             $datos['valor_impuesto'] = 0;
             $datos['inv_bodega_id'] = 0;
 
-            $cxp_id = Proveedor::get_cuenta_por_pagar($datos['proveedor_id']);
+            $cxp_id = (new \App\Compras\Services\CuentaPorPagarService())->resolver(
+                $datos['proveedor_id'], isset($datos['cta_x_pagar_id']) ? $datos['cta_x_pagar_id'] : null, $datos['core_empresa_id']
+            );
             ContabilidadController::contabilizar_registro2($datos, $cxp_id, $detalle_operacion, 0, abs($total_documento));
         }
 

@@ -71,6 +71,13 @@
 				?>
 
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
+                <div class="row" id="campo_cuenta_por_pagar_directa" style="display:none; margin:5px">
+                    <div class="col-md-6">
+                        {{ Form::bsSelect('cta_x_pagar_id', old('cta_x_pagar_id'), 'Cuenta por pagar directa', \App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
+                        <small>Opcional. Si está vacía, se utiliza la cuenta por pagar del proveedor.</small>
+                    </div>
+                </div>
+
 
 			<!-- Campos adicionales para el proceso de compras -->
 			<!-- 
@@ -218,6 +225,16 @@
 @endsection
 
 @section('scripts')
+    <script>
+        $(function () {
+            function mostrar_cuenta_por_pagar_directa() {
+                $('#campo_cuenta_por_pagar_directa').toggle($('#forma_pago').val() === 'credito');
+            }
+            $('#forma_pago').on('change.cuentaDirecta', mostrar_cuenta_por_pagar_directa);
+            mostrar_cuenta_por_pagar_directa();
+        });
+    </script>
+
     <script src="{{ asset('assets/js/compras/reteica.js?aux=' . uniqid()) }}"></script>
 
 	<script src="{{ asset( 'assets/js/compras/functions_create.js?aux=' . uniqid() )}}"></script>

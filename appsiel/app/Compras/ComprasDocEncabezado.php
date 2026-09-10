@@ -20,6 +20,7 @@ class ComprasDocEncabezado extends Model
 
     //protected $table = 'compras_doc_encabezados';
     protected $fillable = [
+        'cta_x_pagar_id',
         'reteica_retencion_id',
         'core_tipo_transaccion_id',
         'core_tipo_doc_app_id',
@@ -46,6 +47,11 @@ class ComprasDocEncabezado extends Model
         'sincronizado_bot',
         'turno_operativo_id',
     ];
+    public function cuenta_por_pagar_directa()
+    {
+        return $this->belongsTo(\App\Contabilidad\ContabCuenta::class, 'cta_x_pagar_id');
+    }
+
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Proveedor', 'Fact. Proveedor', 'Detalle', 'Valor total',  'Forma de pago', 'Estado'];
 
     /**
@@ -351,6 +357,7 @@ class ComprasDocEncabezado extends Model
                 'compras_doc_encabezados.created_at',
                 'compras_doc_encabezados.updated_at',
                 'compras_doc_encabezados.valor_total',
+                'compras_doc_encabezados.cta_x_pagar_id',
                 'compras_doc_encabezados.reteica_retencion_id',
                 'compras_doc_encabezados.reteica_base',
                 'compras_doc_encabezados.reteica_tasa',

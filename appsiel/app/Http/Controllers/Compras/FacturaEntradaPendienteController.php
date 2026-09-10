@@ -25,6 +25,7 @@ class FacturaEntradaPendienteController extends CompraController
 
     public function store( Request $request )
     {
+        $this->validar_cuenta_por_pagar_directa($request);
         $this->validate($request, ['reteica_retencion_id' => 'integer|min:0']);
         try {
             (new \App\Compras\Services\ReteicaService())->validar_seleccion(

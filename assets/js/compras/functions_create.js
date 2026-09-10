@@ -249,7 +249,7 @@ function seleccionar_proveedor(item_sugerencia)
         $('#fecha_vencimiento').removeAttr( 'readonly' );
         $('#mostrar_medios_recaudos').attr('style','display:none');
     }
-    $('#forma_pago').val( forma_pago );
+    $('#forma_pago').val( forma_pago ).trigger('change.cuentaDirecta');
 
     // Para llenar la fecha de vencimiento
     var fecha = new Date( $('#fecha').val() );
@@ -741,7 +741,7 @@ function reset_campos_formulario()
     $('#proveedor_input').css( 'background-color','#FF8C8C' );
     $('#vendedor_id').val( '' );
     $('#inv_bodega_id').val( '' );
-    $('#forma_pago').val( 'contado' );
+    $('#forma_pago').val( 'contado' ).trigger('change.cuentaDirecta');
     $('#fecha_vencimiento').val( '' );
     $('#lista_precios_id').val( '' );
     $('#lista_descuentos_id').val( '' );

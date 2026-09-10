@@ -1,3 +1,8 @@
+@if($doc_encabezado->cta_x_pagar_id && $doc_encabezado->cuenta_por_pagar_directa)
+<p><strong>Cuenta por pagar directa:</strong>
+    {{ $doc_encabezado->cuenta_por_pagar_directa->codigo }} — {{ $doc_encabezado->cuenta_por_pagar_directa->descripcion }}
+</p>
+@endif
 <div class="table-responsive">
     <table class="table table-bordered table-striped" style="font-size: 13px;">
         {{ Form::bsTableHeader(['Cód.','Producto','U.M.','Cantidad','Precio','Total bruto','Sub-total <br> (Sin IVA)','Dcto.','Total Dcto.','IVA','Total IVA','Total','Acción']) }}
