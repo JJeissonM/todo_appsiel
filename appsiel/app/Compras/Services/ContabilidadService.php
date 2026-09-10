@@ -13,6 +13,9 @@ class ContabilidadService
 {
     public function aplicar_retenciones_por_linea_compras(ComprasDocEncabezado $doc_encabezado)
     {
+        if ($doc_encabezado->estado == 'Anulado') {
+            throw new \InvalidArgumentException('No se pueden contabilizar retenciones de una compra anulada.');
+        }
         $service = new RetencionFuenteService();
         if (!$service->maneja_retenciones_compras($doc_encabezado->fecha)) {
             return false;
@@ -115,6 +118,26 @@ class ContabilidadService
             ['core_tipo_transaccion_id', '=', $doc_encabezado->core_tipo_transaccion_id],
             ['core_tipo_doc_app_id', '=', $doc_encabezado->core_tipo_doc_app_id],
             ['consecutivo', '=', $doc_encabezado->consecutivo]
-        ])->get();
+        ])->where('estado', 'Activo')->where(function ($query) use ($doc_encabezado) {
+            $query->whereIn('compras_doc_registro_id', function ($lineas) use ($doc_encabezado) {
+                $lineas->select('id')->from('compras_doc_registros')
+                    ->where('compras_doc_encabezado_id', $doc_encabezado->id);
+            });
+            if (\Illuminate\Support\Facades\Schema::hasTable('compras_retenciones_liquidaciones')) {
+                $query->orWhereIn('id', function ($liquidaciones) use ($doc_encabezado) {
+                    $liquidaciones->select('contab_registro_retencion_id')->from('compras_retenciones_liquidaciones')
+                        ->where('compras_doc_encabezado_id', $doc_encabezado->id);
+                });
+            }
+            // Retenciones históricas anteriores al control por línea/documento.
+            $query->orWhere(function ($legacy) {
+                $legacy->where('compras_doc_registro_id', 0);
+                if (\Illuminate\Support\Facades\Schema::hasTable('compras_retenciones_liquidaciones')) {
+                    $legacy->whereNotIn('id', function ($liquidaciones) {
+                        $liquidaciones->select('contab_registro_retencion_id')->from('compras_retenciones_liquidaciones');
+                    });
+                }
+            });
+        })->get();
     }
 }

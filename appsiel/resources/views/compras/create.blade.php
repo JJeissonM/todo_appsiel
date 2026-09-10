@@ -105,6 +105,7 @@
 				<input type="hidden" name="saldo_original" id="saldo_original" value="0">
 
 				<input type="hidden" name="valor_total_retefuente" id="valor_total_retefuente" value="0">
+				<input type="hidden" name="reteica_retencion_id" id="reteica_retencion_id" value="0">
 				<input type="hidden" name="retencion_id" id="retencion_id" value="0">
 				<input type="hidden" id="maneja_retenciones_compras" value="{{ $maneja_retenciones_compras ? 1 : 0 }}">
 
@@ -195,7 +196,8 @@
 							</td>
 	            		</tr>
 	            		@endif
-	            		<tr>
+                        @include('compras.incluir.reteica')
+						<tr>
 	            			<td style="text-align: right; font-weight: bold;"> Total factura: &nbsp; </td> 
 							<td>
 								&nbsp;
@@ -216,6 +218,7 @@
 @endsection
 
 @section('scripts')
+    <script src="{{ asset('assets/js/compras/reteica.js?aux=' . uniqid()) }}"></script>
 
 	<script src="{{ asset( 'assets/js/compras/functions_create.js?aux=' . uniqid() )}}"></script>
 
@@ -886,6 +889,7 @@
 				// Total factura  (Sumatoria de precio_total)
 				$('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_factura.toFixed(2) ) );
 
+				calcular_totales();
 				hay_productos = 1;
 			});
 

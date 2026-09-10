@@ -34,6 +34,9 @@ class ProcesoController extends Controller
     public static function recontabilizar_documento( $documento_id )
     {
         $documento = ComprasDocEncabezado::find( $documento_id );
+        if ((float)$documento->reteica_valor > 0) {
+            throw new \InvalidArgumentException('La recontabilización masiva no admite compras con ReteICA. Anule y registre nuevamente la compra para modificar su contabilización.');
+        }
 
         // Recontabilizar la entrada de almacén
         if ( $documento->entrada_almacen_id != 0)

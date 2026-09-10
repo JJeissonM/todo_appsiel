@@ -282,6 +282,14 @@
 
 				<br>
 				<h5> Liquidación de Impuestos y Retenciones </h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ Form::bsSelect('categoria_reteica_id', isset($parametros['categoria_reteica_id']) ? $parametros['categoria_reteica_id'] : 0, 'Categoría de retención ReteICA', \App\Contabilidad\CategoriaRetencion::opciones_campo_select(), ['class'=>'combobox']) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ Form::bsSelect('tercero_reteica_id', isset($parametros['tercero_reteica_id']) ? $parametros['tercero_reteica_id'] : 0, 'Tercero recaudador municipal ReteICA', \App\Core\Tercero::opciones_campo_select(), ['class'=>'combobox']) }}
+                    </div>
+                </div>
 				<div class="row">
 
 					<div class="col-md-6">

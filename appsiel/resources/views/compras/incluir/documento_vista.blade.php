@@ -110,3 +110,10 @@
         </tr>
     </table>
 </div>
+@if((float)$doc_encabezado->reteica_valor > 0)
+<p style="text-align:right">ReteICA: {{ (float)$doc_encabezado->reteica_tasa * 10 }} por mil;
+    base $ {{ number_format($doc_encabezado->reteica_base, 2, ',', '.') }};
+    valor $ {{ number_format($doc_encabezado->reteica_valor, 2, ',', '.') }}
+    @if($doc_encabezado->estado == 'Anulado') (Anulada) @endif
+</p>
+@endif

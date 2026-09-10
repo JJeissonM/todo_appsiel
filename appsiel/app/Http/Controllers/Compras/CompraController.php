@@ -108,6 +108,14 @@ class CompraController extends TransaccionController
      */
     public function store(Request $request)
     {
+        $this->validate($request, ['reteica_retencion_id' => 'integer|min:0']);
+        try {
+            (new \App\Compras\Services\ReteicaService())->validar_seleccion(
+                $request->input('reteica_retencion_id', 0), $request->core_tipo_transaccion_id
+            );
+        } catch (\InvalidArgumentException $e) {
+            return redirect()->back()->withInput()->with('mensaje_error', $e->getMessage());
+        }
         $bodegaValida = InvBodega::where('id', (int)$request->input('inv_bodega_id'))
             ->where('core_empresa_id', (int)Auth::user()->empresa_id)
             ->where('estado', 'Activo')
@@ -143,13 +151,15 @@ class CompraController extends TransaccionController
                 $total_documento -= $total_retenciones;
             }
 
-            $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids($request->all()['lineas_registros_medios_recaudo'], $lineas_registros_originales, $total_documento, 'compras');
+            $request['registros_medio_pago'] = (int)$request->reteica_retencion_id ? [] : (new RegistrosMediosPago())->get_datos_ids($request->all()['lineas_registros_medios_recaudo'], $lineas_registros_originales, $total_documento, 'compras');
 
             CompraController::crear_registros_documento($request, $doc_encabezado);
 
             if ($total_retenciones != 0) {
                 (new ContabilidadService())->aplicar_retenciones_por_linea_compras($doc_encabezado);
             }
+
+            (new \App\Compras\Services\ReteicaService())->contabilizar($doc_encabezado);
 
             return $doc_encabezado;
         });
@@ -462,6 +472,13 @@ class CompraController extends TransaccionController
             $total_documento -= $total_retenciones_documento;
         }
 
+        $total_documento -= (new \App\Compras\Services\ReteicaService())->liquidar_documento($doc_encabezado);
+        if ((int)$doc_encabezado->reteica_retencion_id && isset($datos['lineas_registros_medios_recaudo'])) {
+            $datos['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids(
+                $datos['lineas_registros_medios_recaudo'], $lineas_registros_originales, $total_documento, 'compras'
+            );
+        }
+
         CompraController::contabilizar_movimiento_credito($forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion);
 
         // Crear registro del pago: cuenta por pagar o pago de tesorería
@@ -719,7 +736,7 @@ class CompraController extends TransaccionController
             $valor_retenciones_confirmacion = (float) $lineas_confirmacion->sum('valor_retencion');
         }
 
-        $valor_neto_confirmacion = round($valor_total_confirmacion - $valor_retenciones_confirmacion, 2);
+        $valor_neto_confirmacion = round($valor_total_confirmacion - $valor_retenciones_confirmacion - (float)$doc_encabezado->reteica_valor, 2);
         $factura_es_contado = strtolower((string)$doc_encabezado->forma_pago) == 'contado';
 
         $mostrar_boton_confirmar = false;
@@ -782,7 +799,7 @@ class CompraController extends TransaccionController
             if (Schema::hasColumn('compras_doc_registros', 'valor_retencion')) {
                 $total_documento -= (float)$lineas_registros_collection->sum('valor_retencion');
             }
-            $total_documento = round($total_documento, 2);
+            $total_documento = round($total_documento - (float)$factura->reteica_valor, 2);
 
             $lineas_medios_pago = $request->lineas_registros_medios_recaudo;
             if (empty($lineas_medios_pago) || $lineas_medios_pago == '0') {
@@ -1098,82 +1115,99 @@ class CompraController extends TransaccionController
     */
     public static function anular_factura(Request $request)
     {
-        $factura = ComprasDocEncabezado::find($request->factura_id);
+        return DB::transaction(function () use ($request) {
+            $factura = ComprasDocEncabezado::where('core_empresa_id', Auth::user()->empresa_id)
+                ->where('id', $request->factura_id)->lockForUpdate()->firstOrFail();
+            if ($factura->estado == 'Anulado') {
+                return redirect()->back()->with('mensaje_error', 'La compra ya está anulada.');
+            }
 
-        if ($factura->enviado_electronicamente()) {
-            return redirect('compras/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', 'Documento NO puede ser anulado. Ya fue enviado electrónicamente a la DIAN.');
-        }
+            if ($factura->enviado_electronicamente()) {
+                return redirect('compras/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', 'Documento NO puede ser anulado. Ya fue enviado electrónicamente a la DIAN.');
+            }
 
-        $array_wheres = [
-            'core_empresa_id' => $factura->core_empresa_id,
-            'core_tipo_transaccion_id' => $factura->core_tipo_transaccion_id,
-            'core_tipo_doc_app_id' => $factura->core_tipo_doc_app_id,
-            'consecutivo' => $factura->consecutivo
-        ];
+            $array_wheres = [
+                'core_empresa_id' => $factura->core_empresa_id,
+                'core_tipo_transaccion_id' => $factura->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => $factura->core_tipo_doc_app_id,
+                'consecutivo' => $factura->consecutivo
+            ];
 
-        // Verificar si la factura tiene abonos, si tiene no se puede eliminar
-        $cantidad = CxpAbono::where('doc_cxp_transacc_id', $factura->core_tipo_transaccion_id)
-            ->where('doc_cxp_tipo_doc_id', $factura->core_tipo_doc_app_id)
-            ->where('doc_cxp_consecutivo', $factura->consecutivo)
-            ->count();
+            // Verificar si la factura tiene abonos, si tiene no se puede eliminar
+            $cantidad = CxpAbono::where('core_empresa_id', $factura->core_empresa_id)
+                ->where('doc_cxp_transacc_id', $factura->core_tipo_transaccion_id)
+                ->where('doc_cxp_tipo_doc_id', $factura->core_tipo_doc_app_id)
+                ->where('doc_cxp_consecutivo', $factura->consecutivo)
+                ->count();
 
-        if ($cantidad != 0) {
-            return redirect('compras/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', 'Factura NO puede ser eliminada. Tiene Abonos aplicados.');
-        }
+            if ($cantidad != 0) {
+                return redirect('compras/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', 'Factura NO puede ser eliminada. Tiene Abonos aplicados.');
+            }
 
-        // Verificar SI tiene notas crédito aplicada a factura
-        $cantidad = ComprasDocEncabezado::where('compras_doc_relacionado_id', $factura->id)->count();
+            // Verificar SI tiene notas crédito aplicada a factura
+            $cantidad = ComprasDocEncabezado::where('compras_doc_relacionado_id', $factura->id)->where('estado', '<>', 'Anulado')->count();
 
-        if ($cantidad != 0) {
-            return redirect('compras/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', 'Factura NO puede ser eliminada. Tiene Notas crédito aplicadas.');
-        }
+            if ($cantidad != 0) {
+                return redirect('compras/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', 'Factura NO puede ser eliminada. Tiene Notas crédito aplicadas.');
+            }
 
 
-        $modificado_por = Auth::user()->email;
+            $modificado_por = Auth::user()->email;
 
-        // 1ro. Anular documento asociado de inventarios
-        // Obtener las entradas de almacén relacionadas con la factura y anularlas o dejarlas en estado Pendiente
-        $ids_documentos_relacionados = explode(',', $factura->entrada_almacen_id);
-        $cant_registros = count($ids_documentos_relacionados);
-        for ($i = 0; $i < $cant_registros; $i++) {
-            $entrada_almacen = InvDocEncabezado::find($ids_documentos_relacionados[$i]);
-            if ($entrada_almacen != null) {
-                if ($request->anular_entrada_almacen) //  anular_entrada_almacen es tipo boolean
-                {
-                    // Antes de anular la entrada de almacén, por cada producto ingresado en la factura
-                    // Validar saldos negativos en movimientos de inventarios
-                    $linea_saldo_negativo = InvMovimiento::validar_saldo_movimientos_posteriores_todas_lineas($entrada_almacen, 'no_fecha', 'anular', 'salida'); // al anular la entrada de almacén se hace una salida de inventarios
-
-                    if ($linea_saldo_negativo != '0') {
-                        return redirect('compras/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', $linea_saldo_negativo);
+            // 1ro. Anular documento asociado de inventarios
+            // Obtener las entradas de almacén relacionadas con la factura y anularlas o dejarlas en estado Pendiente
+            $ids_documentos_relacionados = explode(',', $factura->entrada_almacen_id);
+            if ($request->anular_entrada_almacen) {
+                foreach ($ids_documentos_relacionados as $entradaId) {
+                    $entrada = InvDocEncabezado::find($entradaId);
+                    if (!$entrada) { continue; }
+                    $error = InvMovimiento::validar_saldo_movimientos_posteriores_todas_lineas($entrada, 'no_fecha', 'anular', 'salida');
+                    if ($error != '0') {
+                        return redirect()->back()->with('mensaje_error', $error);
                     }
-
-                    InventarioController::anular_documento_inventarios($entrada_almacen->id);
-                } else {
-                    $entrada_almacen->update(['estado' => 'Pendiente', 'modificado_por' => $modificado_por]);
                 }
             }
-        }
+            $cant_registros = count($ids_documentos_relacionados);
+            for ($i = 0; $i < $cant_registros; $i++) {
+                $entrada_almacen = InvDocEncabezado::find($ids_documentos_relacionados[$i]);
+                if ($entrada_almacen != null) {
+                    if ($request->anular_entrada_almacen) //  anular_entrada_almacen es tipo boolean
+                    {
+                        InventarioController::anular_documento_inventarios($entrada_almacen->id);
+                    } else {
+                        $entrada_almacen->update(['estado' => 'Pendiente', 'modificado_por' => $modificado_por]);
+                    }
+                }
+            }
 
-        // 2do. Borrar registros contables del documento
-        ContabMovimiento::where($array_wheres)->delete();
+            // 2do. Borrar registros contables del documento
+            ContabMovimiento::where($array_wheres)->delete();
 
-        // 3ro. Se elimina el documento del movimimeto de cuentas por pagar
-        CxpMovimiento::where($array_wheres)->delete();
+            // 3ro. Se elimina el documento del movimimeto de cuentas por pagar
+            CxpMovimiento::where($array_wheres)->delete();
 
-        // 4to. Se elimina el documento del movimimeto de Tesorería
-        TesoMovimiento::where($array_wheres)->delete();
+            // 4to. Se elimina el documento del movimimeto de Tesorería
+            TesoMovimiento::where($array_wheres)->delete();
 
-        // 5to. Se elimina el movimiento de compras
-        ComprasMovimiento::where($array_wheres)->delete();
+            // 5to. Se elimina el movimiento de compras
+            ComprasMovimiento::where($array_wheres)->delete();
 
-        // 6to. Se marcan como anulados los registros del documento
-        ComprasDocRegistro::where('compras_doc_encabezado_id', $factura->id)->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
+            $retencionIds = (new ContabilidadService())->get_retenciones($factura)->pluck('id')->all();
+            \App\Contabilidad\RegistroRetencion::whereIn('id', $retencionIds)
+                ->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
+            if (Schema::hasTable('compras_retenciones_liquidaciones')) {
+                \App\Compras\ComprasRetencionLiquidacion::where('compras_doc_encabezado_id', $factura->id)
+                    ->where('estado', 'Activo')->update(['estado' => 'Anulado', 'aplicada' => 0, 'modificado_por' => $modificado_por]);
+            }
 
-        // 7mo. Se marca como anulado el documento
-        $factura->update(['estado' => 'Anulado', 'entrada_almacen_id' => '', 'modificado_por' => $modificado_por]);
+            // 6to. Se marcan como anulados los registros del documento
+            ComprasDocRegistro::where('compras_doc_encabezado_id', $factura->id)->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
 
-        return redirect('compras/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Factura de compra ANULADA correctamente.');
+            // 7mo. Se marca como anulado el documento
+            $factura->update(['estado' => 'Anulado', 'entrada_almacen_id' => '', 'modificado_por' => $modificado_por]);
+
+            return redirect('compras/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Factura de compra ANULADA correctamente.');
+        });
     }
 
 
@@ -1357,6 +1391,10 @@ class CompraController extends TransaccionController
 
         $linea_registro = ComprasDocRegistro::find($request->linea_factura_id);
         $doc_encabezado = ComprasDocEncabezado::find($linea_registro->compras_doc_encabezado_id);
+        if ((float)$doc_encabezado->reteica_valor > 0) {
+            return redirect()->back()->with('mensaje_error', 'Esta compra tiene ReteICA contabilizada. Anule y registre nuevamente el documento para modificar sus importes.');
+        }
+
 
         // NO ACTUALIZA BIEN LA CONTABILIDAD DEL MOV DE TESORERIA,POR LOS MEDIOS DE RECAUDOS
         //return redirect( 'compras/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','En estos momentos no se pueden editar registros. Consultar con el administrador.');

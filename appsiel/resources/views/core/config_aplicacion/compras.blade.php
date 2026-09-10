@@ -37,8 +37,33 @@
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
 				<h4> Parámetros para transacciones </h4>
-				<hr>
+				<hr>				
 
+				<h5> Parámetros generales </h5>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$maneja_retenciones_fuente = 0;
+								if( isset($parametros['maneja_retenciones_fuente'] ) )
+								{
+									$maneja_retenciones_fuente = $parametros['maneja_retenciones_fuente'];
+								}
+							?>
+							{{ Form::bsSelect('maneja_retenciones_fuente', $maneja_retenciones_fuente, 'Manejar retenciones por compras', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<br>
 				<h5> Para entradas de Almacén </h5>
 				<div class="row">
 

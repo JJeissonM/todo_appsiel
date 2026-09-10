@@ -20,7 +20,7 @@
                 $gran_total_documento_mas_iva = 0;
             ?>
                @foreach( $entradas as $linea)         
-                    <tr class="fila-{{$j}}" id="{{ $linea->id }}">
+                    <tr class="fila-{{$j}}" id="{{ $linea->id }}" data-base-ica="{{ $linea->total_documento }}" data-total-compra="{{ $linea->total_documento_mas_iva }}">
                         <td style="display: none;"> {{ $linea->id }} </td>
                         <td> {{ $linea->tercero_nombre_completo }} </td>
                         <td> {{ $linea->documento_transaccion_prefijo_consecutivo }} </td>

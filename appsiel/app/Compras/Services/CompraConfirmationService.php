@@ -70,6 +70,7 @@ class CompraConfirmationService
                     (new ContabilidadService())->aplicar_retenciones_por_linea_compras($documento);
                 }
 
+                (new ReteicaService())->contabilizar($documento);
                 $this->ensureAccountingIsBalanced($documento);
             });
         };
@@ -226,6 +227,7 @@ class CompraConfirmationService
         $documento->valor_total = $total_documento;
         $documento->save();
 
+        $total_documento -= (new ReteicaService())->liquidar_documento($documento);
         $datos['valor_total_retefuente'] = $total_retenciones;
         if ($total_retenciones != 0) {
             $total_documento -= $total_retenciones;

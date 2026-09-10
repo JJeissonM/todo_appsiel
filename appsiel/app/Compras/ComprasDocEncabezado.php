@@ -20,6 +20,7 @@ class ComprasDocEncabezado extends Model
 
     //protected $table = 'compras_doc_encabezados';
     protected $fillable = [
+        'reteica_retencion_id',
         'core_tipo_transaccion_id',
         'core_tipo_doc_app_id',
         'consecutivo',
@@ -350,6 +351,10 @@ class ComprasDocEncabezado extends Model
                 'compras_doc_encabezados.created_at',
                 'compras_doc_encabezados.updated_at',
                 'compras_doc_encabezados.valor_total',
+                'compras_doc_encabezados.reteica_retencion_id',
+                'compras_doc_encabezados.reteica_base',
+                'compras_doc_encabezados.reteica_tasa',
+                'compras_doc_encabezados.reteica_valor',
                 'compras_doc_encabezados.doc_proveedor_prefijo',
                 'compras_doc_encabezados.doc_proveedor_consecutivo',
                 'compras_doc_encabezados.forma_pago',

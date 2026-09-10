@@ -21,6 +21,7 @@ class RetencionFuenteService
         }
 
         return Retencion::where('estado', 'Activo')
+            ->where('categoria_retenciones_id', '<>', (int)config('contabilidad.categoria_reteica_id', 0))
             ->select('id', 'descripcion', 'nombre_corto', 'tasa_retencion')
             ->orderBy('descripcion')
             ->get();

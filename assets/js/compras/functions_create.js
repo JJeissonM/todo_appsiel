@@ -114,6 +114,13 @@ function calcular_totales()
         }
 
     });
+    $('#tabla_registros_documento tr[data-base-ica]').each(function () {
+        var base = parseFloat($(this).attr('data-base-ica')) || 0;
+        var total = parseFloat($(this).attr('data-total-compra')) || 0;
+        subtotal += base;
+        total_factura += total;
+        total_impuestos += total - base;
+    });
     $('#total_cantidad').text( new Intl.NumberFormat("de-DE").format( cantidad ) );
 
     // Subtotal (Sumatoria de base_impuestos por cantidad)
@@ -129,8 +136,10 @@ function calcular_totales()
     $('#valor_total_retefuente').val( total_retencion.toFixed(2) );
     $('#retencion_id').val(0);
 
+    var total_reteica = typeof calcular_reteica === 'function' ? calcular_reteica(subtotal) : 0;
+
     // Total factura neta
-    $('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( (total_factura - total_retencion).toFixed(2) ) );
+    $('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( (total_factura - total_retencion - total_reteica).toFixed(2) ) );
     
 }
 
@@ -764,6 +773,7 @@ function reset_tabla_ingreso()
     $('#total_factura').text( '$ 0' );
     $('#lbl_total_retefuente').text( '-$ 0' );
     $('#valor_total_retefuente').val(0);
+    $('#reteica_reset').trigger('click');
 
 
     reset_linea_ingreso_default()
@@ -860,6 +870,10 @@ function calcular_precio_total()
 
 function validar_todo()
 {
+    if ($('#reteica_editor').is(':visible')) {
+        alert('Confirme o elimine la edición de ReteICA antes de guardar.');
+        return false;
+    }
     if ( validar_documento_proveedor() ) { return false; }
 
     if ( !validar_bodega_compra() ) { return false; }

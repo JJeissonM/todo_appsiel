@@ -25,18 +25,32 @@ class FacturaEntradaPendienteController extends CompraController
 
     public function store( Request $request )
     {
-        $datos = $request->all();
-        
-        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
-        $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
+        $this->validate($request, ['reteica_retencion_id' => 'integer|min:0']);
+        try {
+            (new \App\Compras\Services\ReteicaService())->validar_seleccion(
+                $request->input('reteica_retencion_id', 0), $request->core_tipo_transaccion_id
+            );
+        } catch (\InvalidArgumentException $e) {
+            return redirect()->back()->withInput()->with('mensaje_error', $e->getMessage());
+        }
+        $doc_encabezado = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $datos = $request->all();
 
-        $lineas_registros = json_decode( $request->lineas_registros );
+            $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+            $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
-        $registros_medio_pago = new RegistrosMediosPago;
-        
-        $datos['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], null, self::get_total_documento_desde_lineas_registros_desde_entrada( $doc_encabezado, $lineas_registros ), 'compras' );
-        
-        CompraController::crear_lineas_registros_compras( $datos, $doc_encabezado, $lineas_registros );
+            $lineas_registros = json_decode( $request->lineas_registros );
+
+            $registros_medio_pago = new RegistrosMediosPago;
+
+            $datos['registros_medio_pago'] = (int)$request->reteica_retencion_id ? [] : $registros_medio_pago->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], null, self::get_total_documento_desde_lineas_registros_desde_entrada( $doc_encabezado, $lineas_registros ), 'compras' );
+
+            CompraController::crear_lineas_registros_compras( $datos, $doc_encabezado, $lineas_registros );
+
+            (new \App\Compras\Services\ContabilidadService())->aplicar_retenciones_por_linea_compras($doc_encabezado);
+            (new \App\Compras\Services\ReteicaService())->contabilizar($doc_encabezado);
+            return $doc_encabezado;
+        });
 
         return redirect('compras/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
     }
