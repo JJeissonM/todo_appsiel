@@ -130,22 +130,7 @@ class DocSoporte
          $responseBody = $e->getResponse() ? (string) $e->getResponse()->getBody() : 'No response body';
          \Log::warning('Error 4xx de OSEI al enviar documento soporte. HTTP ' . $statusCode . '. Respuesta: ' . $responseBody);
 
-         $decodedBody = json_decode($responseBody, true);
-         $errorMessage = '';
-
-         if (is_array($decodedBody)) {
-            if (!empty($decodedBody['message'])) {
-               $errorMessage = $decodedBody['message'];
-            } elseif (!empty($decodedBody['error'])) {
-               $errorMessage = $decodedBody['error'];
-            } elseif (!empty($decodedBody['errors'])) {
-               $errorMessage = is_array($decodedBody['errors']) ? json_encode($decodedBody['errors'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $decodedBody['errors'];
-            } else {
-               $errorMessage = json_encode($decodedBody, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            }
-         } else {
-            $errorMessage = trim($responseBody);
-         }
+         $errorMessage = $this->decodeErrorResponseBody($responseBody);
 
          if ($errorMessage === '') {
             $errorMessage = 'HTTP ' . $statusCode . ' sin detalle retornado por OSEI.';
@@ -156,10 +141,22 @@ class DocSoporte
             'contenido' => "Error de Empresa: " . $errorMessage
          ];
       } catch (\GuzzleHttp\Exception\ServerException $e) {
-         // Esto captura errores 5xx
+         // Esto captura errores 5xx. Antes se descartaba el cuerpo de la respuesta
+         // y siempre se mostraba "error de conexión", ocultando el motivo que OSEI
+         // sí venía informando (por ejemplo, un certificado digital vencido).
+         $statusCode = $e->getResponse() ? $e->getResponse()->getStatusCode() : null;
+         $responseBody = $e->getResponse() ? (string) $e->getResponse()->getBody() : 'No response body';
+         \Log::error('Error 5xx de OSEI al enviar documento soporte. HTTP ' . $statusCode . '. Respuesta: ' . $responseBody);
+
+         $errorMessage = $this->decodeErrorResponseBody($responseBody);
+
+         if ($errorMessage === '') {
+            $errorMessage = 'Este es un error de conexión, intente nuevamente.';
+         }
+
          return (object)[
             'tipo' => 'mensaje_error',
-            'contenido' => "Error de servidor: Este es un error de conexión intente nuevamente."
+            'contenido' => "Error de servidor OSEI: " . $errorMessage
          ];
       } catch (\GuzzleHttp\Exception\RequestException $e) {
          // Esto captura errores de red, DNS, timeouts, etc.
@@ -461,5 +458,37 @@ class DocSoporte
       }
 
       return $json->support_doc;
+   }
+
+   /**
+    * Extrae el mensaje de error del cuerpo devuelto por OSEI.
+    *
+    * Mismo criterio que FacturaGeneralOsei: OSEI informa la causa en 'message'
+    * (por ejemplo, un certificado digital vencido) y hay que mostrarla al usuario
+    * en lugar de un texto genérico.
+    */
+   protected function decodeErrorResponseBody($responseBody)
+   {
+      $decodedBody = json_decode($responseBody, true);
+
+      if (!is_array($decodedBody)) {
+         return trim($responseBody);
+      }
+
+      if (!empty($decodedBody['message'])) {
+         return $decodedBody['message'];
+      }
+
+      if (!empty($decodedBody['error'])) {
+         return $decodedBody['error'];
+      }
+
+      if (!empty($decodedBody['errors'])) {
+         return is_array($decodedBody['errors'])
+            ? json_encode($decodedBody['errors'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+            : $decodedBody['errors'];
+      }
+
+      return json_encode($decodedBody, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
    }
 }
