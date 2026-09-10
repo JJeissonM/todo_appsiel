@@ -114,15 +114,22 @@ class CompraController extends TransaccionController
                 $request->input('reteica_retencion_id', 0), $request->core_tipo_transaccion_id
             );
         } catch (\InvalidArgumentException $e) {
-            return redirect()->back()->withInput()->with('mensaje_error', $e->getMessage());
+            return $this->respuesta_error_guardado($request, $e->getMessage());
         }
-        $bodegaValida = InvBodega::where('id', (int)$request->input('inv_bodega_id'))
-            ->where('core_empresa_id', (int)Auth::user()->empresa_id)
-            ->where('estado', 'Activo')
-            ->exists();
+        $bodega_id = (int)$request->input('inv_bodega_id');
+        if ($bodega_id <= 0) {
+            $bodega_id = (int)config('inventarios.item_bodega_principal_id');
+        }
+
+        $bodegaValida = InvBodega::where('id', $bodega_id)->exists();
         if (!$bodegaValida) {
-            return redirect()->back()->withInput()
-                ->with('mensaje_error', 'Debe seleccionar una bodega activa de la empresa para registrar la factura de compra.');
+            return $this->respuesta_error_guardado($request, 'Debe seleccionar una bodega activa de la empresa para registrar la factura de compra.');
+        }
+        $request['inv_bodega_id'] = $bodega_id;
+        try {
+            $this->validar_documento_entrada_almacen();
+        } catch (\InvalidArgumentException $e) {
+            return $this->respuesta_error_guardado($request, $e->getMessage());
         }
         $lineas_registros_originales = json_decode($request->all()['lineas_registros']);
         if (is_array($lineas_registros_originales)) {
@@ -164,7 +171,25 @@ class CompraController extends TransaccionController
             return $doc_encabezado;
         });
 
-        return redirect('compras/' . $doc_encabezado->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+        return $this->respuesta_compra_guardada($request, $doc_encabezado);
+    }
+
+    protected function respuesta_error_guardado(Request $request, $mensaje)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['message' => $mensaje], 422);
+        }
+        return redirect()->back()->withInput()->with('mensaje_error', $mensaje);
+    }
+
+    protected function respuesta_compra_guardada(Request $request, $documento)
+    {
+        $url = url('compras/' . $documento->id) . '?id=' . $request->url_id
+            . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion;
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['redirect_url' => $url]);
+        }
+        return redirect($url);
     }
 
     public function get_total_documento_desde_lineas_registros(array $lineas_registros)
@@ -228,8 +253,18 @@ class CompraController extends TransaccionController
         Este método crea el documento de salida de inventarios de los productos vendidos (Remisión de compras)
         WARNING: Se asignan manualmente algunos campos de a tablas inv_doc_inventarios  
     */
+    public function validar_documento_entrada_almacen()
+    {
+        $tipo = (int)config('compras.ea_tipo_doc_app_id');
+        if (!$tipo || !\App\Core\TipoDocApp::where('id', $tipo)->where('estado', 'Activo')->exists()) {
+            throw new \InvalidArgumentException('Configure un Documento para entradas de almacén activo en Configuración de Compras. No se ha guardado la compra.');
+        }
+        return $tipo;
+    }
+
     public function crear_entrada_almacen(Request $request)
     {
+        $this->validar_documento_entrada_almacen();
         // Llamar a los parámetros del archivo de configuración
         $parametros = config('compras');
 

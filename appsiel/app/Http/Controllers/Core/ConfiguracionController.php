@@ -255,6 +255,15 @@ class ConfiguracionController extends ModeloController
     public function guardar_config(Request $request)
     {
         $app = Aplicacion::find( $request->url_id );
+        if ($app->app == 'compras') {
+            $this->validate($request, [
+                'ea_tipo_doc_app_id' => 'required|integer|min:1|exists:core_tipos_docs_apps,id,estado,Activo',
+            ], [
+                'ea_tipo_doc_app_id.required' => 'Seleccione el documento para entradas de almacén.',
+                'ea_tipo_doc_app_id.exists' => 'El documento para entradas de almacén debe existir y estar activo.',
+            ]);
+        }
+
 
         $array = [];
         // NOTA: La variable que no sea enviada en el request será borrada del archivo de configuración

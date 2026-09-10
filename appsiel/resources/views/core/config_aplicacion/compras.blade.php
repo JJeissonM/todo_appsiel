@@ -106,7 +106,7 @@
 									$ea_tipo_doc_app_id = $parametros['ea_tipo_doc_app_id'];
 								}
 							?>
-							{{ Form::bsSelect('ea_tipo_doc_app_id', $ea_tipo_doc_app_id, 'Documento para entradas de almacén', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('ea_tipo_doc_app_id', $ea_tipo_doc_app_id, 'Documento para entradas de almacén', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 

@@ -710,6 +710,11 @@
 
 			});
 
+            $('#form_create').on('submit', function (event) {
+                event.preventDefault();
+                $('#btn_guardar').trigger('click');
+            });
+
 			// GUARDAR EL FORMULARIO
 			$('#btn_guardar').click(function(event){
 				event.preventDefault();				
@@ -738,19 +743,19 @@
 					return false;
 				}
 
-				// Desactivar el click del botón
-				$( this ).off( event );
-				
-				$('#linea_ingreso_default').remove();
+                if ($('#form_create').data('guardando-compra')) { return; }
 
 				if ( $('#tipo_transaccion').val() == 'factura_directa' ) 
 				{
 
 					// Se transfoma la tabla a formato JSON a través de un plugin JQuery
-					var table = $('#ingreso_registros').tableToJSON();
+					var fila_ingreso = $('#linea_ingreso_default');
+                    var ignorar_anterior = fila_ingreso.data('ignore');
+                    fila_ingreso.data('ignore', true);
+                    var table = $('#ingreso_registros').tableToJSON();
+                    fila_ingreso.data('ignore', ignorar_anterior === undefined ? false : ignorar_anterior);
 
-			 		// No se puede enviar controles disabled
-			 		$('#fecha').removeAttr('disabled');
+
 				}else{
 
 					var table = $('#tabla_registros_documento').tableToJSON();					
@@ -767,8 +772,7 @@
 		 		$('#lineas_registros_medios_recaudo').val( JSON.stringify(tabla_recaudos) );
 				
 
-		 		// Se envía el formulario
-				$('#form_create').submit();
+                enviar_formulario_compra();
 			});
 
 			function validar_medio_pago_factura_contado()

@@ -31,7 +31,7 @@ class FacturaEntradaPendienteController extends CompraController
                 $request->input('reteica_retencion_id', 0), $request->core_tipo_transaccion_id
             );
         } catch (\InvalidArgumentException $e) {
-            return redirect()->back()->withInput()->with('mensaje_error', $e->getMessage());
+            return $this->respuesta_error_guardado($request, $e->getMessage());
         }
         $doc_encabezado = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
             $datos = $request->all();
@@ -52,7 +52,7 @@ class FacturaEntradaPendienteController extends CompraController
             return $doc_encabezado;
         });
 
-        return redirect('compras/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
+        return $this->respuesta_compra_guardada($request, $doc_encabezado);
     }
 
     

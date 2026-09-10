@@ -913,3 +913,52 @@ function validar_bodega_compra()
 
     return true;
 }
+
+// Conserva el DOM completo durante la validación del servidor y permite corregir y reintentar.
+function enviar_formulario_compra()
+{
+    var formulario = $('#form_create');
+    if (formulario.data('guardando-compra')) { return; }
+    var fecha = $('#fecha');
+    var fecha_deshabilitada = fecha.prop('disabled');
+    fecha.prop('disabled', false);
+    var datos = formulario.serialize();
+    fecha.prop('disabled', fecha_deshabilitada);
+    formulario.data('guardando-compra', true);
+    $('#btn_guardar').prop('disabled', true);
+    $('#div_cargando').show();
+
+    return $.ajax({
+        url: formulario.attr('action'),
+        type: 'POST',
+        data: datos,
+        dataType: 'json',
+        headers: { Accept: 'application/json' }
+    }).done(function (respuesta) {
+        if (respuesta && respuesta.redirect_url) {
+            window.location.assign(respuesta.redirect_url);
+        } else {
+            Swal.fire({icon: 'warning', title: 'No se pudo verificar el guardado',
+                text: 'Los datos siguen en pantalla. Verifique si la compra se registró antes de intentar guardarla nuevamente.'});
+        }
+    }).fail(function (xhr) {
+        var respuesta = xhr.responseJSON || {};
+        var mensaje = respuesta.message;
+        if (!mensaje && xhr.status === 422) {
+            var errores = respuesta.errors || respuesta;
+            var mensajes = [];
+            $.each(errores, function (campo, errores_campo) {
+                if (Array.isArray(errores_campo)) { mensajes = mensajes.concat(errores_campo); }
+            });
+            mensaje = mensajes.join('\n');
+        }
+        if (!mensaje) {
+            mensaje = 'No se pudo completar el guardado. Los datos siguen en pantalla. Verifique la conexión y si la compra se registró antes de reintentar.';
+        }
+        Swal.fire({icon: 'error', title: 'No se pudo guardar la compra', text: mensaje});
+    }).always(function () {
+        formulario.data('guardando-compra', false);
+        $('#btn_guardar').prop('disabled', false);
+        $('#div_cargando').hide();
+    });
+}

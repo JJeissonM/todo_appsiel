@@ -1087,11 +1087,17 @@ class InventarioController extends TransaccionController
                                 ->take($cantidad_a_mostrar);
                 break;
             case 'id':
-                $operador = 'LIKE';
-                $texto_busqueda = Input::get('texto_busqueda') . '%';
+            case 'referencia':
+                $texto_busqueda = trim(Input::get('texto_busqueda'));
+                $referencia_busqueda = '%' . str_replace(' ', '%', $texto_busqueda) . '%';
 
                 $producto = InvProducto::where( $array_wheres )
-                                    ->where($campo_busqueda, $operador, $texto_busqueda)
+                                    ->where(function ($query) use ($campo_busqueda, $texto_busqueda, $referencia_busqueda) {
+                                        $query->where('referencia', 'LIKE', $referencia_busqueda);
+                                        if ($campo_busqueda == 'id') {
+                                            $query->orWhere('id', 'LIKE', $texto_busqueda . '%');
+                                        }
+                                    })
                                     ->select( 
                                             DB::raw('CONCAT( descripcion, " ", referencia ) AS nueva_cadena'),
                                             'id',
