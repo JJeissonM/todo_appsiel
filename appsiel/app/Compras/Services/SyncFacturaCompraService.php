@@ -73,10 +73,13 @@ class SyncFacturaCompraService
                     );
 
                     return [
-                        'cufe'                      => $cufe,
-                        'estado'                    => 'procesado',
-                        'compras_doc_encabezado_id' => $encabezado->consecutivo,
-                        'proveedor_encontrado'      => !is_null($proveedor),
+                        'cufe'                 => $cufe,
+                        'estado'               => 'procesado',
+                        // El BOT muestra el documento tal como se ve en el ERP
+                        // ("FC 67"), no el id de compras_doc_encabezados.
+                        'documento'            => $this->etiqueta_documento($encabezado),
+                        'consecutivo'          => $encabezado->consecutivo,
+                        'proveedor_encontrado' => !is_null($proveedor),
                     ];
                 });
 
@@ -217,6 +220,22 @@ class SyncFacturaCompraService
             'valor_total'                 => $this->calcular_total_factura($invoice['items']),
             'creado_por'                  => $creado_por,
         ]);
+    }
+
+    /**
+     * Etiqueta del documento como la muestra el ERP: prefijo + consecutivo ("FC 67").
+     *
+     * Se apoya en get_label_documento() del modelo para no tener dos formas
+     * distintas de nombrar el mismo documento. Si faltara el tipo de documento,
+     * se devuelve al menos el consecutivo en lugar de romper la sincronización.
+     */
+    private function etiqueta_documento(ComprasDocEncabezado $encabezado): string
+    {
+        if (!$encabezado->tipo_documento_app) {
+            return (string) $encabezado->consecutivo;
+        }
+
+        return $encabezado->get_label_documento();
     }
 
     private function getFacturaCompraDocumentConfig(): array
