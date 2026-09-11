@@ -40,6 +40,11 @@
 					<br/>
 					{{ Form::select('core_tercero_id',$terceros,null,['class'=>'combobox','id'=>'core_terecero_id']) }}
 				</div>
+				<div class="col-sm-2">
+					{{ Form::label('agrupar_por_cuenta','Agrupar por cuenta') }}
+					<br/>
+					{{ Form::select('agrupar_por_cuenta',['0'=>'No','1'=>'Sí'],null,['id'=>'agrupar_por_cuenta']) }}
+				</div>
 			</div>
 
 			<div class="row">
