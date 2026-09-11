@@ -143,8 +143,11 @@ class RegistroDeCheque extends TesoDocEncabezado
             $tipo_operacion = $linea->tipo_operacion_id_cheque;
             
             $datos['teso_encabezado_id'] = $doc_encabezado->id;
+            $datos['core_tipo_transaccion_id'] = $doc_encabezado->core_tipo_transaccion_id;
+            $datos['core_tipo_doc_app_id'] = $doc_encabezado->core_tipo_doc_app_id;
             $datos['core_tercero_id'] = $doc_encabezado->core_tercero_id;
             $datos['core_empresa_id'] = $doc_encabezado->core_empresa_id;
+            $datos['codigo_referencia_tercero'] = $doc_encabezado->codigo_referencia_tercero;
             $datos['fecha'] = $doc_encabezado->fecha;
             $datos['teso_motivo_id'] = (int)$linea->teso_motivo_id_cheque;
             $datos['teso_medio_recaudo_id'] = $teso_medio_recaudo_id;

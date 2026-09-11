@@ -168,6 +168,7 @@ class PagoCxpController extends TransaccionController
                     'propio'
                 );
 
+                $this->validar_balance_contable($doc);
                 $doc->actualizar_valor_total();
 
                 return $doc;
@@ -201,6 +202,27 @@ class PagoCxpController extends TransaccionController
 
         // se llama la vista de PagoCxpController@show
         return redirect($urlDocumento);
+    }
+
+    protected function validar_balance_contable($doc_encabezado)
+    {
+        $filtros = [
+            'core_tipo_transaccion_id' => (int)$doc_encabezado->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => (int)$doc_encabezado->core_tipo_doc_app_id,
+            'consecutivo' => (int)$doc_encabezado->consecutivo,
+            'core_empresa_id' => (int)$doc_encabezado->core_empresa_id
+        ];
+
+        $debitos = round((float)ContabMovimiento::where($filtros)->sum('valor_debito'), 2);
+        $creditos = round(abs((float)ContabMovimiento::where($filtros)->sum('valor_credito')), 2);
+
+        if (abs($debitos - $creditos) > 0.01) {
+            throw new \Exception(
+                'El pago no fue guardado porque el asiento contable está descuadrado. ' .
+                'Débitos: $' . number_format($debitos, 2, ',', '.') .
+                '; créditos: $' . number_format($creditos, 2, ',', '.') . '.'
+            );
+        }
     }
 
     public function almacenar_registros_cxp( Request $request, $doc_encabezado )
@@ -434,13 +456,41 @@ class PagoCxpController extends TransaccionController
     {
         $items = [];
 
+        foreach ($registros as $registro) {
+
+        dd($registro);
+
+            $valor = (float) $registro->valor;
+            $items[] = [
+                'Account' => (string) $registro->motivo_id,
+                'CO' => !empty($registro->caja) ? (string) $registro->caja : '-',
+                'ThirdParty' => (string) $registro->numero_identificacion,
+                'Reference' => !empty($registro->medio_recaudo) ? (string) $registro->medio_recaudo : '-',
+                'Debit' => $valor >= 0 ? $this->format_apm_money($valor) : $this->format_apm_money(0),
+                'Credit' => $valor < 0 ? $this->format_apm_money(abs($valor)) : $this->format_apm_money(0)
+            ];
+        }
+
+        
+
         $doc_pagados = CxpAbono::get_documentos_abonados($encabezado);
 
         foreach ($doc_pagados as $registro) {
             $valor = (float) $registro->abono;
 
+            $contab_mov = ContabMovimiento::where([
+                    'core_tercero_id' => $registro->core_tercero_id,
+                    'core_tipo_transaccion_id' => $registro->doc_cxp_transacc_id,
+                    'core_tipo_doc_app_id' => $registro->doc_cxp_tipo_doc_id,
+                    'consecutivo' => $registro->doc_cxp_consecutivo,
+                    'valor_debito' => $valor
+                ])
+                ->first();
+
+            $cuenta_code = is_null($contab_mov) ? 'Cta Contable null' : $contab_mov->cuenta->codigo;
+
             $items[] = [
-                'Account' => (string) $registro->doc_cxp_consecutivo,
+                'Account' => (string) $cuenta_code,
                 'CO' => '-',
                 'ThirdParty' => (string) $registro->numero_identificacion,
                 'Reference' => (string) $registro->documento_prefijo_consecutivo,

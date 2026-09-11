@@ -8,6 +8,10 @@ use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\ControlCheque;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMedioRecaudoDestino;
+use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\TesoMotivo;
+use App\Tesoreria\RegistroDeCheque;
+use App\Contabilidad\ContabMovimiento;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
@@ -177,6 +181,90 @@ class ChequeraServiceTest extends TestCase
         $this->assertSame('Emitido', $cheque->estado);
         $this->assertSame($inicio, (int)$chequera->fresh()->consecutivo_actual);
         $this->assertTrue($documento->cheques_relacionados_pagos()->contains('id', $cheque->id));
+    }
+
+    public function test_registro_de_chequera_conserva_referencias_y_contabiliza_la_cuenta_bancaria()
+    {
+        config(['tesoreria.modalidad_cheques_pago' => 'usar_chequera']);
+
+        $usuario = User::whereNotNull('empresa_id')->first();
+        $this->be($usuario);
+
+        $cuentasPermitidas = TesoCuentaBancaria::get_cuentas_permitidas()->pluck('id')->toArray();
+        $cuenta = TesoCuentaBancaria::whereIn('id', $cuentasPermitidas)
+            ->where('core_empresa_id', $usuario->empresa_id)
+            ->where('estado', 'Activo')
+            ->where('contab_cuenta_id', '>', 0)
+            ->first();
+        $documento = TesoDocEncabezado::where('core_empresa_id', $usuario->empresa_id)->first();
+        $motivo = TesoMotivo::where('core_empresa_id', $usuario->empresa_id)
+            ->where('movimiento', 'salida')
+            ->first();
+
+        $this->assertNotNull($cuenta);
+        $this->assertNotNull($documento);
+        $this->assertNotNull($motivo);
+
+        $medio = TesoMedioRecaudo::create([
+            'descripcion' => 'Cheque prueba contabilización',
+            'comportamiento' => 'Cheque',
+            'por_defecto' => '',
+            'maneja_puntos' => 'No',
+            'estado' => 'Activo'
+        ]);
+        TesoMedioRecaudoDestino::create([
+            'teso_medio_recaudo_id' => $medio->id,
+            'teso_caja_id' => null,
+            'teso_cuenta_bancaria_id' => $cuenta->id,
+            'estado' => 'Activo'
+        ]);
+
+        $inicio = $this->siguienteRango();
+        $chequera = TesoChequera::create([
+            'teso_cuenta_bancaria_id' => $cuenta->id,
+            'descripcion' => 'Chequera prueba contabilización',
+            'numero_inicial' => $inicio,
+            'numero_final' => $inicio + 10,
+            'consecutivo_actual' => $inicio - 1,
+            'estado' => 'Activo'
+        ]);
+
+        $linea = [[
+            'cheque_id' => 0,
+            'tipo_operacion_id_cheque' => 'pago-proveedores',
+            'teso_motivo_id_cheque' => $motivo->id,
+            'caja_id_cheque' => 0,
+            'teso_cuenta_bancaria_id_cheque' => $cuenta->id,
+            'teso_chequera_id_cheque' => $chequera->id,
+            'entidad_financiera_id' => 0,
+            'valor_cheque' => 2500
+        ]];
+
+        DB::transaction(function () use ($linea, $documento, $medio) {
+            (new RegistroDeCheque())->almacenar_registros(
+                json_encode($linea),
+                $documento,
+                $medio->id,
+                'Emitido',
+                'propio'
+            );
+        });
+
+        $movimientoTesoreria = TesoMovimiento::where('documento_soporte', 'Cheque número ' . $inicio)
+            ->where('teso_cuenta_bancaria_id', $cuenta->id)
+            ->first();
+        $movimientoContable = ContabMovimiento::where('documento_soporte', 'Cheque número ' . $inicio)
+            ->where('teso_cuenta_bancaria_id', $cuenta->id)
+            ->first();
+
+        $this->assertNotNull($movimientoTesoreria);
+        $this->assertSame((int)$documento->core_tipo_transaccion_id, (int)$movimientoTesoreria->core_tipo_transaccion_id);
+        $this->assertSame((int)$documento->core_tipo_doc_app_id, (int)$movimientoTesoreria->core_tipo_doc_app_id);
+        $this->assertNotNull($movimientoContable);
+        $this->assertSame((int)$documento->core_tipo_transaccion_id, (int)$movimientoContable->core_tipo_transaccion_id);
+        $this->assertSame((int)$documento->core_tipo_doc_app_id, (int)$movimientoContable->core_tipo_doc_app_id);
+        $this->assertSame((int)$cuenta->contab_cuenta_id, (int)$movimientoContable->contab_cuenta_id);
+        $this->assertSame(-2500.0, (float)$movimientoContable->valor_credito);
     }
 
     public function test_formulario_de_pago_muestra_cuenta_y_chequera_en_la_nueva_modalidad()

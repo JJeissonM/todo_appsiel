@@ -53,6 +53,10 @@ class ChequePaymentService
             throw new \Exception('La cuenta bancaria seleccionada no existe, no está activa o pertenece a otra empresa.');
         }
 
+        if ((int)$cuenta->contab_cuenta_id <= 0) {
+            throw new \Exception('La cuenta bancaria seleccionada no tiene una cuenta contable asociada.');
+        }
+
         if (Auth::check() && !TesoCuentaBancaria::es_permitida_para_usuario($cuentaId)) {
             throw new \Exception('El usuario no tiene permiso para usar la cuenta bancaria seleccionada.');
         }
