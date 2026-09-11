@@ -491,16 +491,51 @@ class ReportsServices
     /**
      * 
      */
-    public function get_movimentos_cuentas_bancarias($fecha, $teso_caja_id, $creado_por = null)
+    public function get_movimentos_cuentas_bancarias(
+        $fecha,
+        $teso_caja_id,
+        $creado_por = null,
+        $turno_operativo_id = null,
+        $empresa_id = null
+    )
     {
-        $pdv = Pdv::where('caja_default_id', $teso_caja_id)->first();
+        $empresa_id = (int)$empresa_id;
+        if ($empresa_id <= 0 && auth()->check()) {
+            $empresa_id = (int)auth()->user()->empresa_id;
+        }
+
+        $turno_operativo_id = (int)$turno_operativo_id;
+        if ($turno_operativo_id > 0) {
+            // En modo turnos la relación explícita es la autoridad. No se debe
+            // inferir el PDV porque recaudos generales y CxC pueden guardar
+            // pdv_id NULL aunque pertenezcan inequívocamente al mismo turno.
+            $movimientos_turno = TesoMovimiento::with(array('cuenta_bancaria', 'motivo'))
+                ->where('turno_operativo_id', $turno_operativo_id)
+                ->where('teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas'))
+                ->where('teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono'))
+                ->where('teso_caja_id', 0)
+                ->where('teso_cuenta_bancaria_id', '>', 0);
+
+            if ($empresa_id > 0) {
+                $movimientos_turno->where('core_empresa_id', $empresa_id);
+            }
+
+            return $movimientos_turno->orderBy('valor_movimiento', 'DESC')
+                ->get()
+                ->groupBy('teso_cuenta_bancaria_id');
+        }
+
+        $pdv = Pdv::where('caja_default_id', $teso_caja_id);
+        if ($empresa_id > 0) {
+            $pdv->where('core_empresa_id', $empresa_id);
+        }
+        $pdv = $pdv->first();
         if ( is_null($pdv) ) {
             return collect([]);
         }
 
         $emails_filtro_creado_por = [];
         if ( !is_null($creado_por) ) {
-            $empresa_id = auth()->check() ? auth()->user()->empresa_id : null;
             $emails_filtro_creado_por = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
         }
 
@@ -538,10 +573,17 @@ class ReportsServices
                                     ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono') ],
                                     ['fecha', '=', $fecha],
                                     ['teso_caja_id', '=', 0],
-                                    ['teso_cuenta_bancaria_id', '>', 0],
-                                    ['pdv_id', '=', $pdv->id]
+                                    ['teso_cuenta_bancaria_id', '>', 0]
                                 ])
+                                ->where(function ($query) use ($pdv) {
+                                    $query->where('pdv_id', $pdv->id)
+                                        ->orWhereNull('pdv_id');
+                                })
                                 ->orderBy('valor_movimiento', 'DESC');
+
+        if ($empresa_id > 0) {
+            $movimientos_externos_pdv->where('core_empresa_id', $empresa_id);
+        }
 
         if ( !empty($emails_filtro_creado_por) ) {
             $movimientos_externos_pdv->whereIn('creado_por', $emails_filtro_creado_por);
