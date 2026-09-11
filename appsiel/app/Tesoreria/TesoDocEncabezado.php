@@ -98,6 +98,12 @@ class TesoDocEncabezado extends Model
                                 ->get();
     } 
 
+    public function get_accounting_movement()
+    {
+        $obj_accou_serv = new AccountingServices();
+        return $obj_accou_serv->get_document_accounting_movement( $this->core_tipo_transaccion_id, $this->core_tipo_doc_app_id, $this->consecutivo );
+    }
+
     public function accounting_movement()
     {
         $obj_accou_serv = new AccountingServices();

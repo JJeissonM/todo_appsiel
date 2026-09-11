@@ -884,4 +884,6 @@ INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `valu
 UPDATE `sys_modelos` SET `enlaces` = '' WHERE `sys_modelos`.`id` = 3;
 UPDATE `sys_modelos` SET `enlaces` = '{\"0\":{\"tag_html\":\"a\",\"title\":\"Duplicar\",\"url\":\"duplicar/id_fila?id=2&id_modelo=116\",\"color_bootstrap\":\"default\",\"faicon\":\"clone\",\"size\":\"xs\"}}' WHERE `sys_modelos`.`id` = 116;
 
-
+// 11 septiembre 2026
+ALTER TABLE `teso_movimientos` CHANGE `codigo_referencia_tercero` `codigo_referencia_tercero` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT 'En PH= Código del inmueble. En Colegio=Código Matricula';
+ALTER TABLE `contab_movimientos` CHANGE `codigo_referencia_tercero` `codigo_referencia_tercero` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT 'En PH= Código del inmueble. En Colegio=Código Matricula';

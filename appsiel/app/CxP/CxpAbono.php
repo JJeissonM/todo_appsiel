@@ -213,7 +213,6 @@ class CxpAbono extends Model
     */
     public static function get_documentos_abonados( $doc_encabezado )
     {
-
         return CxpAbono::where('cxp_abonos.core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
                     ->where('cxp_abonos.core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
                     ->where('cxp_abonos.consecutivo',$doc_encabezado->consecutivo)
@@ -226,6 +225,9 @@ class CxpAbono extends Model
                             ->on('cxp_movimientos.consecutivo', '=', 'cxp_abonos.doc_cxp_consecutivo');
                     })
                     ->select(
+                                'cxp_abonos.core_tipo_transaccion_id',
+                                'cxp_abonos.core_tipo_doc_app_id',
+                                'cxp_abonos.consecutivo',
                                 'cxp_abonos.id',
                                 'cxp_abonos.core_empresa_id',
                                 'cxp_abonos.core_tercero_id',

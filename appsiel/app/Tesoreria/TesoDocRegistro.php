@@ -10,6 +10,11 @@ class TesoDocRegistro extends Model
 {
     protected $fillable = ['teso_encabezado_id','teso_motivo_id','core_tercero_id','teso_medio_recaudo_id','teso_caja_id','teso_cuenta_bancaria_id','detalle_operacion','valor','estado'];
 
+    public function encabezado()
+    {
+        return $this->belongsTo(TesoEncabezado::class, 'teso_encabezado_id');
+    }
+
     public function motivo()
     {
         return $this->belongsTo(TesoMotivo::class, 'teso_motivo_id');
@@ -44,6 +49,7 @@ class TesoDocRegistro extends Model
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_registros.core_tercero_id')
                             ->where('teso_encabezado_id',$doc_encabezado_id)
                             ->select(
+                            		'teso_doc_registros.teso_encabezado_id',
                                     'core_terceros.descripcion AS tercero',
                                     'core_terceros.descripcion AS tercero_nombre_completo',
                                     'teso_medios_recaudo.descripcion AS medio_recaudo',

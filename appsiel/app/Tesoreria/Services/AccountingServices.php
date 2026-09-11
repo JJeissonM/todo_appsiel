@@ -13,6 +13,15 @@ class AccountingServices
 {
     use AppliesContabMovementDefaults;
 
+    public function get_document_accounting_movement( int $core_tipo_transaccion_id, int $core_tipo_doc_app_id, string $consecutivo )
+    {
+        return ContabMovimiento::where( [
+            'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+            'consecutivo' => $consecutivo
+        ] )->get();
+    }
+
     public function create_accounting_movement( $treasury_movement )
     {
         $obj_acco_move = new AccountingMovement();
