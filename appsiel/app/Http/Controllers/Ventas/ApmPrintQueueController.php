@@ -21,7 +21,7 @@ class ApmPrintQueueController extends Controller
 
     public function index()
     {
-        $jobs = $this->service->getPendingJobs()->map(function ($job) {
+        $jobs = $this->service->getActiveJobs()->map(function ($job) {
             return $this->service->serializeJob($job);
         });
 

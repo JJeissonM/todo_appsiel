@@ -783,10 +783,11 @@
 
             return this.queueItems.map((item) => {
                 const label = item.document_label || `${item.document_type} ${item.consecutivo}`;
+                const statusBadge = item.status_code === 'failed' ? ' <span style="color:#b94a48;">(error)</span>' : '';
 
                 return `
                     <div class="apm-queue-item">
-                        <div class="apm-queue-item-title">${label}</div>
+                        <div class="apm-queue-item-title">${label}${statusBadge}</div>
                         <div class="apm-queue-item-meta">
                             Copia: ${item.copy_label}<br>
                             Pendiente desde: ${item.queued_at || ''}<br>

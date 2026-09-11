@@ -362,6 +362,21 @@ class PagoCxpController extends TransaccionController
     protected function build_json_egreso_apm($encabezado, $registros)
     {
         $printerId = trim((string) config('tesoreria.apm_printer_id_pago_cxp'));
+
+        if ($printerId === '') {
+            throw new \RuntimeException('No hay impresora APM configurada para pagos CxP (tesoreria.apm_printer_id_pago_cxp).');
+        }
+
+        $device = \App\Ventas\ApmDevice::where('device_id', $printerId)->first();
+
+        if (is_null($device)) {
+            throw new \RuntimeException('La impresora APM "' . $printerId . '" no existe en el catalogo de dispositivos (apm_devices).');
+        }
+
+        if (trim((string) $device->estado) !== 'Activo') {
+            throw new \RuntimeException('La impresora APM "' . $printerId . '" no esta activa en el catalogo de dispositivos.');
+        }
+
         $stationId = 'TESORERIA';
         $dateInfo = $this->build_apm_date_info($encabezado->fecha);
         $cheque = $encabezado->cheques_relacionados_pagos()->first();
@@ -406,7 +421,7 @@ class PagoCxpController extends TransaccionController
                     'ReceiverId' => (string) $receiverId,
                     'Concept' => $conceptLines,
                     'Description' => trim(strip_tags((string) $encabezado->documento_soporte)),
-                    'Items' => $this->build_apm_items($registros),
+                    'Items' => $this->build_apm_items($encabezado, $registros),
                     'TotalDebit' => $this->format_apm_money($encabezado->valor_total),
                     'TotalCredit' => $this->format_apm_money($encabezado->valor_total),
                     'CreatedBy' => $createdBy
@@ -415,19 +430,22 @@ class PagoCxpController extends TransaccionController
         ];
     }
 
-    protected function build_apm_items($registros)
+    protected function build_apm_items($encabezado, $registros)
     {
         $items = [];
 
-        foreach ($registros as $registro) {
-            $valor = (float) $registro->valor;
+        $doc_pagados = CxpAbono::get_documentos_abonados($encabezado);
+
+        foreach ($doc_pagados as $registro) {
+            $valor = (float) $registro->abono;
+
             $items[] = [
-                'Account' => (string) $registro->motivo_id,
-                'CO' => !empty($registro->caja) ? (string) $registro->caja : '-',
+                'Account' => (string) $registro->doc_cxp_consecutivo,
+                'CO' => '-',
                 'ThirdParty' => (string) $registro->numero_identificacion,
-                'Reference' => !empty($registro->medio_recaudo) ? (string) $registro->medio_recaudo : '-',
-                'Debit' => $valor >= 0 ? $this->format_apm_money($valor) : $this->format_apm_money(0),
-                'Credit' => $valor < 0 ? $this->format_apm_money(abs($valor)) : $this->format_apm_money(0)
+                'Reference' => (string) $registro->documento_prefijo_consecutivo,
+                'Debit' => $this->format_apm_money($valor),
+                'Credit' => $this->format_apm_money(0)
             ];
         }
 

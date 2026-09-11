@@ -15,6 +15,7 @@ class ApmPrintStatusesSeeder extends Seeder
         $statuses = [
             ['code' => 'pending', 'description' => 'Pendiente de reimpresion manual'],
             ['code' => 'printed', 'description' => 'Impreso correctamente'],
+            ['code' => 'failed', 'description' => 'Error de impresion (pendiente de reimpresion)'],
             ['code' => 'cancelled', 'description' => 'Cancelado manualmente'],
             ['code' => 'retired', 'description' => 'Retirado manualmente']
         ];

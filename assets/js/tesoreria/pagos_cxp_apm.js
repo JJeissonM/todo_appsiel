@@ -19,6 +19,21 @@
 
     const getPayloadUrl = () => getValue('#pago_cxp_apm_payload_url');
 
+    const getDeviceConfig = (printerId) => {
+        const raw = getValue('#apm_devices_config');
+
+        if (!raw || !printerId) {
+            return null;
+        }
+
+        try {
+            const parsed = JSON.parse(raw);
+            return parsed && parsed[printerId] ? parsed[printerId] : null;
+        } catch (error) {
+            return null;
+        }
+    };
+
     const isApmSelected = () => {
         const select = document.getElementById('formato_impresion_id');
         return !!select && select.value === 'apm';
@@ -113,9 +128,18 @@
                 const payload = response && response.payload ? response.payload : null;
                 const documentMeta = response && response.document_meta ? response.document_meta : buildFallbackMeta();
                 const printerId = getValue('#apm_printer_id_pago_cxp');
+                const deviceConfig = getDeviceConfig(printerId);
 
                 if (payload && !payload.PrinterId && printerId !== '') {
                     payload.PrinterId = printerId;
+                }
+
+                if (!payload || String(payload.PrinterId || '').trim() === '') {
+                    throw { ErrorMessage: 'No hay impresora APM configurada para pagos CxP.' };
+                }
+
+                if (deviceConfig) {
+                    payload.DeviceConfig = deviceConfig;
                 }
 
                 return client.enqueuePrintJob({
@@ -145,7 +169,29 @@
             global.APM_CLIENT.connect();
         }
 
-        $('#btn_print').on('click', function (event) {
+        const printButton = $('#btn_print');
+        const printFormat = $('#formato_impresion_id');
+
+        const syncPrintButtonUrl = () => {
+            const href = String(printButton.attr('href') || '');
+
+            if (!href) {
+                return;
+            }
+
+            const nextHref = isApmSelected()
+                ? href.replace(/([?&])formato_impresion_id=[^&]*/g, '$1formato_impresion_id=apm')
+                : href;
+
+            if (nextHref !== href) {
+                printButton.attr('href', nextHref);
+            }
+        };
+
+        printFormat.on('change', syncPrintButtonUrl);
+        syncPrintButtonUrl();
+
+        printButton.on('click', function (event) {
             if (!isApmSelected()) {
                 return true;
             }

@@ -19,14 +19,28 @@ class ApmPrintQueueService
             ->get();
     }
 
-    public function getManageableJobs($limit = 30)
+    public function getActiveJobs()
     {
         return ApmPrintJob::whereIn('apm_print_status_id', [
                 $this->getStatusId('pending'),
+                $this->getStatusId('failed')
+            ])
+            ->orderByRaw('CASE WHEN apm_print_status_id = ? THEN 0 ELSE 1 END', [$this->getStatusId('pending')])
+            ->orderBy('queued_at', 'asc')
+            ->get();
+    }
+
+    public function getManageableJobs($limit = 30)
+    {
+        $failedId = $this->getStatusId('failed');
+
+        return ApmPrintJob::whereIn('apm_print_status_id', [
+                $this->getStatusId('pending'),
+                $failedId,
                 $this->getStatusId('printed'),
                 $this->getStatusId('retired')
             ])
-            ->orderByRaw('CASE WHEN apm_print_status_id = ? THEN 0 ELSE 1 END', [$this->getStatusId('pending')])
+            ->orderByRaw('CASE WHEN apm_print_status_id IN (?, ?) THEN 0 ELSE 1 END', [$this->getStatusId('pending'), $failedId])
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();
@@ -36,14 +50,7 @@ class ApmPrintQueueService
     {
         $meta = $this->normalizeDocumentMeta($documentMeta);
 
-        $pendingJob = ApmPrintJob::where('core_tipo_transaccion_id', $meta['core_tipo_transaccion_id'])
-            ->where('core_tipo_doc_app_id', $meta['core_tipo_doc_app_id'])
-            ->where('consecutivo', $meta['consecutivo'])
-            ->where('document_type', $meta['document_type'])
-            ->where('apm_print_status_id', $this->getStatusId('pending'))
-            ->first();
-
-        if (!is_null($pendingJob)) {
+        if ($this->hasActiveJob($meta)) {
             throw new \RuntimeException('Este documento ya esta pendiente en la cola de APM.');
         }
 
@@ -151,6 +158,16 @@ class ApmPrintQueueService
         ];
     }
 
+    protected function hasActiveJob(array $meta)
+    {
+        return ApmPrintJob::where('core_tipo_transaccion_id', $meta['core_tipo_transaccion_id'])
+            ->where('core_tipo_doc_app_id', $meta['core_tipo_doc_app_id'])
+            ->where('consecutivo', $meta['consecutivo'])
+            ->where('document_type', $meta['document_type'])
+            ->whereIn('apm_print_status_id', [$this->getStatusId('pending'), $this->getStatusId('failed')])
+            ->exists();
+    }
+
     protected function validateRetryableFailedJob(ApmPrintJob $job)
     {
         if (!is_null($job->printed_at)) {
@@ -161,8 +178,9 @@ class ApmPrintQueueService
             throw new \RuntimeException('Imprimir ahora solo aplica para trabajos con error de impresion.');
         }
 
-        if ((int) $job->apm_print_status_id !== (int) $this->getStatusId('pending')) {
-            throw new \RuntimeException('Imprimir ahora solo aplica para trabajos pendientes en la cola APM.');
+        $validStatuses = [$this->getStatusId('pending'), $this->getStatusId('failed')];
+        if (!in_array((int) $job->apm_print_status_id, $validStatuses)) {
+            throw new \RuntimeException('Imprimir ahora solo aplica para trabajos pendientes o fallidos en la cola APM.');
         }
     }
 
@@ -186,8 +204,8 @@ class ApmPrintQueueService
     {
         $job = ApmPrintJob::findOrFail($jobId);
 
-        if ((int) $job->apm_print_status_id !== (int) $this->getStatusId('pending')) {
-            throw new \RuntimeException('El trabajo seleccionado ya no esta pendiente en la cola de APM.');
+        if (!in_array((int) $job->apm_print_status_id, [$this->getStatusId('pending'), $this->getStatusId('failed')])) {
+            throw new \RuntimeException('El trabajo seleccionado ya no esta activo en la cola de APM.');
         }
 
         $job->attempts_count = (int) $job->attempts_count + 1;
@@ -204,6 +222,8 @@ class ApmPrintQueueService
 
         if ($retryOnly) {
             $this->validateRetryableFailedJob($job);
+        } elseif (!in_array((int) $job->apm_print_status_id, [$this->getStatusId('pending'), $this->getStatusId('failed')])) {
+            throw new \RuntimeException('El trabajo seleccionado ya no esta activo en la cola de APM.');
         }
 
         $payload = json_decode($job->payload_json, true);
@@ -229,7 +249,11 @@ class ApmPrintQueueService
     {
         $job = ApmPrintJob::findOrFail($jobId);
 
-        $job->apm_print_status_id = $this->getStatusId('pending');
+        if (!in_array((int) $job->apm_print_status_id, [$this->getStatusId('pending'), $this->getStatusId('failed')])) {
+            throw new \RuntimeException('El trabajo seleccionado ya no esta activo en la cola de APM.');
+        }
+
+        $job->apm_print_status_id = $this->getStatusId('failed');
         $job->attempts_count = (int) $job->attempts_count + 1;
         $job->last_attempt_at = Carbon::now()->toDateTimeString();
         $job->last_error = $errorMessage;
@@ -242,8 +266,8 @@ class ApmPrintQueueService
     {
         $job = ApmPrintJob::findOrFail($jobId);
 
-        if ((int) $job->apm_print_status_id !== (int) $this->getStatusId('pending')) {
-            throw new \RuntimeException('El trabajo seleccionado ya no esta pendiente en la cola de APM.');
+        if (!in_array((int) $job->apm_print_status_id, [$this->getStatusId('pending'), $this->getStatusId('failed')])) {
+            throw new \RuntimeException('El trabajo seleccionado ya no esta disponible para retirar de la cola APM.');
         }
 
         $user = Auth::user();
@@ -286,6 +310,7 @@ class ApmPrintQueueService
             'document_label' => $job->document_label,
             'copy_number' => (int) $job->copy_number,
             'copy_label' => $job->copy_label,
+            'status_code' => $this->statusCodeOf($job),
             'printer_id' => $job->printer_id,
             'station_id' => $job->station_id,
             'attempts_count' => (int) $job->attempts_count,
@@ -658,6 +683,23 @@ class ApmPrintQueueService
         return is_null($maxCopyNumber) ? 1 : ((int) $maxCopyNumber + 1);
     }
 
+    protected function statusCodeOf(ApmPrintJob $job)
+    {
+        $statusId = (int) $job->apm_print_status_id;
+
+        foreach (['pending', 'printed', 'failed', 'cancelled', 'retired'] as $code) {
+            try {
+                if ($statusId === (int) $this->getStatusId($code)) {
+                    return $code;
+                }
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
+        return null;
+    }
+
     protected function getStatusId($code)
     {
         if (isset($this->statusIds[$code])) {
@@ -667,6 +709,7 @@ class ApmPrintQueueService
         $defaults = [
             'pending' => 'Pendiente de reimpresion manual',
             'printed' => 'Impreso correctamente',
+            'failed' => 'Error de impresion (pendiente de reimpresion)',
             'cancelled' => 'Cancelado manualmente',
             'retired' => 'Retirado manualmente'
         ];

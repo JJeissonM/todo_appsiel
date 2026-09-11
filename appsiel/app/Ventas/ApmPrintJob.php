@@ -101,7 +101,7 @@ class ApmPrintJob extends Model
                     ->orWhere('apm_print_jobs.retired_by', 'LIKE', "%$search%")
                     ->orWhere('apm_print_jobs.last_error', 'LIKE', "%$search%");
             })
-            ->orderByRaw("CASE apm_print_statuses.code WHEN 'pending' THEN 0 WHEN 'retired' THEN 1 WHEN 'cancelled' THEN 2 ELSE 3 END")
+                        ->orderByRaw("CASE apm_print_statuses.code WHEN 'pending' THEN 0 WHEN 'failed' THEN 1 WHEN 'retired' THEN 2 WHEN 'cancelled' THEN 3 ELSE 4 END")
             ->orderBy('apm_print_jobs.created_at', 'DESC')
             ->paginate($nro_registros);
     }
