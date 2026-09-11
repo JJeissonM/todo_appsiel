@@ -150,7 +150,7 @@ class PagoAutomaticoNominaService
                 throw new \InvalidArgumentException('El valor total del pago debe ser mayor a cero.');
             }
 
-            $terceroEncabezado = (int) config('nomina.tercero_id_salarios_por_pagar');
+            $terceroEncabezado = (int) config('contabilidad.tercero_default_cierre_ejercicio');
             if ($terceroEncabezado <= 0) {
                 $terceroEncabezado = (int) $tercerosSeleccionados[0];
             } elseif (!Tercero::where('id', $terceroEncabezado)->where('core_empresa_id', $empresaId)->exists()) {
