@@ -79,7 +79,7 @@
                         {{ $fila['tercero'] }}
                     </td>
                     <td> {{ $fila['motivo'] }} </td>
-                    <td> {{ $fila['detalle'] }} </td>
+                    <td> {{ isset($fila['detalle']) ? $fila['detalle'] : '' }} </td>
                     <td> 
                         {{ $entrada }}
                         {!! $msj_warning !!}

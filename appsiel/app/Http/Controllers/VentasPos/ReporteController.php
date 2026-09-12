@@ -55,8 +55,6 @@ class ReporteController extends Controller
         $saldo_inicial = TesoMovimiento::get_saldo_inicial($pdv->caja_default_id, 0, $fecha_desde);
         
         $lineas_movimientos = $this->get_lista_movimientos_caja_pdv($fecha_desde, $fecha_hasta, $pdv->caja_default_id, $lista_por_medios_recaudos);
-
-        //$vista_movimiento = View::make('ventas_pos.incluir.movimiento_caja_bancos', compact('fecha_desde', 'fecha_hasta', 'saldo_inicial', 'lineas_movimientos', 'mensaje'));
         
         return View::make('ventas_pos.incluir.vista_estado_pdv', compact('total_efectivo', 'total_bancos', 'total_credito', 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'lineas_movimientos', 'mensaje', 'caja_pdv_id'))->render();
         //return $resumen_ventas . '<br><br>' . $vista_movimiento;
@@ -104,6 +102,7 @@ class ReporteController extends Controller
                     'created_at' => $documento->created_at,
                     'documento' => $documento->get_label_documento(),
                     'tercero' => $documento->tercero->descripcion,
+                    'detalle' => isset($documento->descripcion) ? (string)$documento->descripcion : '',
                     'forma_pago' => 'credito', // [efectivo | cuenta_bancaria | credito]
                     'caja_o_banco' => '',
                     'concepto' => '',
@@ -122,6 +121,7 @@ class ReporteController extends Controller
                     'created_at' => $documento->created_at,
                     'documento' => $documento->get_label_documento(),
                     'tercero' => $documento->tercero->descripcion,
+                    'detalle' => isset($documento->descripcion) ? (string)$documento->descripcion : '',
                     'forma_pago' => $linea->forma_pago, // [efectivo | cuenta_bancaria | credito]
                     'caja_o_banco' => $linea->caja_o_banco,
                     'concepto' => $linea->concepto,
