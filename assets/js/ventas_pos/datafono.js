@@ -49,7 +49,7 @@ function permitir_guardar_factura_con_datafono () {
 
         if ( cantidad_lineas_medios_recaudos > 1 ) { // Hay varias lineas medios de recaudo
             
-            if ( motivos_registrados_lineas_medios_recaudos.indexOf( parseInt( $('#motivo_tesoreria_datafono').val() ) ) > 0  ) {
+            if ( motivos_registrados_lineas_medios_recaudos.indexOf( parseInt( $('#motivo_tesoreria_datafono').val() ) ) >= 0  ) {
                 // El motivo para datafono esta registrado en una linea de Pago.
                 return true;
             }

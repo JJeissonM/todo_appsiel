@@ -173,7 +173,7 @@
     <script src="{{ asset( 'assets/js/ventas_pos/precios.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/clientes.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?v=' . $asset_v )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/commons.js?v=' . $asset_v . '-print-totals-1' )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/commons.js?v=' . $asset_v . '-pos-recargos-3' )}}"></script>
 
     <script src="{{ asset( 'assets/js/apm/client.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/apm_scale_listener.js?v=' . $asset_v )}}"></script>
@@ -195,7 +195,7 @@
     @endif
 
     @if( (int)config('ventas_pos.manejar_datafono') )
-        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/datafono.js?v=' . $asset_v )}}"></script>
+        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/datafono.js?v=' . $asset_v . '-pos-recargos-3' )}}"></script>
     @endif
 
     @if ( (int)config('ventas_pos.modulo_fe_activo'))

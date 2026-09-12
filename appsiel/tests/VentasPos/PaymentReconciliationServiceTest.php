@@ -252,4 +252,27 @@ class PaymentReconciliationServiceTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($resultado['normalizado']);
         $this->assertEquals(5.0, $resultado['ajuste']);
     }
+    public function test_completar_datafono_no_consume_propina_ni_otros_recaudos()
+    {
+        $json = '[{"teso_motivo_id":"83-Ventas","valor":"$99500"},{"teso_motivo_id":"84-Comision","valor":"$500"},{"teso_motivo_id":"85-Propina","valor":"$10000"}]';
+        $result = $this->service->normalizar_lineas_recargo($json, 5000, 84, 'Comision', 83, 'Ventas');
+        $this->assertTrue($result['normalizado']);
+        $this->assertEquals(10000, $this->service->sumar_por_motivo($result['lineas_json'], 85));
+        $this->assertEquals(5000, $this->service->sumar_por_motivo($result['lineas_json'], 84));
+        $this->assertEquals(95000, $this->service->sumar_por_motivo($result['lineas_json'], 83));
+    }
+
+    public function test_no_hace_correccion_parcial_si_solo_hay_propina_disponible()
+    {
+        $json = '[{"teso_motivo_id":"84-Comision","valor":"$500"},{"teso_motivo_id":"85-Propina","valor":"$10000"}]';
+        $result = $this->service->normalizar_lineas_recargo($json, 5000, 84, 'Comision', 83, 'Ventas');
+        $this->assertFalse($result['normalizado']);
+        $this->assertSame($json, $result['lineas_json']);
+    }
+
+    public function test_importes_de_recargos_en_formato_colombiano()
+    {
+        $json = '[{"teso_motivo_id":"85-Propina","valor":"$8.930,50"},{"teso_motivo_id":"85-Propina","valor":"$100"}]';
+        $this->assertEquals(9030.5, $this->service->sumar_por_motivo($json, 85));
+    }
 }

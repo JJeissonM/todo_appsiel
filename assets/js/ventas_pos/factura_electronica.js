@@ -247,6 +247,7 @@ $(document).ready(function () {
     // GUARDAR EL FORMULARIO
     $('#btn_guardar_factura_electronica').click(function (event){
         event.preventDefault();
+        if (locked) { return false; }
 
         if( hay_productos == 0 )
         {
@@ -332,6 +333,7 @@ $(document).ready(function () {
             data = $("#form_create").serialize();
         }
         
+        locked = true;
         $.post(
             url.replace('pos_factura', 'pos_factura_electronica'),
             data, 
@@ -485,6 +487,8 @@ $(document).ready(function () {
                 });
             }
             return false;
+        }).always(function () {
+            locked = false;
         });
         
     });

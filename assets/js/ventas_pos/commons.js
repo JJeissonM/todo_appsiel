@@ -246,9 +246,9 @@ function pos_recalcular_total_con_recargos()
   var subtotal = parseFloat($('#valor_sub_total_factura').val()) || 0;
   var valor_propina = parseFloat($('#valor_propina').val()) || 0;
   var valor_datafono = parseFloat($('#valor_datafono').val()) || 0;
-  var total_sin_redondear = subtotal + valor_propina + valor_datafono;
+  var total_sin_redondear = Math.round((subtotal + valor_propina + valor_datafono) * 100) / 100;
   var total_redondeado = redondear_a_centena(total_sin_redondear);
-  var ajuste_final = total_redondeado - total_sin_redondear;
+  var ajuste_final = Math.round((total_redondeado - total_sin_redondear) * 100) / 100;
 
   $('#total_factura').text('$ ' + new Intl.NumberFormat('de-DE').format(total_redondeado));
   $('#valor_total_factura').val(total_sin_redondear);
@@ -343,7 +343,9 @@ function pos_separar_recargo_medio_recaudo(json_recaudos, valor_recargo, motivo_
   var indice_origen = -1;
   for (var i = 0; i < lineas.length; i++) {
     var valor_linea = parseFloat((lineas[i].valor || '$0').toString().replace('$', '')) || 0;
-    if (valor_linea >= valor_recargo) {
+    var motivo_venta_id = parseInt($('#teso_motivo_default_id').val()) || 0;
+    var motivo_linea_id = parseInt((lineas[i].teso_motivo_id || '0').toString().split('-')[0]);
+    if (motivo_linea_id === motivo_venta_id && valor_linea >= valor_recargo) {
       indice_origen = i;
       break;
     }
@@ -501,7 +503,7 @@ function pos_preparar_payload_guardado(opciones)
 {
   opciones = opciones || {};
   var incluir_impuesto_id = !!opciones.incluir_impuesto_id;
-  var refrescar_identificadores = (opciones.refrescar_identificadores !== false);
+  var refrescar_identificadores = !$.trim($("#uniqid").val() || "");
 
   var flags = pos_get_manejo_recargos_flags();
 
@@ -525,6 +527,10 @@ function pos_preparar_payload_guardado(opciones)
   if (flags.manejar_datafono) {
     // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
     json_table2 = separar_json_linea_medios_recaudo_datafono(json_table2);
+    if (flags.manejar_propinas) {
+      // El desglose del datáfono puede haber recuperado la línea de venta.
+      json_table2 = separar_json_linea_medios_recaudo_propina(json_table2);
+    }
   }
 
   // Se asigna el objeto JSON a un campo oculto del formulario
@@ -580,7 +586,8 @@ function pos_mostrar_mensaje_error_guardado(xhr, opciones)
 {
   opciones = opciones || {};
   var prefijo_titulo = opciones.prefijo_titulo || "FACTURA NO GUARDADA";
-  var recargar_uniqid = (opciones.recargar_uniqid !== false);
+  // Un error o timeout no demuestra que el servidor haya revertido la venta.
+  var recargar_uniqid = false;
 
   var status_text = (xhr && typeof xhr.statusText === "string") ? xhr.statusText : "";
   var response_text = (xhr && typeof xhr.responseText === "string") ? xhr.responseText : "";

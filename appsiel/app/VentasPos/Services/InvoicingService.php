@@ -146,8 +146,27 @@ class InvoicingService
                             ['estado' => 'Contabilizado'] +
                             ['vtas_pos_doc_encabezado_id' => $doc_encabezado->id];
 
+            $linea_datos = $this->normalizar_importes_linea($linea_datos);
             DocRegistro::create($linea_datos);
         }
+    }
+
+    /** Derivar la base del total cobrado, sin acumular redondeos unitarios. */
+    public function normalizar_importes_linea(array $linea)
+    {
+        $total = round((float)$linea['precio_total'], 2);
+        $cantidad = (float)$linea['cantidad'];
+        $factor = 1 + (float)$linea['tasa_impuesto'] / 100;
+        if ($cantidad <= 0 || $factor <= 0) {
+            throw new \InvalidArgumentException('Cantidad o tasa de impuesto inválida.');
+        }
+        $base = $total / $factor;
+        $linea['precio_total'] = $total;
+        $linea['base_impuesto_total'] = $base;
+        $linea['base_impuesto'] = $base / $cantidad;
+        $linea['valor_impuesto'] = ($total - $base) / $cantidad;
+
+        return $linea;
     }
 
     public function validar_lineas_registros_pos($lineas_registros, Request $request = null)

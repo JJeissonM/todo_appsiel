@@ -121,7 +121,7 @@ class FacturaGeneral
          $lista_emails .= ';' . $email_copia;
       }
 
-      return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"invoice": {' . $this->get_encabezado_factura() . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
+      return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"invoice": {' . $this->get_encabezado_factura() . ',"items": ' . $this->get_lineas_registros() . ',"charges": ' . json_encode((new \App\FacturacionElectronica\Services\PosInvoiceChargesService())->getCharges($this->doc_encabezado)) . '}}';
    }
 
    public function preparar_cadena_json_nota_credito( $factura_doc_encabezado )

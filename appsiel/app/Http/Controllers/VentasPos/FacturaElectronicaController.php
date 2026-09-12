@@ -35,6 +35,20 @@ class FacturaElectronicaController extends TransaccionController
      */
     public function store(Request $request)
     {
+        // Recuperar también ventas de pedidos antes de comprobar su estado Facturado.
+        $existing = $this->find_existing_pos_invoice_by_uniqid($request->input('uniqid', ''), $request);
+        if ($existing) {
+            $electronic = Factura::where('ventas_doc_relacionado_id', $existing->id)->first();
+            if ($electronic) {
+                return response()->json($this->build_print_response_fe($electronic), 200);
+            }
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Esta venta ya está guardada como POS. Revísela y conviértala desde el historial.',
+                'factura_pos_id' => (int)$existing->id
+            ], 409);
+        }
+
         $invoice_service = new InvoicingService();
 
         if (!isset($request['creado_por'])) {
@@ -98,6 +112,23 @@ class FacturaElectronicaController extends TransaccionController
                 }
             }
 
+            // La conversión debe confirmar o revertir también el POS y sus movimientos.
+            $result = (new DocumentHeaderService())->convert_to_electronic_invoice($factura_pos_encabezado->id);
+            if ($result->status == 'mensaje_error' || empty($result->new_document_header_id)) {
+                throw new \UnexpectedValueException($result->message);
+            }
+            $vtas_document_header = Factura::findOrFail((int)$result->new_document_header_id);
+
+            if ($crear_cruce_con_anticipos) {
+                (new CxCService())->crear_cruce_con_anticipos($vtas_document_header, $request->object_anticipos);
+            }
+            if ($crear_abonos) {
+                $datos = $factura_pos_encabezado->toArray();
+                (new TreasuryService())->crear_abonos_documento($vtas_document_header, $datos['lineas_registros_medios_recaudos']);
+            }
+
+            (new \App\FacturacionElectronica\Services\InvoiceTotalsService())->validateBeforeSend($vtas_document_header);
+
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -133,42 +164,18 @@ class FacturaElectronicaController extends TransaccionController
                     'request_id' => $request_id
                 ], 409);
             }
+            if ($e instanceof \InvalidArgumentException || $e instanceof \UnexpectedValueException) {
+                return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
+            }
             throw $e;
         }
 
-        // Convertir a factura electrónica
-        $doc_header_serv = new DocumentHeaderService();
-        $result = $doc_header_serv->convert_to_electronic_invoice($factura_pos_encabezado->id);
-        if ($result->status == 'mensaje_error' || empty($result->new_document_header_id)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $result->message
-            ], 422);
-        }
-
-        // Enviar al proveedor tecnológico (validación previa + envío)
-        $vtas_document_header = Factura::find((int)$result->new_document_header_id);
-        if (is_null($vtas_document_header)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No fue posible obtener la Factura Electrónica convertida.'
-            ], 422);
-        }
-
+        // El envío externo ocurre solamente después de confirmar la transacción local.
         $sendingService = new ElectronicInvoiceSendingService();
         $mensaje = $sendingService->send($vtas_document_header, 2, 250);
 
         if ($mensaje->tipo != 'mensaje_error') {
             $sendingService->markAsSent($vtas_document_header, $factura_pos_encabezado);
-        }
-
-        if ($crear_cruce_con_anticipos) {
-            (new CxCService())->crear_cruce_con_anticipos($vtas_document_header, $request->object_anticipos);
-        }
-
-        if ($crear_abonos) {
-            $datos = $factura_pos_encabezado->toArray();
-            (new TreasuryService())->crear_abonos_documento($vtas_document_header, $datos['lineas_registros_medios_recaudos']);
         }
 
         if ($mensaje->tipo == 'mensaje_error') {
@@ -300,7 +307,7 @@ class FacturaElectronicaController extends TransaccionController
         }
 
         $message = (string)$e->getMessage();
-        return (stripos($message, 'for key \'uniqid\'') !== false || stripos($message, 'for key `uniqid`') !== false);
+        return stripos($message, 'uniqid') !== false;
     }
 
     protected function find_existing_pos_invoice_by_uniqid($uniqid, Request $request = null)

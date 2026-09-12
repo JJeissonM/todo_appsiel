@@ -80,7 +80,7 @@ class PaymentReconciliationService
         // de lineas normales conservando el mismo destino del recaudo.
         if ($pendiente_recargo > (float)$tolerancia) {
             for ($index = count($normalizadas) - 1; $index >= 0 && $pendiente_recargo > (float)$tolerancia; $index--) {
-                if ($this->get_motivo_id($normalizadas[$index]) === $motivo_recargo_id) {
+                if ($this->get_motivo_id($normalizadas[$index]) !== $motivo_default_id) {
                     continue;
                 }
 
@@ -365,6 +365,21 @@ class PaymentReconciliationService
         }
 
         return (int)explode('-', (string)$linea['teso_motivo_id'])[0];
+    }
+
+    public function sumar_por_motivo($lineas_json, $motivo_id)
+    {
+        $lineas = json_decode((string)$lineas_json, true);
+        if ((int)$motivo_id <= 0 || !is_array($lineas)) {
+            return 0.0;
+        }
+        $total = 0.0;
+        foreach ($lineas as $linea) {
+            if ($this->get_motivo_id($linea) === (int)$motivo_id) {
+                $total += $this->parsear_valor(isset($linea['valor']) ? $linea['valor'] : 0);
+            }
+        }
+        return round($total, 2);
     }
 
     public function parsear_valor($valor)

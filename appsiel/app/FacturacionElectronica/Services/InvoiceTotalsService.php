@@ -124,14 +124,7 @@ class InvoiceTotalsService
             'La factura electrónica no se envió porque el total del encabezado no coincide con sus líneas'
         );
 
-        $adjustment = round((float)$electronicInvoice->valor_ajuste_al_peso, 2);
-        $bags = round((float)$electronicInvoice->valor_total_bolsas, 2);
-        if (abs($adjustment) >= self::TOLERANCE || abs($bags) >= self::TOLERANCE) {
-            throw new \UnexpectedValueException(
-                'La factura electrónica no se envió porque contiene ajuste al peso o cobro de bolsas, ' .
-                'pero esos cargos no están representados en las líneas que se reportan a la DIAN.'
-            );
-        }
+        (new PosInvoiceChargesService())->getCharges($electronicInvoice);
 
         foreach ($electronicInvoice->lineas_registros as $index => $line) {
             $this->validateStoredLine($line, $index + 1);
@@ -143,10 +136,7 @@ class InvoiceTotalsService
 
             $quantity = (float)number_format($values->quantity, $values->decimals, '.', '');
             $price = (float)number_format($values->price, $values->decimals, '.', '');
-            $projectedBase = round(
-                $quantity * $price * (1 - ((float)$line->tasa_descuento / 100)),
-                2
-            );
+            $projectedBase = $quantity * $price * (1 - ((float)$line->tasa_descuento / 100));
             $projectedTotal = round($projectedBase * (1 + ((float)$line->tasa_impuesto / 100)), 2);
 
             $this->assertSameAmount(
@@ -161,9 +151,8 @@ class InvoiceTotalsService
 
     protected function validateStoredLine($line, $lineNumber)
     {
-        $base = round(abs((float)$line->base_impuesto_total), 2);
-        $tax = round($base * ((float)$line->tasa_impuesto / 100), 2);
-        $calculatedTotal = round($base + $tax, 2);
+        $base = abs((float)$line->base_impuesto_total);
+        $calculatedTotal = round($base * (1 + ((float)$line->tasa_impuesto / 100)), 2);
 
         $this->assertSameAmount(
             abs((float)$line->precio_total),
