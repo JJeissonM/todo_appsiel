@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\VentasPos;
 
-use App\Http\Requests\VentasPos\StoreFacturaPosRequest;
-use App\Http\Requests\VentasPos\UpdateFacturaPosRequest;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;

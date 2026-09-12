@@ -228,11 +228,15 @@ class ReporteController extends Controller
                 $forma_pago = 'cuenta_bancaria';
             }
 
+            $teso_doc_encabezado = $movimiento->get_documento_tesoreria();
+            $detalle = $teso_doc_encabezado != null ? $teso_doc_encabezado->descripcion : '';
+
             $lista_por_medios_recaudos->push([
                 'fecha' => $movimiento->fecha,
                 'created_at' => $movimiento->created_at,
                 'documento' => $movimiento->get_label_documento(),
                 'tercero' => $movimiento->tercero->descripcion,
+                'detalle' => $detalle,
                 'forma_pago' => $forma_pago, // [efectivo | cuenta_bancaria | credito]
                 'caja_o_banco' => $caja . ' ' . $cuenta_bancaria,
                 'teso_caja_id' => (int)$movimiento->teso_caja_id,

@@ -80,6 +80,16 @@ class TesoMovimiento extends Model
         });
     }
 
+    public function get_documento_tesoreria()
+    {
+        return TesoDocEncabezado::where( [ 
+                                'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                'consecutivo' => $this->consecutivo
+                            ] )
+                        ->get()->first();
+    }
+
     /**
      * Ubica el movimiento dentro del ultimo cierre del PDV para su fecha contable.
      * Si no existe un cierre, Eloquent conserva el created_at normal del movimiento.
