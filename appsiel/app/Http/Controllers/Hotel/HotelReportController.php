@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Hotel;
 
 use App\Hotel\HotelRoom;
 use App\Hotel\HotelGuest;
-use App\Hotel\HotelOrderHeader;
 use App\Hotel\HotelOrderLine;
 use App\Hotel\HotelStay;
 use App\Hotel\HotelStayGuest;
@@ -66,20 +65,60 @@ class HotelReportController extends Controller
 
         $mostrarDetalle = (string)$request->hotel_detalle !== '0';
         $ivaIncluido = (string)$request->hotel_iva_incluido !== '0';
+        $fechaInicio = $fechaDesde . ' 00:00:00';
+        $fechaFin = $fechaHasta . ' 23:59:59';
 
         $lines = DB::table('hotel_order_lines AS hotel_line')
             ->join('hotel_order_headers AS hotel_order', 'hotel_order.id', '=', 'hotel_line.hotel_order_id')
             ->join('hotel_stays AS hotel_stay', 'hotel_stay.id', '=', 'hotel_order.stay_id')
+            ->leftJoin('vtas_pos_doc_encabezados AS pos_invoice', function ($join) {
+                $join->on('pos_invoice.id', '=', 'hotel_order.pos_doc_id')
+                    ->on('pos_invoice.core_empresa_id', '=', 'hotel_order.empresa_id');
+            })
+            ->leftJoin('vtas_doc_encabezados AS sales_invoice', function ($join) {
+                $join->on('sales_invoice.id', '=', 'hotel_order.sales_doc_id')
+                    ->on('sales_invoice.core_empresa_id', '=', 'hotel_order.empresa_id');
+            })
             ->leftJoin('hotel_rooms AS hotel_room', 'hotel_room.id', '=', 'hotel_stay.room_id')
             ->leftJoin('vtas_clientes AS client', 'client.id', '=', 'hotel_stay.main_cliente_id')
             ->leftJoin('core_terceros AS third_party', 'third_party.id', '=', 'client.core_tercero_id')
             ->leftJoin('inv_productos AS product', 'product.id', '=', 'hotel_line.producto_id')
             ->leftJoin('inv_grupos AS product_group', 'product_group.id', '=', 'product.inv_grupo_id')
             ->where('hotel_line.empresa_id', Auth::user()->empresa_id)
-            ->where('hotel_order.status', '<>', HotelOrderHeader::STATUS_ANULADO)
-            ->where('hotel_stay.status', '<>', HotelStay::STATUS_ANULADA)
-            ->where('hotel_order.order_date', '>=', $fechaDesde . ' 00:00:00')
-            ->where('hotel_order.order_date', '<=', $fechaHasta . ' 23:59:59')
+            // Este es un reporte de ventas facturadas. La fecha y el estado del
+            // documento de venta son la fuente contable; order_date corresponde
+            // al consumo y puede pertenecer a un período diferente.
+            ->where(function ($invoiceQuery) use ($fechaInicio, $fechaFin) {
+                $invoiceQuery->where(function ($posQuery) use ($fechaInicio, $fechaFin) {
+                    $posQuery->whereNotNull('hotel_order.pos_doc_id')
+                        ->where('hotel_order.pos_doc_id', '>', 0)
+                        ->where('pos_invoice.estado', '<>', 'Anulado')
+                        ->whereBetween('pos_invoice.fecha', array($fechaInicio, $fechaFin))
+                        // Evita asociar un pedido histórico con una factura cuyo
+                        // ID fue reutilizado después de depurar datos.
+                        ->where(function ($freshRelation) {
+                            $freshRelation->whereNull('pos_invoice.created_at')
+                                ->orWhereNull('hotel_order.updated_at')
+                                ->orWhereRaw('hotel_order.updated_at >= pos_invoice.created_at');
+                        });
+                })->orWhere(function ($salesQuery) use ($fechaInicio, $fechaFin) {
+                    // Una factura electrónica convertida desde POS conserva los
+                    // dos IDs. Se toma siempre la POS para no duplicarla.
+                    $salesQuery->where(function ($withoutPos) {
+                        $withoutPos->whereNull('hotel_order.pos_doc_id')
+                            ->orWhere('hotel_order.pos_doc_id', '<=', 0);
+                    })
+                        ->whereNotNull('hotel_order.sales_doc_id')
+                        ->where('hotel_order.sales_doc_id', '>', 0)
+                        ->where('sales_invoice.estado', '<>', 'Anulado')
+                        ->whereBetween('sales_invoice.fecha', array($fechaInicio, $fechaFin))
+                        ->where(function ($freshRelation) {
+                            $freshRelation->whereNull('sales_invoice.created_at')
+                                ->orWhereNull('hotel_order.updated_at')
+                                ->orWhereRaw('hotel_order.updated_at >= sales_invoice.created_at');
+                        });
+                });
+            })
             ->select(
                 'hotel_stay.room_id',
                 'hotel_room.room_number',

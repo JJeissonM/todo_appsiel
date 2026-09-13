@@ -21,6 +21,13 @@
         font-size: 9px;
     }
 
+    .hotel-room-sales-note {
+        margin: 0 0 8px;
+        border: 1px solid #000;
+        padding: 5px;
+        font-size: 9px;
+    }
+
     .hotel-room-sales-table {
         width: 100%;
         border-collapse: collapse;
@@ -96,9 +103,14 @@
 <div class="hotel-room-sales-report">
     <h3 class="hotel-room-sales-title">Reporte de ventas por habitación</h3>
     <div class="hotel-room-sales-filters">
-        Período de ventas: {{ date('d/m/Y', strtotime($fechaDesde)) }} al {{ date('d/m/Y', strtotime($fechaHasta)) }}
+        Período de facturación: {{ date('d/m/Y', strtotime($fechaDesde)) }} al {{ date('d/m/Y', strtotime($fechaHasta)) }}
         &nbsp;|&nbsp; Detalle: {{ $mostrarDetalle ? 'Sí' : 'No' }}
         &nbsp;|&nbsp; IVA incluido: {{ $ivaIncluido ? 'Sí' : 'No' }}
+    </div>
+
+    <div class="hotel-room-sales-note">
+        <strong>Observación:</strong>
+        Este reporte incluye únicamente las facturas vigentes generadas desde pedidos hoteleros y vinculadas a una habitación, según la fecha de facturación. Su total puede ser diferente al del Reporte de ventas general, porque este último también incluye facturas POS directas y ventas estándar o electrónicas que no se originaron en un pedido hotelero y, por tanto, no tienen una habitación que agrupar.
     </div>
 
     <table id="tbDatos" class="report-table hotel-room-sales-table">
