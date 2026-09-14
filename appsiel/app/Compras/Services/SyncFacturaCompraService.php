@@ -40,10 +40,17 @@ class SyncFacturaCompraService
             // ── Idempotencia ──────────────────────────────────────
             if (SyncFacturaCompraLog::ya_procesado($cufe, $empresa_id)) {
                 $resultado['duplicadas']++;
+
+                // También se informa el documento que ya existe: sin él, las filas
+                // duplicadas se veían en blanco en la columna DOCUMENTO del BOT.
+                $encabezado_existente = $this->encabezado_ya_sincronizado($cufe, $empresa_id);
+
                 $resultado['detalle'][] = [
-                    'cufe'    => $cufe,
-                    'estado'  => 'duplicado',
-                    'mensaje' => 'La factura con este CUFE ya fue sincronizada.',
+                    'cufe'        => $cufe,
+                    'estado'      => 'duplicado',
+                    'mensaje'     => 'La factura con este CUFE ya fue sincronizada.',
+                    'documento'   => $encabezado_existente ? $this->etiqueta_documento($encabezado_existente) : null,
+                    'consecutivo' => $encabezado_existente ? $encabezado_existente->consecutivo : null,
                 ];
                 continue;
             }
@@ -229,6 +236,21 @@ class SyncFacturaCompraService
      * distintas de nombrar el mismo documento. Si faltara el tipo de documento,
      * se devuelve al menos el consecutivo en lugar de romper la sincronización.
      */
+    /**
+     * Encabezado creado en una sincronización anterior para este CUFE, si existe.
+     */
+    private function encabezado_ya_sincronizado(string $cufe, int $empresa_id): ?ComprasDocEncabezado
+    {
+        $log = SyncFacturaCompraLog::where('cufe', $cufe)
+            ->where('core_empresa_id', $empresa_id)
+            ->where('estado', 'procesado')
+            ->whereNotNull('compras_doc_encabezado_id')
+            ->orderByDesc('id')
+            ->first();
+
+        return $log ? $log->encabezado : null;
+    }
+
     private function etiqueta_documento(ComprasDocEncabezado $encabezado): string
     {
         if (!$encabezado->tipo_documento_app) {
