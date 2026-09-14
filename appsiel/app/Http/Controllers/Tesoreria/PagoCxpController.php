@@ -227,17 +227,41 @@ class PagoCxpController extends TransaccionController
 
     public function almacenar_registros_cxp( Request $request, $doc_encabezado )
     {
-        $lineas_registros = json_decode($request->lineas_registros);
+        $jsonLineasRegistros = trim((string)$request->lineas_registros);
 
-        array_pop($lineas_registros);
+        // Los pagos directos no requieren aplicar valores a documentos de CxP.
+        if ($jsonLineasRegistros === '') {
+            return 0;
+        }
+
+        $lineas_registros = json_decode($jsonLineasRegistros);
+
+        if (!is_array($lineas_registros)) {
+            throw new \InvalidArgumentException('El detalle de documentos por pagar no tiene un formato válido.');
+        }
 
         $total_abonos_cxc = 0;
-        
-        $cantidad = count($lineas_registros);
-        for ($i=0; $i < $cantidad; $i++) 
+
+        foreach ($lineas_registros as $linea_registro)
         {
-            $abono = (float)$lineas_registros[$i]->abono;
-            $registro_movimiento_cxp = CxpMovimiento::find( (int)$lineas_registros[$i]->id_doc );
+            // tableToJSON incluye la fila de totales, que no representa un documento.
+            $idDocumento = is_object($linea_registro) && isset($linea_registro->id_doc)
+                ? (int)$linea_registro->id_doc
+                : 0;
+
+            if ($idDocumento <= 0) {
+                continue;
+            }
+
+            $abono = isset($linea_registro->abono) ? (float)$linea_registro->abono : 0;
+            if ($abono <= 0) {
+                throw new \InvalidArgumentException('El valor aplicado al documento por pagar debe ser mayor que cero.');
+            }
+
+            $registro_movimiento_cxp = CxpMovimiento::find($idDocumento);
+            if (is_null($registro_movimiento_cxp)) {
+                throw new \InvalidArgumentException('El documento por pagar seleccionado ya no existe.');
+            }
             
             // Almacenar registro de abono
             $datos = ['core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id]+

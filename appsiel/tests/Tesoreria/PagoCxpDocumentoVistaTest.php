@@ -6,10 +6,23 @@ use App\Contabilidad\ContabMovimiento;
 use App\Http\Controllers\Tesoreria\PagoCxpController;
 use App\Tesoreria\TesoDocEncabezado;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\Request;
 
 class PagoCxpDocumentoVistaTest extends TestCase
 {
     use DatabaseTransactions;
+
+    public function test_permite_pago_directo_sin_documentos_de_cartera()
+    {
+        $controller = new PagoCxpController();
+        $encabezado = new TesoDocEncabezado();
+
+        foreach (['', '[]', '[{"id_doc":"","abono":""}]'] as $lineasRegistros) {
+            $request = new Request(['lineas_registros' => $lineasRegistros]);
+
+            $this->assertSame(0.0, (float)$controller->almacenar_registros_cxp($request, $encabezado));
+        }
+    }
 
     public function test_documento_pagado_usa_datos_del_movimiento_cxp_sin_depender_del_encabezado_origen()
     {

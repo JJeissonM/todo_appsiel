@@ -218,14 +218,6 @@
 					return false;
 				}	
 
-				var total_valor = parseFloat( $('#total_valor').text().substring(1) );
-
-				if ( total_valor <= 0 )
-				{
-					alert('No ha seleccionado documentos a pagar.');
-					return false;
-				}
-
 				var botonGuardar = $(this);
 				botonGuardar.prop('disabled', true);
 				$('#div_error_guardado_ajax').hide();
