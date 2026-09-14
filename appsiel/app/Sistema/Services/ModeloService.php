@@ -255,8 +255,13 @@ class ModeloService
                         $campo_del_modelo = $lista_campos[$i]['name'];
                         $registro_input = app($lista_campos[$i]['atributos']['data-clase_modelo'])->find($registro->$campo_del_modelo);
 
+                        $value = '';
+                        if ( $registro_input != null) {
+                            $value = $registro_input->descripcion . ' (' . number_format($registro_input->numero_identificacion, 0, ',', '.') . ')';
+                        }
+
                         // value es un array con los valores para text_input y para el input hidden
-                        $lista_campos[$i]['value'] = [$registro_input->descripcion . ' (' . number_format($registro_input->numero_identificacion, 0, ',', '.') . ')', $registro->$campo_del_modelo];
+                        $lista_campos[$i]['value'] = [ $value, $registro->$campo_del_modelo];
                     }
                 }
 
