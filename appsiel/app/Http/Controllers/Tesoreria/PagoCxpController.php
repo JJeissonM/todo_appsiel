@@ -456,7 +456,7 @@ class PagoCxpController extends TransaccionController
                     'DateInfo' => $dateInfo,
                     'PayTo' => $receiverName,
                     'AmountText' => strtoupper(trim(NumerosEnLetras::convertir((float) $encabezado->valor_total, 'pesos', false))) . ' MCTE.',
-                    'Amount' => number_format((float) $encabezado->valor_total, 2, ',', '.'),
+                    'Amount' => number_format((float) $encabezado->valor_total, 0, ',', '.'),
                     'City' => strtoupper($city)
                 ],
                 'egreso' => [
