@@ -95,6 +95,7 @@
             </tr>
         @endif
     </table>
+    @include('compras.incluir.retenciones_aplicadas')
     <br>
 
     @if(isset($medios_pago))

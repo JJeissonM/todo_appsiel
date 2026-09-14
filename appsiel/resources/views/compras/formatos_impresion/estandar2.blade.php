@@ -107,6 +107,7 @@
         </table>    
     </div>
     
+@include('compras.incluir.retenciones_aplicadas')
 <?php $retenciones_impresion = (new \App\Compras\Services\ContabilidadService())->get_valor_retenciones($doc_encabezado); ?>
 @if($retenciones_impresion > 0)
 <p style="text-align:right">Retenciones: $ {{ number_format($retenciones_impresion, 2, ',', '.') }}<br>
