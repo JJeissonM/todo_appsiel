@@ -94,20 +94,61 @@ class PagoCxpDocumentoVistaTest extends TestCase
             ]);
         }
 
-        $metodo = new ReflectionMethod(PagoCxpController::class, 'build_apm_items');
+        $metodo = new ReflectionMethod(PagoCxpController::class, 'build_apm_accounting_summary');
         $metodo->setAccessible(true);
-        $items = $metodo->invoke(new PagoCxpController(), $encabezado, collect([]));
+        $summary = $metodo->invoke(new PagoCxpController(), $encabezado);
+        $items = $summary['items'];
         $documentoPagado = CxpAbono::get_documentos_abonados($encabezado)->first();
         $itemDebito = collect($items)->filter(function ($item) {
-            return $item['Debit'] === '$125.50';
+            return $item['Debit'] === '$126';
         })->first();
         $itemCredito = collect($items)->filter(function ($item) {
-            return $item['Credit'] === '$125.50';
+            return $item['Credit'] === '$126';
         })->first();
 
         $this->assertCount(2, $items);
+        $this->assertSame(126, $summary['total_debit']);
+        $this->assertSame($summary['total_debit'], $summary['total_credit']);
         $this->assertNotNull($documentoPagado);
         $this->assertSame((string)$documentoPagado->documento_prefijo_consecutivo, $itemDebito['Reference']);
         $this->assertSame('-', $itemCredito['Reference']);
+    }
+
+    public function test_resumen_apm_rechaza_totales_descuadrados_despues_del_redondeo()
+    {
+        $base = ContabMovimiento::where('contab_cuenta_id', '>', 0)
+            ->where('core_tercero_id', '>', 0)
+            ->first();
+        $this->assertNotNull($base);
+
+        $consecutivo = (int)ContabMovimiento::max('consecutivo') + 2000;
+        $encabezado = new TesoDocEncabezado([
+            'core_tipo_transaccion_id' => 33,
+            'core_tipo_doc_app_id' => $base->core_tipo_doc_app_id,
+            'consecutivo' => $consecutivo
+        ]);
+
+        foreach ([[0.50, 0], [0.50, 0], [0, -1.00]] as $valores) {
+            ContabMovimiento::create([
+                'core_tipo_transaccion_id' => $encabezado->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => $encabezado->core_tipo_doc_app_id,
+                'consecutivo' => $encabezado->consecutivo,
+                'fecha' => date('Y-m-d'),
+                'core_empresa_id' => $base->core_empresa_id,
+                'core_tercero_id' => $base->core_tercero_id,
+                'contab_cuenta_id' => $base->contab_cuenta_id,
+                'valor_debito' => $valores[0],
+                'valor_credito' => $valores[1],
+                'valor_saldo' => $valores[0] + $valores[1],
+                'detalle_operacion' => 'Prueba redondeo APM',
+                'estado' => 'Activo',
+                'creado_por' => 'test@appsiel.com'
+            ]);
+        }
+
+        $this->setExpectedException('RuntimeException', 'los valores redondeados están descuadrados');
+        $metodo = new ReflectionMethod(PagoCxpController::class, 'build_apm_accounting_summary');
+        $metodo->setAccessible(true);
+        $metodo->invoke(new PagoCxpController(), $encabezado);
     }
 }

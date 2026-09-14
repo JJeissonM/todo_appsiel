@@ -417,6 +417,7 @@ class PagoCxpController extends TransaccionController
         }
 
         $conceptLines = $this->build_apm_concept_lines($encabezado, $registros);
+        $accountingSummary = $this->build_apm_accounting_summary($encabezado);
         $createdBy = strtoupper(explode('@', (string) $encabezado->creado_por)[0]);
 
         return [
@@ -443,9 +444,9 @@ class PagoCxpController extends TransaccionController
                     'ReceiverId' => (string) $receiverId,
                     'Concept' => $conceptLines,
                     'Description' => trim(strip_tags((string) $encabezado->documento_soporte)),
-                    'Items' => $this->build_apm_items($encabezado, $registros),
-                    'TotalDebit' => $this->format_apm_money($encabezado->valor_total),
-                    'TotalCredit' => $this->format_apm_money($encabezado->valor_total),
+                    'Items' => $accountingSummary['items'],
+                    'TotalDebit' => $this->format_apm_money($accountingSummary['total_debit'], 0),
+                    'TotalCredit' => $this->format_apm_money($accountingSummary['total_credit'], 0),
                     'CreatedBy' => $createdBy
                 ]
             ]
@@ -454,7 +455,16 @@ class PagoCxpController extends TransaccionController
 
     protected function build_apm_items($encabezado, $registros)
     {
+        $summary = $this->build_apm_accounting_summary($encabezado);
+
+        return $summary['items'];
+    }
+
+    protected function build_apm_accounting_summary($encabezado)
+    {
         $items = [];
+        $totalDebit = 0;
+        $totalCredit = 0;
 
         $contab_mov = $encabezado->get_accounting_movement();
         $doc_pagados = CxpAbono::get_documentos_abonados($encabezado);
@@ -464,6 +474,8 @@ class PagoCxpController extends TransaccionController
 
             $valor_debito = (float) $registro->valor_debito;
             $valor_credito = (float) $registro->valor_credito;
+            $roundedDebit = $valor_debito > 0 ? (int)round($valor_debito, 0, PHP_ROUND_HALF_UP) : 0;
+            $roundedCredit = $valor_credito != 0 ? (int)round(abs($valor_credito), 0, PHP_ROUND_HALF_UP) : 0;
 
             $reference = $this->find_apm_reference($doc_pagados, $abonosTomados, $valor_debito);
 
@@ -476,12 +488,27 @@ class PagoCxpController extends TransaccionController
                 'CO' => '-',
                 'ThirdParty' => $registro->tercero ? (string) $registro->tercero->numero_identificacion : 'Tercero null',
                 'Reference' => !is_null($reference) ? (string) $reference->documento_prefijo_consecutivo : '-',
-                'Debit' => $valor_debito > 0 ? $this->format_apm_money($valor_debito) : $this->format_apm_money(0),
-                'Credit' => $valor_credito != 0 ? $this->format_apm_money(abs($valor_credito)) : $this->format_apm_money(0)
+                'Debit' => $this->format_apm_money($roundedDebit, 0),
+                'Credit' => $this->format_apm_money($roundedCredit, 0)
             ];
+
+            $totalDebit += $roundedDebit;
+            $totalCredit += $roundedCredit;
         }
 
-        return $items;
+        if ($totalDebit !== $totalCredit) {
+            throw new \RuntimeException(
+                'No se puede generar el comprobante APM porque los valores redondeados están descuadrados. ' .
+                'Débitos: ' . $this->format_apm_money($totalDebit, 0) .
+                '; créditos: ' . $this->format_apm_money($totalCredit, 0) . '.'
+            );
+        }
+
+        return [
+            'items' => $items,
+            'total_debit' => $totalDebit,
+            'total_credit' => $totalCredit
+        ];
     }
 
     protected function find_apm_reference($documentosPagados, array $abonosTomados, $valorDebito)
@@ -549,9 +576,9 @@ class PagoCxpController extends TransaccionController
         ];
     }
 
-    protected function format_apm_money($value)
+    protected function format_apm_money($value, $decimals = 2)
     {
-        return '$' . number_format((float) $value, 2, '.', ',');
+        return '$' . number_format((float) $value, (int)$decimals, '.', ',');
     }
 
     public function get_documentos_pendientes_cxp()
