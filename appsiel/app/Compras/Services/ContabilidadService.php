@@ -43,12 +43,10 @@ class ContabilidadService
                 continue;
             }
 
-            $datos_retencion = $service->calcular_valor_retencion_linea(
-                $linea->precio_unitario,
-                $linea->cantidad,
-                $linea->tasa_impuesto,
-                $retencion->tasa_retencion
-            );
+            $datos_retencion = [
+                'base_sin_iva' => (float)$linea->base_impuesto,
+                'valor_retencion' => (float)$linea->valor_retencion,
+            ];
 
             $valor_base_retencion = (float)$datos_retencion['base_sin_iva'];
             $valor_retencion = (float)$datos_retencion['valor_retencion'];
@@ -66,7 +64,7 @@ class ContabilidadService
                 'razon_social_agente_retencion' => '',
                 'contab_retencion_id' => (int)$retencion->id,
                 'valor_base_retencion' => $valor_base_retencion,
-                'tasa_retencion' => (float)$retencion->tasa_retencion,
+                'tasa_retencion' => (float)$linea->tasa_retencion,
                 'valor' => $valor_retencion,
                 'detalle' => 'Factura de compras, línea #' . $linea->id,
                 'compras_doc_registro_id' => $linea->id
@@ -75,7 +73,7 @@ class ContabilidadService
             $datos['estado'] = 'Activo';
 
             $registroRetencion = RegistroRetencion::create($datos);
-            $service->almacenar_liquidacion_linea($doc_encabezado, $linea, $retencion, $datos_retencion, $registroRetencion->id, 'automatico');
+            $service->almacenar_liquidacion_linea($doc_encabezado, $linea, $retencion, $datos_retencion, $registroRetencion->id, 'manual');
 
             // NIIF: retención practicada como menor valor pagado al proveedor y pasivo tributario.
             $datos['tipo_transaccion'] = '';
@@ -85,9 +83,7 @@ class ContabilidadService
             $total_retenciones += $valor_retencion;
             $ultimo_dato_movimiento = $datos;
 
-            $linea->tasa_retencion = (float)$retencion->tasa_retencion;
-            $linea->valor_retencion = $valor_retencion;
-            $linea->save();
+
         }
 
         if ($total_retenciones > 0 && !empty($ultimo_dato_movimiento)) {

@@ -60,6 +60,38 @@ class RetencionFuenteService
             ->get();
     }
 
+    public function validar_lineas_enviadas(array $lineas, $fecha = null)
+    {
+        if (!$this->maneja_retenciones_compras($fecha)) {
+            return $this->limpiar_retenciones_lineas($lineas);
+        }
+
+        foreach ($lineas as $indice => $linea) {
+            if (!is_object($linea)) {
+                throw new \InvalidArgumentException('El formato de las líneas de compra no es válido.');
+            }
+            $id = isset($linea->contab_retencion_id) ? $linea->contab_retencion_id : 0;
+            if ($id === '' || $id === null || (string)$id === '0') {
+                $this->limpiar_retenciones_lineas([$linea]);
+                continue;
+            }
+            $retencion = filter_var($id, FILTER_VALIDATE_INT) && $id > 0 ? Retencion::find($id) : null;
+            if (!$retencion || $retencion->estado !== 'Activo' ||
+                ((int)config('contabilidad.categoria_reteica_id') > 0 &&
+                (int)$retencion->categoria_retenciones_id === (int)config('contabilidad.categoria_reteica_id'))) {
+                throw new \InvalidArgumentException('La retención en la línea ' . ($indice + 1) . ' no es válida.');
+            }
+            foreach (['tasa_retencion', 'valor_retencion'] as $campo) {
+                if (!isset($linea->$campo) || !is_numeric($linea->$campo) ||
+                    !is_finite((float)$linea->$campo) || (float)$linea->$campo < 0 ||
+                    ($campo === 'tasa_retencion' && (float)$linea->$campo > 100)) {
+                    throw new \InvalidArgumentException('Revise la tasa y el valor de retención en la línea ' . ($indice + 1) . '.');
+                }
+            }
+        }
+        return $lineas;
+    }
+
     public function liquidar_lineas_request(array $lineas, $fecha = null, $proveedorId = 0, $forzar = false)
     {
         if (!$this->maneja_retenciones_compras($fecha)) {
@@ -159,7 +191,14 @@ class RetencionFuenteService
         $total = 0;
 
         foreach ($lineas as $linea) {
-            $liquidacion = $this->liquidar_linea($linea, $docEncabezado->fecha, null, $docEncabezado->proveedor);
+            // Registrar la selección guardada; no volver a liquidar por producto o proveedor.
+        $concepto = $linea->retencion_fuente_concepto_anual_id
+            ? RetencionFuenteConceptoAnual::find($linea->retencion_fuente_concepto_anual_id) : null;
+        if ($concepto && (int)$concepto->contab_retencion_id !== (int)$retencion->id) {
+            $concepto = null;
+        }
+        $liquidacion = $this->respuesta_no_aplica((int)date('Y', strtotime($docEncabezado->fecha)), $concepto);
+        $liquidacion['concepto'] = $concepto ? $concepto->concepto : $retencion->descripcion;
             $liquidacion['compras_doc_registro_id'] = (int)$linea->id;
             $resultado[] = $liquidacion;
             $total += (float)$liquidacion['valor_retencion'];
@@ -185,7 +224,14 @@ class RetencionFuenteService
             return null;
         }
 
-        $liquidacion = $this->liquidar_linea($linea, $docEncabezado->fecha, null, $docEncabezado->proveedor);
+        // Registrar la selección guardada; no volver a liquidar por producto o proveedor.
+        $concepto = $linea->retencion_fuente_concepto_anual_id
+            ? RetencionFuenteConceptoAnual::find($linea->retencion_fuente_concepto_anual_id) : null;
+        if ($concepto && (int)$concepto->contab_retencion_id !== (int)$retencion->id) {
+            $concepto = null;
+        }
+        $liquidacion = $this->respuesta_no_aplica((int)date('Y', strtotime($docEncabezado->fecha)), $concepto);
+        $liquidacion['concepto'] = $concepto ? $concepto->concepto : $retencion->descripcion;
 
         if (isset($datosRetencion['base_sin_iva'])) {
             $liquidacion['base_retencion'] = (float)$datosRetencion['base_sin_iva'];
@@ -207,7 +253,7 @@ class RetencionFuenteService
             'tipo_operacion' => $liquidacion['tipo_operacion'],
             'tipo_declarante' => $liquidacion['tipo_declarante'],
             'base_retencion' => (float)$liquidacion['base_retencion'],
-            'tasa_retencion' => (float)$retencion->tasa_retencion,
+            'tasa_retencion' => (float)$linea->tasa_retencion,
             'cuantia_minima_uvt' => (float)$liquidacion['cuantia_minima_uvt'],
             'cuantia_minima_pesos' => (float)$liquidacion['cuantia_minima_pesos'],
             'valor_retencion' => (float)$liquidacion['valor_retencion'],
