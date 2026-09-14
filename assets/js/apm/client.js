@@ -3,6 +3,7 @@
 ((global) => {
     const DEFAULT_WS_URL = 'ws://localhost:7000/websocket/';
     const DEFAULT_TIMEOUT_MS = 12000;
+    const CONNECTION_ATTEMPT_TIMEOUT_MS = 2000;
     const QUEUE_BUTTON_ID = 'apm-queue-toggle';
     const QUEUE_BADGE_ID = 'apm-queue-badge';
     const QUEUE_STYLE_ID = 'apm-queue-style';
@@ -50,6 +51,7 @@
             this.logger = null;
             this.autoReconnect = options.autoReconnect !== false;
             this.reconnectTimer = null;
+            this.connectionTimer = null;
             this.wsUrlIndex = 0;
             this.pendingJobs = {};
             this.dispatchQueue = [];
@@ -96,29 +98,58 @@
 
             const wsUrl = candidates[this.wsUrlIndex] || DEFAULT_WS_URL;
 
+            const scheduleReconnect = () => {
+                if (this.autoReconnect) {
+                    this.wsUrlIndex = (this.wsUrlIndex + 1) % candidates.length;
+                    this.reconnectTimer = global.setTimeout(() => this.connect(), 150);
+                }
+            };
+
+            let socket;
             try {
-                this.socket = new WebSocket(wsUrl);
+                socket = new WebSocket(wsUrl);
+                this.socket = socket;
             } catch (error) {
                 this.log(`Error al crear WebSocket APM: ${error.message}`, 'error');
-                this.wsUrlIndex = (this.wsUrlIndex + 1) % candidates.length;
+                this.socket = null;
+                scheduleReconnect();
                 return;
             }
 
             this.log(`Conectando a APM: ${wsUrl}`, 'info');
 
-            this.socket.onopen = () => {
-                this.wsUrlIndex = 0;
+            this.connectionTimer = global.setTimeout(() => {
+                if (this.socket !== socket || socket.readyState !== WebSocket.CONNECTING) {
+                    return;
+                }
+                this.socket = null;
+                socket.close();
+                scheduleReconnect();
+            }, CONNECTION_ATTEMPT_TIMEOUT_MS);
+
+            socket.onopen = () => {
+                if (this.socket !== socket) {
+                    return;
+                }
+                global.clearTimeout(this.connectionTimer);
                 this.log('Conexion APM establecida.', 'success');
                 this.refreshQueueUI();
             };
 
-            this.socket.onmessage = (event) => {
+            socket.onmessage = (event) => {
+                if (this.socket !== socket) {
+                    return;
+                }
                 this.log(`Mensaje APM: ${event.data}`, 'info');
                 this.notifyScaleListeners(event.data);
                 this.resolvePendingJob(event.data);
             };
 
-            this.socket.onclose = (event) => {
+            socket.onclose = (event) => {
+                if (this.socket !== socket) {
+                    return;
+                }
+                global.clearTimeout(this.connectionTimer);
                 const reason = event.reason || 'Conexion cerrada.';
                 const candidatesOnClose = getWsUrlCandidates();
 
@@ -144,7 +175,7 @@
                 }
             };
 
-            this.socket.onerror = (error) => {
+            socket.onerror = (error) => {
                 this.log('Error en WebSocket APM. Revisa la consola para detalles.', 'error');
                 console.error('APM WebSocket Error:', error);
             };
@@ -418,7 +449,7 @@
 
             const nextDispatch = this.dispatchQueue.shift();
             this.activeDispatch = nextDispatch;
-            this.waitForSocketReady()
+            this.waitForSocketReady(nextDispatch.timeoutMs)
                 .then(() => this.sendAndWait(nextDispatch.payload, nextDispatch.timeoutMs))
                 .then((response) => {
                     nextDispatch.resolve(response);
