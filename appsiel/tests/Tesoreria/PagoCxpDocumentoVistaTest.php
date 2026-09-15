@@ -5,8 +5,10 @@ use App\CxP\CxpMovimiento;
 use App\Contabilidad\ContabMovimiento;
 use App\Http\Controllers\Tesoreria\PagoCxpController;
 use App\Tesoreria\TesoDocEncabezado;
+use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PagoCxpDocumentoVistaTest extends TestCase
 {
@@ -111,6 +113,108 @@ class PagoCxpDocumentoVistaTest extends TestCase
         $this->assertNotNull($linea);
         $this->assertSame((string)$movimiento->fecha, (string)$linea->documento_fecha);
         $this->assertNotEmpty($linea->documento_descripcion);
+    }
+
+    public function test_anulacion_reversa_una_vez_cada_abono_de_documentos_con_la_misma_identidad()
+    {
+        $usuario = User::where('empresa_id', 1)->first();
+        $movimientoBase = CxpMovimiento::where('core_empresa_id', 1)->first();
+
+        $this->assertNotNull($usuario);
+        $this->assertNotNull($movimientoBase);
+        $this->be($usuario);
+
+        $terceroEncabezado = DB::table('core_terceros')
+            ->where('id', '<>', $movimientoBase->core_tercero_id)
+            ->value('id');
+        $this->assertNotNull($terceroEncabezado);
+
+        $consecutivoPago = (int)TesoDocEncabezado::where('core_tipo_transaccion_id', 33)
+            ->max('consecutivo') + 1000;
+        $consecutivoCxp = (int)CxpMovimiento::max('consecutivo') + 1000;
+
+        $pago = TesoDocEncabezado::create([
+            'core_tipo_transaccion_id' => 33,
+            'core_tipo_doc_app_id' => 23,
+            'consecutivo' => $consecutivoPago,
+            'fecha' => date('Y-m-d'),
+            'core_empresa_id' => 1,
+            'core_tercero_id' => $terceroEncabezado,
+            'codigo_referencia_tercero' => '',
+            'teso_tipo_motivo' => '',
+            'documento_soporte' => '',
+            'descripcion' => 'Pago para probar anulación',
+            'teso_medio_recaudo_id' => 1,
+            'teso_caja_id' => 1,
+            'teso_cuenta_bancaria_id' => 0,
+            'valor_total' => 300,
+            'estado' => 'Activo',
+            'creado_por' => $usuario->email,
+            'modificado_por' => ''
+        ]);
+
+        $movimientos = collect([100, 200])->map(function ($valor) use ($movimientoBase, $consecutivoCxp, $usuario) {
+            return CxpMovimiento::create([
+                'core_tipo_transaccion_id' => $movimientoBase->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => $movimientoBase->core_tipo_doc_app_id,
+                'consecutivo' => $consecutivoCxp,
+                'core_empresa_id' => 1,
+                'core_tercero_id' => $movimientoBase->core_tercero_id,
+                'modelo_referencia_tercero_index' => $movimientoBase->modelo_referencia_tercero_index,
+                'referencia_tercero_id' => $movimientoBase->referencia_tercero_id,
+                'doc_proveedor_prefijo' => 'TEST',
+                'doc_proveedor_consecutivo' => (string)$consecutivoCxp,
+                'fecha' => date('Y-m-d'),
+                'fecha_vencimiento' => date('Y-m-d'),
+                'valor_documento' => $valor,
+                'valor_pagado' => $valor,
+                'saldo_pendiente' => 0,
+                'estado' => 'Pagado',
+                'detalle' => 'Línea CxP para probar anulación',
+                'creado_por' => $usuario->email,
+                'modificado_por' => ''
+            ]);
+        });
+
+        foreach ($movimientos as $movimiento) {
+            CxpAbono::create([
+                'core_tipo_transaccion_id' => $pago->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => $pago->core_tipo_doc_app_id,
+                'consecutivo' => $pago->consecutivo,
+                'core_empresa_id' => $movimiento->core_empresa_id,
+                // Simula los abonos históricos que guardaban el tercero del
+                // encabezado aunque la línea de CxP perteneciera a otro.
+                'core_tercero_id' => $terceroEncabezado,
+                'modelo_referencia_tercero_index' => $movimiento->modelo_referencia_tercero_index,
+                'referencia_tercero_id' => $movimiento->referencia_tercero_id,
+                'fecha' => $pago->fecha,
+                'doc_cxp_transacc_id' => $movimiento->core_tipo_transaccion_id,
+                'doc_cxp_tipo_doc_id' => $movimiento->core_tipo_doc_app_id,
+                'doc_cxp_consecutivo' => $movimiento->consecutivo,
+                'doc_cruce_transacc_id' => 0,
+                'doc_cruce_tipo_doc_id' => 0,
+                'doc_cruce_consecutivo' => 0,
+                'abono' => $movimiento->valor_documento,
+                'creado_por' => $usuario->email,
+                'modificado_por' => ''
+            ]);
+        }
+
+        $response = (new PagoCxpController())->anular_pago_cxp($pago->id);
+
+        $this->assertInstanceOf('Illuminate\Http\RedirectResponse', $response);
+        $this->assertSame('Anulado', TesoDocEncabezado::find($pago->id)->estado);
+        $this->assertSame(0, CxpAbono::where('core_tipo_transaccion_id', 33)
+            ->where('core_tipo_doc_app_id', 23)
+            ->where('consecutivo', $consecutivoPago)
+            ->count());
+
+        foreach ($movimientos as $movimiento) {
+            $movimiento = CxpMovimiento::find($movimiento->id);
+            $this->assertSame('Pendiente', $movimiento->estado);
+            $this->assertEquals(0, $movimiento->valor_pagado);
+            $this->assertEquals($movimiento->valor_documento, $movimiento->saldo_pendiente);
+        }
     }
 
     public function test_items_apm_asocian_la_factura_solo_al_debito_y_muestran_creditos_negativos()

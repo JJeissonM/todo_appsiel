@@ -308,7 +308,10 @@ class PagoCxpController extends TransaccionController
                         ['core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id]+
                         ['consecutivo' => $doc_encabezado->consecutivo]+
                         ['core_empresa_id' => $doc_encabezado->core_empresa_id]+
-                        ['core_tercero_id' => $doc_encabezado->core_tercero_id]+
+                        // El tercero del abono debe ser el de la línea de CxP.
+                        // Un mismo pago puede incluir documentos de terceros
+                        // diferentes al tercero del encabezado.
+                        ['core_tercero_id' => $registro_movimiento_cxp->core_tercero_id]+
                         ['modelo_referencia_tercero_index' => $registro_movimiento_cxp->modelo_referencia_tercero_index]+
                         ['referencia_tercero_id' => $registro_movimiento_cxp->referencia_tercero_id]+
                         ['fecha' => $doc_encabezado->fecha]+
@@ -710,32 +713,58 @@ class PagoCxpController extends TransaccionController
 
         // Se reversan los pagos hecho por este documento: aumenta el saldo_pendiente en el documento de CxP
 
-        $documentos_abonados = CxpAbono::get_documentos_abonados( $pago );
+        // Para reversar se deben usar los abonos originales. La consulta
+        // get_documentos_abonados() contiene joins para presentación y puede
+        // repetir un abono cuando el documento de CxP tiene varias líneas con
+        // la misma transacción, tipo y consecutivo.
+        $documentos_abonados = CxpAbono::where($array_wheres)
+                                ->orderBy('id')
+                                ->lockForUpdate()
+                                ->get();
         
         $documentos_cxp_ya_aplicados = [];
         foreach ($documentos_abonados as $registro_abono)
         {
             // Se verifica si cada documento abonado por este pago aún tiene saldo pendiente por pagar
-            $documento_cxp_pendiente = CxpMovimiento::where('core_tipo_transaccion_id', $registro_abono->doc_cxp_transacc_id)
+            $consulta_movimiento_cxp = CxpMovimiento::where('core_empresa_id', $registro_abono->core_empresa_id)
+                                    ->where('core_tipo_transaccion_id', $registro_abono->doc_cxp_transacc_id)
                                     ->where('core_tipo_doc_app_id', $registro_abono->doc_cxp_tipo_doc_id)
-                                    ->where('consecutivo', $registro_abono->doc_cxp_consecutivo)
-                                    ->where('core_tercero_id', $registro_abono->core_tercero_id)
-                                    ->whereNotIn('id',$documentos_cxp_ya_aplicados)
-                                    ->get()
-                                    ->first();
+                                    ->where('consecutivo', $registro_abono->doc_cxp_consecutivo);
+
+            // Los registros históricos tomaban el tercero del encabezado del
+            // pago. La referencia especializada sí se copiaba desde el
+            // movimiento de CxP y permite encontrar correctamente esas líneas.
+            if ($registro_abono->modelo_referencia_tercero_index != ''
+                && (int)$registro_abono->referencia_tercero_id > 0) {
+                $consulta_movimiento_cxp
+                    ->where('modelo_referencia_tercero_index', $registro_abono->modelo_referencia_tercero_index)
+                    ->where('referencia_tercero_id', $registro_abono->referencia_tercero_id);
+            } else {
+                $consulta_movimiento_cxp->where('core_tercero_id', $registro_abono->core_tercero_id);
+            }
+
+            if (!empty($documentos_cxp_ya_aplicados)) {
+                $consulta_movimiento_cxp->whereNotIn('id', $documentos_cxp_ya_aplicados);
+            }
+
+            $documento_cxp_pendiente = $consulta_movimiento_cxp
+                                        ->orderBy('id')
+                                        ->lockForUpdate()
+                                        ->first();
+
+            if (is_null($documento_cxp_pendiente)) {
+                throw new \RuntimeException(
+                    'No se encontró el movimiento de CxP asociado al abono #' . $registro_abono->id
+                    . ' (documento ' . $registro_abono->doc_cxp_consecutivo . ').'
+                );
+            }
 
             if ( $documento_cxp_pendiente->estado == 'Pagado' )
             {
                 // Se halla el total de todos los pagos que halla tenido (incluido el abono realizado por este pago)
                 // Ahi que diferenciar por el tercero
-                /*
-
-                    ERROR. CUANDO SE PAGAN VARIOS REGISTROS DEL MISMO DOCUMENTO SOLO REVERSA UN REGISTRO DE CXC
-                    EJEMPLO, CONTABILIZACIO DE LA NOMINA: UNA EPS TIENE VARIOS REGISTROS DE CXP CON EL MISMO DOC. 
-                    SI HAGO EL PAGO DE CXC DE TODOS LOS REGISTRO Y LUEGO ANULO ESE PAGO, SOLO ME "REVIVE" UN REGISTRO DE CXP
-
-                */
                 $array_wheres_abono_cxp = [
+                    ['core_empresa_id', '=', $registro_abono->core_empresa_id],
                     ['doc_cxp_transacc_id', '=', $registro_abono->doc_cxp_transacc_id],
                     ['doc_cxp_tipo_doc_id' , '=',  $registro_abono->doc_cxp_tipo_doc_id],
                     ['doc_cxp_consecutivo' , '=',  $registro_abono->doc_cxp_consecutivo]
@@ -745,7 +774,10 @@ class PagoCxpController extends TransaccionController
                 {
                     $array_wheres_abono_cxp = array_merge($array_wheres_abono_cxp, ['core_tercero_id' => $registro_abono->core_tercero_id ]);
                 }else{
-                    $array_wheres_abono_cxp = array_merge($array_wheres_abono_cxp, ['referencia_tercero_id' => $registro_abono->referencia_tercero_id ]);
+                    $array_wheres_abono_cxp = array_merge($array_wheres_abono_cxp, [
+                        'modelo_referencia_tercero_index' => $registro_abono->modelo_referencia_tercero_index,
+                        'referencia_tercero_id' => $registro_abono->referencia_tercero_id
+                    ]);
                 }
 
                 $valor_abonos_aplicados = CxpAbono::where( $array_wheres_abono_cxp )
