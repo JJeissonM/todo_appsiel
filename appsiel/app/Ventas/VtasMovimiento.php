@@ -434,6 +434,9 @@ class VtasMovimiento extends Model
     {
         switch ( $agrupar_por )
         {
+            case 'inv_bodega_id':
+                $agrupar_por = 'inv_bodega_id';
+                break;
             case 'cliente_id':
                 $agrupar_por = 'cliente';
                 break;
@@ -478,6 +481,7 @@ class VtasMovimiento extends Model
         }
 
         $movimiento = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
+                            ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'vtas_movimientos.inv_bodega_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
                             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_movimientos.clase_cliente_id')
                             ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_movimientos.core_tipo_transaccion_id')
@@ -487,6 +491,8 @@ class VtasMovimiento extends Model
                             ->select(
                                         'vtas_movimientos.id',
                                         'vtas_movimientos.inv_producto_id',
+                                        'vtas_movimientos.inv_bodega_id',
+                                        'inv_bodegas.descripcion AS bodega_descripcion',
                                         DB::raw($raw_producto),
                                         DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'),
                                         'vtas_movimientos.cliente_id',

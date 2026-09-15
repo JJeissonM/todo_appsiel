@@ -227,6 +227,9 @@ class Movimiento extends Model
             case 'inv_grupo_id':
                 $agrupar_por = 'inv_grupo_id';
                 break;
+            case 'inv_bodega_id':
+                $agrupar_por = 'inv_bodega_id';
+                break;
             case 'cliente_id':
                 $agrupar_por = 'cliente';
                 break;
@@ -293,6 +296,7 @@ class Movimiento extends Model
         $movimiento = DocRegistro::join('vtas_pos_doc_encabezados', 'vtas_pos_doc_encabezados.id', '=', 'vtas_pos_doc_registros.vtas_pos_doc_encabezado_id')
                             ->leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_doc_registros.inv_producto_id')
                             ->leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
+                            ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'vtas_pos_doc_registros.inv_bodega_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_doc_encabezados.core_tercero_id')
                             ->leftJoin('vtas_clientes', 'vtas_clientes.id', '=', 'vtas_pos_doc_encabezados.cliente_id')
                             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_clientes.clase_cliente_id')
@@ -302,6 +306,8 @@ class Movimiento extends Model
                             ->whereBetween('vtas_pos_doc_encabezados.fecha', [$fecha_desde, $fecha_hasta])
                             ->select(
                                         'vtas_pos_doc_registros.inv_producto_id',
+                                        'vtas_pos_doc_registros.inv_bodega_id',
+                                        'inv_bodegas.descripcion AS bodega_descripcion',
                                         DB::raw($raw_producto),
                                         DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'),
                                         'inv_productos.inv_grupo_id',

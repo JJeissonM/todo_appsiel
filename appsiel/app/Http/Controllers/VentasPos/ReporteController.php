@@ -350,7 +350,7 @@ class ReporteController extends Controller
         $movimiento_pos = Movimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por, $estado_facturas, null, $pdv_id);
 
         $array_lista = [];
-        $array_lista = $this->get_array_lista_registros($array_lista, $movimiento_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'POS', $user_cajero_pdv);
+        $array_lista = $agrupar_por == 'inv_bodega_id' ? [] : $this->get_array_lista_registros($array_lista, $movimiento_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'POS', $user_cajero_pdv);
 
         /**
          * 23 = Factura de venta
@@ -370,7 +370,21 @@ class ReporteController extends Controller
         if ($estado_facturas != 'Pendiente') {
             $movimiento_vtas_no_pos = VtasMovimiento::get_movimiento_ventas_por_transaccion($fecha_desde, $fecha_hasta, $agrupar_por, [23, 38, 41, 44, 49, 50, 52, 53, 54, 55]);
 
-            $array_lista = $this->get_array_lista_registros($array_lista, $movimiento_vtas_no_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'Estandar_FE', $user_cajero_pdv);
+            $array_lista = $agrupar_por == 'inv_bodega_id' ? [] : $this->get_array_lista_registros($array_lista, $movimiento_vtas_no_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'Estandar_FE', $user_cajero_pdv);
+        }
+
+        if ($agrupar_por == 'inv_bodega_id') {
+            // Consolidar las dos fuentes por el id real de la bodega.
+            $lineas_bodegas = collect($movimiento_pos->collapse()->all());
+            if (isset($movimiento_vtas_no_pos)) {
+                $lineas_estandar = $movimiento_vtas_no_pos->collapse();
+                if ($user_cajero_pdv != null) {
+                    $lineas_estandar = $lineas_estandar->where('creado_por', $user_cajero_pdv);
+                }
+                $lineas_bodegas = $lineas_bodegas->merge($lineas_estandar);
+            }
+            $array_lista = $this->get_array_lista_registros([], $lineas_bodegas->groupBy('inv_bodega_id'),
+                $agrupar_por, $detalla_productos, $iva_incluido, 'POS', null);
         }
 
         // En el movimiento se trae el precio_total con IVA incluido
@@ -437,6 +451,12 @@ class ReporteController extends Controller
                         $label = $coleccion_movimiento->first()->grupo_descripcion;
                     }
                 }
+            }
+
+            if ($agrupar_por == 'inv_bodega_id') {
+                $bodega = $coleccion_movimiento->first();
+                $label = $bodega->bodega_descripcion ?: ((int)$bodega->inv_bodega_id > 0
+                    ? 'Bodega #' . $bodega->inv_bodega_id : 'Sin bodega');
             }
 
             if ($agrupar_por == 'inv_producto_id') {

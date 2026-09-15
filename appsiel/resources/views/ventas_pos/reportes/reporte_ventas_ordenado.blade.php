@@ -11,6 +11,9 @@
 <?php 
     switch ( $agrupar_por )
     {
+        case 'inv_bodega_id':
+            $primer_encabezado = 'Bodega';
+            break;
         case 'pdv_id':
             $primer_encabezado = 'Pto. de Ventas';
             break;
