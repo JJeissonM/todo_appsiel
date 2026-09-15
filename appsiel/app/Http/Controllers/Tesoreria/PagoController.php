@@ -30,6 +30,7 @@ use App\Tesoreria\TesoDocRegistro;
 use App\Tesoreria\TesoMovimiento;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Core\Services\TurnoContext;
 use Collective\Html\FormFacade;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -447,35 +448,58 @@ class PagoController extends TransaccionController
 
         $doc_encabezado = app( $modelo->name_space )->find($id);
 
-        // Borrar registros viejos asociados al documento
-        TesoDocRegistro::where( 'teso_encabezado_id', $id )->delete();
+        // Una edición reconstruye las líneas del documento, pero continúa siendo
+        // la misma operación. Por eso debe conservar el turno que fue asignado al
+        // crearla, aunque actualmente se encuentre cerrado o auditado.
+        $request->merge([
+            'turno_operativo_id' => $doc_encabezado->turno_operativo_id,
+            'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
+            'consecutivo' => $doc_encabezado->consecutivo,
+            'creado_por' => $doc_encabezado->creado_por ?: Auth::user()->email,
+            'modificado_por' => Auth::user()->email
+        ]);
 
-        TesoMovimiento::where( 'core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id )
-                        ->where( 'core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id )
-                        ->where( 'consecutivo', $doc_encabezado->consecutivo )
-                        ->delete();
+        $actualizarDocumento = function () use ($request, $id, $doc_encabezado) {
+            // Borrar registros viejos asociados al documento
+            TesoDocRegistro::where( 'teso_encabezado_id', $id )->delete();
 
-        ContabMovimiento::where( 'core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id )
-                        ->where( 'core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id )
-                        ->where( 'consecutivo', $doc_encabezado->consecutivo )
-                        ->delete();
+            TesoMovimiento::where( 'core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id )
+                            ->where( 'core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id )
+                            ->where( 'consecutivo', $doc_encabezado->consecutivo )
+                            ->delete();
 
+            ContabMovimiento::where( 'core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id )
+                            ->where( 'core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id )
+                            ->where( 'consecutivo', $doc_encabezado->consecutivo )
+                            ->delete();
 
-        $request['core_tipo_transaccion_id'] = $doc_encabezado->core_tipo_transaccion_id;
-        $request['core_tipo_doc_app_id'] = $doc_encabezado->core_tipo_doc_app_id;
-        $request['consecutivo'] = $doc_encabezado->consecutivo;
-        $request['creado_por'] = $doc_encabezado->creado_por ?: Auth::user()->email;
-        $request['modificado_por'] = Auth::user()->email;
+            // Contabilizar nuevos registros
+            $tabla_registros_documento = json_decode($request->tabla_registros_documento);
 
-        // Contabilizar nuevos registros
-        $tabla_registros_documento = json_decode($request->tabla_registros_documento);
-        
-        $vec = $this->almacenar_lineas_registros( $request, $tabla_registros_documento, $doc_encabezado );
+            $vec = $this->almacenar_lineas_registros( $request, $tabla_registros_documento, $doc_encabezado );
 
-        $this->contabilizar_registro( $vec[0], '', 0, $vec[1]);
+            $this->contabilizar_registro( $vec[0], '', 0, $vec[1]);
 
-        $doc_encabezado->fill( $request->all() );
-        $doc_encabezado->save();
+            $doc_encabezado->fill( $request->all() );
+            $doc_encabezado->save();
+        };
+
+        DB::transaction(function () use ($doc_encabezado, $actualizarDocumento) {
+            $turno = $doc_encabezado->turnoOperativo;
+
+            if (is_null($turno)) {
+                $actualizarDocumento();
+                return;
+            }
+
+            app(TurnoContext::class)->runFromOrigin(
+                $turno,
+                get_class($doc_encabezado),
+                $doc_encabezado->getKey(),
+                $actualizarDocumento
+            );
+        });
 
         return redirect( 'tesoreria/pagos/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
