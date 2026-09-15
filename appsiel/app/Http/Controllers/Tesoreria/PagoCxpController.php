@@ -364,7 +364,7 @@ class PagoCxpController extends TransaccionController
         $botones_anterior_siguiente = new BotonesAnteriorSiguiente( $transaccion, $id );
 
         // Documentos pagados
-        $doc_pagados = CxpAbono::get_documentos_abonados( $doc_encabezado, $doc_encabezado->core_tercero_id );
+        $doc_pagados = CxpAbono::get_documentos_abonados( $doc_encabezado );
 
         $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 

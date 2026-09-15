@@ -115,6 +115,73 @@ class PagoCxpDocumentoVistaTest extends TestCase
         $this->assertNotEmpty($linea->documento_descripcion);
     }
 
+    public function test_documentos_pagados_muestra_una_fila_por_abono_aunque_el_documento_tenga_varios_movimientos()
+    {
+        $movimientoBase = CxpMovimiento::first();
+        $this->assertNotNull($movimientoBase);
+
+        $consecutivoCxp = (int)CxpMovimiento::max('consecutivo') + 2000;
+        $consecutivoPago = (int)CxpAbono::where('core_tipo_transaccion_id', 33)
+            ->max('consecutivo') + 2000;
+        $movimientos = collect(['Detalle principal', 'Detalle línea 2', 'Detalle línea 3'])
+            ->map(function ($detalle) use ($movimientoBase, $consecutivoCxp) {
+                return CxpMovimiento::create([
+                    'core_tipo_transaccion_id' => $movimientoBase->core_tipo_transaccion_id,
+                    'core_tipo_doc_app_id' => $movimientoBase->core_tipo_doc_app_id,
+                    'consecutivo' => $consecutivoCxp,
+                    'core_empresa_id' => $movimientoBase->core_empresa_id,
+                    'core_tercero_id' => $movimientoBase->core_tercero_id,
+                    'modelo_referencia_tercero_index' => $movimientoBase->modelo_referencia_tercero_index,
+                    'referencia_tercero_id' => $movimientoBase->referencia_tercero_id,
+                    'doc_proveedor_prefijo' => 'TEST',
+                    'doc_proveedor_consecutivo' => (string)$consecutivoCxp,
+                    'fecha' => date('Y-m-d'),
+                    'fecha_vencimiento' => date('Y-m-d'),
+                    'valor_documento' => 1000,
+                    'valor_pagado' => 1000,
+                    'saldo_pendiente' => 0,
+                    'estado' => 'Pagado',
+                    'detalle' => $detalle,
+                    'creado_por' => 'test@appsiel.com',
+                    'modificado_por' => ''
+                ]);
+            });
+
+        $pago = new TesoDocEncabezado([
+            'core_tipo_transaccion_id' => 33,
+            'core_tipo_doc_app_id' => 23,
+            'consecutivo' => $consecutivoPago,
+            'core_empresa_id' => $movimientoBase->core_empresa_id
+        ]);
+
+        $abono = CxpAbono::create([
+            'core_tipo_transaccion_id' => $pago->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $pago->core_tipo_doc_app_id,
+            'consecutivo' => $pago->consecutivo,
+            'core_empresa_id' => $movimientoBase->core_empresa_id,
+            'core_tercero_id' => $movimientoBase->core_tercero_id,
+            'modelo_referencia_tercero_index' => $movimientoBase->modelo_referencia_tercero_index,
+            'referencia_tercero_id' => $movimientoBase->referencia_tercero_id,
+            'fecha' => date('Y-m-d'),
+            'doc_cxp_transacc_id' => $movimientoBase->core_tipo_transaccion_id,
+            'doc_cxp_tipo_doc_id' => $movimientoBase->core_tipo_doc_app_id,
+            'doc_cxp_consecutivo' => $consecutivoCxp,
+            'doc_cruce_transacc_id' => 0,
+            'doc_cruce_tipo_doc_id' => 0,
+            'doc_cruce_consecutivo' => 0,
+            'abono' => 1000,
+            'creado_por' => 'test@appsiel.com',
+            'modificado_por' => ''
+        ]);
+
+        $documentosPagados = CxpAbono::get_documentos_abonados($pago);
+
+        $this->assertCount(1, $documentosPagados);
+        $this->assertSame((int)$abono->id, (int)$documentosPagados->first()->id);
+        $this->assertEquals(1000, $documentosPagados->sum('abono'));
+        $this->assertSame($movimientos->first()->detalle, $documentosPagados->first()->documento_descripcion);
+    }
+
     public function test_anulacion_reversa_una_vez_cada_abono_de_documentos_con_la_misma_identidad()
     {
         $usuario = User::where('empresa_id', 1)->first();

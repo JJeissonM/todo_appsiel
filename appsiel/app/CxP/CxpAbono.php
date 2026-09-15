@@ -211,15 +211,11 @@ class CxpAbono extends Model
     /*
         Obtener los registro de abonos hechos por $doc_encabezado
     */
-    public static function get_documentos_abonados( $doc_encabezado, $tercero_id = null )
+    public static function get_documentos_abonados( $doc_encabezado )
     {
         $query = CxpAbono::where('cxp_abonos.core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
                     ->where('cxp_abonos.core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
                     ->where('cxp_abonos.consecutivo',$doc_encabezado->consecutivo);
-
-        if ($tercero_id !== null) {
-            $query->where('cxp_abonos.core_tercero_id', $tercero_id);
-        }
 
         return $query->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_abonos.doc_cxp_tipo_doc_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxp_abonos.core_tercero_id')
@@ -227,7 +223,9 @@ class CxpAbono extends Model
                         $join->on('cxp_movimientos.core_empresa_id', '=', 'cxp_abonos.core_empresa_id')
                             ->on('cxp_movimientos.core_tipo_transaccion_id', '=', 'cxp_abonos.doc_cxp_transacc_id')
                             ->on('cxp_movimientos.core_tipo_doc_app_id', '=', 'cxp_abonos.doc_cxp_tipo_doc_id')
-                            ->on('cxp_movimientos.consecutivo', '=', 'cxp_abonos.doc_cxp_consecutivo');
+                            ->on('cxp_movimientos.consecutivo', '=', 'cxp_abonos.doc_cxp_consecutivo')
+                            ->on('cxp_movimientos.modelo_referencia_tercero_index', '=', 'cxp_abonos.modelo_referencia_tercero_index')
+                            ->on('cxp_movimientos.referencia_tercero_id', '=', 'cxp_abonos.referencia_tercero_id');
                     })
                     ->select(
                                 'cxp_abonos.core_tipo_transaccion_id',
@@ -251,7 +249,15 @@ class CxpAbono extends Model
                                 'core_terceros.direccion1',
                                 'core_terceros.telefono1'
                             )
-                    ->get();
+                    ->orderBy('cxp_abonos.id')
+                    ->orderBy('cxp_movimientos.id')
+                    ->get()
+                    // cxp_abonos no almacena el id del movimiento de CxP. Si
+                    // el documento originó varias líneas con la misma
+                    // identidad, el join las repite. Para la presentación debe
+                    // existir exactamente una fila por cada abono real.
+                    ->unique('id')
+                    ->values();
     }
 
     /*
