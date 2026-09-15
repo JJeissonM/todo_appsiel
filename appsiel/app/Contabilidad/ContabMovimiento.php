@@ -242,16 +242,20 @@ class ContabMovimiento extends Model
         }
 
         if (!is_null($clase_cuenta_id)) {
-            $arr_ids_cuentas_de_la_clase = ContabCuenta::where('contab_cuenta_clase_id',$clase_cuenta_id)->get()->pluck('id')->toArray();
+            $cuentas_de_la_clase = function ($query) use ($clase_cuenta_id) {
+                $query->select('id')->from('contab_cuentas')->where('contab_cuenta_clase_id', $clase_cuenta_id);
+            };
             return ContabMovimiento::where($array_wheres)
-                            ->whereIn('contab_cuenta_id',$arr_ids_cuentas_de_la_clase)
+                            ->whereIn('contab_cuenta_id',$cuentas_de_la_clase)
                             ->sum('valor_saldo');
         }
 
         if (!is_null($grupo_cuenta_id)) {
-            $arr_ids_cuentas_del_grupo = ContabCuenta::where('contab_cuenta_grupo_id',$grupo_cuenta_id)->get()->pluck('id')->toArray();
+            $cuentas_del_grupo = function ($query) use ($grupo_cuenta_id) {
+                $query->select('id')->from('contab_cuentas')->where('contab_cuenta_grupo_id', $grupo_cuenta_id);
+            };
             return ContabMovimiento::where($array_wheres)
-                            ->whereIn('contab_cuenta_id',$arr_ids_cuentas_del_grupo)
+                            ->whereIn('contab_cuenta_id',$cuentas_del_grupo)
                             ->sum('valor_saldo');
         }
 
@@ -276,11 +280,15 @@ class ContabMovimiento extends Model
         $query = ContabMovimiento::where($array_wheres);
 
         if (!is_null($clase_cuenta_id)) {
-            $arr_ids_cuentas_de_la_clase = ContabCuenta::where('contab_cuenta_clase_id',$clase_cuenta_id)->get()->pluck('id')->toArray();
-            $query->whereIn('contab_cuenta_id', $arr_ids_cuentas_de_la_clase);
+            $cuentas_de_la_clase = function ($query) use ($clase_cuenta_id) {
+                $query->select('id')->from('contab_cuentas')->where('contab_cuenta_clase_id', $clase_cuenta_id);
+            };
+            $query->whereIn('contab_cuenta_id', $cuentas_de_la_clase);
         } elseif (!is_null($grupo_cuenta_id)) {
-            $arr_ids_cuentas_del_grupo = ContabCuenta::where('contab_cuenta_grupo_id',$grupo_cuenta_id)->get()->pluck('id')->toArray();
-            $query->whereIn('contab_cuenta_id', $arr_ids_cuentas_del_grupo);
+            $cuentas_del_grupo = function ($query) use ($grupo_cuenta_id) {
+                $query->select('id')->from('contab_cuentas')->where('contab_cuenta_grupo_id', $grupo_cuenta_id);
+            };
+            $query->whereIn('contab_cuenta_id', $cuentas_del_grupo);
         } elseif (!is_null($cuenta_id)) {
             $query->where('contab_cuenta_id', $cuenta_id);
         }
@@ -302,21 +310,25 @@ class ContabMovimiento extends Model
         }
 
         if (!is_null($clase_cuenta_id)) {
-            $arr_ids_cuentas_de_la_clase = ContabCuenta::where('contab_cuenta_clase_id',$clase_cuenta_id)->get()->pluck('id')->toArray();
-            return ContabMovimiento::whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+            $cuentas_de_la_clase = function ($query) use ($clase_cuenta_id) {
+                $query->select('id')->from('contab_cuentas')->where('contab_cuenta_clase_id', $clase_cuenta_id);
+            };
+            return ContabMovimiento::with(['cuenta', 'tercero', 'tipo_documento_app'])->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                             ->where($array_wheres)
-                            ->whereIn('contab_cuenta_id',$arr_ids_cuentas_de_la_clase)
+                            ->whereIn('contab_cuenta_id',$cuentas_de_la_clase)
                             ->orderBy('fecha')
                             ->orderBy('created_at')
                             ->get();
         }
 
         if (!is_null($grupo_cuenta_id)) {
-            $arr_ids_cuentas_del_grupo = ContabCuenta::where('contab_cuenta_grupo_id',$grupo_cuenta_id)->get()->pluck('id')->toArray();
+            $cuentas_del_grupo = function ($query) use ($grupo_cuenta_id) {
+                $query->select('id')->from('contab_cuentas')->where('contab_cuenta_grupo_id', $grupo_cuenta_id);
+            };
             
-            return ContabMovimiento::whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+            return ContabMovimiento::with(['cuenta', 'tercero', 'tipo_documento_app'])->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                                 ->where($array_wheres)
-                                ->whereIn('contab_cuenta_id',$arr_ids_cuentas_del_grupo)
+                                ->whereIn('contab_cuenta_id',$cuentas_del_grupo)
                                 ->orderBy('fecha')
                                 ->get();
         }
@@ -325,7 +337,7 @@ class ContabMovimiento extends Model
             $array_wheres = array_merge($array_wheres, ['contab_cuenta_id' => $cuenta_id]);
         }
 
-        return ContabMovimiento::whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+        return ContabMovimiento::with(['cuenta', 'tercero', 'tipo_documento_app'])->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
             ->where($array_wheres)
             ->orderBy('fecha')
             ->get();
