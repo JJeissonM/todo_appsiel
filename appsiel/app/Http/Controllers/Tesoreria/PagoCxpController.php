@@ -54,7 +54,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\DB;
-use NumerosEnLetras;
+use App\Tesoreria\Services\ImporteChequeEnLetras;
 
 class PagoCxpController extends TransaccionController
 {
@@ -364,7 +364,7 @@ class PagoCxpController extends TransaccionController
         $botones_anterior_siguiente = new BotonesAnteriorSiguiente( $transaccion, $id );
 
         // Documentos pagados
-        $doc_pagados = CxpAbono::get_documentos_abonados( $doc_encabezado );
+        $doc_pagados = CxpAbono::get_documentos_abonados( $doc_encabezado, $doc_encabezado->core_tercero_id );
 
         $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 
@@ -498,7 +498,7 @@ class PagoCxpController extends TransaccionController
                     'Number' => is_null($cheque) ? '' : (string) $cheque->numero_cheque,
                     'DateInfo' => $dateInfo,
                     'PayTo' => $receiverName,
-                    'AmountText' => strtoupper(trim(NumerosEnLetras::convertir((float) $encabezado->valor_total, 'pesos', false))) . ' MCTE.',
+                    'AmountText' => ImporteChequeEnLetras::convertir($encabezado->valor_total),
                     'Amount' => number_format((float) $encabezado->valor_total, 0, ',', '.'),
                     'City' => strtoupper($city)
                 ],

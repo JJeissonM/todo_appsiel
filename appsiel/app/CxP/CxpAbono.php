@@ -211,12 +211,17 @@ class CxpAbono extends Model
     /*
         Obtener los registro de abonos hechos por $doc_encabezado
     */
-    public static function get_documentos_abonados( $doc_encabezado )
+    public static function get_documentos_abonados( $doc_encabezado, $tercero_id = null )
     {
-        return CxpAbono::where('cxp_abonos.core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+        $query = CxpAbono::where('cxp_abonos.core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
                     ->where('cxp_abonos.core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
-                    ->where('cxp_abonos.consecutivo',$doc_encabezado->consecutivo)
-                    ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_abonos.doc_cxp_tipo_doc_id')
+                    ->where('cxp_abonos.consecutivo',$doc_encabezado->consecutivo);
+
+        if ($tercero_id !== null) {
+            $query->where('cxp_abonos.core_tercero_id', $tercero_id);
+        }
+
+        return $query->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_abonos.doc_cxp_tipo_doc_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxp_abonos.core_tercero_id')
                     ->leftJoin('cxp_movimientos', function ($join) {
                         $join->on('cxp_movimientos.core_empresa_id', '=', 'cxp_abonos.core_empresa_id')
