@@ -24,6 +24,63 @@ class PagoCxpDocumentoVistaTest extends TestCase
         }
     }
 
+    public function test_genera_detalle_del_encabezado_desde_los_documentos_seleccionados()
+    {
+        $documentos = CxpMovimiento::orderBy('id')->take(2)->get();
+        $this->assertCount(2, $documentos);
+
+        $documentos[0]->detalle = 'Detalle del primer documento';
+        $documentos[0]->save();
+        $documentos[1]->detalle = 'Detalle del segundo documento';
+        $documentos[1]->save();
+
+        $configuracionOriginal = config('tesoreria.generar_detalle_pago_cxp_desde_documentos');
+
+        try {
+            $request = new Request([
+                'descripcion' => '   ',
+                'lineas_registros' => json_encode([
+                    ['id_doc' => $documentos[1]->id, 'abono' => 10],
+                    ['id_doc' => $documentos[0]->id, 'abono' => 20],
+                    ['id_doc' => '', 'abono' => '']
+                ])
+            ]);
+
+            config(['tesoreria.generar_detalle_pago_cxp_desde_documentos' => 0]);
+            $this->invocarGeneracionDetalle($request);
+            $this->assertSame('   ', $request->descripcion);
+
+            config(['tesoreria.generar_detalle_pago_cxp_desde_documentos' => 1]);
+            $this->invocarGeneracionDetalle($request);
+
+            $this->assertSame(
+                'Detalle del segundo documento | Detalle del primer documento',
+                $request->descripcion
+            );
+
+            $requestConDetalle = new Request([
+                'descripcion' => 'Detalle escrito por el usuario',
+                'lineas_registros' => $request->lineas_registros
+            ]);
+            $this->invocarGeneracionDetalle($requestConDetalle);
+            $this->assertSame('Detalle escrito por el usuario', $requestConDetalle->descripcion);
+        } finally {
+            config([
+                'tesoreria.generar_detalle_pago_cxp_desde_documentos' => is_null($configuracionOriginal)
+                    ? 0
+                    : $configuracionOriginal
+            ]);
+        }
+    }
+
+    public function test_configuracion_para_generar_el_detalle_esta_disponible_y_desactivada_por_defecto()
+    {
+        $vista = file_get_contents(resource_path('views/core/config_aplicacion/tesoreria.blade.php'));
+
+        $this->assertSame('0', (string)config('tesoreria.generar_detalle_pago_cxp_desde_documentos', 0));
+        $this->assertContains("Form::bsSelect('generar_detalle_pago_cxp_desde_documentos'", $vista);
+    }
+
     public function test_documento_pagado_usa_datos_del_movimiento_cxp_sin_depender_del_encabezado_origen()
     {
         $pago = TesoDocEncabezado::first();
@@ -163,5 +220,12 @@ class PagoCxpDocumentoVistaTest extends TestCase
         $metodo = new ReflectionMethod(PagoCxpController::class, 'build_apm_accounting_summary');
         $metodo->setAccessible(true);
         $metodo->invoke(new PagoCxpController(), $encabezado);
+    }
+
+    protected function invocarGeneracionDetalle(Request $request)
+    {
+        $metodo = new ReflectionMethod(PagoCxpController::class, 'completar_detalle_encabezado_desde_documentos');
+        $metodo->setAccessible(true);
+        $metodo->invoke(new PagoCxpController(), $request);
     }
 }

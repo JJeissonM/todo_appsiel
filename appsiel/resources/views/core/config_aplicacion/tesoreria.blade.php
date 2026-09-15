@@ -93,6 +93,22 @@
 					<div class="col-md-6">&nbsp;</div>
 				</div>
 
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$generar_detalle_pago_cxp_desde_documentos = 0;
+								if (isset($parametros['generar_detalle_pago_cxp_desde_documentos'])) {
+									$generar_detalle_pago_cxp_desde_documentos = $parametros['generar_detalle_pago_cxp_desde_documentos'];
+								}
+							?>
+							{{ Form::bsSelect('generar_detalle_pago_cxp_desde_documentos', $generar_detalle_pago_cxp_desde_documentos, 'Generar detalle del pago CxP desde los documentos', ['0' => 'No', '1' => 'Sí'], ['class'=>'form-control']) }}
+							<small class="help-block">Cuando el detalle del encabezado esté vacío, concatena los detalles de los documentos de cartera pagados.</small>
+						</div>
+					</div>
+					<div class="col-md-6">&nbsp;</div>
+				</div>
+
 				<h4> Parámetros para arqueos de caja </h4>
 				<hr>
 

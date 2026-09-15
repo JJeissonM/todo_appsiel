@@ -139,6 +139,8 @@ class PagoCxpController extends TransaccionController
     {
         try {
             $doc_encabezado = DB::transaction(function () use ($request) {
+                $this->completar_detalle_encabezado_desde_documentos($request);
+
                 $doc = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
                 $totalAbonos = $this->almacenar_registros_cxp($request, $doc);
@@ -202,6 +204,44 @@ class PagoCxpController extends TransaccionController
 
         // se llama la vista de PagoCxpController@show
         return redirect($urlDocumento);
+    }
+
+    protected function completar_detalle_encabezado_desde_documentos(Request $request)
+    {
+        if ((int)config('tesoreria.generar_detalle_pago_cxp_desde_documentos', 0) !== 1
+            || trim((string)$request->descripcion) !== '') {
+            return;
+        }
+
+        $lineas = json_decode((string)$request->lineas_registros);
+        if (!is_array($lineas)) {
+            return;
+        }
+
+        $detalles = [];
+        foreach ($lineas as $linea) {
+            $documentoId = is_object($linea) && isset($linea->id_doc)
+                ? (int)$linea->id_doc
+                : 0;
+
+            if ($documentoId <= 0) {
+                continue;
+            }
+
+            $documento = CxpMovimiento::find($documentoId);
+            if (is_null($documento)) {
+                continue;
+            }
+
+            $detalle = trim((string)$documento->detalle);
+            if ($detalle !== '') {
+                $detalles[] = $detalle;
+            }
+        }
+
+        if (!empty($detalles)) {
+            $request->merge(['descripcion' => implode(' | ', $detalles)]);
+        }
     }
 
     protected function validar_balance_contable($doc_encabezado)
