@@ -129,6 +129,68 @@ class ComprasCuentaPorPagarDirectaTest extends TestCase
         $this->assertEquals($cuenta->id, $this->movimientos($doc)->firstOrFail()->contab_cuenta_id);
     }
 
+    public function test_nota_directa_descarta_cuenta_de_factura_y_revierte_guardado_fallido()
+    {
+        list($doc) = $this->preparar(40);
+        foreach (['', '0', 999999999] as $cuentaEnviada) {
+            $datos = $doc->toArray();
+            unset($datos['id']);
+            $datos['cta_x_pagar_id'] = $cuentaEnviada;
+            $controller = new NotaDirectaGuardadoTestController();
+            try {
+                $controller->store(new Request($datos));
+                $this->fail('Se esperaba el fallo simulado.');
+            } catch (RuntimeException $e) {
+                $this->assertSame('Fallo posterior a la escritura', $e->getMessage());
+            }
+            $this->assertNull($controller->cuentaRecibida);
+            $this->assertNotNull($controller->documentoCreadoId);
+            $this->assertNull(ComprasDocEncabezado::find($controller->documentoCreadoId));
+        }
+    }
+
+    public function test_nota_devolucion_hereda_cuenta_y_revierte_escrituras()
+    {
+        list($factura, $cuenta) = $this->preparar();
+        foreach ([$cuenta->id, null] as $cuentaFactura) {
+            $factura->update(['cta_x_pagar_id'=>$cuentaFactura]);
+            $request = new Request($factura->toArray());
+            $request->merge(['compras_doc_relacionado_id'=>$factura->id, 'cta_x_pagar_id'=>999999999]);
+            $controller = new NotaDevolucionGuardadoTestController();
+            try {
+                $controller->store($request);
+                $this->fail('Se esperaba el fallo simulado.');
+            } catch (RuntimeException $e) {
+                $this->assertSame('Fallo posterior a la escritura', $e->getMessage());
+            }
+            $this->assertEquals($cuentaFactura, $controller->cuentaRecibida);
+            $this->assertNotNull($controller->documentoCreadoId);
+            $this->assertNull(ComprasDocEncabezado::find($controller->documentoCreadoId));
+        }
+    }
+
+    public function test_nota_valor_hereda_cuenta_y_revierte_encabezado_si_falla()
+    {
+        list($factura, $cuenta) = $this->preparar();
+        $modelo = App\Sistema\Modelo::where('name_space', 'App\\Compras\\NotaCreditoValor')->firstOrFail();
+        foreach ([$cuenta->id, null] as $cuentaFactura) {
+            $factura->update(['cta_x_pagar_id'=>$cuentaFactura]);
+            $request = new Request($factura->toArray());
+            $request->merge(['compras_doc_relacionado_id'=>$factura->id, 'cta_x_pagar_id'=>999999999,
+                'url_id_modelo'=>$modelo->id, 'core_tipo_transaccion_id'=>61]);
+            $controller = new NotaValorGuardadoTestController();
+            try {
+                $controller->store($request);
+                $this->fail('Se esperaba el fallo simulado.');
+            } catch (RuntimeException $e) {
+                $this->assertSame('Fallo posterior a la escritura', $e->getMessage());
+            }
+            $this->assertEquals($cuentaFactura, $controller->cuentaRecibida);
+            $this->assertNotNull($controller->documentoCreadoId);
+            $this->assertNull(ComprasDocEncabezado::find($controller->documentoCreadoId));
+        }
+    }
+
     public function test_nota_credito_revierte_la_cuenta_directa_de_la_factura()
     {
         list($doc,$cuenta) = $this->preparar();
@@ -147,4 +209,46 @@ class CompraCuentaDirectaTestController extends CompraController
 class ConfirmacionCuentaDirectaTestService extends CompraConfirmationService
 {
     public function requestFrom($doc) { return $this->buildRequestFromDocument($doc); }
+}
+
+class NotaDirectaGuardadoTestController extends App\Http\Controllers\Compras\NotaCreditoDirectaController
+{
+    public $cuentaRecibida;
+    public $documentoCreadoId;
+
+    public function crear_devolucion(Request $request)
+    {
+        $this->cuentaRecibida = $request->input('cta_x_pagar_id');
+        // Escribir con la FK real para reproducir el error del encabezado.
+        $doc = App\Compras\NotaCreditoDirecta::create($request->all());
+        $this->documentoCreadoId = $doc->id;
+        throw new RuntimeException('Fallo posterior a la escritura');
+    }
+}
+
+class NotaDevolucionGuardadoTestController extends NotaCreditoController
+{
+    public $cuentaRecibida;
+    public $documentoCreadoId;
+
+    public function crear_devolucion(Request $request, $entrada_almacen_id)
+    {
+        $this->cuentaRecibida = $request->input('cta_x_pagar_id');
+        $doc = App\Compras\NotaCredito::create($request->all());
+        $this->documentoCreadoId = $doc->id;
+        throw new RuntimeException('Fallo posterior a la escritura');
+    }
+}
+
+class NotaValorGuardadoTestController extends App\Http\Controllers\Compras\NotaCreditoValorController
+{
+    public $cuentaRecibida;
+    public $documentoCreadoId;
+
+    public function crear_registros_nota_credito(Request $request, $nota_credito, $factura)
+    {
+        $this->cuentaRecibida = $nota_credito->cta_x_pagar_id;
+        $this->documentoCreadoId = $nota_credito->id;
+        throw new RuntimeException('Fallo posterior a la escritura');
+    }
 }

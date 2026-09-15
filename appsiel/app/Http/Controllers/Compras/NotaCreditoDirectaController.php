@@ -30,6 +30,7 @@ use App\CxP\CxpAbono;
 
 use App\Contabilidad\Impuesto;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class NotaCreditoDirectaController extends TransaccionController
 {
@@ -61,16 +62,19 @@ class NotaCreditoDirectaController extends TransaccionController
      */
     public function store(Request $request)
     {
-        // 1ro. Crear documento de Salida de inventarios (Devolución) con base en la entrada y las cantidades a devolver
-        // WARNING. HECHO MANUALMENTE
-        $request['entrada_almacen_id'] = $this->crear_devolucion( $request );
+        // La nota directa usa la cuenta del proveedor, no la opción de las facturas.
+        $request->merge(['cta_x_pagar_id' => null]);
 
-        // 2do. Crear encabezado del documento de Compras (Nota Crédito)
-        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
-        $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
+        $nota_credito = DB::transaction(function () use ($request) {
+            $request['entrada_almacen_id'] = $this->crear_devolucion($request);
 
-        // 3ro. Crear líneas de registros del documento
-        NotaCreditoDirectaController::crear_registros_nota_credito( $request, $nota_credito );
+            $encabezado_documento = new EncabezadoDocumentoTransaccion($request->url_id_modelo);
+            $nota_credito = $encabezado_documento->crear_nuevo($request->all());
+
+            NotaCreditoDirectaController::crear_registros_nota_credito($request, $nota_credito);
+
+            return $nota_credito;
+        });
 
         return redirect('compras_notas_credito_directa/'.$nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
     }
