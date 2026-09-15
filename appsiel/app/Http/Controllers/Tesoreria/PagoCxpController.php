@@ -512,8 +512,8 @@ class PagoCxpController extends TransaccionController
                     'Concept' => $conceptLines,
                     'Description' => trim(strip_tags((string) $encabezado->documento_soporte)),
                     'Items' => $accountingSummary['items'],
-                    'TotalDebit' => $this->format_apm_money($accountingSummary['total_debit'], 0),
-                    'TotalCredit' => $this->format_apm_money($accountingSummary['total_credit'], 0),
+                    'TotalDebit' => $this->format_apm_money($accountingSummary['total_debit'], $accountingSummary['decimals']),
+                    'TotalCredit' => $this->format_apm_money($accountingSummary['total_credit'], $accountingSummary['decimals']),
                     'CreatedBy' => $createdBy
                 ]
             ]
@@ -529,12 +529,21 @@ class PagoCxpController extends TransaccionController
 
     protected function build_apm_accounting_summary($encabezado)
     {
+        return $this->build_apm_accounting_summary_from_movements(
+            $encabezado->get_accounting_movement(),
+            CxpAbono::get_documentos_abonados($encabezado)
+        );
+    }
+
+    protected function build_apm_accounting_summary_from_movements($contab_mov, $doc_pagados)
+    {
         $items = [];
         $totalDebit = 0;
         $totalCredit = 0;
 
-        $contab_mov = $encabezado->get_accounting_movement();
-        $doc_pagados = CxpAbono::get_documentos_abonados($encabezado);
+        $debitCents = 0;
+        $creditCents = 0;
+        $amounts = [];
 
         $abonosTomados = [];
         foreach ($contab_mov as $registro) {
@@ -543,6 +552,11 @@ class PagoCxpController extends TransaccionController
             $valor_credito = (float) $registro->valor_credito;
             $roundedDebit = $valor_debito > 0 ? (int)round($valor_debito, 0, PHP_ROUND_HALF_UP) : 0;
             $roundedCredit = $valor_credito != 0 ? (int)round(abs($valor_credito), 0, PHP_ROUND_HALF_UP) : 0;
+            $lineDebitCents = $valor_debito > 0 ? (int)round($valor_debito * 100, 0, PHP_ROUND_HALF_UP) : 0;
+            $lineCreditCents = (int)round(abs($valor_credito) * 100, 0, PHP_ROUND_HALF_UP);
+            $debitCents += $lineDebitCents;
+            $creditCents += $lineCreditCents;
+            $amounts[] = [$lineDebitCents, $lineCreditCents];
 
             $reference = $this->find_apm_reference($doc_pagados, $abonosTomados, $valor_debito);
 
@@ -563,18 +577,33 @@ class PagoCxpController extends TransaccionController
             $totalCredit += $roundedCredit;
         }
 
-        if ($totalDebit !== $totalCredit) {
+        if ($debitCents !== $creditCents) {
             throw new \RuntimeException(
-                'No se puede generar el comprobante APM porque los valores redondeados están descuadrados. ' .
-                'Débitos: ' . $this->format_apm_money($totalDebit, 0) .
-                '; créditos: ' . $this->format_apm_money($totalCredit, 0) . '.'
+                'No se puede generar el comprobante APM porque los movimientos contables están descuadrados. ' .
+                'Débitos: ' . $this->format_apm_money($debitCents / 100, 2) .
+                '; créditos: ' . $this->format_apm_money($creditCents / 100, 2) . '.'
             );
+        }
+
+        // Si redondear cada linea a pesos rompe el equilibrio, conservar los
+        // centavos originales en todo el detalle y en sus totales impresos.
+        $decimals = 0;
+        if ($totalDebit !== $totalCredit) {
+            $decimals = 2;
+            foreach ($items as $index => &$item) {
+                $item['Debit'] = $this->format_apm_money($amounts[$index][0] / 100, 2);
+                $item['Credit'] = $this->format_apm_money($amounts[$index][1] / 100, 2);
+            }
+            unset($item);
+            $totalDebit = $debitCents / 100;
+            $totalCredit = $creditCents / 100;
         }
 
         return [
             'items' => $items,
             'total_debit' => $totalDebit,
-            'total_credit' => $totalCredit
+            'total_credit' => $totalCredit,
+            'decimals' => $decimals
         ];
     }
 

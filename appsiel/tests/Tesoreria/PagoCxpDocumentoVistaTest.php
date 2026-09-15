@@ -355,7 +355,7 @@ class PagoCxpDocumentoVistaTest extends TestCase
         $this->assertSame('-', $itemCredito['Reference']);
     }
 
-    public function test_resumen_apm_rechaza_totales_descuadrados_despues_del_redondeo()
+    public function test_resumen_apm_conserva_centavos_si_redondear_descuadra()
     {
         $base = ContabMovimiento::where('contab_cuenta_id', '>', 0)
             ->where('core_tercero_id', '>', 0)
@@ -387,10 +387,12 @@ class PagoCxpDocumentoVistaTest extends TestCase
             ]);
         }
 
-        $this->setExpectedException('RuntimeException', 'los valores redondeados están descuadrados');
         $metodo = new ReflectionMethod(PagoCxpController::class, 'build_apm_accounting_summary');
         $metodo->setAccessible(true);
-        $metodo->invoke(new PagoCxpController(), $encabezado);
+        $summary = $metodo->invoke(new PagoCxpController(), $encabezado);
+        $this->assertSame(2, $summary['decimals']);
+        $this->assertEquals(1, $summary['total_debit']);
+        $this->assertEquals(1, $summary['total_credit']);
     }
 
     protected function invocarGeneracionDetalle(Request $request)
