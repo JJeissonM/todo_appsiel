@@ -29,6 +29,25 @@ class HotelReceivableService
             ->get();
     }
 
+    public function pendingCheckOutInvoices(HotelStay $stay)
+    {
+        $query = $this->customerMovements($stay)
+            ->where('cxc_movimientos.saldo_pendiente', '>', 0.1);
+
+        // Solo se exceptúan saldos con una factura de crédito identificada.
+        // Los demás conservan el bloqueo, incluidos los documentos de contado.
+        foreach (array('vtas_doc_encabezados', 'vtas_pos_doc_encabezados') as $table) {
+            $invoice = DB::table($table)->select(DB::raw(1));
+            foreach (array('core_empresa_id', 'core_tercero_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo') as $column) {
+                $invoice->whereRaw($table . '.' . $column . ' = cxc_movimientos.' . $column);
+            }
+            $invoice->whereRaw('LOWER(TRIM(' . $table . '.forma_pago)) = ?', array('credito'));
+            $query->whereRaw('NOT EXISTS (' . $invoice->toSql() . ')', $invoice->getBindings());
+        }
+
+        return $query->get();
+    }
+
     public function availableAdvances(HotelStay $stay)
     {
         return $this->customerMovements($stay)
