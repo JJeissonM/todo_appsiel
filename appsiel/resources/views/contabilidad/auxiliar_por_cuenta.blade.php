@@ -80,6 +80,13 @@
 								<p class="help-block">Sí: ordena, agrupa y subtotaliza por cada cuenta.</p>
 							</div>
 						</div>
+                        <div class="col-xs-6 col-sm-4 col-md-3">
+                            <div class="form-group">
+                                {{ Form::label('totalizar_por_documento','Totalizar por documento') }}
+                                {{ Form::select('totalizar_por_documento',['0'=>'No','1'=>'Sí'],0,['class'=>'form-control','id'=>'totalizar_por_documento']) }}
+                                <p class="help-block">Suma los movimientos del mismo documento, tercero y cuenta.</p>
+                            </div>
+                        </div>
 						<div class="col-xs-6 col-sm-4 col-md-3">
 							<div class="form-group">
 								<label>&nbsp;</label>

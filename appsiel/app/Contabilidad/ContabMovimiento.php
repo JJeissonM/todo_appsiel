@@ -299,48 +299,47 @@ class ContabMovimiento extends Model
                     ->toArray();
     }
 
-    public static function get_movimiento_contable($fecha_desde, $fecha_hasta, $cuenta_id, $tercero_id, $grupo_cuenta_id, $clase_cuenta_id)
+    public static function get_movimiento_contable($fecha_desde, $fecha_hasta, $cuenta_id, $tercero_id, $grupo_cuenta_id, $clase_cuenta_id, $totalizar_por_documento = false)
     {
-        $array_wheres = [
-            ['core_empresa_id', '=', Auth::user()->empresa_id]
-        ];
+        $query = ContabMovimiento::with(['cuenta', 'tercero', 'tipo_documento_app'])
+            ->where('core_empresa_id', Auth::user()->empresa_id)
+            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta]);
 
         if (!is_null($tercero_id)) {
-            $array_wheres = array_merge($array_wheres, ['core_tercero_id' => $tercero_id]);
+            $query->where('core_tercero_id', $tercero_id);
         }
 
         if (!is_null($clase_cuenta_id)) {
-            $cuentas_de_la_clase = function ($query) use ($clase_cuenta_id) {
-                $query->select('id')->from('contab_cuentas')->where('contab_cuenta_clase_id', $clase_cuenta_id);
-            };
-            return ContabMovimiento::with(['cuenta', 'tercero', 'tipo_documento_app'])->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-                            ->where($array_wheres)
-                            ->whereIn('contab_cuenta_id',$cuentas_de_la_clase)
-                            ->orderBy('fecha')
-                            ->orderBy('created_at')
-                            ->get();
+            $query->whereIn('contab_cuenta_id', function ($cuentas) use ($clase_cuenta_id) {
+                $cuentas->select('id')->from('contab_cuentas')->where('contab_cuenta_clase_id', $clase_cuenta_id);
+            });
+        } elseif (!is_null($grupo_cuenta_id)) {
+            $query->whereIn('contab_cuenta_id', function ($cuentas) use ($grupo_cuenta_id) {
+                $cuentas->select('id')->from('contab_cuentas')->where('contab_cuenta_grupo_id', $grupo_cuenta_id);
+            });
+        } elseif (!is_null($cuenta_id)) {
+            $query->where('contab_cuenta_id', $cuenta_id);
         }
 
-        if (!is_null($grupo_cuenta_id)) {
-            $cuentas_del_grupo = function ($query) use ($grupo_cuenta_id) {
-                $query->select('id')->from('contab_cuentas')->where('contab_cuenta_grupo_id', $grupo_cuenta_id);
-            };
-            
-            return ContabMovimiento::with(['cuenta', 'tercero', 'tipo_documento_app'])->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-                                ->where($array_wheres)
-                                ->whereIn('contab_cuenta_id',$cuentas_del_grupo)
-                                ->orderBy('fecha')
-                                ->get();
+        if ($totalizar_por_documento) {
+            // Agrupar en SQL para no cargar cada asiento individual en memoria.
+            $campos = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'core_tercero_id', 'contab_cuenta_id'];
+            $query->select($campos)
+                ->selectRaw('MIN(id) AS id, MIN(fecha) AS fecha, MIN(created_at) AS created_at')
+                ->selectRaw('SUM(valor_debito) AS valor_debito, SUM(valor_credito) AS valor_credito, SUM(valor_saldo) AS valor_saldo')
+                ->selectRaw("CASE WHEN COUNT(DISTINCT COALESCE(detalle_operacion, '')) <= 1 THEN MIN(detalle_operacion) ELSE 'Varios detalles' END AS detalle_operacion")
+                ->groupBy($campos);
         }
 
-        if (!is_null($cuenta_id)) {
-            $array_wheres = array_merge($array_wheres, ['contab_cuenta_id' => $cuenta_id]);
+        $query->orderBy('fecha');
+        if (!is_null($clase_cuenta_id)) {
+            $query->orderBy('created_at');
+        }
+        if ($totalizar_por_documento) {
+            $query->orderBy('id');
         }
 
-        return ContabMovimiento::with(['cuenta', 'tercero', 'tipo_documento_app'])->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-            ->where($array_wheres)
-            ->orderBy('fecha')
-            ->get();
+        return $query->get();
     }
 
     public static function get_saldo_movimiento_clase_cuenta($fecha_desde, $fecha_hasta, $clase_cuenta_id )
