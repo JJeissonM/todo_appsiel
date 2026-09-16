@@ -5,6 +5,7 @@
 ?>
 
 @section('content')
+    <p><a class="btn btn-default" href="{{ url('contab_auxiliar_terceros') }}">Auxiliar por terceros: mensual y anual</a></p>
 	{{ Form::bsMigaPan($miga_pan) }}
 
 	<div class="row">
