@@ -135,14 +135,11 @@ class ArqueoCajaController extends ModeloController
                 ->lists('descripcion', 'id')->toArray();
             $turnos = $turnos
                 ->map(function ($turno) use ($pdvDescriptions, $companyId, $cashBoxId) {
-                    $cashBase = (int)$turno->teso_caja_id === (int)$cashBoxId
-                        ? (float)$turno->saldo_inicial
-                        : TesoMovimiento::calcularSaldoInicialArqueo(
-                            $companyId,
-                            $cashBoxId,
-                            $turno->fecha_operativa,
-                            is_null($turno->abierto_en) ? null : $turno->abierto_en->format('Y-m-d H:i:s')
-                        );
+                    $cashBase = TesoMovimiento::calcularSaldoInicialArqueoPorTurno(
+                        $companyId,
+                        $cashBoxId,
+                        $turno
+                    );
                     return array(
                         'id' => $turno->id,
                         'code' => $turno->codigo,
@@ -248,14 +245,11 @@ class ArqueoCajaController extends ModeloController
             $pdvDescription = !is_null($pdvId) && isset($pdvDescriptions[$pdvId])
                 ? $pdvDescriptions[$pdvId]
                 : $turn->contexto_tipo . ' ' . $turn->contexto_id;
-            $cashBase = (int)$turn->teso_caja_id === $cashBoxId
-                ? (float)$turn->saldo_inicial
-                : TesoMovimiento::calcularSaldoInicialArqueo(
-                    $companyId,
-                    $cashBoxId,
-                    $turn->fecha_operativa,
-                    is_null($turn->abierto_en) ? null : $turn->abierto_en->format('Y-m-d H:i:s')
-                );
+            $cashBase = TesoMovimiento::calcularSaldoInicialArqueoPorTurno(
+                $companyId,
+                $cashBoxId,
+                $turn
+            );
             $label = $turn->codigo . ' - ' . $turn->estado . ' | ' . $turn->fecha_operativa . ' | ' . $pdvDescription;
             $items[] = '<a href="#" class="list-group-item list-group-item-sugerencia"'
                 . ' data-registro_id="' . e($turn->id) . '"'
@@ -324,18 +318,15 @@ class ArqueoCajaController extends ModeloController
             if (is_null($turno)) {
                 return response()->json(array('status' => 'error', 'message' => 'Seleccione un turno operativo válido antes de recalcular el saldo inicial.'), 422);
             }
-            $cashBase = (int)$turno->teso_caja_id === (int)$teso_caja_id
-                ? (float)$turno->saldo_inicial
-                : TesoMovimiento::calcularSaldoInicialArqueo(
-                    $user->empresa_id,
-                    $teso_caja_id,
-                    $turno->fecha_operativa,
-                    is_null($turno->abierto_en) ? null : $turno->abierto_en->format('Y-m-d H:i:s')
-                );
+            $cashBase = TesoMovimiento::calcularSaldoInicialArqueoPorTurno(
+                $user->empresa_id,
+                $teso_caja_id,
+                $turno
+            );
             return response()->json(array(
                 'status' => 'success',
                 'saldo_inicial' => $cashBase,
-                'message' => 'Saldo inicial tomado del turno operativo seleccionado.'
+                'message' => 'Saldo inicial actualizado con los movimientos de turnos anteriores.'
             ));
         }
 

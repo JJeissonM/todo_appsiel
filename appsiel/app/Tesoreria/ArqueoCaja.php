@@ -249,7 +249,11 @@ class ArqueoCaja extends Model
                 'fecha' => $turno->fecha_operativa,
                 'fecha_hora_apertura' => $this->turnoDateValue($turno->abierto_en),
                 'fecha_hora_cierre' => $this->turnoDateValue($turno->cerrado_en),
-                'base' => $turno->saldo_inicial
+                'base' => TesoMovimiento::calcularSaldoInicialArqueoPorTurno(
+                    $empresaId,
+                    (int)$request->teso_caja_id,
+                    $turno
+                )
             ));
             return;
         }
