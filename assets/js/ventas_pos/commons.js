@@ -1527,6 +1527,26 @@ function agregar_nueva_linea()
  * 
  * @param {*} vlr_efectivo_recibido 
  */
+function pos_asignar_total_a_efectivo()
+{
+  var $efectivo = $("#efectivo_recibido");
+  if (locked || $efectivo.prop("disabled") || $efectivo.prop("readonly")) {
+    return;
+  }
+
+  // El total visible incluye el redondeo y los recargos, en formato colombiano.
+  var texto = $("#total_factura").text().replace(/[$\s]/g, "").replace(/\./g, "").replace(",", ".");
+  var total = Number(texto);
+  if (!isFinite(total) || total <= 0) {
+    return;
+  }
+
+  $efectivo.val(total);
+  // Primero recalcular como al escribir; luego ejecutar el Enter existente.
+  $efectivo.trigger($.Event("keyup", { which: 48, keyCode: 48 }));
+  $efectivo.trigger($.Event("keyup", { which: 13, keyCode: 13 }));
+}
+
 function set_datos_efectivo_recibido( vlr_efectivo_recibido )
 {
   $("#total_efectivo_recibido").val( vlr_efectivo_recibido );
@@ -1705,6 +1725,11 @@ $(document).ready(function () {
   /**
    * EFECTIVO RECIBIDO
    */
+  $("#btn_efectivo_exacto").on("click", function (event) {
+    event.preventDefault();
+    pos_asignar_total_a_efectivo();
+  });
+
   $("#efectivo_recibido").on("keyup", function (event) {
     $("#popup_alerta").hide();
     var codigo_tecla_presionada = event.which || event.keyCode;

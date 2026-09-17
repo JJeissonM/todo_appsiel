@@ -86,7 +86,13 @@
                     <div id="lbl_valor_total_bolsas" style="display: inline; font-size: 9px; color: green;"> $ 0</div>                    
                 @endif
                 <div id="lbl_ajuste_al_peso" style="font-size: 9px;"> $ 0</div>
-                <div id="total_factura" style="font-weight: bold;"> $ {{ number_format( $valor_total_factura,'2',',','.') }}</div>
+                <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;">
+                    <div id="total_factura" style="font-weight: bold;"> $ {{ number_format( $valor_total_factura,'2',',','.') }}</div>
+                    <button type="button" id="btn_efectivo_exacto" class="btn btn-success btn-sm"
+                            title="Asignar el total como efectivo recibido" aria-label="Asignar el total como efectivo recibido">
+                        <i class="fa fa-money" aria-hidden="true"></i> Exacto
+                    </button>
+                </div>
                 <input type="hidden" name="valor_total_factura" id="valor_total_factura" value="{{ $valor_total_factura }}">
             </td>
         </tr>

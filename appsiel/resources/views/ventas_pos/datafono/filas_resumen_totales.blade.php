@@ -17,7 +17,18 @@
         <input type="hidden" name="motivo_tesoreria_datafono" id="motivo_tesoreria_datafono" value="{{ (int)config('ventas_pos.motivo_tesoreria_datafono') }}">
 
         @if( (int)config('ventas_pos.motivo_tesoreria_datafono') != 0)
-            <input type="hidden" name="motivo_tesoreria_datafono_label" id="motivo_tesoreria_datafono_label" value="{{ App\Tesoreria\TesoMotivo::find( (int)config('ventas_pos.motivo_tesoreria_datafono') )->descripcion }}">
+
+            <?php
+                $motivo_datafono = App\Tesoreria\TesoMotivo::find( (int)config('ventas_pos.motivo_tesoreria_datafono') );
+
+                if( $motivo_datafono == null)
+                {
+                    dd("El motivo de tesorería para la comisión del datáfono no existe. Por favor verifique la configuración de la aplicación.");
+                }
+
+                $label_motivo_datafono = ($motivo_datafono !== null) ? $motivo_datafono->descripcion : '';
+            ?>
+            <input type="hidden" name="motivo_tesoreria_datafono_label" id="motivo_tesoreria_datafono_label" value="{{ $label_motivo_datafono }}">
         @else
             <input type="hidden" name="motivo_tesoreria_datafono_label" id="motivo_tesoreria_datafono_label" value="">
         @endif        
