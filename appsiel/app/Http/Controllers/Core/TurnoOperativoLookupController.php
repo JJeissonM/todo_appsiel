@@ -31,6 +31,33 @@ class TurnoOperativoLookupController extends Controller
         }
 
         $companyId = (int)Auth::user()->empresa_id;
+        if ($request->input('reporte') === 'pos_movimientos_ventas') {
+            if (!Auth::user()->can('pos_movimientos_ventas')) {
+                abort(403);
+            }
+            $query = (new \App\VentasPos\Services\SalesReportShiftService())->available($companyId);
+            $pdvId = (int)$request->input('pdv_id');
+            if ($pdvId > 0) {
+                $query->where(function ($where) use ($pdvId) {
+                    $where->where('pdv_id', $pdvId)->orWhere(function ($fallback) use ($pdvId) {
+                        $fallback->where(function ($empty) { $empty->whereNull('pdv_id')->orWhere('pdv_id', 0); })
+                            ->where('contexto_id', $pdvId);
+                    });
+                });
+            }
+            $search = trim((string)$request->input('texto_busqueda'));
+            if ($search !== '') {
+                $query->where(function ($where) use ($search) {
+                    $like = '%' . $search . '%';
+                    $where->where('codigo', 'LIKE', $like)->orWhere('fecha_operativa', 'LIKE', $like)
+                        ->orWhere('estado', 'LIKE', $like)->orWhereIn('pdv_id', function ($pdv) use ($like) {
+                            $pdv->select('id')->from('vtas_pos_puntos_de_ventas')->where('descripcion', 'LIKE', $like);
+                        });
+                });
+            }
+            return response($this->renderSuggestions($query->limit(self::RESULT_LIMIT)->get()->all()));
+        }
+
         $search = trim((string)$request->input('texto_busqueda'));
         $pdvId = (int)$request->input('pdv_id');
         $states = $this->allowedStates();
@@ -196,6 +223,8 @@ class TurnoOperativoLookupController extends Controller
             $html .= '<a class="list-group-item list-group-item-sugerencia' . ($index === 0 ? ' active' : '') . '"'
                 . ' data-registro_id="' . (int)$turn->id . '"'
                 . ' data-turno-estado="' . e($turn->estado) . '"'
+                . ' data-turno-opening-at="' . e($turn->abierto_en ? $turn->abierto_en->format('Y-m-d H:i:s') : '') . '"'
+                . ' data-turno-closing-at="' . e($turn->cerrado_en ? $turn->cerrado_en->format('Y-m-d H:i:s') : '') . '"'
                 . ' data-primer_item="' . ($index === 0 ? 1 : 0) . '"'
                 . ' data-ultimo_item="' . ($index === $last ? 1 : 0) . '"'
                 . ' data-accion="na">' . e($label) . '</a>';

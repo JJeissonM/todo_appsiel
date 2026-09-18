@@ -37,6 +37,9 @@ class RegistroDeEfectivo extends TesoDocEncabezado
         {
             $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_efectivo );
 
+            $valor_linea = 0;
+            $valor_debito = 0;
+            $valor_credito = 0;
             switch ( $motivo->movimiento )
             {
                 case 'entrada':
@@ -64,7 +67,7 @@ class RegistroDeEfectivo extends TesoDocEncabezado
                         'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
                         'teso_caja_id' => (int)$lineas_registros[$i]->caja_id_efectivo,
                         'teso_cuenta_bancaria_id' => 0,
-                        'detalle_operacion' => $tipo_operacion,
+                        'detalle_operacion' => ($lineas_registros[$i]->detalle_operacion) ? $lineas_registros[$i]->detalle_operacion : '',
                         'valor' => abs( $valor_linea )
                     ] + $doc_encabezado->toArray();
             

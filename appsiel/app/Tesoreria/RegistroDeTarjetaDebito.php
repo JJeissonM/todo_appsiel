@@ -33,6 +33,9 @@ class RegistroDeTarjetaDebito extends TesoDocEncabezado
 
         $teso_medio_recaudo_id = TesoMedioRecaudo::get_id_por_tipo_registro('tarjeta_debito');
 
+        $valor_linea = 0;
+        $valor_debito = 0;
+        $valor_credito = 0;
         for ($i=0; $i < $cantidad; $i++) 
         {
             $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_tarjeta_debito );
@@ -58,13 +61,15 @@ class RegistroDeTarjetaDebito extends TesoDocEncabezado
                 
             $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_tarjeta_debito;
 
+            $detalle_operacion = ($lineas_registros[$i]->detalle_operacion) ? $lineas_registros[$i]->detalle_operacion : '';
+
             $datos = [
                         'teso_encabezado_id' => $doc_encabezado->id,
                         'teso_motivo_id' => (int)$lineas_registros[$i]->teso_motivo_id_tarjeta_debito,
                         'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
                         'teso_caja_id' => 0,
                         'teso_cuenta_bancaria_id' => (int)$lineas_registros[$i]->banco_id_tarjeta_debito,
-                        'detalle_operacion' => $tipo_operacion . '. Comprobante número ' . $lineas_registros[$i]->numero_comprobante_tarjeta_debito,
+                        'detalle_operacion' => $detalle_operacion,
                         'valor' => abs( $valor_linea )
                     ] + $doc_encabezado->toArray();
             

@@ -6,6 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
+class SalesReportShiftLookupUser
+{
+    public $empresa_id = 1;
+    public function can($permission) { return $permission === 'pos_movimientos_ventas'; }
+}
+
 class SalesReportShiftTest extends TestCase
 {
     private $previous;
@@ -16,10 +22,10 @@ class SalesReportShiftTest extends TestCase
         config(['database.connections.shift_report_test' => ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => ''], 'cache.default' => 'array']);
         DB::setDefaultConnection('shift_report_test');
         DB::connection()->getPdo()->sqliteCreateFunction('CONCAT', function () { return implode('', func_get_args()); });
-        Auth::shouldReceive('user')->andReturn((object)['empresa_id' => 1]);
+        Auth::shouldReceive('user')->andReturn(new SalesReportShiftLookupUser());
         $tables = [
             'sys_campos' => 'id opciones',
-            'core_turnos_operativos' => 'id core_empresa_id contexto_tipo contexto_id pdv_id estado codigo abierto_en cerrado_en',
+            'core_turnos_operativos' => 'id core_empresa_id contexto_tipo contexto_id pdv_id estado codigo fecha_operativa abierto_en cerrado_en',
             'vtas_pos_puntos_de_ventas' => 'id descripcion cajero_id',
             'core_terceros' => 'id descripcion numero_identificacion',
             'vtas_clientes' => 'id clase_cliente_id',
@@ -98,10 +104,27 @@ class SalesReportShiftTest extends TestCase
     }
     public function test_selector_solo_ofrece_turnos_de_la_empresa_cerrados_o_auditados()
     {
-        $html = view('ventas_pos.reportes.filtro_turno_operativo')->render();
+        config(['turnos.modules.tesoreria.integrated' => true]);
+        $controller = new \App\Http\Controllers\Core\TurnoOperativoLookupController(
+            Mockery::mock('App\Core\Services\TurnoModeResolver')
+        );
+        $params = ['modulo' => 'tesoreria', 'reporte' => 'pos_movimientos_ventas', 'texto_busqueda' => 'T-', 'pdv_id' => 0];
+        $html = $controller->suggestions(new Request($params))->getContent();
         $this->assertContains('T-1', $html);
         $this->assertContains('T-2', $html);
+        $this->assertContains('data-turno-opening-at="2026-09-17 20:00:00"', $html);
+        $this->assertContains('data-turno-closing-at="2026-09-18 04:00:00"', $html);
         foreach (['T-3', 'T-4', 'T-5'] as $code) { $this->assertNotContains($code, $html); }
+        $params['pdv_id'] = 99;
+        $this->assertNotContains('data-registro_id', $controller->suggestions(new Request($params))->getContent());
+        $params['pdv_id'] = 0; $params['texto_busqueda'] = 'T-2';
+        $html = $controller->suggestions(new Request($params))->getContent();
+        $this->assertContains('T-2', $html);
+        $this->assertNotContains('T-1', $html);
+        $field = view('ventas_pos.reportes.filtro_turno_operativo')->render();
+        $this->assertContains('text_input_sugerencias', $field);
+        $this->assertContains('turnos/operativos/sugerencias', $field);
+        $this->assertNotContains('<select', $field);
     }
 
     public function test_orden_descendente_por_venta_total_se_conserva()
