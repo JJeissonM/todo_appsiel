@@ -67,7 +67,7 @@ class RegistroDeEfectivo extends TesoDocEncabezado
                         'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
                         'teso_caja_id' => (int)$lineas_registros[$i]->caja_id_efectivo,
                         'teso_cuenta_bancaria_id' => 0,
-                        'detalle_operacion' => ($lineas_registros[$i]->detalle_operacion) ? $lineas_registros[$i]->detalle_operacion : '',
+                        'detalle_operacion' => (isset($lineas_registros[$i]->detalle_operacion)) ? $lineas_registros[$i]->detalle_operacion : '',
                         'valor' => abs( $valor_linea )
                     ] + $doc_encabezado->toArray();
             
