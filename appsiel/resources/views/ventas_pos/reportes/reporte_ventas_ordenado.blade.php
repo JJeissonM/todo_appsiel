@@ -6,6 +6,12 @@
 @if ($pdv != null)
     <p style="width: 100%; text-align: center;"><b>Punto de ventas:</b> {{ $pdv->descripcion }}</p>
 @endif
+@if(isset($turno) && $turno)
+    <p style="text-align:center;"><b>Turno:</b> {{ $turno->codigo }} ({{ $turno->estado }})<br>
+        <b>Desde:</b> {{ $turno->abierto_en->format('Y-m-d H:i:s') }}
+        <b>Hasta:</b> {{ $turno->cerrado_en->format('Y-m-d H:i:s') }}
+    </p>
+@endif
 <hr>
 
 <?php 

@@ -430,7 +430,7 @@ class VtasMovimiento extends Model
         return $movimiento->groupBy( $agrupar_por );
     }
 
-    public static function get_movimiento_ventas_por_transaccion( $fecha_desde, $fecha_hasta, $agrupar_por, array $core_tipo_transaccion_id )
+    public static function get_movimiento_ventas_por_transaccion( $fecha_desde, $fecha_hasta, $agrupar_por, array $core_tipo_transaccion_id, $turno_operativo_id = null, $turno_pdv_id = 0 )
     {
         switch ( $agrupar_por )
         {
@@ -480,17 +480,20 @@ class VtasMovimiento extends Model
             $raw_producto = 'CONCAT( inv_productos.referencia, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto';
         }
 
-        $movimiento = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
+        $query = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
                             ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'vtas_movimientos.inv_bodega_id')
+                            ->leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
                             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_movimientos.clase_cliente_id')
                             ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_movimientos.core_tipo_transaccion_id')
                             ->where($array_wheres)
                             ->whereIn('vtas_movimientos.core_tipo_transaccion_id',$core_tipo_transaccion_id)
-                            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                             ->select(
                                         'vtas_movimientos.id',
                                         'vtas_movimientos.inv_producto_id',
+                                        'inv_productos.inv_grupo_id',
+                                        'inv_grupos.descripcion AS grupo_descripcion',
+                                        DB::raw((int)$turno_pdv_id . ' AS pdv_id'),
                                         'vtas_movimientos.inv_bodega_id',
                                         'inv_bodegas.descripcion AS bodega_descripcion',
                                         DB::raw($raw_producto),
@@ -508,8 +511,18 @@ class VtasMovimiento extends Model
                                         'vtas_movimientos.base_impuesto_total',// AS base_imp_tot
                                         'vtas_movimientos.tasa_descuento',
                                         'vtas_movimientos.valor_total_descuento',
-                                        'vtas_movimientos.creado_por')
-                            ->get();
+                                        'vtas_movimientos.creado_por');
+        if ($turno_operativo_id) {
+            $query->whereRaw('EXISTS (SELECT 1 FROM vtas_doc_encabezados AS turno_documento
+                WHERE turno_documento.turno_operativo_id = ?
+                AND turno_documento.core_empresa_id = vtas_movimientos.core_empresa_id
+                AND turno_documento.core_tipo_transaccion_id = vtas_movimientos.core_tipo_transaccion_id
+                AND turno_documento.core_tipo_doc_app_id = vtas_movimientos.core_tipo_doc_app_id
+                AND turno_documento.consecutivo = vtas_movimientos.consecutivo)', [$turno_operativo_id]);
+        } else {
+            $query->whereBetween('vtas_movimientos.fecha', [$fecha_desde, $fecha_hasta]);
+        }
+        $movimiento = $query->get();
 
         foreach ($movimiento as $fila)
         {

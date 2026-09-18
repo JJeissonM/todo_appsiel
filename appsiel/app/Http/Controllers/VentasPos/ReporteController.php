@@ -337,9 +337,27 @@ class ReporteController extends Controller
         $iva_incluido  = (int)$request->iva_incluido;
         $pdv_id  = (int)$request->pdv_id;
 
+        $turno = null;
+        $turno_id = $request->input('turno_operativo_id', $request->input('trurno_operativo_id'));
+        if ($turno_id !== null && $turno_id !== '' && (string)$turno_id !== '0') {
+            try {
+                $turno = (new \App\VentasPos\Services\SalesReportShiftService())->resolve($turno_id, Auth::user()->empresa_id, $pdv_id);
+            } catch (\InvalidArgumentException $e) {
+                return response()->json(['message' => $e->getMessage()], 422);
+            }
+            $pdv_id = (int)($turno->pdv_id ?: $turno->contexto_id);
+            $fecha_desde = $turno->abierto_en->format('Y-m-d');
+            $fecha_hasta = $turno->cerrado_en->format('Y-m-d');
+        } else {
+            $this->validate($request, ['fecha_desde' => 'required|date_format:Y-m-d', 'fecha_hasta' => 'required|date_format:Y-m-d']);
+            if ($fecha_hasta < $fecha_desde) {
+                return response()->json(['message' => 'La fecha final debe ser igual o posterior a la inicial.'], 422);
+            }
+        }
+
         $pdv = Pdv::find($pdv_id);
         $user_cajero_pdv = null;
-        if ($pdv != null) {
+        if ($pdv != null && !$turno) {
             if ($pdv->cajero != null) {
                 $user_cajero_pdv = $pdv->cajero->email;
             }
@@ -347,10 +365,10 @@ class ReporteController extends Controller
 
         $estado_facturas = $this->normalizarEstadoFacturas($request->estado_facturas);
 
-        $movimiento_pos = Movimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por, $estado_facturas, null, $pdv_id);
+        $movimiento_pos = Movimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por, $estado_facturas, null, $pdv_id, $turno ? $turno->id : null);
 
         $array_lista = [];
-        $array_lista = $agrupar_por == 'inv_bodega_id' ? [] : $this->get_array_lista_registros($array_lista, $movimiento_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'POS', $user_cajero_pdv);
+        $array_lista = ($turno || $agrupar_por == 'inv_bodega_id') ? [] : $this->get_array_lista_registros($array_lista, $movimiento_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'POS', $user_cajero_pdv);
 
         /**
          * 23 = Factura de venta
@@ -368,12 +386,12 @@ class ReporteController extends Controller
         // documentos ya emitidos. No deben aparecer al solicitar solamente
         // facturas POS pendientes.
         if ($estado_facturas != 'Pendiente') {
-            $movimiento_vtas_no_pos = VtasMovimiento::get_movimiento_ventas_por_transaccion($fecha_desde, $fecha_hasta, $agrupar_por, [23, 38, 41, 44, 49, 50, 52, 53, 54, 55]);
+            $movimiento_vtas_no_pos = VtasMovimiento::get_movimiento_ventas_por_transaccion($fecha_desde, $fecha_hasta, $agrupar_por, [23, 38, 41, 44, 49, 50, 52, 53, 54, 55], $turno ? $turno->id : null, $turno ? $pdv_id : 0);
 
-            $array_lista = $agrupar_por == 'inv_bodega_id' ? [] : $this->get_array_lista_registros($array_lista, $movimiento_vtas_no_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'Estandar_FE', $user_cajero_pdv);
+            $array_lista = ($turno || $agrupar_por == 'inv_bodega_id') ? [] : $this->get_array_lista_registros($array_lista, $movimiento_vtas_no_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'Estandar_FE', $user_cajero_pdv);
         }
 
-        if ($agrupar_por == 'inv_bodega_id') {
+        if (!$turno && $agrupar_por == 'inv_bodega_id') {
             // Consolidar las dos fuentes por el id real de la bodega.
             $lineas_bodegas = collect($movimiento_pos->collapse()->all());
             if (isset($movimiento_vtas_no_pos)) {
@@ -387,13 +405,28 @@ class ReporteController extends Controller
                 $agrupar_por, $detalla_productos, $iva_incluido, 'POS', null);
         }
 
+        if ($turno) {
+            $grupos_turno = collect();
+            foreach ([$movimiento_pos, isset($movimiento_vtas_no_pos) ? $movimiento_vtas_no_pos : collect()] as $fuente) {
+                foreach ($fuente as $clave => $lineas) {
+                    foreach ($lineas as $linea) {
+                        $linea->pdv_descripcion = $pdv ? $pdv->descripcion : 'PDV ' . $pdv_id;
+                    }
+                    $previas = $grupos_turno->get($clave, collect());
+                    $grupos_turno->put($clave, $previas->merge($lineas->all()));
+                }
+            }
+            $array_lista = $this->get_array_lista_registros([], $grupos_turno, $agrupar_por,
+                $detalla_productos, $iva_incluido, 'POS', null);
+        }
+
         // En el movimiento se trae el precio_total con IVA incluido
         $mensaje = 'IVA Incluido en precio';
         if (!$iva_incluido) {
             $mensaje = 'IVA <b>NO</b> incluido en precio';
         }
 
-        $vista = View::make('ventas_pos.reportes.reporte_ventas_ordenado', compact('array_lista', 'agrupar_por', 'mensaje', 'iva_incluido', 'detalla_productos', 'pdv'))->render();
+        $vista = View::make('ventas_pos.reportes.reporte_ventas_ordenado', compact('array_lista', 'agrupar_por', 'mensaje', 'iva_incluido', 'detalla_productos', 'pdv', 'turno', 'fecha_desde', 'fecha_hasta'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

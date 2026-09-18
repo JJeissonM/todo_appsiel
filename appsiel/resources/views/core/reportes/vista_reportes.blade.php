@@ -35,6 +35,9 @@
 					</div>
 				@endif
 			@endforeach
+            @if($reporte->url_form_action == 'pos_movimientos_ventas')
+                @include('ventas_pos.reportes.filtro_turno_operativo')
+            @endif
 
 		<?php
 			$reports_list = [
@@ -122,6 +125,9 @@
 @endsection
 
 @section('scripts')
+    @if($reporte->url_form_action == 'pos_movimientos_ventas')
+        <script src="{{ asset('assets/js/ventas_pos/reporte_filtro_turno.js?v=1') }}"></script>
+    @endif
 
 	<script src="{{ asset( 'assets/js/inventarios/barcodes_printing.js?aux=' . uniqid() )}}"></script>
 
@@ -196,9 +202,13 @@
 						return false;
 					}
 
-					create_btns_for_print_barcodes();
-					
-				});
+                    create_btns_for_print_barcodes();
+                }).fail(function (xhr) {
+                    if ($('#form_consulta').attr('data-url_form_action') !== 'pos_movimientos_ventas') { return; }
+                    $('#div_cargando, #div_spin').hide();
+                    var mensaje = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'No fue posible generar el resumen. Revise los filtros e intente nuevamente.';
+                    $('#resultado_consulta').empty().append($('<div class="alert alert-danger" role="alert">').text(mensaje));
+                });
 			});
 
 			// Para algunos reportes de calificaciones

@@ -217,7 +217,7 @@ class Movimiento extends Model
         return $vec;
     }
 
-    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por, $estado, $core_tipo_transaccion_id, $pdv_id )
+    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por, $estado, $core_tipo_transaccion_id, $pdv_id, $turno_operativo_id = null )
     {
         switch ( $agrupar_por )
         {
@@ -293,7 +293,7 @@ class Movimiento extends Model
             $raw_producto = 'CONCAT( inv_productos.referencia, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto';
         }
 
-        $movimiento = DocRegistro::join('vtas_pos_doc_encabezados', 'vtas_pos_doc_encabezados.id', '=', 'vtas_pos_doc_registros.vtas_pos_doc_encabezado_id')
+        $query = DocRegistro::join('vtas_pos_doc_encabezados', 'vtas_pos_doc_encabezados.id', '=', 'vtas_pos_doc_registros.vtas_pos_doc_encabezado_id')
                             ->leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_doc_registros.inv_producto_id')
                             ->leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
                             ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'vtas_pos_doc_registros.inv_bodega_id')
@@ -303,7 +303,6 @@ class Movimiento extends Model
                             ->leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_doc_encabezados.pdv_id')
                             ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_pos_doc_encabezados.core_tipo_transaccion_id')
                             ->where($array_wheres)
-                            ->whereBetween('vtas_pos_doc_encabezados.fecha', [$fecha_desde, $fecha_hasta])
                             ->select(
                                         'vtas_pos_doc_registros.inv_producto_id',
                                         'vtas_pos_doc_registros.inv_bodega_id',
@@ -331,8 +330,13 @@ class Movimiento extends Model
                                         'vtas_pos_doc_registros.base_impuesto_total',// AS base_imp_tot
                                         'vtas_pos_doc_registros.tasa_descuento',
                                         'vtas_pos_doc_registros.valor_total_descuento',
-                                        'vtas_pos_doc_encabezados.creado_por')
-                            ->get();
+                                        'vtas_pos_doc_encabezados.creado_por');
+        if ($turno_operativo_id) {
+            $query->where('vtas_pos_doc_encabezados.turno_operativo_id', $turno_operativo_id);
+        } else {
+            $query->whereBetween('vtas_pos_doc_encabezados.fecha', [$fecha_desde, $fecha_hasta]);
+        }
+        $movimiento = $query->get();
 
         foreach ($movimiento as $fila)
         {
