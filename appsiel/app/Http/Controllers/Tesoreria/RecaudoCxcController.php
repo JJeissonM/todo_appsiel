@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -133,39 +134,83 @@ class RecaudoCxcController extends Controller
      */
     public function store(Request $request)
     {
-        $pdv_id = PdvResolver::normalize($request->input('pdv_id'));
+        try {
+            $this->validarMediosRecaudoSolicitados($request);
 
-        $request['creado_por'] = Auth::user()->email;
-        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
-        $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
+            return DB::transaction(function () use ($request) {
+                $pdv_id = PdvResolver::normalize($request->input('pdv_id'));
 
-        $total_abonos_cxc = $doc_encabezado->almacenar_y_contabilizar_abonos_cxc( $request );
-        
-        $retenciones = new RegistroRetencion();
-        $retenciones->almacenar_nuevos_registros( $request->lineas_registros_retenciones, $doc_encabezado, $total_abonos_cxc, 'sufrida' );
-        
-        $descuentos_pronto_pago = new RegistroDescuentoProntoPago();
-        $descuentos_pronto_pago->almacenar_nuevos_registros( $request->lineas_registros_descuento_pronto_pagos, $doc_encabezado, 'concedido' );
+                $request['creado_por'] = Auth::user()->email;
+                $encabezado_documento = new EncabezadoDocumentoTransaccion($request->url_id_modelo);
+                $doc_encabezado = $encabezado_documento->crear_nuevo($request->all());
 
-        $efectivo = new RegistroDeEfectivo();
-        $efectivo->almacenar_registros( $request->lineas_registros_efectivo, $doc_encabezado, $pdv_id );
+                $total_abonos_cxc = $doc_encabezado->almacenar_y_contabilizar_abonos_cxc($request);
 
-        $transferencia_consignacion = new RegistroDeTransferenciaConsignacion();
-        $transferencia_consignacion->almacenar_registros( $request->lineas_registros_transferencia_consignacion, $doc_encabezado, $pdv_id );
+                $retenciones = new RegistroRetencion();
+                $retenciones->almacenar_nuevos_registros($request->lineas_registros_retenciones, $doc_encabezado, $total_abonos_cxc, 'sufrida');
 
-        $tarjeta_debito = new RegistroDeTarjetaDebito();
-        $tarjeta_debito->almacenar_registros( $request->lineas_registros_tarjeta_debito, $doc_encabezado, $pdv_id );
+                $descuentos_pronto_pago = new RegistroDescuentoProntoPago();
+                $descuentos_pronto_pago->almacenar_nuevos_registros($request->lineas_registros_descuento_pronto_pagos, $doc_encabezado, 'concedido');
 
-        $tarjeta_credito = new RegistroDeTarjetaCredito();
-        $tarjeta_credito->almacenar_registros( $request->lineas_registros_tarjeta_credito, $doc_encabezado, $pdv_id );
+                $efectivo = new RegistroDeEfectivo();
+                $efectivo->almacenar_registros($request->lineas_registros_efectivo, $doc_encabezado, $pdv_id);
 
-        $cheques = new RegistroDeCheque();
-        $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 'cheque_tercero', 'Recibido', 'de_tercero', $pdv_id );
+                $transferencia_consignacion = new RegistroDeTransferenciaConsignacion();
+                $transferencia_consignacion->almacenar_registros($request->lineas_registros_transferencia_consignacion, $doc_encabezado, $pdv_id);
 
-        $doc_encabezado->actualizar_valor_total();
+                $tarjeta_debito = new RegistroDeTarjetaDebito();
+                $tarjeta_debito->almacenar_registros($request->lineas_registros_tarjeta_debito, $doc_encabezado, $pdv_id);
 
-        // se llama la vista de RecaudoCxcController@show
-        return redirect( 'tesoreria/recaudos_cxc/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+                $tarjeta_credito = new RegistroDeTarjetaCredito();
+                $tarjeta_credito->almacenar_registros($request->lineas_registros_tarjeta_credito, $doc_encabezado, $pdv_id);
+
+                $cheques = new RegistroDeCheque();
+                $cheques->almacenar_registros($request->lineas_registros_cheques, $doc_encabezado, 'cheque_tercero', 'Recibido', 'de_tercero', $pdv_id);
+
+                $doc_encabezado->actualizar_valor_total();
+
+                // se llama la vista de RecaudoCxcController@show
+                return redirect('tesoreria/recaudos_cxc/' . $doc_encabezado->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+            });
+        } catch (\InvalidArgumentException $exception) {
+            return redirect()->back()
+                ->withInput($request->except('_token'))
+                ->with('mensaje_error', 'No fue posible registrar el recaudo: ' . $exception->getMessage());
+        }
+    }
+
+    /**
+     * Verifica antes de crear el encabezado que cada pestaña con registros
+     * tenga un medio de recaudo activo que permita procesarla.
+     */
+    protected function validarMediosRecaudoSolicitados(Request $request)
+    {
+        $campos = [
+            'lineas_registros_efectivo' => 'efectivo',
+            'lineas_registros_transferencia_consignacion' => 'transferencia_consignacion',
+            'lineas_registros_tarjeta_debito' => 'tarjeta_debito',
+            'lineas_registros_tarjeta_credito' => 'tarjeta_credito',
+            'lineas_registros_cheques' => 'cheque_tercero'
+        ];
+
+        foreach ($campos as $campo => $tipo_registro) {
+            if ($this->contieneLineasRegistrables($request->input($campo))) {
+                TesoMedioRecaudo::get_id_por_tipo_registro($tipo_registro);
+            }
+        }
+    }
+
+    protected function contieneLineasRegistrables($json_lineas)
+    {
+        $lineas = json_decode((string)$json_lineas);
+        if (!is_array($lineas)) {
+            return false;
+        }
+
+        // Los formularios agregan al final una fila auxiliar de totales.
+        array_pop($lineas);
+
+        return count($lineas) > 0;
     }
 
     /**
