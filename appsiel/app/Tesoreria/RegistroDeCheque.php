@@ -45,6 +45,9 @@ class RegistroDeCheque extends TesoDocEncabezado
         $chequePaymentService = new ChequePaymentService();
         $usarChequera = $fuente === 'propio' && ChequePaymentService::usaChequera();
 
+        $valor_linea = 0;
+        $valor_debito = 0;
+        $valor_credito = 0;
         foreach ($lineas_registros as $linea)
         {
             $motivo = TesoMotivo::find( (int)$linea->teso_motivo_id_cheque );
@@ -141,6 +144,7 @@ class RegistroDeCheque extends TesoDocEncabezado
             }
 
             $tipo_operacion = $linea->tipo_operacion_id_cheque;
+            $detalle_operacion = (isset($linea->detalle_operacion)) ? $linea->detalle_operacion : '';
             
             $datos['teso_encabezado_id'] = $doc_encabezado->id;
             $datos['core_tipo_transaccion_id'] = $doc_encabezado->core_tipo_transaccion_id;
@@ -151,12 +155,12 @@ class RegistroDeCheque extends TesoDocEncabezado
             $datos['fecha'] = $doc_encabezado->fecha;
             $datos['teso_motivo_id'] = (int)$linea->teso_motivo_id_cheque;
             $datos['teso_medio_recaudo_id'] = $teso_medio_recaudo_id;
-            $datos['detalle_operacion'] = $tipo_operacion;
+            $datos['detalle_operacion'] = $detalle_operacion;
             $datos['estado'] = 'Activo';
             TesoDocRegistro::create( $datos );
                 
             $datos['valor_movimiento'] = $valor_linea;
-            $datos['descripcion'] = $tipo_operacion;
+            $datos['descripcion'] = $detalle_operacion;
             $datos['documento_soporte'] = 'Cheque número ' . $numero_cheque;
             $datos['pdv_id'] = $pdv_id;
             TesoMovimiento::create( $datos );

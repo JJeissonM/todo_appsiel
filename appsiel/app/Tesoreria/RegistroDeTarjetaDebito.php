@@ -61,7 +61,7 @@ class RegistroDeTarjetaDebito extends TesoDocEncabezado
                 
             $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_tarjeta_debito;
 
-            $detalle_operacion = ($lineas_registros[$i]->detalle_operacion) ? $lineas_registros[$i]->detalle_operacion : '';
+            $detalle_operacion = (isset($lineas_registros[$i]->detalle_operacion)) ? $lineas_registros[$i]->detalle_operacion : '';
 
             $datos = [
                         'teso_encabezado_id' => $doc_encabezado->id,
@@ -76,7 +76,7 @@ class RegistroDeTarjetaDebito extends TesoDocEncabezado
             TesoDocRegistro::create( $datos );
 
             $datos['valor_movimiento'] = $valor_linea;
-            $datos['descripcion'] = $tipo_operacion;
+            $datos['descripcion'] = $detalle_operacion;
             $datos['documento_soporte'] = 'Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_tarjeta_debito;
             $datos['pdv_id'] = $pdv_id;
             TesoMovimiento::create( $datos );

@@ -60,21 +60,21 @@ class RegistroDeEfectivo extends TesoDocEncabezado
             }
                 
             $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_efectivo;
-
+            $detalle_operacion = (isset($lineas_registros[$i]->detalle_operacion)) ? $lineas_registros[$i]->detalle_operacion : '';
             $datos = [
                         'teso_encabezado_id' => $doc_encabezado->id,
                         'teso_motivo_id' => (int)$lineas_registros[$i]->teso_motivo_id_efectivo,
                         'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
                         'teso_caja_id' => (int)$lineas_registros[$i]->caja_id_efectivo,
                         'teso_cuenta_bancaria_id' => 0,
-                        'detalle_operacion' => (isset($lineas_registros[$i]->detalle_operacion)) ? $lineas_registros[$i]->detalle_operacion : '',
+                        'detalle_operacion' => $detalle_operacion,
                         'valor' => abs( $valor_linea )
                     ] + $doc_encabezado->toArray();
             
             TesoDocRegistro::create( $datos );
 
             $datos['valor_movimiento'] = $valor_linea;
-            $datos['descripcion'] = $tipo_operacion;
+            $datos['descripcion'] = $detalle_operacion;
             $datos['pdv_id'] = $pdv_id;
             TesoMovimiento::create( $datos );
 
