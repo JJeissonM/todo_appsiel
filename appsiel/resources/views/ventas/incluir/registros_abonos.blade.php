@@ -22,16 +22,19 @@
 
                             $prefix_url = 'tesoreria/recaudos_cxc/';
                             $id_modelo = 153; // Recaudos de CxC
+                            $app_id = Input::get('id');
                             switch ( $linea->core_tipo_transaccion_id ) {
                                 
                                 case '8': // Recaudos generales de tesorería
                                     $prefix_url = 'tesoreria/recaudos/';
                                     $id_modelo = 46; // Recaudos de tesorería
+                                    $app_id = 3; // Tesorería
                                     break;
 
                                 case '9': // Notas de contabilidad
                                     $prefix_url = 'contabilidad/';
-                                    $id_modelo = 47; // Documentos contables 
+                                    $id_modelo = 47; // Documentos contables
+                                    $app_id = 14; // Contabilidad
                                     break;
                                 
                                 default:
@@ -41,7 +44,7 @@
                         ?>
 
                         <td class="text-center"> 
-                            <a href="{{ url( $prefix_url . $el_documento->id.'?id=' . Input::get('id') . '&id_modelo=' . $id_modelo . '&id_transaccion=' . $linea->core_tipo_transaccion_id ) }}" target="_blank"> {{ $linea->documento_prefijo_consecutivo }}</a>  
+                            <a href="{{ url( $prefix_url . $el_documento->id.'?id=' . $app_id . '&id_modelo=' . $id_modelo . '&id_transaccion=' . $linea->core_tipo_transaccion_id ) }}" target="_blank"> {{ $linea->documento_prefijo_consecutivo }}</a>  
                         </td>
                         <td> {{ $el_documento->fecha }} </td>
                         <td> {{ $el_documento->descripcion }} </td>

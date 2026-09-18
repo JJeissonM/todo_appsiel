@@ -199,6 +199,11 @@
         padding: 13px 4px;
         text-align: center;
     }
+
+    .fila-linea-movimiento td {
+        font-weight: 700;
+        color: #454545;
+    }
 </style>
 
 @php
@@ -398,7 +403,7 @@
                 $referencia_tercero = $fila->get_datos_referencia_tercero();
             @endphp
 
-            <tr>
+            <tr class="fila-linea-movimiento">
                 <td class="text-center">{{ $fila->fecha }}</td>
                 <td>{!! $fila->enlace_show_documento() !!}</td>
                 <td>
