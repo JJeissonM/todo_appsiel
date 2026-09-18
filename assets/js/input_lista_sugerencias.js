@@ -6,24 +6,14 @@ $(document).ready( function(){
 		$(this).select();
 	});
 
-	function closeAllLists( div_lista_sugerencias )
-	{
-		if( $('#lista_sugerencias').attr('class') !== div_lista_sugerencias.id )
-		{
-			$("#lista_sugerencias").remove();	
+	// No retirar la lista antes de que el clic delegado seleccione el resultado.
+	document.addEventListener('click', function (event) {
+		var list = document.getElementById('lista_sugerencias');
+		if (list && !list.contains(event.target) &&
+			event.target.id !== list.getAttribute('class')) {
+			$(list).remove();
 		}
-	  }
-
-
-	document.addEventListener("click", function (e) {
-		
-		if( $('#lista_sugerencias').html() !== undefined )
-		{
-			// Se envía el elemento donde se hizo click
-			closeAllLists( e.target );
-		}
-
-	  });
+	});
 
 	$(document).on('keyup', '.text_input_sugerencias', function(event){
 

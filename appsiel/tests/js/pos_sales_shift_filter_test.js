@@ -8,7 +8,7 @@ function $(selector) {
     attr(k,v) {if(arguments.length === 2) {this.attrs[k]=v; return this;} return this.attrs[k];},
     removeAttr(keys) {keys.split(' ').forEach(k => delete this.attrs[k]); return this;},
     data(k,v) {this.storage=this.storage||{}; if(arguments.length===2) {this.storage[k]=v; return this;} return this.storage[k];},
-    remove() {return this;},
+    remove() {this.removals = (this.removals || 0) + 1; return this;},
     text(v) {this.label = v; return this;},
     prop(k, v) {this.props[k] = v; return this;},
     on(events, selector, handler) {const fn=handler||selector; this.delegate=handler ? selector : null;events.split(' ').forEach(e => this.events[e] = fn); return this;},
@@ -36,6 +36,10 @@ function assertUnlocked() {
     assert.strictEqual($(id).props.disabled, false);
   }
 }
+search.val('2012'); search.events.input({type:'input'});
+const removalsBeforeBlur = $('#lista_sugerencias').removals;
+search.events.change({type:'change'});
+assert.strictEqual($('#lista_sugerencias').removals, removalsBeforeBlur, 'Perder foco no debe retirar las sugerencias antes del clic');
 selectShift();
 for (const id of ['#fecha_desde','#fecha_hasta']) {
   assert.strictEqual($(id).props.required,false); assert.strictEqual($(id).props.disabled,true);

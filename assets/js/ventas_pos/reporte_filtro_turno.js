@@ -45,7 +45,9 @@ $(document).ready(function () {
     $('#periodo_turno_resumen').text(apertura + ' — ' + cierre);
   };
 
-  $busqueda.on('input change', function () {
+  // El change al perder foco ocurre antes del clic sobre una sugerencia.
+  $busqueda.on('input change', function (event) {
+    if (event && event.type === 'change' && !$turno.val()) { return; }
     if ($busqueda.val() !== ($busqueda.attr('data-selected-label') || '') || !$busqueda.val()) {
       limpiarTurno(false);
     }
