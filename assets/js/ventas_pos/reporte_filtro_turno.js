@@ -6,11 +6,41 @@ $(document).ready(function () {
   var teniaTurno = false;
   var ayuda = 'Busque y seleccione un turno para utilizar su periodo de apertura y cierre.';
 
+  var timerBusqueda, solicitudActiva = false, versionBusqueda = 0, busquedaPendiente = false;
+  function cargandoBusqueda(estado) {
+    $busqueda.attr('aria-busy', estado ? 'true' : 'false');
+    $('#turno_busqueda_spinner').toggle(estado);
+  }
   function cancelarBusqueda() {
-    clearTimeout($busqueda.data('suggestions-timeout'));
-    var request = $busqueda.data('suggestions-request');
-    if (request && request.readyState !== 4) { request.abort(); }
+    clearTimeout(timerBusqueda);
+    versionBusqueda++;
+    busquedaPendiente = false;
+    cargandoBusqueda(false);
     $('#lista_sugerencias').remove();
+  }
+  function consultarTurnos() {
+    if (solicitudActiva) { busquedaPendiente = true; return; }
+    var texto = $.trim($busqueda.val()), version = versionBusqueda;
+    if (!texto || $turno.val()) { return; }
+    solicitudActiva = true;
+    busquedaPendiente = false;
+    $.ajax({
+      url: $busqueda.attr('data-url_busqueda'),
+      data: {texto_busqueda: texto, pdv_id: $('[name="pdv_id"]').val() || 0},
+      timeout: 15000
+    }).done(function (html) {
+      if (version !== versionBusqueda) { return; }
+      $('#lista_sugerencias').remove();
+      $busqueda.after('<div id="lista_sugerencias" class="turno_operativo_busqueda" style="position:absolute;z-index:99999;"></div>');
+      $('#lista_sugerencias').html(html);
+    }).fail(function () {
+      if (version !== versionBusqueda) { return; }
+      $('#periodo_turno_resumen').text('No se pudieron cargar los turnos. Vuelva a escribir para reintentar.');
+    }).always(function () {
+      solicitudActiva = false;
+      if (busquedaPendiente) { consultarTurnos(); }
+      else if (version === versionBusqueda) { cargandoBusqueda(false); }
+    });
   }
 
   function limpiarTurno(borrarTexto) {
@@ -50,11 +80,12 @@ $(document).ready(function () {
     if (event && event.type === 'change' && !$turno.val()) { return; }
     if ($busqueda.val() !== ($busqueda.attr('data-selected-label') || '') || !$busqueda.val()) {
       limpiarTurno(false);
+      if ($.trim($busqueda.val())) {
+        cargandoBusqueda(true);
+        timerBusqueda = setTimeout(consultarTurnos, 400);
+      }
     }
   });
   $('#limpiar_turno_resumen').on('click', function () { limpiarTurno(true); });
-  $('#form_consulta').on('change comboboxselect', '[name="pdv_id"], [name="agrupar_por"], [name="estado_facturas"], [name="detalla_productos"], [name="detalla_clientes"], [name="iva_incluido"]', function () {
-    limpiarTurno(true);
-  });
   limpiarTurno(false);
 });

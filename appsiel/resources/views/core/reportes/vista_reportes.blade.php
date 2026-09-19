@@ -126,7 +126,7 @@
 
 @section('scripts')
     @if($reporte->url_form_action == 'pos_movimientos_ventas')
-        <script src="{{ asset('assets/js/ventas_pos/reporte_filtro_turno.js?v=3') }}"></script>
+        <script src="{{ asset('assets/js/ventas_pos/reporte_filtro_turno.js?v=5') }}"></script>
     @endif
 
 	<script src="{{ asset( 'assets/js/inventarios/barcodes_printing.js?aux=' . uniqid() )}}"></script>

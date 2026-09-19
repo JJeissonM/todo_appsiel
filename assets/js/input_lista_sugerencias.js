@@ -17,6 +17,7 @@ $(document).ready( function(){
 
 	$(document).on('keyup', '.text_input_sugerencias', function(event){
 
+		if ($(this).attr('data-busqueda-reporte') === '1' && [13, 27, 38, 40].indexOf(event.which || event.keyCode) === -1) { return; }
 		crear_div_lista_sugerencias( $(this) );
 
 		var codigo_tecla_presionada = event.which || event.keyCode;
@@ -184,6 +185,7 @@ $(document).ready( function(){
 
 	$(document).on('change', '[name="pdv_id"]', function() {
 		$('.turno-operativo-ajax').each(function() {
+			if ($(this).attr('data-preservar-turno-al-cambiar-pdv') === '1') { return; }
 			$(this).val('').removeAttr('data-registro_id').attr('data-selected-label', '');
 			$(this).removeAttr('data-turno-state');
 			$(this).next('input[type="hidden"]').val('');
