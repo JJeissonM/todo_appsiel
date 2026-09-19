@@ -24,6 +24,7 @@ class SalesReportShiftTest extends TestCase
         DB::connection()->getPdo()->sqliteCreateFunction('CONCAT', function () { return implode('', func_get_args()); });
         Auth::shouldReceive('user')->andReturn(new SalesReportShiftLookupUser());
         $tables = [
+            'vtas_pos_apertura_encabezados' => 'id turno_operativo_id responsable',
             'sys_campos' => 'id opciones',
             'core_turnos_operativos' => 'id core_empresa_id contexto_tipo contexto_id pdv_id estado codigo fecha_operativa abierto_en cerrado_en',
             'vtas_pos_puntos_de_ventas' => 'id descripcion cajero_id',
@@ -42,6 +43,7 @@ class SalesReportShiftTest extends TestCase
         foreach ($tables as $table => $columns) {
             DB::statement('CREATE TABLE ' . $table . ' (' . implode(', ', array_map(function ($column) { return $column . ($column === 'id' ? ' INTEGER' : ' TEXT'); }, explode(' ', $columns))) . ')');
         }
+        DB::table('vtas_pos_apertura_encabezados')->insert(['id' => 1, 'turno_operativo_id' => 1, 'responsable' => 'Ana & Luis']);
         DB::table('sys_campos')->insert(['id' => 79, 'opciones' => '{"UND":"Unidad"}']);
         foreach (['vtas_pos_puntos_de_ventas', 'core_terceros', 'vtas_clases_clientes', 'inv_grupos', 'inv_bodegas'] as $table) {
             DB::table($table)->insert(['id' => 1, 'descripcion' => 'Prueba']);
@@ -79,6 +81,7 @@ class SalesReportShiftTest extends TestCase
                 foreach ([0, 1] as $tax) {
                     $html = $this->report(['agrupar_por' => $group, 'detalla_productos' => $detail, 'iva_incluido' => $tax]);
                     $this->assertContains($tax ? '300,00' : '252,10', $html);
+                    $this->assertContains('Responsable:</b> Ana &amp; Luis', $html);
                     $this->assertContains('2026-09-17 20:00:00', $html);
                     $this->assertContains('2026-09-18 04:00:00', $html);
                 }

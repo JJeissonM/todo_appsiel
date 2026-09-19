@@ -8,6 +8,7 @@
 @endif
 @if(isset($turno) && $turno)
     <p style="text-align:center;"><b>Turno:</b> {{ $turno->codigo }} ({{ $turno->estado }})<br>
+        <b>Responsable:</b> {{ $turno->responsable ?: 'No registrado' }}<br>
         <b>Desde:</b> {{ $turno->abierto_en->format('Y-m-d H:i:s') }}
         <b>Hasta:</b> {{ $turno->cerrado_en->format('Y-m-d H:i:s') }}
     </p>

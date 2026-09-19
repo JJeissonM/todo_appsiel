@@ -28,6 +28,8 @@ class SalesReportShiftService
         if ((int)$pdvId > 0 && (int)$pdvId !== $shiftPdv) {
             throw new \InvalidArgumentException('El turno no corresponde al punto de venta seleccionado.');
         }
+        $shift->responsable = \App\VentasPos\AperturaEncabezado::where('turno_operativo_id', $shift->id)
+            ->orderBy('id', 'desc')->value('responsable');
         return $shift;
     }
 }
