@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class SalesReportShiftLookupUser
 {
     public $empresa_id = 1;
-    public function can($permission) { return $permission === 'pos_movimientos_ventas'; }
+    public function can($permission) { return false; }
 }
 
 class SalesReportShiftTest extends TestCase

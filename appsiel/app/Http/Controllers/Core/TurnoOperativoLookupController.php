@@ -32,7 +32,9 @@ class TurnoOperativoLookupController extends Controller
 
         $companyId = (int)Auth::user()->empresa_id;
         if ($request->input('reporte') === 'pos_movimientos_ventas') {
-            if (!Auth::user()->can('pos_movimientos_ventas')) {
+            // El reporte utiliza auth; su lookup debe compartir ese acceso,
+            // conservando el aislamiento por empresa sin exigir un permiso adicional.
+            if ($companyId <= 0) {
                 abort(403);
             }
             $query = (new \App\VentasPos\Services\SalesReportShiftService())->available($companyId);
