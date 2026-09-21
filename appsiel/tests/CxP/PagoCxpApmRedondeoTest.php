@@ -19,23 +19,24 @@ class PagoCxpApmRedondeoTest extends PHPUnit_Framework_TestCase
         return $metodo->invoke(new PagoCxpController(), $movimientos, new Collection());
     }
 
-    public function testDiferenciaDeUnPesoPorRedondeoConservaLosCentavos()
+    public function testDiferenciaDeUnPesoPorRedondeoSeDistribuyeEnPesos()
     {
         $summary = $this->resumen([[6309460.30, 0], [6309460.30, 0], [0, -12618920.60]]);
-        $this->assertSame(2, $summary['decimals']);
-        $this->assertEquals(12618920.60, $summary['total_debit']);
+        $this->assertSame(0, $summary['decimals']);
+        $this->assertEquals(12618921, $summary['total_debit']);
         $this->assertSame($summary['total_debit'], $summary['total_credit']);
-        $this->assertSame('$6,309,460.30', $summary['items'][0]['Debit']);
-        $this->assertSame('$12,618,920.60', $summary['items'][2]['Credit']);
+        $this->assertSame('$6,309,461', $summary['items'][0]['Debit']);
+        $this->assertSame('$12,618,921', $summary['items'][2]['Credit']);
     }
 
-    public function testRedondeoHaciaArribaTambienConservaCentavos()
+    public function testRedondeoHaciaArribaTambienCuadraEnPesos()
     {
         $summary = $this->resumen([[0.5, 0], [0.5, 0], [0, -1]]);
-        $this->assertSame(2, $summary['decimals']);
-        $this->assertSame('$0.50', $summary['items'][0]['Debit']);
-        $this->assertSame('$1.00', $summary['items'][2]['Credit']);
+        $this->assertSame(0, $summary['decimals']);
+        $this->assertSame('$1', $summary['items'][0]['Debit']);
+        $this->assertSame('$1', $summary['items'][2]['Credit']);
         $this->assertEquals(1, $summary['total_debit']);
+        $this->assertSame('$0', $summary['items'][1]['Debit']);
     }
 
     public function testMantieneFormatoSinDecimalesCuandoCuadra()
@@ -44,6 +45,16 @@ class PagoCxpApmRedondeoTest extends PHPUnit_Framework_TestCase
         $this->assertSame(0, $summary['decimals']);
         $this->assertSame('$126', $summary['items'][0]['Debit']);
         $this->assertSame(126, $summary['total_credit']);
+    }
+
+    public function testElTotalEsElImporteRedondeadoInclusoSiAmbasColumnasRedondeabanIgual()
+    {
+        $summary = $this->resumen([[1.3, 0], [1.3, 0], [0, -1.3], [0, -1.3]]);
+        $this->assertSame(3, $summary['total_debit']);
+        $this->assertSame(3, $summary['total_credit']);
+        $this->assertSame('$2', $summary['items'][0]['Debit']);
+        $this->assertSame('$1', $summary['items'][1]['Debit']);
+        $this->assertSame('$2', $summary['items'][2]['Credit']);
     }
 
     /** @dataProvider descuadres */

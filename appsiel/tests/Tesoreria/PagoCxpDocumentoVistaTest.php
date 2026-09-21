@@ -355,7 +355,7 @@ class PagoCxpDocumentoVistaTest extends TestCase
         $this->assertSame('-', $itemCredito['Reference']);
     }
 
-    public function test_resumen_apm_conserva_centavos_si_redondear_descuadra()
+    public function test_resumen_apm_distribuye_redondeo_en_pesos()
     {
         $base = ContabMovimiento::where('contab_cuenta_id', '>', 0)
             ->where('core_tercero_id', '>', 0)
@@ -390,7 +390,7 @@ class PagoCxpDocumentoVistaTest extends TestCase
         $metodo = new ReflectionMethod(PagoCxpController::class, 'build_apm_accounting_summary');
         $metodo->setAccessible(true);
         $summary = $metodo->invoke(new PagoCxpController(), $encabezado);
-        $this->assertSame(2, $summary['decimals']);
+        $this->assertSame(0, $summary['decimals']);
         $this->assertEquals(1, $summary['total_debit']);
         $this->assertEquals(1, $summary['total_credit']);
     }

@@ -485,6 +485,7 @@ class PagoCxpController extends TransaccionController
 
         $conceptLines = $this->build_apm_concept_lines($encabezado, $registros);
         $accountingSummary = $this->build_apm_accounting_summary($encabezado);
+        $importeCheque = ImporteChequeEnLetras::redondear($encabezado->valor_total);
         $createdBy = strtoupper(explode('@', (string) $encabezado->creado_por)[0]);
 
         return [
@@ -498,8 +499,8 @@ class PagoCxpController extends TransaccionController
                     'Number' => is_null($cheque) ? '' : (string) $cheque->numero_cheque,
                     'DateInfo' => $dateInfo,
                     'PayTo' => $receiverName,
-                    'AmountText' => ImporteChequeEnLetras::convertir($encabezado->valor_total),
-                    'Amount' => number_format((float) $encabezado->valor_total, 0, ',', '.'),
+                    'AmountText' => ImporteChequeEnLetras::convertir($importeCheque),
+                    'Amount' => number_format($importeCheque, 0, ',', '.'),
                     'City' => strtoupper($city)
                 ],
                 'egreso' => [
@@ -538,8 +539,6 @@ class PagoCxpController extends TransaccionController
     protected function build_apm_accounting_summary_from_movements($contab_mov, $doc_pagados)
     {
         $items = [];
-        $totalDebit = 0;
-        $totalCredit = 0;
 
         $debitCents = 0;
         $creditCents = 0;
@@ -573,8 +572,6 @@ class PagoCxpController extends TransaccionController
                 'Credit' => $this->format_apm_money($roundedCredit, 0)
             ];
 
-            $totalDebit += $roundedDebit;
-            $totalCredit += $roundedCredit;
         }
 
         if ($debitCents !== $creditCents) {
@@ -585,19 +582,18 @@ class PagoCxpController extends TransaccionController
             );
         }
 
-        // Si redondear cada linea a pesos rompe el equilibrio, conservar los
-        // centavos originales en todo el detalle y en sus totales impresos.
-        $decimals = 0;
-        if ($totalDebit !== $totalCredit) {
-            $decimals = 2;
-            foreach ($items as $index => &$item) {
-                $item['Debit'] = $this->format_apm_money($amounts[$index][0] / 100, 2);
-                $item['Credit'] = $this->format_apm_money($amounts[$index][1] / 100, 2);
-            }
-            unset($item);
-            $totalDebit = $debitCents / 100;
-            $totalCredit = $creditCents / 100;
+        // Repartir los pesos residuales segun las mayores fracciones para que
+        // cada columna sume el total redondeado sin imprimir centavos.
+        $debits = $this->round_apm_column_to_pesos(array_column($amounts, 0));
+        $credits = $this->round_apm_column_to_pesos(array_column($amounts, 1));
+        foreach ($items as $index => &$item) {
+            $item['Debit'] = $this->format_apm_money($debits[$index], 0);
+            $item['Credit'] = $this->format_apm_money($credits[$index], 0);
         }
+        unset($item);
+        $totalDebit = array_sum($debits);
+        $totalCredit = array_sum($credits);
+        $decimals = 0;
 
         return [
             'items' => $items,
@@ -605,6 +601,29 @@ class PagoCxpController extends TransaccionController
             'total_credit' => $totalCredit,
             'decimals' => $decimals
         ];
+    }
+
+    protected function round_apm_column_to_pesos(array $cents)
+    {
+        $pesos = [];
+        $fractions = [];
+        foreach ($cents as $index => $value) {
+            $pesos[$index] = (int) floor($value / 100);
+            $fractions[$index] = $value % 100;
+        }
+        $remaining = (int) round(array_sum($cents) / 100, 0, PHP_ROUND_HALF_UP) - array_sum($pesos);
+        $indices = array_keys($cents);
+        usort($indices, function ($a, $b) use ($fractions) {
+            return $fractions[$a] === $fractions[$b] ? $a - $b : $fractions[$b] - $fractions[$a];
+        });
+        foreach ($indices as $index) {
+            if ($remaining <= 0) {
+                break;
+            }
+            $pesos[$index]++;
+            $remaining--;
+        }
+        return $pesos;
     }
 
     protected function find_apm_reference($documentosPagados, array $abonosTomados, $valorDebito)

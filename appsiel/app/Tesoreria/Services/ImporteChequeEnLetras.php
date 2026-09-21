@@ -6,23 +6,22 @@ class ImporteChequeEnLetras
 {
     public static function convertir($importe)
     {
-        if (!is_numeric($importe) || !is_finite((float) $importe) || $importe < 0 || $importe > 999999999999.99) {
-            throw new \InvalidArgumentException('El importe del cheque debe estar entre 0 y 999.999.999.999,99 pesos.');
-        }
-
-        // Separar pesos y centavos despues de redondear a la precision monetaria.
-        list($pesos, $centavos) = explode('.', number_format((float) $importe, 2, '.', ''));
-        if (strlen($pesos) > 12) {
-            throw new \InvalidArgumentException('El importe del cheque supera el limite de conversion a letras.');
-        }
-        $pesos = (int) $pesos;
+        $pesos = self::redondear($importe);
         $texto = self::entero($pesos);
         $texto .= $pesos > 0 && $pesos % 1000000 === 0 ? ' DE PESOS' : ($pesos === 1 ? ' PESO' : ' PESOS');
-        if ((int) $centavos > 0) {
-            $texto .= ' CON ' . self::entero((int) $centavos) . ((int) $centavos === 1 ? ' CENTAVO' : ' CENTAVOS');
-        }
-
         return $texto . ' MCTE.';
+    }
+
+    public static function redondear($importe)
+    {
+        if (!is_numeric($importe) || !is_finite((float) $importe) || $importe < 0) {
+            throw new \InvalidArgumentException('El importe del cheque debe ser un numero positivo.');
+        }
+        $pesos = round((float) $importe, 0, PHP_ROUND_HALF_UP);
+        if ($pesos > 999999999999) {
+            throw new \InvalidArgumentException('El importe del cheque supera el limite de conversion a letras.');
+        }
+        return (int) $pesos;
     }
 
     protected static function entero($numero)
