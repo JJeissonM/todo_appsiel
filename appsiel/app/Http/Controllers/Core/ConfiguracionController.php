@@ -12,6 +12,7 @@ use App\Sistema\Modelo;
 use App\Sistema\Campo;
 use App\Sistema\Permiso;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Input;
 use Maatwebsite\Excel\Facades\Excel;
@@ -294,6 +295,13 @@ class ConfiguracionController extends ModeloController
         try {
             if( File::put( $ruta_archivo, "<?php\n return $data ;") )
             {
+                // El sistema permite modificar los archivos de configuración
+                // en ejecución. Se actualiza el repositorio de la petición y
+                // se elimina una posible copia cacheada para que el cambio sea
+                // efectivo en la siguiente petición.
+                config([$app->app => $array]);
+                Artisan::call('config:clear');
+
                 return redirect( 'config?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Configuración ACTUALIZADA correctamente.' );
             }
         } catch (Throwable $e) {

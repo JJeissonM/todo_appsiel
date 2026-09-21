@@ -29,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->cargarConfiguracionTesoreriaActual();
+
         $this->app->singleton(\App\Core\Services\TurnoContext::class, function () {
             return new \App\Core\Services\TurnoContext();
         });
@@ -44,5 +46,28 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Way\Generators\GeneratorsServiceProvider::class);
             $this->app->register(\Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class);
         }
+    }
+
+    /**
+     * La configuración de las aplicaciones se modifica desde la interfaz y se
+     * guarda directamente en config/*.php. Por ello no se debe conservar la
+     * copia incluida en config:cache para Tesorería.
+     */
+    protected function cargarConfiguracionTesoreriaActual()
+    {
+        $parametros = [
+            'generar_detalle_pago_cxp_desde_documentos' => 0,
+        ];
+        $ruta = config_path('tesoreria.php');
+
+        if (is_file($ruta)) {
+            $configuracionArchivo = require $ruta;
+
+            if (is_array($configuracionArchivo)) {
+                $parametros = array_merge($parametros, $configuracionArchivo);
+            }
+        }
+
+        $this->app['config']->set('tesoreria', $parametros);
     }
 }

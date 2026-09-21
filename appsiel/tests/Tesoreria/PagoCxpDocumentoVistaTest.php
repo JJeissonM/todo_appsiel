@@ -79,7 +79,8 @@ class PagoCxpDocumentoVistaTest extends TestCase
     {
         $vista = file_get_contents(resource_path('views/core/config_aplicacion/tesoreria.blade.php'));
 
-        $this->assertSame('0', (string)config('tesoreria.generar_detalle_pago_cxp_desde_documentos', 0));
+        $this->assertArrayHasKey('generar_detalle_pago_cxp_desde_documentos', config('tesoreria'));
+        $this->assertSame('0', (string)config('tesoreria.generar_detalle_pago_cxp_desde_documentos'));
         $this->assertContains("Form::bsSelect('generar_detalle_pago_cxp_desde_documentos'", $vista);
     }
 
