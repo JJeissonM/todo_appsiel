@@ -42,7 +42,7 @@ class PreparaTransaccion
 
         // name = data-override
          $datos = [
-                    'titulo' => 'Líneas de registros',
+                    'titulo' => '',
                     'columnas' => $columnas,
                     'fila_body' => $body,
                     'fila_foot' => '' //$fila_controles_formulario

@@ -86,14 +86,14 @@
                         @include('ventas_pos.componentes.tactil.tabs_inv_grupos')
                     @endif
                     
+                    <div class="container">
+                        @include('ventas_pos.crud_factura_btn_revisar_pedidos')
+                    </div>
+                    
                     <!-- Cinta Filtro Items -->
                     @if( !(int)config('ventas_pos.ocultar_cinta_de_busqueda_items') )
                         @include('ventas_pos.crud_factura_cinta_filtro_items')
                     @endif
-                    
-                    <div class="container">
-                        @include('ventas_pos.crud_factura_btn_revisar_pedidos')
-                    </div>
 
                         <!-- NO QUITAR LOS ESPACIOS NI TABULACIONES DESDE AQUI HASTA <INMODIFICABLE> -->
                     <div class="col-md-8"><div class="container-fluid">
