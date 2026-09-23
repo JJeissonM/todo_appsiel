@@ -38,6 +38,9 @@ class FacturaElectronicaController extends TransaccionController
         // Recuperar también ventas de pedidos antes de comprobar su estado Facturado.
         $existing = $this->find_existing_pos_invoice_by_uniqid($request->input('uniqid', ''), $request);
         if ($existing) {
+            if ($this->es_cliente_interno($existing)) {
+                return response()->json($this->build_print_response_pos_interno($existing), 200);
+            }
             $electronic = Factura::where('ventas_doc_relacionado_id', $existing->id)->first();
             if ($electronic) {
                 return response()->json($this->build_print_response_fe($electronic), 200);
@@ -112,6 +115,19 @@ class FacturaElectronicaController extends TransaccionController
                 }
             }
 
+            if ($this->es_cliente_interno($factura_pos_encabezado)) {
+                if ($crear_cruce_con_anticipos) {
+                    (new CxCService())->crear_cruce_con_anticipos($factura_pos_encabezado, $request->object_anticipos);
+                }
+                if ($crear_abonos) {
+                    $datos = $factura_pos_encabezado->toArray();
+                    (new TreasuryService())->crear_abonos_documento($factura_pos_encabezado, $datos['lineas_registros_medios_recaudos']);
+                }
+                $response = $this->build_print_response_pos_interno($factura_pos_encabezado);
+                DB::commit();
+                return response()->json($response, 200);
+            }
+
             // La conversión debe confirmar o revertir también el POS y sus movimientos.
             $result = (new DocumentHeaderService())->convert_to_electronic_invoice($factura_pos_encabezado->id);
             if ($result->status == 'mensaje_error' || empty($result->new_document_header_id)) {
@@ -142,6 +158,9 @@ class FacturaElectronicaController extends TransaccionController
 
                 $factura_pos_existente = $this->find_existing_pos_invoice_by_uniqid($request_uniqid, $request);
                 if (!is_null($factura_pos_existente)) {
+                    if ($this->es_cliente_interno($factura_pos_existente)) {
+                        return response()->json($this->build_print_response_pos_interno($factura_pos_existente), 200);
+                    }
                     $factura_electronica_existente = Factura::where('ventas_doc_relacionado_id', (int)$factura_pos_existente->id)
                         ->orderBy('id', 'desc')
                         ->first();
@@ -341,6 +360,22 @@ class FacturaElectronicaController extends TransaccionController
     protected function build_url_print_fe($factura_electronica_id)
     {
         return url('/') . '/vtas_imprimir/' . (int)$factura_electronica_id . '?id=20&id_modelo=230&id_transaccion=52&formato_impresion_id=pos';
+    }
+
+    protected function es_cliente_interno($factura)
+    {
+        return isset($factura->cliente->tercero) && $factura->cliente->tercero->tipo === 'Interno';
+    }
+
+    protected function build_print_response_pos_interno($factura)
+    {
+        return [
+            'status' => 'success',
+            'solo_pos' => true,
+            'factura_pos_id' => (int)$factura->id,
+            'url_print' => url('pos_factura_imprimir/' . $factura->id),
+            'message' => 'Cliente interno: la venta se guardó solamente como factura POS.'
+        ];
     }
 
     protected function build_print_response_fe(Factura $factura_electronica)

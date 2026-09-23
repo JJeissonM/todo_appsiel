@@ -20,6 +20,34 @@ class ElectronicInvoiceAtomicStoreTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
+    public function test_cliente_interno_guarda_solo_pos_sin_convertir_ni_enviar()
+    {
+        $invoicing = Mockery::mock('overload:App\VentasPos\Services\InvoicingService');
+        $invoicing->shouldReceive('almacenar_factura_pos')->once()->andReturn((object)[
+            'id' => 123, 'cliente' => (object)['tercero' => (object)['tipo' => 'Interno']]
+        ]);
+        $conversion = Mockery::mock('overload:App\FacturacionElectronica\Services\DocumentHeaderService');
+        $conversion->shouldReceive('convert_to_electronic_invoice')->never();
+        $sending = Mockery::mock('overload:App\VentasPos\Services\ElectronicInvoiceSendingService');
+        $sending->shouldReceive('send')->never();
+        DB::shouldReceive('beginTransaction')->once()->ordered();
+        DB::shouldReceive('commit')->once()->ordered();
+        DB::shouldReceive('rollBack')->never();
+        $response = (new AtomicStoreFacturaElectronicaController())->store(new Request([
+            'uniqid' => 'venta-interna', 'creado_por' => 'test@example.com',
+            'pedido_id' => 0, 'object_anticipos' => 'null'
+        ]));
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertTrue($response->getData()->solo_pos);
+        $this->assertSame(123, $response->getData()->factura_pos_id);
+        $this->assertContains('pos_factura_imprimir/123', $response->getData()->url_print);
+        Mockery::close();
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function test_conversion_rechazada_revierte_el_pos_sin_confirmar_ni_enviar()
     {
         $invoicing = Mockery::mock('overload:App\VentasPos\Services\InvoicingService');

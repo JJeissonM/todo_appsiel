@@ -45,6 +45,14 @@ class DocumentHeaderService
                     ];
                 }
 
+                if (isset($original_document_header->cliente->tercero) &&
+                    $original_document_header->cliente->tercero->tipo === 'Interno') {
+                    return (object)[
+                        'status' => 'mensaje_error',
+                        'message' => 'Los clientes internos deben conservar su factura POS; no se permite convertirla a electrónica.'
+                    ];
+                }
+
                 $fe_document_type_id_default = (new ElectronicDocumentTypeService())
                     ->resolveId($original_document_header->pdv);
 
