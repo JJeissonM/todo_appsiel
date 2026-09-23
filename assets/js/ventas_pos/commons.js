@@ -499,6 +499,21 @@ function pos_validar_y_recalcular_lineas_registros()
   return resultado.ok;
 }
 
+// El formulario puede incluir vendedor_id tanto en campos dinámicos como ocultos.
+// Enviar una sola asignación, correspondiente al vendedor visible seleccionado.
+function pos_serializar_formulario_factura()
+{
+  var vendedor = $('.componente_vendedores .vendedor_activo').first().attr('data-vendedor_id');
+  if (!vendedor) {
+    vendedor = $('#vendedor_id').val();
+  }
+  var campos = $('#form_create').serializeArray().filter(function (campo) {
+    return campo.name !== 'vendedor_id';
+  });
+  campos.push({name: 'vendedor_id', value: vendedor || ''});
+  return $.param(campos);
+}
+
 function pos_preparar_payload_guardado(opciones)
 {
   opciones = opciones || {};
@@ -543,7 +558,7 @@ function pos_preparar_payload_guardado(opciones)
   }
 
   // Nota: No se puede enviar controles disabled
-  var data = $("#form_create").serialize();
+  var data = pos_serializar_formulario_factura();
   if (flags.manejar_propinas) {
     data += "&valor_propina=" + $("#valor_propina").val();
   }
