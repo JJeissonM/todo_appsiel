@@ -94,7 +94,10 @@ class HotelService
                 throw new \Exception('El huesped principal no existe.');
             }
 
-            $reservation = $service->reservationForCheckIn($room, $cliente->id, isset($data['check_in_at']) && $data['check_in_at'] != '' ? substr($data['check_in_at'], 0, 10) : date('Y-m-d'));
+            $checkInMoment = isset($data['check_in_at']) && $data['check_in_at'] != ''
+                ? HotelStay::normalizeDateTimeValue($data['check_in_at'])
+                : date('Y-m-d H:i:s');
+            $reservation = $service->reservationForCheckIn($room, $cliente->id, $checkInMoment);
             if (is_null($room) || !$service->roomIsAvailableForCheckIn($room, $reservation)) {
                 throw new \Exception('La habitacion no esta disponible para check-in.');
             }
@@ -1104,7 +1107,7 @@ class HotelService
         return HotelStay::where('empresa_id', $empresaId)->where('room_id', $roomId)->where('status', HotelStay::STATUS_ACTIVA)->count() > 0;
     }
 
-    private function reservationForCheckIn($room, $clienteId, $date)
+    private function reservationForCheckIn($room, $clienteId, $checkInMoment)
     {
         if (is_null($room)) {
             return null;
@@ -1114,8 +1117,8 @@ class HotelService
             ->where('room_id', $room->id)
             ->where('cliente_id', $clienteId)
             ->whereNotIn('status', array(HotelReservation::STATUS_ANULADA, HotelReservation::STATUS_CUMPLIDA))
-            ->where('reserved_from', '<=', $date)
-            ->where('reserved_until', '>=', $date)
+            ->where('reserved_from', '<=', $checkInMoment)
+            ->where('reserved_until', '>', $checkInMoment)
             ->lockForUpdate()
             ->first();
     }

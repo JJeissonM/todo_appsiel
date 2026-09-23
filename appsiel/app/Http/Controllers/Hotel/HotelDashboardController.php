@@ -172,12 +172,12 @@ class HotelDashboardController extends Controller
 
     private function syncTodayReservations($empresaId)
     {
-        $today = date('Y-m-d');
+        $now = date('Y-m-d H:i:s');
 
         $reservedRoomIds = HotelReservation::where('empresa_id', $empresaId)
             ->whereNotIn('status', array(HotelReservation::STATUS_ANULADA, HotelReservation::STATUS_CUMPLIDA))
-            ->where('reserved_from', '<=', $today)
-            ->where('reserved_until', '>=', $today)
+            ->where('reserved_from', '<=', $now)
+            ->where('reserved_until', '>', $now)
             ->lists('room_id')
             ->toArray();
 
@@ -219,8 +219,8 @@ class HotelDashboardController extends Controller
                             ->on('hotel_stays.main_cliente_id', '=', 'matched_reservations.cliente_id');
                     })
                     ->where('hotel_stays.status', '<>', HotelStay::STATUS_ANULADA)
-                    ->whereRaw('DATE(hotel_stays.check_in_at) >= matched_reservations.reserved_from')
-                    ->whereRaw('DATE(hotel_stays.check_in_at) <= matched_reservations.reserved_until');
+                    ->whereRaw('hotel_stays.check_in_at >= matched_reservations.reserved_from')
+                    ->whereRaw('hotel_stays.check_in_at < matched_reservations.reserved_until');
             })
             ->with('room', 'cliente.tercero')
             ->orderBy('hotel_reservations.reserved_from')

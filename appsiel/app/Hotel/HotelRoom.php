@@ -94,11 +94,11 @@ class HotelRoom extends Model
 
     public function activeTodayReservation()
     {
-        $today = date('Y-m-d');
+        $now = date('Y-m-d H:i:s');
         return $this->reservations()
             ->whereNotIn('status', array(HotelReservation::STATUS_ANULADA, HotelReservation::STATUS_CUMPLIDA))
-            ->where('reserved_from', '<=', $today)
-            ->where('reserved_until', '>=', $today);
+            ->where('reserved_from', '<=', $now)
+            ->where('reserved_until', '>', $now);
     }
 
     public static function consultar_registros($nro_registros, $search)

@@ -16,8 +16,8 @@ class CreateHotelReservationsTable extends Migration
             $table->integer('empresa_id')->unsigned();
             $table->integer('cliente_id')->unsigned();
             $table->integer('room_id')->unsigned();
-            $table->date('reserved_from');
-            $table->date('reserved_until');
+            $table->dateTime('reserved_from');
+            $table->dateTime('reserved_until');
             $table->string('status', 30)->default('ACTIVA');
             $table->text('notes')->nullable();
             $table->integer('created_by')->unsigned()->nullable();

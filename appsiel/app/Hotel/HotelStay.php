@@ -599,14 +599,14 @@ class HotelStay extends Model
 
     private static function reservationForCheckIn($stay)
     {
-        $date = substr($stay->check_in_at, 0, 10);
+        $checkInMoment = self::normalizeDateTimeValue($stay->check_in_at);
 
         return HotelReservation::where('empresa_id', $stay->empresa_id)
             ->where('room_id', $stay->room_id)
             ->where('cliente_id', $stay->main_cliente_id)
             ->whereNotIn('status', array(HotelReservation::STATUS_ANULADA, HotelReservation::STATUS_CUMPLIDA))
-            ->where('reserved_from', '<=', $date)
-            ->where('reserved_until', '>=', $date)
+            ->where('reserved_from', '<=', $checkInMoment)
+            ->where('reserved_until', '>', $checkInMoment)
             ->first();
     }
 
