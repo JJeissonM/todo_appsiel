@@ -22,6 +22,7 @@ class ElectronicInvoiceAtomicStoreTest extends TestCase
      */
     public function test_cliente_interno_guarda_solo_pos_sin_convertir_ni_enviar()
     {
+        config(['facturacion_electronica.enviar_facturas_clientes_internos' => 0]);
         $invoicing = Mockery::mock('overload:App\VentasPos\Services\InvoicingService');
         $invoicing->shouldReceive('almacenar_factura_pos')->once()->andReturn((object)[
             'id' => 123, 'cliente' => (object)['tercero' => (object)['tipo' => 'Interno']]
@@ -45,13 +46,17 @@ class ElectronicInvoiceAtomicStoreTest extends TestCase
     }
 
     /**
+     * @dataProvider clientesConConversion
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function test_conversion_rechazada_revierte_el_pos_sin_confirmar_ni_enviar()
+    public function test_conversion_rechazada_revierte_el_pos_sin_confirmar_ni_enviar($tipo = 'Externo', $permitirInternos = 0)
     {
         $invoicing = Mockery::mock('overload:App\VentasPos\Services\InvoicingService');
-        $invoicing->shouldReceive('almacenar_factura_pos')->once()->andReturn((object)['id' => 123]);
+        config(['facturacion_electronica.enviar_facturas_clientes_internos' => $permitirInternos]);
+        $invoicing->shouldReceive('almacenar_factura_pos')->once()->andReturn((object)[
+            'id' => 123, 'cliente' => (object)['tercero' => (object)['tipo' => $tipo]]
+        ]);
         $conversion = Mockery::mock('overload:App\FacturacionElectronica\Services\DocumentHeaderService');
         $conversion->shouldReceive('convert_to_electronic_invoice')->with(123)->once()->andReturn((object)[
             'status' => 'mensaje_error', 'message' => 'Totales inconsistentes'
@@ -69,4 +74,9 @@ class ElectronicInvoiceAtomicStoreTest extends TestCase
         $this->assertSame('Totales inconsistentes', $response->getData()->message);
         Mockery::close();
     }
+    public function clientesConConversion()
+    {
+        return [['Externo', 0], ['Interno', 1]];
+    }
+
 }

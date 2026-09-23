@@ -45,7 +45,8 @@ class DocumentHeaderService
                     ];
                 }
 
-                if (isset($original_document_header->cliente->tercero) &&
+                if (!(int)config('facturacion_electronica.enviar_facturas_clientes_internos') &&
+                    isset($original_document_header->cliente->tercero) &&
                     $original_document_header->cliente->tercero->tipo === 'Interno') {
                     return (object)[
                         'status' => 'mensaje_error',

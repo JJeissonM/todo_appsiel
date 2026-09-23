@@ -38,7 +38,7 @@ class FacturaElectronicaController extends TransaccionController
         // Recuperar también ventas de pedidos antes de comprobar su estado Facturado.
         $existing = $this->find_existing_pos_invoice_by_uniqid($request->input('uniqid', ''), $request);
         if ($existing) {
-            if ($this->es_cliente_interno($existing)) {
+            if ($this->debe_conservar_solo_pos($existing)) {
                 return response()->json($this->build_print_response_pos_interno($existing), 200);
             }
             $electronic = Factura::where('ventas_doc_relacionado_id', $existing->id)->first();
@@ -115,7 +115,7 @@ class FacturaElectronicaController extends TransaccionController
                 }
             }
 
-            if ($this->es_cliente_interno($factura_pos_encabezado)) {
+            if ($this->debe_conservar_solo_pos($factura_pos_encabezado)) {
                 if ($crear_cruce_con_anticipos) {
                     (new CxCService())->crear_cruce_con_anticipos($factura_pos_encabezado, $request->object_anticipos);
                 }
@@ -158,7 +158,7 @@ class FacturaElectronicaController extends TransaccionController
 
                 $factura_pos_existente = $this->find_existing_pos_invoice_by_uniqid($request_uniqid, $request);
                 if (!is_null($factura_pos_existente)) {
-                    if ($this->es_cliente_interno($factura_pos_existente)) {
+                    if ($this->debe_conservar_solo_pos($factura_pos_existente)) {
                         return response()->json($this->build_print_response_pos_interno($factura_pos_existente), 200);
                     }
                     $factura_electronica_existente = Factura::where('ventas_doc_relacionado_id', (int)$factura_pos_existente->id)
@@ -258,7 +258,7 @@ class FacturaElectronicaController extends TransaccionController
             ], 404);
         }
 
-        if ($factura_pos_encabezado->cliente->tercero->tipo == 'Interno') {
+        if ($this->debe_conservar_solo_pos($factura_pos_encabezado)) {
             return response()->json([
                 'status' => 'skipped',
                 'message' => 'La factura corresponde a un cliente interno y no se envia electronicamente.',
@@ -362,9 +362,10 @@ class FacturaElectronicaController extends TransaccionController
         return url('/') . '/vtas_imprimir/' . (int)$factura_electronica_id . '?id=20&id_modelo=230&id_transaccion=52&formato_impresion_id=pos';
     }
 
-    protected function es_cliente_interno($factura)
+    protected function debe_conservar_solo_pos($factura)
     {
-        return isset($factura->cliente->tercero) && $factura->cliente->tercero->tipo === 'Interno';
+        return !(int)config('facturacion_electronica.enviar_facturas_clientes_internos')
+            && isset($factura->cliente->tercero) && $factura->cliente->tercero->tipo === 'Interno';
     }
 
     protected function build_print_response_pos_interno($factura)
