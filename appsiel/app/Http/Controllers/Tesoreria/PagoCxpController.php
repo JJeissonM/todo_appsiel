@@ -744,7 +744,7 @@ class PagoCxpController extends TransaccionController
 
         $concept = preg_replace('/\s+/u', ' ', implode(' ', $conceptParts));
         $concept = $this->normalize_apm_printable_text($concept);
-        $concept = $this->truncate_apm_concept($concept, 825);
+        $concept = $this->truncate_apm_concept($concept, 800);
 
         // La impresora APM envuelve físicamente el concepto cada 60
         // caracteres. Se anticipa ese ajuste para que nunca divida palabras.
