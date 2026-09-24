@@ -863,7 +863,7 @@ class BoletinController extends Controller
                 {
                     $valor_calificacion = $calificacion->calificacion;
 
-                    $calificacion_nivelada = $notas_nivelacion_del_curso_en_el_periodo->where('asignatura_id',$asignacion->asignatura_id)->where('estudiante_id', $matricula->estudiante->id )->first();
+                    $calificacion_nivelada = $notas_nivelacion_del_curso_en_el_periodo->where('periodo_id', $periodo->id)->where('asignatura_id',$asignacion->asignatura_id)->where('estudiante_id', $matricula->estudiante->id )->first();
 
                     if( $calificacion_nivelada != null )
                     {

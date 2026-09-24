@@ -9,7 +9,10 @@ class ImagenesBoletinPdf
 
     public function __construct(array $rutas)
     {
-        $this->rutas = $rutas;
+        $this->rutas = [];
+        foreach ($rutas as $url => $directorio) {
+            $this->rutas[$this->normalizarRutaUrl($url)] = $directorio;
+        }
     }
 
     public function prepararHtml($html)
@@ -23,6 +26,16 @@ class ImagenesBoletinPdf
         }, $html);
     }
 
+
+    private function normalizarRutaUrl($url)
+    {
+        // asset() puede conservar la barra final de url_instancia_cliente.
+        // Normalizar sólo la ruta, sin alterar el protocolo, dominio o query.
+        return preg_replace_callback('~^((?:https?:)?//[^/?#]+)([^?#]*)~i', function ($match) {
+            return $match[1] . preg_replace('~/+~', '/', $match[2]);
+        }, $url);
+    }
+
     private function imagenLocal($url)
     {
         if (isset($this->cache[$url])) {
@@ -30,7 +43,7 @@ class ImagenesBoletinPdf
         }
 
         $this->cache[$url] = $url;
-        $urlDecodificada = html_entity_decode($url, ENT_QUOTES, 'UTF-8');
+        $urlDecodificada = $this->normalizarRutaUrl(html_entity_decode($url, ENT_QUOTES, 'UTF-8'));
         foreach ($this->rutas as $prefijo => $directorio) {
             if (strpos($urlDecodificada, $prefijo) !== 0) {
                 continue;

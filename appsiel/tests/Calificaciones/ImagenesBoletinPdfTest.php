@@ -37,6 +37,15 @@ class ImagenesBoletinPdfTest extends PHPUnit_Framework_TestCase
         $this->assertNotContains('https://', $resultado);
     }
 
+    public function testNormalizaDobleBarraGeneradaPorAssetEnEscudosYFirmas()
+    {
+        $service = new ImagenesBoletinPdf(['https://colegio.test/appsiel/storage/app/' => $this->directorio]);
+        $html = '<img src="https://colegio.test/appsiel//storage/app/firma%20uno.png">';
+        $this->assertSame('<img src="data:image/png;base64,' . $this->png . '">', $service->prepararHtml($html));
+        $externa = '<img src="https://otro.test/appsiel//storage/app/firma%20uno.png">';
+        $this->assertSame($externa, $service->prepararHtml($externa));
+    }
+
     public function testDompdfRenderizaLaImagenIncrustadaSinAccesoRemoto()
     {
         $service = new ImagenesBoletinPdf(['https://colegio.test/' => $this->directorio]);
