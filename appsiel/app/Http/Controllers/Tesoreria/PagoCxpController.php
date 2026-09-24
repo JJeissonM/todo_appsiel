@@ -744,18 +744,13 @@ class PagoCxpController extends TransaccionController
 
         $concept = preg_replace('/\s+/u', ' ', implode(' ', $conceptParts));
         $concept = $this->normalize_apm_printable_text($concept);
-        $concept = $this->truncate_apm_concept($concept, 825);
+        $concept = $this->truncate_apm_concept($concept, 800);
 
-        // La impresora APM envuelve físicamente el concepto cada 60
-        // caracteres. Se anticipa ese ajuste para que nunca divida palabras.
-        $printLines = $this->wrap_apm_concept_by_words($concept, 60);
-        $lines = $this->pack_apm_concept_lines($printLines, 4);
-
-        while (count($lines) < 4) {
-            $lines[] = '';
-        }
-
-        return $lines;
+        // Concept es una sección repetida en APM: cada elemento del arreglo
+        // ocupa exactamente un renglón. Enviar cadenas multilínea, bloques
+        // agrupados o elementos vacíos hace que el renderizador vuelva a
+        // envolver el texto y genera desplazamientos o espacios verticales.
+        return $this->wrap_apm_concept_by_words($concept, 60);
     }
 
     protected function normalize_apm_printable_text($text)
@@ -834,25 +829,6 @@ class PagoCxpController extends TransaccionController
         }
 
         return $lines;
-    }
-
-    protected function pack_apm_concept_lines(array $printLines, $blocksQuantity)
-    {
-        if (empty($printLines)) {
-            return [];
-        }
-
-        $linesPerBlock = (int)ceil(count($printLines) / $blocksQuantity);
-        $blocks = [];
-
-        foreach (array_chunk($printLines, max(1, $linesPerBlock)) as $blockLines) {
-            // Las impresoras matriciales requieren retorno de carro y avance
-            // de línea. Un LF aislado conserva la posición horizontal del
-            // cabezal y provoca renglones con grandes espacios al comienzo.
-            $blocks[] = implode("\r\n", $blockLines);
-        }
-
-        return array_slice($blocks, 0, $blocksQuantity);
     }
 
     protected function build_apm_date_info($fecha)

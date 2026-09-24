@@ -37,7 +37,7 @@ class Cuota implements Estrategia
                 // El valor_acumulado no se puede pasar del tope_maximo
                 $saldo_pendiente = $cuota->tope_maximo - $cuota->valor_acumulado;
 
-                if ( $saldo_pendiente <= 0 )
+                if ( $saldo_pendiente <= 100 )
                 {
                     $cuota->estado = "Inactivo";
                     $cuota->save();

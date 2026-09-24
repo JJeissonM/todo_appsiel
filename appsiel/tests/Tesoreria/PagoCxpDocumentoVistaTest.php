@@ -462,7 +462,7 @@ class PagoCxpDocumentoVistaTest extends TestCase
         $lines = $this->invocarBuildApmConceptLines($encabezado, []);
         $concepto = $this->normalizarConceptoApmDePrueba($lines);
 
-        $this->assertCount(4, $lines);
+        $this->assertGreaterThan(4, count($lines));
         $this->assertLessThanOrEqual(825, mb_strlen($concepto, 'UTF-8'));
         $this->assertSame('...', mb_substr($concepto, -3, null, 'UTF-8'));
 
@@ -487,18 +487,16 @@ class PagoCxpDocumentoVistaTest extends TestCase
         }
     }
 
-    public function test_concepto_apm_usa_retorno_de_carro_en_cada_salto()
+    public function test_concepto_apm_no_envia_saltos_que_alteren_el_margen()
     {
         $palabras = array_fill(0, 20, 'PALABRACOMPLETA');
         $encabezado = (object)['descripcion' => implode(' ', $palabras)];
         $blocks = $this->invocarBuildApmConceptLines($encabezado, []);
 
-        $this->assertNotEmpty(array_filter($blocks, function ($block) {
-            return strpos($block, "\r\n") !== false;
-        }));
-
         foreach ($blocks as $block) {
-            $this->assertSame(0, preg_match('/(?<!\r)\n/', $block));
+            $this->assertSame(0, preg_match('/[\r\n]/', $block));
+            $this->assertSame($block, trim($block));
+            $this->assertLessThanOrEqual(60, strlen($block));
         }
     }
 
@@ -534,16 +532,9 @@ class PagoCxpDocumentoVistaTest extends TestCase
 
     protected function obtenerLineasImpresasApm(array $blocks)
     {
-        $printLines = [];
-        foreach ($blocks as $block) {
-            foreach (preg_split('/\r\n|\n|\r/', $block) as $line) {
-                if ($line !== '') {
-                    $printLines[] = $line;
-                }
-            }
-        }
-
-        return $printLines;
+        return array_values(array_filter($blocks, function ($line) {
+            return $line !== '';
+        }));
     }
 
     protected function normalizarConceptoApmDePrueba(array $blocks)
