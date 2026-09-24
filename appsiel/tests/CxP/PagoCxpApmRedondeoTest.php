@@ -57,6 +57,32 @@ class PagoCxpApmRedondeoTest extends PHPUnit_Framework_TestCase
         $this->assertSame('$2', $summary['items'][2]['Credit']);
     }
 
+    public function testConsolidaTodosLosMovimientosPosterioresAlOctavoEnUnaSolaLinea()
+    {
+        $summary = $this->resumen([
+            [100, 0], [100, 0], [100, 0], [100, 0],
+            [0, -100], [0, -100], [0, -100], [0, -100],
+            [10.40, 0], [20.40, 0], [0, -15.40], [0, -15.40]
+        ]);
+
+        $this->assertCount(9, $summary['items']);
+        $this->assertSame('...', $summary['items'][8]['Account']);
+        $this->assertSame('$31', $summary['items'][8]['Debit']);
+        $this->assertSame('$31', $summary['items'][8]['Credit']);
+        $this->assertSame(431, $summary['total_debit']);
+        $this->assertSame($summary['total_debit'], $summary['total_credit']);
+
+        $debitosImpresos = array_sum(array_map(function ($item) {
+            return (int)str_replace(['$', ','], '', $item['Debit']);
+        }, $summary['items']));
+        $creditosImpresos = array_sum(array_map(function ($item) {
+            return (int)str_replace(['$', ','], '', $item['Credit']);
+        }, $summary['items']));
+
+        $this->assertSame($summary['total_debit'], $debitosImpresos);
+        $this->assertSame($summary['total_credit'], $creditosImpresos);
+    }
+
     /** @dataProvider descuadres */
     public function testRechazaDescuadresRealesAunqueElRedondeoLosOculte($debit, $credit)
     {

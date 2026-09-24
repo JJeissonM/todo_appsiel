@@ -599,13 +599,13 @@ class PagoCxpController extends TransaccionController
 
         $debitCents = 0;
         $creditCents = 0;
-        $amounts = [];
+        $displayAmounts = [];
 
         $abonosTomados = [];
         $lines_quantity_max = 8;
         $lines_quantity_count = 0;
-        $suma_debitos_restantes = 0;
-        $suma_creditos_restantes = 0;
+        $debitos_restantes_centavos = 0;
+        $creditos_restantes_centavos = 0;
         foreach ($contab_mov as $registro) {
 
             $valor_debito = (float) $registro->valor_debito;
@@ -616,8 +616,6 @@ class PagoCxpController extends TransaccionController
             $lineCreditCents = (int)round(abs($valor_credito) * 100, 0, PHP_ROUND_HALF_UP);
             $debitCents += $lineDebitCents;
             $creditCents += $lineCreditCents;
-            $amounts[] = [$lineDebitCents, $lineCreditCents];
-
             $reference = $this->find_apm_reference($doc_pagados, $abonosTomados, $valor_debito);
 
             if (!is_null($reference)) {
@@ -625,6 +623,7 @@ class PagoCxpController extends TransaccionController
             }
             $lines_quantity_count++;
             if ($lines_quantity_count <= $lines_quantity_max) {
+                $displayAmounts[] = [$lineDebitCents, $lineCreditCents];
                 $items[] = [
                     'Account' => $registro->cuenta ? (string) $registro->cuenta->codigo : 'Cta Contable null',
                     'CO' => '-',
@@ -634,19 +633,20 @@ class PagoCxpController extends TransaccionController
                     'Credit' => $this->format_apm_money($roundedCredit, 0)
                 ];
             }else {
-                $suma_debitos_restantes += $roundedDebit;
-                $suma_creditos_restantes += $roundedCredit;
+                $debitos_restantes_centavos += $lineDebitCents;
+                $creditos_restantes_centavos += $lineCreditCents;
             }
         }
 
-        if($suma_debitos_restantes > 0 || $suma_creditos_restantes > 0){
+        if ($debitos_restantes_centavos > 0 || $creditos_restantes_centavos > 0) {
+            $displayAmounts[] = [$debitos_restantes_centavos, $creditos_restantes_centavos];
             $items[] = [
                 'Account' => '...',
                 'CO' => '-',
                 'ThirdParty' => '...',
                 'Reference' => '...',
-                'Debit' => $this->format_apm_money($suma_debitos_restantes, 0),
-                'Credit' => $this->format_apm_money($suma_creditos_restantes, 0)
+                'Debit' => '$0',
+                'Credit' => '$0'
             ];
         }
 
@@ -660,8 +660,8 @@ class PagoCxpController extends TransaccionController
 
         // Repartir los pesos residuales segun las mayores fracciones para que
         // cada columna sume el total redondeado sin imprimir centavos.
-        $debits = $this->round_apm_column_to_pesos(array_column($amounts, 0));
-        $credits = $this->round_apm_column_to_pesos(array_column($amounts, 1));
+        $debits = $this->round_apm_column_to_pesos(array_column($displayAmounts, 0));
+        $credits = $this->round_apm_column_to_pesos(array_column($displayAmounts, 1));
         foreach ($items as $index => &$item) {
             $item['Debit'] = $this->format_apm_money($debits[$index], 0);
             $item['Credit'] = $this->format_apm_money($credits[$index], 0);
