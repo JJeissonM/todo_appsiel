@@ -70,6 +70,12 @@ class RetencionFuenteService
             if (!is_object($linea)) {
                 throw new \InvalidArgumentException('El formato de las líneas de compra no es válido.');
             }
+            if (isset($linea->base_retencion) && (!is_numeric($linea->base_retencion) ||
+                !is_finite((float)$linea->base_retencion) || (float)$linea->base_retencion < 0 ||
+                (float)$linea->base_retencion > 9999999999999.99 ||
+                !preg_match('/^\d+(\.\d{1,2})?$/', (string)$linea->base_retencion))) {
+                throw new \InvalidArgumentException('Revise la base de retención en la línea ' . ($indice + 1) . '.');
+            }
             $id = isset($linea->contab_retencion_id) ? $linea->contab_retencion_id : 0;
             if ($id === '' || $id === null || (string)$id === '0') {
                 $this->limpiar_retenciones_lineas([$linea]);
@@ -81,11 +87,11 @@ class RetencionFuenteService
                 (int)$retencion->categoria_retenciones_id === (int)config('contabilidad.categoria_reteica_id'))) {
                 throw new \InvalidArgumentException('La retención en la línea ' . ($indice + 1) . ' no es válida.');
             }
-            foreach (['tasa_retencion', 'valor_retencion'] as $campo) {
+            foreach (['base_retencion', 'tasa_retencion', 'valor_retencion'] as $campo) {
                 if (!isset($linea->$campo) || !is_numeric($linea->$campo) ||
                     !is_finite((float)$linea->$campo) || (float)$linea->$campo < 0 ||
                     ($campo === 'tasa_retencion' && (float)$linea->$campo > 100)) {
-                    throw new \InvalidArgumentException('Revise la tasa y el valor de retención en la línea ' . ($indice + 1) . '.');
+                    throw new \InvalidArgumentException('Revise la base, la tasa y el valor de retención en la línea ' . ($indice + 1) . '.');
                 }
             }
         }

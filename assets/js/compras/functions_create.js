@@ -184,6 +184,47 @@ function validar_documento_proveedor()
 }
 
 // Valores unitarios
+function calcular_retencion_sobre_base(base, tasa)
+{
+    var minima = parseFloat($('#linea_ingreso_default').data('retencion_fuente_cuantia_minima_pesos')) || 0;
+    if (base < minima) return 0;
+    return Math.round(base * tasa) / 100;
+}
+
+function actualizar_base_retencion()
+{
+    var campo = $('#base_retencion');
+    if (!campo.length) return;
+    if (!campo.data('manual')) {
+        campo.val((Math.max(0, base_impuesto_unitario * (parseFloat(cantidad) || 0))).toFixed(2));
+    }
+    var base = Number(campo.val());
+    var tasa = get_tasa_retencion_seleccionada();
+    var valor = $('#contab_retencion_id').val() > 0 ? calcular_retencion_sobre_base(base, tasa) : 0;
+    $('#valor_retencion_preview').text(campo.val() !== '' && isFinite(base) && base >= 0
+        ? 'Retención: $ ' + valor.toFixed(2) : 'Base inválida');
+}
+
+function validar_base_retencion()
+{
+    var campo = $('#base_retencion');
+    if (!campo.length) return true;
+    var texto = campo.val();
+    var base = Number(texto);
+    if (texto === '' || !isFinite(base) || base < 0 || base > 9999999999999.99 || !/^\d+(\.\d{1,2})?$/.test(texto)) {
+        Swal.fire({icon: 'error', title: 'Base de retención inválida', text: 'Ingrese una base mayor o igual a cero, con máximo dos decimales.'});
+        campo.focus();
+        return false;
+    }
+    return true;
+}
+
+$(document).on('input', '#base_retencion', function () {
+    $(this).data('manual', true);
+    actualizar_base_retencion();
+});
+$(document).on('change', '#contab_retencion_id', actualizar_base_retencion);
+
 function calcular_impuestos()
 {
     var precio_compra = precio_unitario - valor_unitario_descuento;
@@ -193,6 +234,7 @@ function calcular_impuestos()
     valor_impuesto_unitario = precio_compra - base_impuesto_unitario;
 
     costo_unitario = base_impuesto_unitario;
+    actualizar_base_retencion();
 }
 
 function calcular_valor_descuento()
@@ -447,6 +489,7 @@ function validar_existencia_actual()
 var numero_linea = 1;
 function agregar_nueva_linea()
 {
+    if (!validar_base_retencion()) return false;
     if ( !calcular_precio_total() )
     {
         return false;
@@ -562,7 +605,7 @@ function generar_string_celdas( fila )
 
         tasa_retencion = get_tasa_retencion_seleccionada();
         if (contab_retencion_id > 0 && tasa_retencion > 0) {
-            valor_retencion = calcular_valor_retencion_linea(precio_unitario, cantidad, tasa_impuesto, tasa_retencion);
+            valor_retencion = calcular_retencion_sobre_base(Number($('#base_retencion').val()), tasa_retencion);
         }
     } else {
         valor_retencion = 0;
@@ -587,6 +630,10 @@ function generar_string_celdas( fila )
     celdas[ num_celda ] = '<td style="display: none;"><div class="retencion_fuente_codigo">'+ (aplica_retencion_fuente ? ($('#linea_ingreso_default').data('retencion_fuente_codigo') || '') : '') +'</div></td>';
 
     num_celda++;
+    if (aplica_retencion_fuente) {
+        celdas[num_celda++] = '<td style="display:none"><div class="base_retencion">' + Number($('#base_retencion').val()).toFixed(2) + '</div></td>';
+    }
+
 
     celdas[ num_celda ] = '<td> &nbsp; </td>';
     
@@ -623,6 +670,7 @@ function generar_string_celdas( fila )
     num_celda++;
 
     if (aplica_retencion_fuente) {
+        celdas[num_celda++] = '<td>$ ' + new Intl.NumberFormat('de-DE').format(Number($('#base_retencion').val())) + '</td>';
         var texto_retencion = $('#contab_retencion_id option:selected').text();
         if (contab_retencion_id <= 0) {
             texto_retencion = 'Sin retención';
@@ -787,6 +835,8 @@ function reset_tabla_ingreso()
 
 function reset_linea_ingreso_default()
 {
+    $('#base_retencion').data('manual', false).val('');
+    $('#valor_retencion_preview').text('');
     $('#linea_ingreso_default input[type="text"]').val('0');
     $('#linea_ingreso_default input[type="text"]').attr('style','background-color:#ECECE5;');
     $('#linea_ingreso_default input[type="text"]').attr('disabled','disabled');

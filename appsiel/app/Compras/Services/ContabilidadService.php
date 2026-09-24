@@ -44,7 +44,7 @@ class ContabilidadService
             }
 
             $datos_retencion = [
-                'base_sin_iva' => (float)$linea->base_impuesto,
+                'base_sin_iva' => $linea->base_retencion !== null ? (float)$linea->base_retencion : (float)$linea->base_impuesto,
                 'valor_retencion' => (float)$linea->valor_retencion,
             ];
 

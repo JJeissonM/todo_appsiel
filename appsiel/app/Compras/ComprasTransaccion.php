@@ -16,6 +16,16 @@ class ComprasTransaccion
             && $retencion_service->maneja_retenciones_compras();
         $ocultar_columna_motivo = !empty($opciones['ocultar_columna_motivo']);
 
+        if ($aplica_retencion_fuente) {
+            $campos_invisibles[] = 'base_retencion';
+            foreach ($campos_visibles as $indice => $campo) {
+                if ($campo[0] === 'Ret. Fuente') {
+                    array_splice($campos_visibles, $indice, 0, [['Base retención', '130px']]);
+                    break;
+                }
+            }
+        }
+
         if (!$aplica_retencion_fuente) {
             $campos_visibles = array_values(array_filter($campos_visibles, function ($campo) {
                 return $campo[0] !== 'Ret. Fuente';
@@ -50,7 +60,7 @@ class ComprasTransaccion
 
         $columna_retencion = '';
         if ($aplica_retencion_fuente) {
-            $columna_retencion = '<td> <select id="contab_retencion_id" class="form-control"><option value="0" data-tasa="0">Sin retención</option></select> </td>';
+            $columna_retencion = '<td><input type="number" id="base_retencion" min="0" max="9999999999999.99" step="0.01" class="form-control"><small id="valor_retencion_preview"></small></td><td> <select id="contab_retencion_id" class="form-control"><option value="0" data-tasa="0">Sin retención</option></select> </td>';
         }
 
         $columna_motivo = '';

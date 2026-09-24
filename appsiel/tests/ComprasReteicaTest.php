@@ -55,7 +55,7 @@ class ComprasReteicaTest extends TestCase
             config(['contabilidad.categoria_reteica_id'=>0, 'contabilidad.tercero_dian_id'=>$doc->core_tercero_id]);
             $enviada = (object)[
                 'contab_retencion_id'=>$retencion->id, 'tasa_retencion'=>1.23,
-                'valor_retencion'=>123.45, 'precio_unitario'=>5355000, 'cantidad'=>1, 'tasa_impuesto'=>19,
+                'base_retencion'=>10036.59, 'valor_retencion'=>123.45, 'precio_unitario'=>5355000, 'cantidad'=>1, 'tasa_impuesto'=>19,
             ];
             $service = new App\Compras\Services\RetencionFuenteService();
             $lineas = $service->validar_lineas_enviadas([$enviada], $doc->fecha);
@@ -66,6 +66,8 @@ class ComprasReteicaTest extends TestCase
             $registro = RegistroRetencion::where('compras_doc_registro_id', $linea->id)->firstOrFail();
             $control = ComprasRetencionLiquidacion::where('compras_doc_registro_id', $linea->id)->firstOrFail();
             $this->assertEquals(123.45, $registro->valor);
+            $this->assertEquals(10036.59, $registro->valor_base_retencion);
+            $this->assertEquals(10036.59, $control->base_retencion);
             $this->assertEquals(1.23, $registro->tasa_retencion);
             $this->assertEquals(123.45, $control->valor_retencion);
             $this->assertEquals(1.23, $control->tasa_retencion);
@@ -77,13 +79,30 @@ class ComprasReteicaTest extends TestCase
         }
     }
 
+    public function test_base_retencion_invalida_no_se_normaliza_ni_se_guarda()
+    {
+        list($doc, $retencion) = $this->preparar();
+        config(['contabilidad.categoria_reteica_id'=>0]);
+        foreach (['', -1, 'abc', '1.234', null] as $base) {
+            try {
+                (new App\Compras\Services\RetencionFuenteService())->validar_lineas_enviadas([
+                    (object)['contab_retencion_id'=>$retencion->id, 'base_retencion'=>$base,
+                        'tasa_retencion'=>1.23, 'valor_retencion'=>123.45]
+                ], $doc->fecha);
+                $this->fail('La base inválida debe rechazarse.');
+            } catch (InvalidArgumentException $e) {
+                $this->assertContains('base', $e->getMessage());
+            }
+        }
+    }
+
     public function test_retefuente_rechaza_valor_negativo_enviado()
     {
         list($doc, $retencion) = $this->preparar();
         config(['contabilidad.categoria_reteica_id'=>0]);
         $this->setExpectedException(InvalidArgumentException::class);
         (new App\Compras\Services\RetencionFuenteService())->validar_lineas_enviadas([
-            (object)['contab_retencion_id'=>$retencion->id, 'tasa_retencion'=>1, 'valor_retencion'=>-1]
+            (object)['contab_retencion_id'=>$retencion->id, 'base_retencion'=>100, 'tasa_retencion'=>1, 'valor_retencion'=>-1]
         ], $doc->fecha);
     }
 

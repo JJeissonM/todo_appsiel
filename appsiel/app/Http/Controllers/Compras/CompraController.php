@@ -411,6 +411,7 @@ class CompraController extends TransaccionController
 
                 if ($campos_retencion_disponibles) {
                     $linea_datos = $linea_datos +
+                        ['base_retencion' => $maneja_retenciones && isset($lineas_registros_originales[$linea]->base_retencion) ? $lineas_registros_originales[$linea]->base_retencion : null] +
                         ['contab_retencion_id' => $contab_retencion_id] +
                         ['tasa_retencion' => $tasa_retencion] +
                         ['valor_retencion' => $valor_retencion] +
