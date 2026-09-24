@@ -108,6 +108,7 @@ class CompraController extends TransaccionController
      */
     public function store(Request $request)
     {
+        \App\Compras\Services\CantidadLineasService::prepararRequest($request);
         $this->validar_cuenta_por_pagar_directa($request);
         $this->validate($request, ['reteica_retencion_id' => 'integer|min:0']);
         try {

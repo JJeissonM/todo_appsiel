@@ -62,6 +62,7 @@ class NotaCreditoDirectaController extends TransaccionController
      */
     public function store(Request $request)
     {
+        \App\Compras\Services\CantidadLineasService::prepararRequest($request);
         // La nota directa usa la cuenta del proveedor, no la opción de las facturas.
         $request->merge(['cta_x_pagar_id' => null]);
 

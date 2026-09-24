@@ -378,7 +378,12 @@ function consultar_existencia(bodega_id, producto_id)
             // Se pasa a ingresar las cantidades
             $('#cantidad').removeAttr('disabled');
             $('#cantidad').attr('style','background-color:white;');
-            $('#cantidad').select();
+            if ($('#ingreso_registros').attr('data-ocultar-cantidad') === '1') {
+                $('#cantidad').val(1).trigger('keyup');
+                $('#precio_unitario').select();
+            } else {
+                $('#cantidad').select();
+            }
 
             return true;
         });

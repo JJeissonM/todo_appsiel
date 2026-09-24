@@ -80,6 +80,7 @@ class ComprasTransaccion
             'columnas' => $columnas,
             'fila_body' => '',
             'fila_foot' => $fila_controles_formulario,
+            'ocultar_cantidad_lineas' => \App\Compras\Services\CantidadLineasService::oculta(),
             'ocultar_columna_motivo' => $ocultar_columna_motivo
         ];
     }
