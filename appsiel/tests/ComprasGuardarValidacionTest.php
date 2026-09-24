@@ -22,12 +22,16 @@ class ComprasGuardarValidacionTest extends TestCase
         $this->be(App\User::whereNotNull('empresa_id')->firstOrFail());
         config(['compras.maneja_retenciones_fuente'=>0]);
         foreach ([CompraController::class, FacturaEntradaPendienteController::class] as $controller) {
-            $request = Request::create('/compras', 'POST', ['reteica_retencion_id'=>1, 'core_tipo_transaccion_id'=>25]);
+            $request = Request::create('/compras', 'POST', ['reteica_retencion_id'=>1, 'core_tipo_transaccion_id'=>25, 'reteica_base'=>1000000, 'reteica_base_manual'=>0]);
             $request->headers->set('Accept', 'application/json');
             $response = app($controller)->store($request);
             $this->assertEquals(422, $response->getStatusCode());
             $this->assertFalse($response->headers->has('Location'));
             $this->assertContains('activar el manejo de retenciones', $response->getContent());
+            if ($controller === CompraController::class) {
+                $this->assertEquals(1000000, $request->reteica_base);
+                $this->assertEquals(1, $request->reteica_base_manual);
+            }
         }
     }
     public function test_documento_de_entrada_sin_configurar_no_crea_encabezados_ni_consecutivos()

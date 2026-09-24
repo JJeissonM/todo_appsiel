@@ -110,7 +110,17 @@ class CompraController extends TransaccionController
     {
         \App\Compras\Services\CantidadLineasService::prepararRequest($request);
         $this->validar_cuenta_por_pagar_directa($request);
-        $this->validate($request, ['reteica_retencion_id' => 'integer|min:0']);
+        $this->validate($request, [
+            'reteica_retencion_id' => 'integer|min:0',
+            'reteica_base_manual' => 'boolean',
+            'reteica_base' => ((int)$request->input('reteica_retencion_id') > 0 ? 'required|' : '') . 'numeric|min:0|max:9999999999999.99|regex:/^\d+(\.\d{1,2})?$/',
+        ]);
+        if (!(int)$request->input('reteica_retencion_id')) {
+            $request->merge(['reteica_base_manual' => 0, 'reteica_base' => 0]);
+        } else {
+            // La base confirmada por el frontend es la fuente del guardado, incluso si era automática.
+            $request->merge(['reteica_base_manual' => 1]);
+        }
         try {
             (new \App\Compras\Services\ReteicaService())->validar_seleccion(
                 $request->input('reteica_retencion_id', 0), $request->core_tipo_transaccion_id

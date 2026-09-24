@@ -22,6 +22,8 @@ class ComprasDocEncabezado extends Model
     protected $fillable = [
         'cta_x_pagar_id',
         'reteica_retencion_id',
+        'reteica_base',
+        'reteica_base_manual',
         'core_tipo_transaccion_id',
         'core_tipo_doc_app_id',
         'consecutivo',

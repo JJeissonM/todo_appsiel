@@ -106,6 +106,23 @@ class ComprasReteicaTest extends TestCase
         ], $doc->fecha);
     }
 
+    public function test_reteica_conserva_base_manual_incluso_cero()
+    {
+        foreach ([25, 48] as $tipo) {
+            list($doc) = $this->preparar($tipo);
+            $doc->update(['reteica_base_manual'=>1, 'reteica_base'=>1000000]);
+            $service = new ReteicaService();
+            $this->assertEquals(4140, $service->liquidar_documento($doc));
+            $service->contabilizar($doc);
+            $registro = (new ContabilidadService())->get_retenciones($doc)->first();
+            $this->assertEquals(1000000, $registro->valor_base_retencion);
+            $this->assertEquals(4140, $registro->valor);
+            $doc->update(['reteica_base'=>0]);
+            $this->assertEquals(0, $service->liquidar_documento($doc));
+            $this->assertEquals(0, $doc->fresh()->reteica_base);
+        }
+    }
+
     public function test_calculo_por_mil_y_redondeo()
     {
         $s = new ReteicaService();

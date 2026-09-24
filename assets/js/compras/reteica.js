@@ -1,6 +1,21 @@
+function validar_base_reteica() {
+    var valor = $('#reteica_base').val();
+    if (!/^\d+(\.\d{1,2})?$/.test(valor) || !isFinite(Number(valor)) || Number(valor) > 9999999999999.99) {
+        alert('Ingrese una base de ReteICA mayor o igual a cero, con máximo dos decimales.');
+        $('#reteica_base').focus();
+        return false;
+    }
+    return true;
+}
 /* Tarifa persistida en porcentaje; presentación en por mil. */
 function calcular_reteica(base) {
     var tasa = parseFloat($('#reteica_select option:selected').attr('data-tasa')) || 0;
+    if ($('#reteica_base_manual').val() === '1') {
+        base = Number($('#reteica_base').val());
+    } else {
+        $('#reteica_base').val((Math.max(0, base)).toFixed(2));
+    }
+    if (!isFinite(base) || base < 0) base = 0;
     base = Math.max(0, Math.round(base * 100) / 100);
     var valor = Math.round((base * tasa / 100 + 1e-9) * 100) / 100;
     $('#reteica_preview').val(valor.toFixed(2));
@@ -20,7 +35,12 @@ $(function () {
     }
     $('#reteica_add, #reteica_editar').on('click', editar);
     $('#reteica_select').on('change', calcular_totales);
+    $('#reteica_base').on('input', function () {
+        $('#reteica_base_manual').val(1);
+        calcular_totales();
+    });
     $('#reteica_confirmar').on('click', function () {
+        if (!validar_base_reteica()) return;
         if ($('#reteica_select').val() == '0') { $('#reteica_select').focus(); return; }
         $('#reteica_retencion_id').val($('#reteica_select').val());
         $('#reteica_editor, #reteica_confirmar, #reteica_add').hide();
@@ -28,7 +48,7 @@ $(function () {
         calcular_totales();
     });
     $('#reteica_reset').on('click', function () {
-        $('#reteica_retencion_id, #reteica_select').val(0);
+        $('#reteica_retencion_id, #reteica_select, #reteica_base_manual').val(0);
         $('#reteica_editor, #reteica_confirmar, #reteica_editar, #reteica_reset').hide();
         $('#reteica_add, #reteica_importe').show();
         calcular_totales();
@@ -36,7 +56,7 @@ $(function () {
     // El guardado usa form.submit(), por eso se valida también el botón existente.
     var boton = document.getElementById('btn_guardar');
     function validar(event) {
-        if ($('#reteica_editor').is(':visible')) {
+        if ($('#reteica_editor').is(':visible') || ($('#reteica_retencion_id').val() > 0 && !validar_base_reteica())) {
             event.preventDefault();
             event.stopImmediatePropagation();
             alert('Confirme o elimine la edición de ReteICA antes de guardar.');
