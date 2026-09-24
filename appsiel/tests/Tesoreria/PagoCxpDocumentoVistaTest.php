@@ -460,7 +460,7 @@ class PagoCxpDocumentoVistaTest extends TestCase
 
         $encabezado = (object)['descripcion' => implode(' ', $palabras)];
         $lines = $this->invocarBuildApmConceptLines($encabezado, []);
-        $concepto = rtrim(implode(' ', $lines));
+        $concepto = $this->normalizarConceptoApmDePrueba($lines);
 
         $this->assertCount(4, $lines);
         $this->assertLessThanOrEqual(825, mb_strlen($concepto, 'UTF-8'));
@@ -478,16 +478,28 @@ class PagoCxpDocumentoVistaTest extends TestCase
         $encabezado = (object)['descripcion' => $texto];
         $lines = $this->invocarBuildApmConceptLines($encabezado, []);
 
-        $this->assertSame($texto, rtrim(implode(' ', $lines)));
-        foreach ($lines as $line) {
-            if ($line === '') {
-                continue;
-            }
-
+        $this->assertSame($texto, $this->normalizarConceptoApmDePrueba($lines));
+        foreach ($this->obtenerLineasImpresasApm($lines) as $line) {
+            $this->assertLessThanOrEqual(60, strlen($line));
             foreach (explode(' ', $line) as $palabra) {
                 $this->assertSame('PALABRACOMPLETA', $palabra);
             }
         }
+    }
+
+    public function test_concepto_apm_convierte_tildes_y_enie_a_ascii_imprimible()
+    {
+        $encabezado = (object)[
+            'descripcion' => 'Reparación de tubería, conexión, válvula y baño del Ñandú'
+        ];
+        $lines = $this->invocarBuildApmConceptLines($encabezado, []);
+        $concepto = $this->normalizarConceptoApmDePrueba($lines);
+
+        $this->assertSame(
+            'REPARACION DE TUBERIA, CONEXION, VALVULA Y BANO DEL NANDU',
+            $concepto
+        );
+        $this->assertRegExp('/^[\x20-\x7E]+$/', $concepto);
     }
 
     protected function invocarGeneracionDetalle(Request $request)
@@ -503,5 +515,24 @@ class PagoCxpDocumentoVistaTest extends TestCase
         $metodo->setAccessible(true);
 
         return $metodo->invoke(new PagoCxpController(), $encabezado, $registros);
+    }
+
+    protected function obtenerLineasImpresasApm(array $blocks)
+    {
+        $printLines = [];
+        foreach ($blocks as $block) {
+            foreach (explode("\n", $block) as $line) {
+                if ($line !== '') {
+                    $printLines[] = $line;
+                }
+            }
+        }
+
+        return $printLines;
+    }
+
+    protected function normalizarConceptoApmDePrueba(array $blocks)
+    {
+        return trim(preg_replace('/\s+/', ' ', implode("\n", $blocks)));
     }
 }

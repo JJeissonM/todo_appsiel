@@ -743,15 +743,46 @@ class PagoCxpController extends TransaccionController
         }
 
         $concept = preg_replace('/\s+/u', ' ', implode(' ', $conceptParts));
-        $concept = mb_strtoupper(trim($concept), 'UTF-8');
-        $concept = $this->truncate_apm_concept($concept, 800);
-        $lines = $this->wrap_apm_concept_by_words($concept, 207, 4);
+        $concept = $this->normalize_apm_printable_text($concept);
+        $concept = $this->truncate_apm_concept($concept, 825);
+
+        // La impresora APM envuelve físicamente el concepto cada 60
+        // caracteres. Se anticipa ese ajuste para que nunca divida palabras.
+        $printLines = $this->wrap_apm_concept_by_words($concept, 60);
+        $lines = $this->pack_apm_concept_lines($printLines, 4);
 
         while (count($lines) < 4) {
             $lines[] = '';
         }
 
         return $lines;
+    }
+
+    protected function normalize_apm_printable_text($text)
+    {
+        $text = strtr($text, [
+            'Á' => 'A', 'À' => 'A', 'Â' => 'A', 'Ä' => 'A', 'Ã' => 'A',
+            'á' => 'a', 'à' => 'a', 'â' => 'a', 'ä' => 'a', 'ã' => 'a',
+            'É' => 'E', 'È' => 'E', 'Ê' => 'E', 'Ë' => 'E',
+            'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
+            'Í' => 'I', 'Ì' => 'I', 'Î' => 'I', 'Ï' => 'I',
+            'í' => 'i', 'ì' => 'i', 'î' => 'i', 'ï' => 'i',
+            'Ó' => 'O', 'Ò' => 'O', 'Ô' => 'O', 'Ö' => 'O', 'Õ' => 'O',
+            'ó' => 'o', 'ò' => 'o', 'ô' => 'o', 'ö' => 'o', 'õ' => 'o',
+            'Ú' => 'U', 'Ù' => 'U', 'Û' => 'U', 'Ü' => 'U',
+            'ú' => 'u', 'ù' => 'u', 'û' => 'u', 'ü' => 'u',
+            'Ñ' => 'N', 'ñ' => 'n', 'Ç' => 'C', 'ç' => 'c',
+            '¿' => '', '¡' => ''
+        ]);
+
+        $ascii = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+        if ($ascii !== false) {
+            $text = $ascii;
+        }
+
+        $text = preg_replace('/[^\x20-\x7E]/', '', $text);
+
+        return strtoupper(trim(preg_replace('/\s+/', ' ', $text)));
     }
 
     protected function truncate_apm_concept($concept, $maxLength)
@@ -779,7 +810,7 @@ class PagoCxpController extends TransaccionController
         return $truncated . '...';
     }
 
-    protected function wrap_apm_concept_by_words($concept, $lineLength, $maxLines)
+    protected function wrap_apm_concept_by_words($concept, $lineLength)
     {
         $words = preg_split('/\s+/u', trim($concept), -1, PREG_SPLIT_NO_EMPTY);
         $lines = [];
@@ -789,8 +820,7 @@ class PagoCxpController extends TransaccionController
             $candidate = $currentLine === '' ? $word : $currentLine . ' ' . $word;
 
             if ($currentLine !== ''
-                && mb_strlen($candidate, 'UTF-8') > $lineLength
-                && count($lines) < $maxLines - 1) {
+                && mb_strlen($candidate, 'UTF-8') > $lineLength) {
                 $lines[] = $currentLine;
                 $currentLine = $word;
                 continue;
@@ -803,7 +833,23 @@ class PagoCxpController extends TransaccionController
             $lines[] = $currentLine;
         }
 
-        return array_slice($lines, 0, $maxLines);
+        return $lines;
+    }
+
+    protected function pack_apm_concept_lines(array $printLines, $blocksQuantity)
+    {
+        if (empty($printLines)) {
+            return [];
+        }
+
+        $linesPerBlock = (int)ceil(count($printLines) / $blocksQuantity);
+        $blocks = [];
+
+        foreach (array_chunk($printLines, max(1, $linesPerBlock)) as $blockLines) {
+            $blocks[] = implode("\n", $blockLines);
+        }
+
+        return array_slice($blocks, 0, $blocksQuantity);
     }
 
     protected function build_apm_date_info($fecha)
