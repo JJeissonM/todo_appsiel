@@ -744,7 +744,7 @@ class PagoCxpController extends TransaccionController
 
         $concept = preg_replace('/\s+/u', ' ', implode(' ', $conceptParts));
         $concept = mb_strtoupper(trim($concept), 'UTF-8');
-        $concept = $this->truncate_apm_concept($concept, 825);
+        $concept = $this->truncate_apm_concept($concept, 800);
         $lines = $this->wrap_apm_concept_by_words($concept, 207, 4);
 
         while (count($lines) < 4) {
