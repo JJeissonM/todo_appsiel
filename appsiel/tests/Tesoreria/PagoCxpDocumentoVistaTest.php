@@ -487,6 +487,21 @@ class PagoCxpDocumentoVistaTest extends TestCase
         }
     }
 
+    public function test_concepto_apm_usa_retorno_de_carro_en_cada_salto()
+    {
+        $palabras = array_fill(0, 20, 'PALABRACOMPLETA');
+        $encabezado = (object)['descripcion' => implode(' ', $palabras)];
+        $blocks = $this->invocarBuildApmConceptLines($encabezado, []);
+
+        $this->assertNotEmpty(array_filter($blocks, function ($block) {
+            return strpos($block, "\r\n") !== false;
+        }));
+
+        foreach ($blocks as $block) {
+            $this->assertSame(0, preg_match('/(?<!\r)\n/', $block));
+        }
+    }
+
     public function test_concepto_apm_convierte_tildes_y_enie_a_ascii_imprimible()
     {
         $encabezado = (object)[
@@ -521,7 +536,7 @@ class PagoCxpDocumentoVistaTest extends TestCase
     {
         $printLines = [];
         foreach ($blocks as $block) {
-            foreach (explode("\n", $block) as $line) {
+            foreach (preg_split('/\r\n|\n|\r/', $block) as $line) {
                 if ($line !== '') {
                     $printLines[] = $line;
                 }
