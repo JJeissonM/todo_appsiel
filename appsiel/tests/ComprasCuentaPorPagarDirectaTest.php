@@ -199,6 +199,32 @@ class ComprasCuentaPorPagarDirectaTest extends TestCase
         NotaCreditoController::contabilizar_movimiento_debito('credito', $datos, 100, 'Devolución prueba', $doc);
         $this->assertEquals($cuenta->id, ContabMovimiento::where('consecutivo',$datos['consecutivo'])->firstOrFail()->contab_cuenta_id);
     }
+
+    public function test_nota_credito_no_puede_superar_saldo_pendiente_de_factura()
+    {
+        list($factura) = $this->preparar();
+        $this->contabilizar($factura);
+        $controller = new NotaDevolucionGuardadoTestController();
+
+        // Se permite devolver exactamente el saldo disponible.
+        $controller->validarSaldoPendiente($factura, 500);
+
+        $this->setExpectedException(
+            InvalidArgumentException::class,
+            'supera el saldo pendiente por pagar de la factura'
+        );
+        $controller->validarSaldoPendiente($factura, 500.01);
+    }
+
+    public function test_create_nota_credito_envia_por_ajax_y_conserva_formulario_ante_error()
+    {
+        $vista = file_get_contents(resource_path('views/compras/notas_credito/create.blade.php'));
+
+        $this->assertContains("$('#form_create').on('submit'", $vista);
+        $this->assertContains('$.ajax({', $vista);
+        $this->assertContains("formulario.serialize()", $vista);
+        $this->assertContains("xhr.responseJSON.message", $vista);
+    }
 }
 
 class CompraCuentaDirectaTestController extends CompraController
@@ -237,6 +263,11 @@ class NotaDevolucionGuardadoTestController extends NotaCreditoController
         $doc = App\Compras\NotaCredito::create($request->all());
         $this->documentoCreadoId = $doc->id;
         throw new RuntimeException('Fallo posterior a la escritura');
+    }
+
+    public function validarSaldoPendiente($factura, $totalNota)
+    {
+        return $this->validar_saldo_pendiente_factura($factura, $totalNota);
     }
 }
 

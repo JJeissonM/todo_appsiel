@@ -144,38 +144,116 @@ class NotaCreditoController extends TransaccionController
      */
     public function store(Request $request)
     {
+        try {
+            $nota_credito = DB::transaction(function () use ($request) {
+                $factura = ComprasDocEncabezado::where('core_empresa_id', Auth::user()->empresa_id)
+                    ->where('estado', 'Activo')->lockForUpdate()->findOrFail($request->compras_doc_relacionado_id); // WARNING: si la factura tiene varias entradas, no se puede hacer la nota
 
-        $nota_credito = DB::transaction(function () use ($request) {
-            $factura = ComprasDocEncabezado::where('core_empresa_id', Auth::user()->empresa_id)
-                ->where('estado', 'Activo')->lockForUpdate()->findOrFail($request->compras_doc_relacionado_id); // WARNING: si la factura tiene varias entradas, no se puede hacer la nota
+                // La cuenta de la nota procede de la factura, nunca del formulario.
+                $request->merge(['cta_x_pagar_id' => $factura->forma_pago == 'credito' && (int)$factura->cta_x_pagar_id > 0
+                    ? (int)$factura->cta_x_pagar_id : null]);
 
-            // La cuenta de la nota procede de la factura, nunca del formulario.
-            $request->merge(['cta_x_pagar_id' => $factura->forma_pago == 'credito' && (int)$factura->cta_x_pagar_id > 0
-                ? (int)$factura->cta_x_pagar_id : null]);
+                $request['creado_por'] = Auth::user()->email;
+                if ($request->forma_pago == null) {
+                    $request['forma_pago'] = $factura->forma_pago;
+                }
 
-            $request['creado_por'] = Auth::user()->email;
-            if ($request->forma_pago == null) {
-                $request['forma_pago'] = $factura->forma_pago;
+                // 1ro. Crear documento de Salida de inventarios (Devolución) con base en la entrada y las cantidades a devolver
+                // WARNING. HECHO MANUALMENTE
+                $request['entrada_almacen_id'] = $this->crear_devolucion( $request , $factura->entrada_almacen_id );
+
+                $totalNota = $this->calcular_total_devolucion(
+                    $request['entrada_almacen_id'],
+                    $factura
+                );
+                $this->validar_saldo_pendiente_factura($factura, $totalNota);
+
+                // 2do. Crear encabezado del documento de Compras (Nota Crédito)
+                $request['compras_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura
+
+                $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+                $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
+
+                // 3ro. Crear líneas de registros del documento
+                NotaCreditoController::crear_registros_nota_credito( $request, $nota_credito, $factura );
+
+                return $nota_credito;
+            });
+        } catch (\Exception $e) {
+            $mensaje = 'No fue posible guardar la nota crédito: ' . $e->getMessage();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $mensaje
+                ], 422);
             }
 
-            // 1ro. Crear documento de Salida de inventarios (Devolución) con base en la entrada y las cantidades a devolver
-            // WARNING. HECHO MANUALMENTE
-            $request['entrada_almacen_id'] = $this->crear_devolucion( $request , $factura->entrada_almacen_id );
+            if ($e instanceof \InvalidArgumentException) {
+                return redirect()->back()->withInput()->with('mensaje_error', $mensaje);
+            }
 
+            throw $e;
+        }
 
-            // 2do. Crear encabezado del documento de Compras (Nota Crédito)
-            $request['compras_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura
+        $url = url('compras_notas_credito_directa/' . $nota_credito->id)
+            . '?id=' . $request->url_id
+            . '&id_modelo=' . $request->url_id_modelo
+            . '&id_transaccion=' . $request->url_id_transaccion;
 
-            $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
-            $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'ok',
+                'redirect' => $url
+            ]);
+        }
 
-            // 3ro. Crear líneas de registros del documento
-            NotaCreditoController::crear_registros_nota_credito( $request, $nota_credito, $factura );
+        return redirect($url);
+    }
 
-            return $nota_credito;
-        });
+    protected function calcular_total_devolucion($devolucionId, $factura)
+    {
+        $total = 0;
+        $registros = InvDocRegistro::where('inv_doc_encabezado_id', $devolucionId)->get();
 
-        return redirect('compras_notas_credito_directa/'.$nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
+        foreach ($registros as $registro) {
+            $valores = static::calcular_valores_linea_nota_credito($registro, $factura);
+            $total += (float)$valores['precio_total'];
+        }
+
+        return $total;
+    }
+
+    protected function validar_saldo_pendiente_factura($factura, $totalNota)
+    {
+        if ($factura->forma_pago != 'credito') {
+            return;
+        }
+
+        $movimientoCxp = CxpMovimiento::where('core_empresa_id', $factura->core_empresa_id)
+            ->where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
+            ->where('consecutivo', $factura->consecutivo)
+            ->orderBy('id')
+            ->lockForUpdate()
+            ->first();
+
+        if (is_null($movimientoCxp)) {
+            throw new \InvalidArgumentException('No se encontró el movimiento de cuentas por pagar de la factura.');
+        }
+
+        $saldoPendiente = round(max(0, (float)$movimientoCxp->saldo_pendiente), 2);
+        $valorNota = round(abs((float)$totalNota), 2);
+        $saldoPendienteCentavos = (int)round($saldoPendiente * 100);
+        $valorNotaCentavos = (int)round($valorNota * 100);
+
+        if ($valorNotaCentavos > $saldoPendienteCentavos) {
+            throw new \InvalidArgumentException(
+                'El valor total de la nota crédito ($' . number_format($valorNota, 2, ',', '.') .
+                ') supera el saldo pendiente por pagar de la factura ($' .
+                number_format($saldoPendiente, 2, ',', '.') . ').'
+            );
+        }
     }
 
     /*
@@ -281,35 +359,13 @@ class NotaCreditoController extends TransaccionController
             foreach ($registros_devolucion as $un_registro)
             {
                 // Nota: $un_registro contiene datos de inventarios 
-                $cantidad = $un_registro->cantidad;
-                $total_base_impuesto = abs($un_registro->costo_total);
-
-                $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, $factura->proveedor_id, 0 );
-                if ((int)config('configuracion.liquidacion_impuestos')) {
-                    $tasa_impuesto = $un_registro->item->impuesto->tasa_impuesto;
-                }
-
-                $precio_unitario = $un_registro->costo_unitario * ( 1 + $tasa_impuesto  / 100 );
-
-                $precio_total = $precio_unitario * $cantidad;
-
-                // Determinar tasa de descuento
-                $linea_de_la_cantidad = $factura->lineas_registros->whereLoose('inv_producto_id', $un_registro->inv_producto_id)->whereLoose('cantidad', $cantidad)->first();
-                $tasa_descuento = 0;
-                if ( !is_null( $linea_de_la_cantidad ) )
-                {
-                    $tasa_descuento = $linea_de_la_cantidad->tasa_descuento;
-                }                
-
-                $precio_total_con_descuento = $precio_total * ( 1 - $tasa_descuento / 100 );
-
-                $valor_impuesto = abs($precio_total_con_descuento) - $total_base_impuesto;
-
-                if (!(int)$factura->proveedor->liquida_impuestos) {
-                    $valor_impuesto = 0;
-                    $tasa_impuesto = 0;
-                    $total_base_impuesto = $precio_total_con_descuento;
-                }
+                $valoresLinea = static::calcular_valores_linea_nota_credito($un_registro, $factura);
+                $cantidad = $valoresLinea['cantidad'];
+                $total_base_impuesto = $valoresLinea['base_impuesto'];
+                $tasa_impuesto = $valoresLinea['tasa_impuesto'];
+                $precio_unitario = $valoresLinea['precio_unitario'];
+                $precio_total_con_descuento = $valoresLinea['precio_total'];
+                $valor_impuesto = $valoresLinea['valor_impuesto'];
 
                 $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
                                 [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
@@ -381,6 +437,47 @@ class NotaCreditoController extends TransaccionController
         }
 
         return true;
+    }
+
+    protected static function calcular_valores_linea_nota_credito($registroDevolucion, $factura)
+    {
+        $cantidad = (float)$registroDevolucion->cantidad;
+        $totalBaseImpuesto = abs((float)$registroDevolucion->costo_total);
+
+        $tasaImpuesto = Impuesto::get_tasa(
+            $registroDevolucion->inv_producto_id,
+            $factura->proveedor_id,
+            0
+        );
+        if ((int)config('configuracion.liquidacion_impuestos')) {
+            $tasaImpuesto = $registroDevolucion->item->impuesto->tasa_impuesto;
+        }
+
+        $precioUnitario = $registroDevolucion->costo_unitario * (1 + $tasaImpuesto / 100);
+        $precioTotal = $precioUnitario * $cantidad;
+
+        $lineaFactura = $factura->lineas_registros
+            ->whereLoose('inv_producto_id', $registroDevolucion->inv_producto_id)
+            ->whereLoose('cantidad', $cantidad)
+            ->first();
+        $tasaDescuento = is_null($lineaFactura) ? 0 : (float)$lineaFactura->tasa_descuento;
+        $precioTotalConDescuento = $precioTotal * (1 - $tasaDescuento / 100);
+        $valorImpuesto = abs($precioTotalConDescuento) - $totalBaseImpuesto;
+
+        if (!(int)$factura->proveedor->liquida_impuestos) {
+            $valorImpuesto = 0;
+            $tasaImpuesto = 0;
+            $totalBaseImpuesto = $precioTotalConDescuento;
+        }
+
+        return [
+            'cantidad' => $cantidad,
+            'base_impuesto' => $totalBaseImpuesto,
+            'tasa_impuesto' => $tasaImpuesto,
+            'precio_unitario' => $precioUnitario,
+            'precio_total' => $precioTotalConDescuento,
+            'valor_impuesto' => $valorImpuesto,
+        ];
     }
 
     public static function contabilizar_movimiento_credito( $datos, $detalle_operacion )
