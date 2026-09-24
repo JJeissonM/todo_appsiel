@@ -299,7 +299,7 @@
 				var url = '../../calif_generar_pdf_un_boletin';
 
 				var formData = new FormData(document.getElementById('formulario'));
-				formData.append('estudiante_id', estudiante_id);
+				formData.set('estudiante_id', estudiante_id);
 
 				$.ajax({
 					url: url,

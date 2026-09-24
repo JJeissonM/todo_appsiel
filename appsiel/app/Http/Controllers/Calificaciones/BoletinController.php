@@ -29,6 +29,7 @@ use App\Calificaciones\CalificacionDesempenio;
 use App\Calificaciones\NotaNivelacion;
 use App\Calificaciones\Services\CalificacionesService;
 use App\Calificaciones\Services\MetasBoletinService;
+use App\Calificaciones\Services\ImagenesBoletinPdf;
 use App\Core\PasswordReset;
 use App\Core\Colegio;
 use App\Sistema\Aplicacion;
@@ -232,14 +233,34 @@ class BoletinController extends Controller
      */
 	public function generar_pdf_un_boletin( Request $request )
 	{
+        $this->validate($request, [
+            'estudiante_id' => 'required|integer|min:1',
+            'curso_id' => 'required|integer|min:1',
+            'periodo_id' => 'required|integer|min:1'
+        ]);
+        $inicio = microtime(true);
         $firmas = $this->almacenar_imagenes_de_firmas( $request );
 
         $view = $this->get_view_for_pdf($request->all(), $firmas, false);
+        if ($view instanceof \Symfony\Component\HttpFoundation\Response) {
+            return $view;
+        }
+
+        // Evitar solicitudes HTTP a la propia aplicación durante el render.
+        $imagenes = new ImagenesBoletinPdf([
+            rtrim(asset(config('configuracion.url_instancia_cliente')), '/') . '/storage/app/' => storage_path('app'),
+            rtrim(url('/'), '/') . '/nube/' => base_path('../nube')
+        ]);
+        $view = $imagenes->prepararHtml($view);
+        $vistaLista = microtime(true);
             
         // Se prepara el PDF
         $orientacion='portrait';
         $tam_hoja = $request->tam_hoja;
         $pdf = App::make('dompdf.wrapper');
+        $pdf->getDomPDF()->setHttpContext(stream_context_create([
+            'http' => ['timeout' => max(1, (int) config('calificaciones.boletin_timeout_imagenes', 5))]
+        ]));
         $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
 
         $estudiante = Estudiante::find((int)$request->estudiante_id);
@@ -249,7 +270,24 @@ class BoletinController extends Controller
             $nombrearchivo = str_slug( $estudiante->tercero->descripcion ) . '-' . uniqid() . '.pdf';
         }
 
-        Storage::put( 'pdf_boletines_curso_id_' . $request->curso_id . '/' . $nombrearchivo, $pdf->output());
+        \Log::info('calif_generar_pdf_un_boletin: inicio render PDF', [
+            'curso_id' => (int) $request->curso_id,
+            'periodo_id' => (int) $request->periodo_id,
+            'estudiante_id' => (int) $request->estudiante_id,
+            'vista_ms' => round(($vistaLista - $inicio) * 1000)
+        ]);
+        $contenidoPdf = $pdf->output();
+        $pdfListo = microtime(true);
+        Storage::put( 'pdf_boletines_curso_id_' . $request->curso_id . '/' . $nombrearchivo, $contenidoPdf);
+
+        \Log::info('calif_generar_pdf_un_boletin: tiempos', [
+            'curso_id' => (int) $request->curso_id,
+            'periodo_id' => (int) $request->periodo_id,
+            'estudiante_id' => (int) $request->estudiante_id,
+            'vista_ms' => round(($vistaLista - $inicio) * 1000),
+            'pdf_ms' => round(($pdfListo - $vistaLista) * 1000),
+            'total_ms' => round((microtime(true) - $inicio) * 1000)
+        ]);
 
         return 'true';
 	}
@@ -333,20 +371,23 @@ class BoletinController extends Controller
     public function get_view_for_pdf($data_request, $firmas, $with_page_breaks = true)
     {
         $colegio = Auth::user()->empresa->colegio;
-        $curso = Curso::find( $data_request['curso_id'] );
-        $periodo = Periodo::find( $data_request['periodo_id'] );
+        $curso = Curso::findOrFail( $data_request['curso_id'] );
+        $periodo = Periodo::findOrFail( $data_request['periodo_id'] );
         $anio = (int)explode("-",$periodo->fecha_desde)[0];
 
-        $obj_matricula = new Matricula;
-        $matriculas = $obj_matricula->get_segun_periodo_lectivo_y_curso( $periodo->periodo_lectivo_id, $data_request['curso_id'] );
+        $consultaMatriculas = Matricula::with('estudiante.tercero')
+            ->where('periodo_lectivo_id', $periodo->periodo_lectivo_id)
+            ->where('curso_id', $curso->id);
+        if (!empty($data_request['estudiante_id'])) {
+            $consultaMatriculas->where('id_estudiante', (int) $data_request['estudiante_id']);
+        }
+        $matriculas = $consultaMatriculas->get();
+        if (!empty($data_request['estudiante_id']) && $matriculas->isEmpty()) {
+            abort(422, 'El estudiante no tiene matrícula en el curso y periodo lectivo seleccionados.');
+        }
         if( empty( $matriculas->toArray() ) )
         {
             return redirect( 'calificaciones/boletines/imprimir?id=' . Input::get('id') . '&id_modelo=0' )->with( 'mensaje_error', "No hay regitros de estudiantes matriculados en el curso " . $curso->descripcion );
-        }
-
-        if( $data_request['estudiante_id'] != null && $data_request['estudiante_id'] != '' )
-        {
-            $matriculas = $matriculas->where( 'id_estudiante', (int)$data_request['estudiante_id'] )->all();
         }
 
         // Parametros enviados        
@@ -646,36 +687,41 @@ class BoletinController extends Controller
      */
     public function preparar_datos_boletin( $periodo, $curso, $matriculas, $mostrar_fallas, $mostrar_nombre_docentes, $mostrar_usuarios_estudiantes, $mostrar_notas_auxiliares, $mostrar_notas_periodos_anteriores )
     {
+        $matriculas = collect($matriculas);
+        $estudianteIds = $matriculas->pluck('id_estudiante')->unique()->all();
         $all_passwords = collect([]);
-        if ($mostrar_usuarios_estudiantes) {
-            $all_passwords = PasswordReset::all();
+        if (in_array($mostrar_usuarios_estudiantes, ['Si', '1', 1, true], true)) {
+            $emails = $matriculas->map(function ($matricula) {
+                return $matricula->estudiante->tercero->email;
+            })->filter()->unique()->all();
+            $all_passwords = PasswordReset::whereIn('email', $emails)->get();
         }
 
-        $observaciones_del_curso_en_el_periodo = ObservacionesBoletin::where( [
+        $observaciones_del_curso_en_el_periodo = ObservacionesBoletin::whereIn('id_estudiante', $estudianteIds)->where( [
                                                 ['id_periodo', '=', $periodo->id],
                                                 ['curso_id', '=', $curso->id]
                                             ])->select('id', 'id_periodo','curso_id','id_estudiante','observacion','puesto')
                                             ->get();
         
         if ($mostrar_notas_periodos_anteriores) {
-            $calificaciones_del_curso_en_el_periodo = Calificacion::where( [
+            $calificaciones_del_curso_en_el_periodo = Calificacion::whereIn('id_estudiante', $estudianteIds)->where( [
                                         ['curso_id', '=', $curso->id]
                                     ])->select('id', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'calificacion', 'logros')
                                     ->get();
 
-            $notas_nivelacion_del_curso_en_el_periodo = NotaNivelacion::where([
+            $notas_nivelacion_del_curso_en_el_periodo = NotaNivelacion::whereIn('estudiante_id', $estudianteIds)->where([
                                             ['curso_id', '=', $curso->id]
                                         ]
                                     )
                                     ->get();
         }else{
-            $calificaciones_del_curso_en_el_periodo = Calificacion::where( [
+            $calificaciones_del_curso_en_el_periodo = Calificacion::whereIn('id_estudiante', $estudianteIds)->where( [
                                             ['id_periodo', '=', $periodo->id],
                                             ['curso_id', '=', $curso->id]
                                         ])->select('id', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'calificacion', 'logros')
                                         ->get();
 
-            $notas_nivelacion_del_curso_en_el_periodo = NotaNivelacion::where([
+            $notas_nivelacion_del_curso_en_el_periodo = NotaNivelacion::whereIn('estudiante_id', $estudianteIds)->where([
                                             ['periodo_id', '=', $periodo->id],
                                             ['curso_id', '=', $curso->id]
                                         ]
@@ -685,7 +731,7 @@ class BoletinController extends Controller
         
         $calificaciones_auxiliares_del_curso_en_el_periodo = collect([]);
         if ($mostrar_notas_auxiliares) {
-            $calificaciones_auxiliares_del_curso_en_el_periodo = CalificacionAuxiliar::where([
+            $calificaciones_auxiliares_del_curso_en_el_periodo = CalificacionAuxiliar::whereIn('id_estudiante', $estudianteIds)->where([
                                         ['id_periodo', '=', $periodo->id],
                                         ['curso_id', '=', $curso->id]
                                     ])->get();
@@ -715,8 +761,8 @@ class BoletinController extends Controller
         $metasBoletinService = new MetasBoletinService();
         
         $profesores_del_curso_en_el_periodo_lectivo = collect([]);
-        if ($mostrar_nombre_docentes) {
-            $profesores_del_curso_en_el_periodo_lectivo = AsignacionProfesor::where( [
+        if (in_array($mostrar_nombre_docentes, ['Si', '1', 1, true], true)) {
+            $profesores_del_curso_en_el_periodo_lectivo = AsignacionProfesor::with('profesor')->where( [
                                     ['periodo_lectivo_id', '=', $periodo->periodo_lectivo_id],
                                     ['curso_id', '=', $curso->id]
                                 ])
@@ -726,7 +772,7 @@ class BoletinController extends Controller
         $anotaciones_del_curso_en_el_periodo = collect([]);
         if( config( 'calificaciones.manejar_preinformes_academicos' ) == 'Si' )
         {
-            $anotaciones_del_curso_en_el_periodo = PreinformeAcademico::where([
+            $anotaciones_del_curso_en_el_periodo = PreinformeAcademico::whereIn('id_estudiante', $estudianteIds)->where([
                                         ['id_periodo', '=', $periodo->id],
                                         ['curso_id', '=', $curso->id]
                                     ])->select('id', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'anotacion')
@@ -735,21 +781,21 @@ class BoletinController extends Controller
         
         $asistencias_del_curso_en_el_periodo = collect([]);
         if ($mostrar_fallas) {
-            $asistencias_del_curso_en_el_periodo = AsistenciaClase::whereBetween('fecha',               [$periodo->fecha_desde, $periodo->fecha_hasta])
+            $asistencias_del_curso_en_el_periodo = AsistenciaClase::whereIn('id_estudiante', $estudianteIds)->whereBetween('fecha',               [$periodo->fecha_desde, $periodo->fecha_hasta])
                                         ->where( [
                                             ['curso_id', '=', $curso->id] 
                                         ])->select('id', 'id_estudiante', 'curso_id', 'asignatura_id', 'fecha', 'asistio')
                                         ->get();
         }
 
-        $asignaturas_asignadas = CursoTieneAsignatura::with('asignatura')->where([
+        $asignaturas_asignadas = CursoTieneAsignatura::with('asignatura.area')->where([
                                             ['curso_id', '=', $curso->id],
                                             ['periodo_lectivo_id', '=', $periodo->periodo_lectivo_id]
                                         ])
                                         ->orderBy('orden_boletin')
                                         ->get();
 
-        $datos = (object)[];
+        $datos = (object)['estudiantes' => []];
         $l = 0;
         foreach ($matriculas as $matricula)
         {
@@ -765,7 +811,8 @@ class BoletinController extends Controller
             $datos->estudiantes[$l]->observacion = $observaciones_del_curso_en_el_periodo->where('id_estudiante', $matricula->estudiante->id )->first();
 
             $a = 0;
-            $cuerpo_boletin = (object)[];
+            $cuerpo_boletin = (object)['lineas' => []];
+            $metas_estudiante = $metasBoletinService->filtrarPorTipoEstudiante($metas_del_curso_en_el_periodo, $matricula->estudiante);
             
             foreach ($asignaturas_asignadas as $asignacion)
             {
@@ -841,7 +888,6 @@ class BoletinController extends Controller
                     $cuerpo_boletin->lineas[$a]->valor_calificacion = $valor_calificacion;
                 }
 
-                $metas_estudiante = $metasBoletinService->filtrarPorTipoEstudiante($metas_del_curso_en_el_periodo, $matricula->estudiante);
                 $cuerpo_boletin->lineas[$a]->propositos = $metas_estudiante->where('asignatura_id', $asignacion->asignatura_id )->all();
                 
                 $cuerpo_boletin->lineas[$a]->profesor_asignatura = $this->get_profesor_de_la_asignatura( $profesores_del_curso_en_el_periodo_lectivo, $asignacion->asignatura_id);
