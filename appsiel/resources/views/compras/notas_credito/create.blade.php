@@ -77,6 +77,19 @@
 				<br/>
 
 			    {!! $tabla !!}
+				
+				<div style="text-align: right;">
+	            	<table style="display: inline;">
+	            		<tr>
+	            			<td style="text-align: right; font-weight: bold;"> 
+								Total: &nbsp; 
+							</td>
+							<td> 
+								<div id="total_nota"> $ 0 </div> 
+							</td>
+	            		</tr>
+	            	</table>
+				</div>
 
 			{{ Form::close() }}
 			
@@ -123,13 +136,14 @@
 					$('#btn_guardar').show();
                     $('#popup_alerta_danger').hide();
 					validacion_saldo_movimientos_posteriores( fila );
-
+					calcular_total_nota();
 				}
 			});
 
 			$('.cantidad_devolver').on('blur',function(){
 				var fila = $(this).closest('tr');
 				validacion_saldo_movimientos_posteriores( fila );
+				calcular_total_nota();
 			});
 
 
@@ -227,6 +241,19 @@
                         }
                     });
             }
+            
+            function calcular_total_nota()
+            {
+            	var total_nota = 0;				
+				
+				$('.linea_registro').each(function () {
+
+					console.log( parseFloat($(this).find('.valor_linea').val()), parseFloat($(this).find('.cantidad_devolver').val()) );
+					total_nota += parseFloat($(this).find('.valor_linea').val()) * parseFloat($(this).find('.cantidad_devolver').val());
+				});
+
+				$('#total_nota').text( '$ ' + total_nota.toLocaleString("es-CO") );
+			}
 
 			/*function calcula_nuevo_saldo_a_la_fecha( fila )
 			{

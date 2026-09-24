@@ -451,10 +451,57 @@ class PagoCxpDocumentoVistaTest extends TestCase
         $this->assertEquals(1, $summary['total_credit']);
     }
 
+    public function test_concepto_apm_limita_a_825_caracteres_y_agrega_puntos_suspensivos()
+    {
+        $palabras = [];
+        for ($i = 0; $i < 100; $i++) {
+            $palabras[] = sprintf('PALABRACOMPLETA%03d', $i);
+        }
+
+        $encabezado = (object)['descripcion' => implode(' ', $palabras)];
+        $lines = $this->invocarBuildApmConceptLines($encabezado, []);
+        $concepto = rtrim(implode(' ', $lines));
+
+        $this->assertCount(4, $lines);
+        $this->assertLessThanOrEqual(825, mb_strlen($concepto, 'UTF-8'));
+        $this->assertSame('...', mb_substr($concepto, -3, null, 'UTF-8'));
+
+        foreach (preg_split('/\s+/u', mb_substr($concepto, 0, -3, 'UTF-8')) as $palabra) {
+            $this->assertRegExp('/^PALABRACOMPLETA\d{3}$/', $palabra);
+        }
+    }
+
+    public function test_concepto_apm_salta_lineas_sin_cortar_palabras()
+    {
+        $palabras = array_fill(0, 50, 'PALABRACOMPLETA');
+        $texto = implode(' ', $palabras);
+        $encabezado = (object)['descripcion' => $texto];
+        $lines = $this->invocarBuildApmConceptLines($encabezado, []);
+
+        $this->assertSame($texto, rtrim(implode(' ', $lines)));
+        foreach ($lines as $line) {
+            if ($line === '') {
+                continue;
+            }
+
+            foreach (explode(' ', $line) as $palabra) {
+                $this->assertSame('PALABRACOMPLETA', $palabra);
+            }
+        }
+    }
+
     protected function invocarGeneracionDetalle(Request $request)
     {
         $metodo = new ReflectionMethod(PagoCxpController::class, 'completar_detalle_encabezado_desde_documentos');
         $metodo->setAccessible(true);
         $metodo->invoke(new PagoCxpController(), $request);
+    }
+
+    protected function invocarBuildApmConceptLines($encabezado, $registros)
+    {
+        $metodo = new ReflectionMethod(PagoCxpController::class, 'build_apm_concept_lines');
+        $metodo->setAccessible(true);
+
+        return $metodo->invoke(new PagoCxpController(), $encabezado, $registros);
     }
 }

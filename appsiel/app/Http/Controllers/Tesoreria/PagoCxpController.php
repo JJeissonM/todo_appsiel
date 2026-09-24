@@ -602,6 +602,10 @@ class PagoCxpController extends TransaccionController
         $amounts = [];
 
         $abonosTomados = [];
+        $lines_quantity_max = 8;
+        $lines_quantity_count = 0;
+        $suma_debitos_restantes = 0;
+        $suma_creditos_restantes = 0;
         foreach ($contab_mov as $registro) {
 
             $valor_debito = (float) $registro->valor_debito;
@@ -619,16 +623,31 @@ class PagoCxpController extends TransaccionController
             if (!is_null($reference)) {
                 $abonosTomados[] = (int)$reference->id;
             }
+            $lines_quantity_count++;
+            if ($lines_quantity_count <= $lines_quantity_max) {
+                $items[] = [
+                    'Account' => $registro->cuenta ? (string) $registro->cuenta->codigo : 'Cta Contable null',
+                    'CO' => '-',
+                    'ThirdParty' => $registro->tercero ? (string) $registro->tercero->numero_identificacion : 'Tercero null',
+                    'Reference' => !is_null($reference) ? (string) $reference->documento_prefijo_consecutivo : '-',
+                    'Debit' => $this->format_apm_money($roundedDebit, 0),
+                    'Credit' => $this->format_apm_money($roundedCredit, 0)
+                ];
+            }else {
+                $suma_debitos_restantes += $roundedDebit;
+                $suma_creditos_restantes += $roundedCredit;
+            }
+        }
 
+        if($suma_debitos_restantes > 0 || $suma_creditos_restantes > 0){
             $items[] = [
-                'Account' => $registro->cuenta ? (string) $registro->cuenta->codigo : 'Cta Contable null',
+                'Account' => '...',
                 'CO' => '-',
-                'ThirdParty' => $registro->tercero ? (string) $registro->tercero->numero_identificacion : 'Tercero null',
-                'Reference' => !is_null($reference) ? (string) $reference->documento_prefijo_consecutivo : '-',
-                'Debit' => $this->format_apm_money($roundedDebit, 0),
-                'Credit' => $this->format_apm_money($roundedCredit, 0)
+                'ThirdParty' => '...',
+                'Reference' => '...',
+                'Debit' => $this->format_apm_money($suma_debitos_restantes, 0),
+                'Credit' => $this->format_apm_money($suma_creditos_restantes, 0)
             ];
-
         }
 
         if ($debitCents !== $creditCents) {
@@ -700,38 +719,91 @@ class PagoCxpController extends TransaccionController
 
     protected function build_apm_concept_lines($encabezado, $registros)
     {
-        $lines = [];
-        $baseConcept = trim(strip_tags((string) $encabezado->descripcion));
+        $conceptParts = [];
+        $baseConcept = trim(strip_tags((string)$encabezado->descripcion));
 
         if ($baseConcept !== '') {
             foreach (preg_split("/(\r\n|\n|\r)/", $baseConcept) as $line) {
                 $line = trim($line);
                 if ($line !== '') {
-                    $lines[] = strtoupper($line);
+                    $conceptParts[] = $line;
                 }
             }
         }
 
         foreach ($registros as $registro) {
-            if (count($lines) >= 4) {
-                break;
-            }
-
-            $detalle = trim((string) $registro->detalle_operacion);
+            $detalle = trim(strip_tags((string)$registro->detalle_operacion));
             if ($detalle !== '') {
-                $lines[] = strtoupper($detalle);
+                $conceptParts[] = $detalle;
             }
         }
 
-        if (empty($lines)) {
-            $lines[] = 'PAGO DE CUENTAS POR PAGAR';
+        if (empty($conceptParts)) {
+            $conceptParts[] = 'PAGO DE CUENTAS POR PAGAR';
         }
+
+        $concept = preg_replace('/\s+/u', ' ', implode(' ', $conceptParts));
+        $concept = mb_strtoupper(trim($concept), 'UTF-8');
+        $concept = $this->truncate_apm_concept($concept, 825);
+        $lines = $this->wrap_apm_concept_by_words($concept, 207, 4);
 
         while (count($lines) < 4) {
             $lines[] = '';
         }
 
-        return array_slice($lines, 0, 4);
+        return $lines;
+    }
+
+    protected function truncate_apm_concept($concept, $maxLength)
+    {
+        if (mb_strlen($concept, 'UTF-8') <= $maxLength) {
+            return $concept;
+        }
+
+        $contentLength = max(0, (int)$maxLength - 3);
+        $truncated = rtrim(mb_substr($concept, 0, $contentLength, 'UTF-8'));
+        $nextCharacter = mb_substr($concept, $contentLength, 1, 'UTF-8');
+
+        // Si el corte quedó dentro de una palabra, se retira esa fracción
+        // para que el indicador de truncamiento tampoco divida palabras.
+        if ($truncated !== ''
+            && $nextCharacter !== ''
+            && !preg_match('/\s/u', $nextCharacter)
+            && !preg_match('/\s/u', mb_substr($truncated, -1, 1, 'UTF-8'))) {
+            $lastSpace = mb_strrpos($truncated, ' ', 0, 'UTF-8');
+            if ($lastSpace !== false) {
+                $truncated = rtrim(mb_substr($truncated, 0, $lastSpace, 'UTF-8'));
+            }
+        }
+
+        return $truncated . '...';
+    }
+
+    protected function wrap_apm_concept_by_words($concept, $lineLength, $maxLines)
+    {
+        $words = preg_split('/\s+/u', trim($concept), -1, PREG_SPLIT_NO_EMPTY);
+        $lines = [];
+        $currentLine = '';
+
+        foreach ($words as $word) {
+            $candidate = $currentLine === '' ? $word : $currentLine . ' ' . $word;
+
+            if ($currentLine !== ''
+                && mb_strlen($candidate, 'UTF-8') > $lineLength
+                && count($lines) < $maxLines - 1) {
+                $lines[] = $currentLine;
+                $currentLine = $word;
+                continue;
+            }
+
+            $currentLine = $candidate;
+        }
+
+        if ($currentLine !== '') {
+            $lines[] = $currentLine;
+        }
+
+        return array_slice($lines, 0, $maxLines);
     }
 
     protected function build_apm_date_info($fecha)
