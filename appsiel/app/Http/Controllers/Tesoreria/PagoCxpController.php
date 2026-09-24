@@ -233,15 +233,72 @@ class PagoCxpController extends TransaccionController
                 continue;
             }
 
-            $detalle = trim((string)$documento->detalle);
+            $detalle = $this->obtener_detalle_documento_cxp($documento);
             if ($detalle !== '') {
                 $detalles[] = $detalle;
             }
         }
 
         if (!empty($detalles)) {
-            $request->merge(['descripcion' => implode(' | ', $detalles)]);
+            $request->merge(['descripcion' => implode(' | ', array_unique($detalles))]);
         }
+    }
+
+    /**
+     * Obtiene el detalle a nivel de documento, no únicamente el de la fila de
+     * cartera seleccionada. Un documento puede generar varias filas en
+     * cxp_movimientos y la fila principal normalmente no tiene detalle.
+     */
+    protected function obtener_detalle_documento_cxp(CxpMovimiento $documento)
+    {
+        $detalle = trim((string)$documento->detalle);
+        if ($detalle !== '') {
+            return $detalle;
+        }
+
+        $tipoTransaccion = TipoTransaccion::with('modelo')->find($documento->core_tipo_transaccion_id);
+        $nombreModelo = !is_null($tipoTransaccion) && !is_null($tipoTransaccion->modelo)
+            ? trim((string)$tipoTransaccion->modelo->name_space)
+            : '';
+
+        if ($nombreModelo !== '' && class_exists($nombreModelo)) {
+            $modeloOrigen = app($nombreModelo);
+            $tablaOrigen = $modeloOrigen->getTable();
+            $camposIdentidad = [
+                'core_empresa_id',
+                'core_tipo_transaccion_id',
+                'core_tipo_doc_app_id',
+                'consecutivo'
+            ];
+            $tieneIdentidadDocumento = true;
+
+            foreach ($camposIdentidad as $campoIdentidad) {
+                if (!Schema::hasColumn($tablaOrigen, $campoIdentidad)) {
+                    $tieneIdentidadDocumento = false;
+                    break;
+                }
+            }
+
+            $documentoOrigen = $tieneIdentidadDocumento
+                ? $modeloOrigen->newQuery()
+                    ->where('core_empresa_id', $documento->core_empresa_id)
+                    ->where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
+                    ->where('core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
+                    ->where('consecutivo', $documento->consecutivo)
+                    ->first()
+                : null;
+
+            if (!is_null($documentoOrigen)) {
+                foreach (['descripcion', 'detalle'] as $campoDetalle) {
+                    $detalle = trim((string)$documentoOrigen->getAttribute($campoDetalle));
+                    if ($detalle !== '') {
+                        return $detalle;
+                    }
+                }
+            }
+        }
+
+        return '';
     }
 
     protected function validar_balance_contable($doc_encabezado)

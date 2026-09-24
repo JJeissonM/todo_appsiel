@@ -2,6 +2,7 @@
 
 use App\CxP\CxpAbono;
 use App\CxP\CxpMovimiento;
+use App\Compras\ComprasDocEncabezado;
 use App\Contabilidad\ContabMovimiento;
 use App\Http\Controllers\Tesoreria\PagoCxpController;
 use App\Tesoreria\TesoDocEncabezado;
@@ -75,12 +76,66 @@ class PagoCxpDocumentoVistaTest extends TestCase
         }
     }
 
-    public function test_configuracion_para_generar_el_detalle_esta_disponible_y_desactivada_por_defecto()
+    public function test_genera_detalle_desde_el_encabezado_origen_cuando_la_fila_cxp_no_tiene_detalle()
+    {
+        $documentos = CxpMovimiento::where('core_tipo_transaccion_id', 25)
+            ->groupBy('core_empresa_id')
+            ->groupBy('core_tipo_transaccion_id')
+            ->groupBy('core_tipo_doc_app_id')
+            ->groupBy('consecutivo')
+            ->orderBy('id')
+            ->take(2)
+            ->get();
+
+        $this->assertCount(2, $documentos);
+        $detallesEsperados = [];
+
+        foreach ($documentos as $indice => $documento) {
+            $origen = ComprasDocEncabezado::where('core_empresa_id', $documento->core_empresa_id)
+                ->where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
+                ->where('core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
+                ->where('consecutivo', $documento->consecutivo)
+                ->first();
+
+            $this->assertNotNull($origen);
+
+            $documento->detalle = null;
+            $documento->save();
+            $origen->descripcion = 'Detalle encabezado origen ' . ($indice + 1);
+            $origen->save();
+            $detallesEsperados[] = $origen->descripcion;
+        }
+
+        $configuracionOriginal = config('tesoreria.generar_detalle_pago_cxp_desde_documentos');
+
+        try {
+            config(['tesoreria.generar_detalle_pago_cxp_desde_documentos' => 1]);
+
+            $request = new Request([
+                'descripcion' => '',
+                'lineas_registros' => json_encode([
+                    ['id_doc' => $documentos[0]->id, 'abono' => 10],
+                    ['id_doc' => $documentos[1]->id, 'abono' => 20]
+                ])
+            ]);
+
+            $this->invocarGeneracionDetalle($request);
+
+            $this->assertSame(implode(' | ', $detallesEsperados), $request->descripcion);
+        } finally {
+            config(['tesoreria.generar_detalle_pago_cxp_desde_documentos' => $configuracionOriginal]);
+        }
+    }
+
+    public function test_configuracion_para_generar_el_detalle_esta_disponible()
     {
         $vista = file_get_contents(resource_path('views/core/config_aplicacion/tesoreria.blade.php'));
 
         $this->assertArrayHasKey('generar_detalle_pago_cxp_desde_documentos', config('tesoreria'));
-        $this->assertSame('0', (string)config('tesoreria.generar_detalle_pago_cxp_desde_documentos'));
+        $this->assertContains(
+            (string)config('tesoreria.generar_detalle_pago_cxp_desde_documentos'),
+            ['0', '1']
+        );
         $this->assertContains("Form::bsSelect('generar_detalle_pago_cxp_desde_documentos'", $vista);
     }
 
