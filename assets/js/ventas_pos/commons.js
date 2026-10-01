@@ -1199,7 +1199,7 @@ function resetear_ventana() {
   $("#valor_ajuste_al_peso").val(0);
 
   $("#lbl_valor_total_bolsas").text("$ ");
-  $("#valor_valor_total_bolsas").val(0);
+  $("#valor_total_bolsas").val(0);
 
   $("#msj_ventana_impresion_abierta").hide();
 
