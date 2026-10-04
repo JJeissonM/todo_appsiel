@@ -439,7 +439,11 @@ class FacturaGeneralOsei
             $lista_emails = $email_copia;
         }
 
-        return '{ "actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": ' . $this->jsonString($lista_emails) . '},"invoice": {' . $this->get_encabezado_factura($auth_token) . ',"items": ' . $this->get_lineas_registros() . ',"charges": []},"aditional_info": ' . $this->get_aditional_info() . '}';
+        $global = (new \App\FacturacionElectronica\Services\PosInvoiceChargesService())
+            ->getOseiGlobalAllowanceCharge($this->doc_encabezado);
+        $global_json = $global === null ? '' : ',"global_allowance_charge": ' . json_encode($global, JSON_UNESCAPED_UNICODE);
+
+        return '{ "actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": ' . $this->jsonString($lista_emails) . '},"invoice": {' . $this->get_encabezado_factura($auth_token) . ',"items": ' . $this->get_lineas_registros() . $global_json . '},"aditional_info": ' . $this->get_aditional_info() . '}';
     }
 
     public function preparar_cadena_json_nota_credito($auth_token, $factura_doc_encabezado)
