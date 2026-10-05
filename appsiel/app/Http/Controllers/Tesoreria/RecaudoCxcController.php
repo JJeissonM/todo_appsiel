@@ -323,8 +323,12 @@ class RecaudoCxcController extends Controller
             - teso_movimientos y su contabilidad. Además se actualiza el estado a Anulado en vtas_doc_registros y vtas_doc_encabezados
     */
     public function anular_recaudo_cxc($id)
-    {        
-        $recaudo = TesoDocEncabezado::find( $id );
+    {
+        return DB::transaction(function () use ($id) {
+        $recaudo = TesoDocEncabezado::where('id', $id)
+                            ->where('core_empresa_id', Auth::user()->empresa_id)
+                            ->lockForUpdate()
+                            ->firstOrFail();
 
         $array_wheres = [
                             'core_empresa_id' => $recaudo->core_empresa_id, 
@@ -333,14 +337,14 @@ class RecaudoCxcController extends Controller
                             'consecutivo' => $recaudo->consecutivo
                         ];
 
+        // Serializa la anulación con cualquier cruce que intente consumir
+        // simultáneamente el saldo a favor de este recaudo.
+        CxcMovimiento::where($array_wheres)->lockForUpdate()->get();
+
         // >>> Validaciones inciales
 
         // Está en un documento cruce de cartera?
-        $cantidad = CxcAbono::where($array_wheres)
-                            ->where('doc_cruce_transacc_id','<>',0)
-                            ->count();
-
-        if($cantidad != 0)
+        if (CxcAbono::estaEnCruceActivo($recaudo))
         {
             return redirect( 'tesoreria/recaudos_cxc/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Recaudo NO puede ser anulado. Está en documento cruce de cartera.');
         }
@@ -350,43 +354,21 @@ class RecaudoCxcController extends Controller
 
         foreach ( $documentos_abonados as $linea )
         {
-            $documento_cxc_pendiente = CxcMovimiento::where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
+            $documento_cxc_pendiente = CxcMovimiento::where('core_empresa_id', $linea->core_empresa_id)
+                                                        ->where('core_tercero_id', $linea->core_tercero_id)
+                                                        ->where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
                                                         ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
                                                         ->where('consecutivo',$linea->doc_cxc_consecutivo)
-                                                        ->get()
+                                                        ->lockForUpdate()
                                                         ->first();
             
             if($documento_cxc_pendiente == null)
             {
-                continue;
-            }
-            
-            if ( $documento_cxc_pendiente->estado == 'Pagado' )
-            {
-                // Se halla el total de todos los abonos que halla tenido el documento de cxc abonado (incluido el abono realizado por este recaudo)
-                $valor_abonos_aplicados = CxcAbono::where('doc_cxc_transacc_id',$linea->doc_cxc_transacc_id)
-                                                ->where('doc_cxc_tipo_doc_id',$linea->doc_cxc_tipo_doc_id)
-                                                ->where('doc_cxc_consecutivo',$linea->doc_cxc_consecutivo)
-                                                ->where('referencia_tercero_id',$linea->referencia_tercero_id)
-                                                ->sum('abono');
-
-
-                $nuevo_saldo_pendiente = $documento_cxc_pendiente->valor_documento - $valor_abonos_aplicados + $linea->abono;
-                
-                $nuevo_valor_pagado = $valor_abonos_aplicados - $linea->abono; // el valor_abonos_aplicados es como mínimo el valor de $linea->abono
-
-            }else{
-
-                $nuevo_saldo_pendiente = $documento_cxc_pendiente->saldo_pendiente + $linea->abono;
-
-                $nuevo_valor_pagado = $documento_cxc_pendiente->valor_pagado - $linea->abono;
+                throw new \RuntimeException('No se encontró el movimiento de cartera abonado por el recaudo. El recaudo no fue anulado.');
             }
 
-            // Actualizar registro del documento pendiente
-            $documento_cxc_pendiente->valor_pagado = $nuevo_valor_pagado;
-            $documento_cxc_pendiente->saldo_pendiente = $nuevo_saldo_pendiente;
-            $documento_cxc_pendiente->estado = 'Pendiente';
-            $documento_cxc_pendiente->save();
+            // Se aplica exactamente la operación inversa del abono original.
+            $documento_cxc_pendiente->actualizar_saldos($linea->abono * -1);
 
             // Se elimina el abono
             $linea->delete();
@@ -423,7 +405,7 @@ class RecaudoCxcController extends Controller
         $this->restablecer_cheque( $recaudo );
 
         return redirect( 'tesoreria/recaudos_cxc/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Recaudo de CxC ANULADO correctamente.');
-        
+        });
     }
 
     public function restablecer_retenciones( $recaudo )

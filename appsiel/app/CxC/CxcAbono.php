@@ -22,6 +22,60 @@ class CxcAbono extends Model
 
     public $urls_acciones = '{"show":"no"}';
 
+    /**
+     * Consulta los abonos generados por un documento de recaudo/anticipo.
+     * La empresa y el tercero forman parte de la identidad para impedir que
+     * consecutivos iguales de otras compañías se mezclen.
+     */
+    public static function queryDocumentoOrigen($documento)
+    {
+        return static::where('cxc_abonos.core_empresa_id', $documento->core_empresa_id)
+            ->where('cxc_abonos.core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
+            ->where('cxc_abonos.core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
+            ->where('cxc_abonos.consecutivo', $documento->consecutivo)
+            ->where('cxc_abonos.core_tercero_id', $documento->core_tercero_id);
+    }
+
+    /**
+     * Elimina únicamente referencias residuales de cruces cuyo encabezado ya
+     * fue anulado. En el flujo normal esas filas se borran al reversar el
+     * cruce; conservarlas bloquea indebidamente la anulación del recaudo.
+     */
+    public static function depurarReferenciasCrucesAnulados($documento)
+    {
+        $ids = static::join('cxc_doc_encabezados AS cruce_anulado', function ($join) {
+                $join->on('cruce_anulado.core_empresa_id', '=', 'cxc_abonos.core_empresa_id')
+                    ->on('cruce_anulado.core_tipo_transaccion_id', '=', 'cxc_abonos.doc_cruce_transacc_id')
+                    ->on('cruce_anulado.core_tipo_doc_app_id', '=', 'cxc_abonos.doc_cruce_tipo_doc_id')
+                    ->on('cruce_anulado.consecutivo', '=', 'cxc_abonos.doc_cruce_consecutivo')
+                    ->on('cruce_anulado.core_tercero_id', '=', 'cxc_abonos.core_tercero_id');
+            })
+            ->where('cxc_abonos.core_empresa_id', $documento->core_empresa_id)
+            ->where('cxc_abonos.core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
+            ->where('cxc_abonos.core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
+            ->where('cxc_abonos.consecutivo', $documento->consecutivo)
+            ->where('cxc_abonos.core_tercero_id', $documento->core_tercero_id)
+            ->where('cxc_abonos.doc_cruce_transacc_id', '<>', 0)
+            ->where('cruce_anulado.estado', 'Anulado')
+            ->lists('cxc_abonos.id')
+            ->all();
+
+        if (empty($ids)) {
+            return 0;
+        }
+
+        return static::whereIn('id', $ids)->delete();
+    }
+
+    public static function estaEnCruceActivo($documento)
+    {
+        static::depurarReferenciasCrucesAnulados($documento);
+
+        return static::queryDocumentoOrigen($documento)
+            ->where('doc_cruce_transacc_id', '<>', 0)
+            ->exists();
+    }
+
     public function tipo_transaccion()
     {
         return $this->belongsTo(TipoTransaccion::class, 'core_tipo_transaccion_id');
@@ -223,9 +277,7 @@ class CxcAbono extends Model
     public static function get_documentos_abonados($doc_recaudo_encabezado)
     {
 
-        return CxcAbono::where('cxc_abonos.core_tipo_transaccion_id', $doc_recaudo_encabezado->core_tipo_transaccion_id)
-            ->where('cxc_abonos.core_tipo_doc_app_id', $doc_recaudo_encabezado->core_tipo_doc_app_id)
-            ->where('cxc_abonos.consecutivo', $doc_recaudo_encabezado->consecutivo)
+        return static::queryDocumentoOrigen($doc_recaudo_encabezado)
             ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_abonos.doc_cxc_tipo_doc_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_abonos.core_tercero_id')
             ->select(

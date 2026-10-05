@@ -105,6 +105,8 @@ class DocCruceController extends TransaccionController
     // En este recorrido se va actualizando la tabla cxc_movimientos, el movimiento contable y se crean dos arrays: $vector_cartera y $vector_afavor con estos dos arrays luego se crearan registros en la tabla cxc_abonos
     $j = 0;
     $valor_total = 0;
+    $vector_cartera = [];
+    $vector_afavor = [];
     $cant = count($tabla_documentos_a_cancelar) - 1;
     for ($i = 0; $i < $cant; $i++) {
 
@@ -139,7 +141,7 @@ class DocCruceController extends TransaccionController
     //dd( [$vector_cartera,$vector_afavor] );
 
     // Se crean los registros que relacionan cada documento de cartera con el recaudo por el cual fue cancelado
-    DocCruceController::creacion_abonos_cxc($doc_encabezado, $vector_cartera, $vector_afavor);
+    $this->creacion_abonos_cxc($doc_encabezado, $vector_cartera, $vector_afavor);
 
     // se llama la vista de DocCruceController@show
     return redirect('doc_cruce/' . $doc_encabezado->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
@@ -154,7 +156,16 @@ class DocCruceController extends TransaccionController
 
     // Se recorre el vector de carteras (cxc_movimiento_id y valor_aplicar)
     foreach ($vector_cartera as $key_cartera => $value_cartera) {
-      $movimiento_cartera = CxcMovimiento::find($key_cartera);
+      $movimiento_cartera = CxcMovimiento::where('id', $key_cartera)
+        ->where('core_empresa_id', $doc_encabezado->core_empresa_id)
+        ->where('core_tercero_id', $doc_encabezado->core_tercero_id)
+        ->lockForUpdate()
+        ->first();
+
+      if (is_null($movimiento_cartera)) {
+        throw new \RuntimeException('No se encontró el movimiento de cartera seleccionado para el cruce de CxC.');
+      }
+
       $valor_cxc = $value_cartera;
 
       // Por cada documento de cartera se recorre el vector_afavor
@@ -166,7 +177,15 @@ class DocCruceController extends TransaccionController
         $valor_afavor = $vector_afavor[$j]['valor_aplicar'];
 
         if ($valor_afavor != 0) {
-          $movimiento_afavor = CxcMovimiento::find($vector_afavor[$j]['cxc_movimiento_id']);
+          $movimiento_afavor = CxcMovimiento::where('id', $vector_afavor[$j]['cxc_movimiento_id'])
+            ->where('core_empresa_id', $doc_encabezado->core_empresa_id)
+            ->where('core_tercero_id', $doc_encabezado->core_tercero_id)
+            ->lockForUpdate()
+            ->first();
+
+          if (is_null($movimiento_afavor)) {
+            throw new \RuntimeException('No se encontró el recaudo o anticipo seleccionado para el cruce de CxC.');
+          }
 
           // Si el item del valor de recaudo puede pagar todo el documento de cartera
           if ($valor_afavor >= $valor_cxc) {
@@ -177,6 +196,7 @@ class DocCruceController extends TransaccionController
 
             // El item de cartera se deja en cero pues se pagó todo
             $vector_cartera[$key_cartera] = 0;
+            $valor_cxc = 0;
 
             // Se termina el recorrido de los documentos a favor y paso al siguiente registro de cartera
             break;
@@ -193,6 +213,10 @@ class DocCruceController extends TransaccionController
           }
         } // Fin si valor_aplicar != 0
       } // Fin FOR cada doc de saldo_a_favor
+
+      if ($valor_cxc > 0.01) {
+        throw new \RuntimeException('Los anticipos seleccionados no cubren el valor de cartera indicado en el cruce de CxC.');
+      }
     } // Fin for cada doc de cartera
   }
 
@@ -476,58 +500,89 @@ class DocCruceController extends TransaccionController
   // ANULAR DOC DE CRUCE
   public function anular_doc_cruce($id)
   {
-    $documento = CxcDocEncabezado::find($id);
+    return DB::transaction(function () use ($id) {
+      $documento = CxcDocEncabezado::where('id', $id)
+        ->where('core_empresa_id', Auth::user()->empresa_id)
+        ->lockForUpdate()
+        ->firstOrFail();
 
-    // 1ro. Borrar registros contables
-    $obj_accou_serv = new AccountingServices();
-    $obj_accou_serv->delete_accounting_move($documento->core_empresa_id, $documento->core_tipo_transaccion_id, $documento->core_tipo_doc_app_id, $documento->consecutivo);
+      $array_wheres = [
+        'core_empresa_id' => $documento->core_empresa_id,
+        'core_tercero_id' => $documento->core_tercero_id,
+        'doc_cruce_transacc_id' => $documento->core_tipo_transaccion_id,
+        'doc_cruce_tipo_doc_id' => $documento->core_tipo_doc_app_id,
+        'doc_cruce_consecutivo' => $documento->consecutivo
+      ];
 
-    // 2do. Por cada abono, se reversa el valor que el doc. cruce descontó en el movimiento cartera y se elimina el abono
-    $array_wheres = [
-      'core_empresa_id' => $documento->core_empresa_id,
-      'core_tercero_id' => $documento->core_tercero_id,
-      'doc_cruce_transacc_id' => $documento->core_tipo_transaccion_id,
-      'doc_cruce_tipo_doc_id' => $documento->core_tipo_doc_app_id,
-      'doc_cruce_consecutivo' => $documento->consecutivo
-    ];
-    $documentos_abonados = CxcAbono::where($array_wheres)->get();
-    // En un documento cruce se actualizan los movimientos de cartera tanto por el documento de cartera, como por el documento de recaudo
-    foreach ($documentos_abonados as $linea) {
+      $documentos_abonados = CxcAbono::where($array_wheres)
+        ->lockForUpdate()
+        ->get();
 
-      // Se debe actualizar el movimiento de cxc tanto para la cartera como para el documento a favor
-      // Se verifica si cada documento abonado aún tiene saldo pendiente por pagar
-      $mov_documento_cartera = CxcMovimiento::where('core_tipo_transaccion_id', $linea->doc_cxc_transacc_id)
-        ->where('core_tipo_doc_app_id', $linea->doc_cxc_tipo_doc_id)
-        ->where('consecutivo', $linea->doc_cxc_consecutivo)
-        ->where('core_tercero_id', $linea->core_tercero_id)
-        ->get()
-        ->first();
+      // Permite reparar cruces anulados por la implementación anterior que
+      // dejaron relaciones residuales. Los saldos ya fueron reversados antes
+      // de marcar el encabezado como Anulado, por lo que aquí solo se depuran.
+      if ($documento->estado == 'Anulado') {
+        CxcAbono::where($array_wheres)->delete();
 
-      $this->actualizar_mov_cxc($mov_documento_cartera, $linea, 'cartera', $linea->abono);
+        return redirect('doc_cruce/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))
+          ->with('flash_message', 'Documento de cruce anulado. Se depuraron sus referencias residuales.');
+      }
 
-      // Para el docuento a favor del abono
-      // Se verifica si cada documento abonado aún tiene saldo pendiente por pagar
-      $mov_documento_afavor = CxcMovimiento::where('core_tipo_transaccion_id', $linea->core_tipo_transaccion_id)
-        ->where('core_tipo_doc_app_id', $linea->core_tipo_doc_app_id)
-        ->where('consecutivo', $linea->consecutivo)
-        ->where('core_tercero_id', $linea->core_tercero_id)
-        ->get()
-        ->first();
+      $obj_accou_serv = new AccountingServices();
+      $obj_accou_serv->delete_accounting_move(
+        $documento->core_empresa_id,
+        $documento->core_tipo_transaccion_id,
+        $documento->core_tipo_doc_app_id,
+        $documento->consecutivo
+      );
 
-      $this->actualizar_mov_cxc($mov_documento_afavor, $linea, 'afavor', $linea->abono); // Para saldo afavor el movimiento es negativo, los abonos también deben ser negativos
+      foreach ($documentos_abonados as $linea) {
+        $mov_documento_cartera = CxcMovimiento::where('core_empresa_id', $linea->core_empresa_id)
+          ->where('core_tipo_transaccion_id', $linea->doc_cxc_transacc_id)
+          ->where('core_tipo_doc_app_id', $linea->doc_cxc_tipo_doc_id)
+          ->where('consecutivo', $linea->doc_cxc_consecutivo)
+          ->where('core_tercero_id', $linea->core_tercero_id)
+          ->lockForUpdate()
+          ->first();
 
-      $this->anular_recaudo_cartera_estudiante($mov_documento_afavor, $linea->abono);
+        if (is_null($mov_documento_cartera)) {
+          throw new \RuntimeException('No se encontró el movimiento de cartera que se debe reversar. El cruce no fue anulado.');
+        }
 
-      $obj_accou_serv->anular_nota_contable_ajuste($linea);
+        $this->actualizar_mov_cxc($mov_documento_cartera, $linea, 'cartera', $linea->abono);
 
-      // Se elimina el abono
-      $linea->delete();
-    }
+        $mov_documento_afavor = CxcMovimiento::where('core_empresa_id', $linea->core_empresa_id)
+          ->where('core_tipo_transaccion_id', $linea->core_tipo_transaccion_id)
+          ->where('core_tipo_doc_app_id', $linea->core_tipo_doc_app_id)
+          ->where('consecutivo', $linea->consecutivo)
+          ->where('core_tercero_id', $linea->core_tercero_id)
+          ->lockForUpdate()
+          ->first();
 
-    // 3ro. Se marca como anulado el encabezado del documento cruce
-    $documento->update(['estado' => 'Anulado', 'modificado_por' => Auth::user()->email]);
+        if (is_null($mov_documento_afavor)) {
+          throw new \RuntimeException('No se encontró el movimiento de recaudo o anticipo que se debe reversar. El cruce no fue anulado.');
+        }
 
-    return redirect('doc_cruce/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('flash_message', 'Documento de cruce anulado correctamente.');
+        $this->actualizar_mov_cxc($mov_documento_afavor, $linea, 'afavor', $linea->abono);
+        $this->anular_recaudo_cartera_estudiante($mov_documento_afavor, $linea->abono);
+        $obj_accou_serv->anular_nota_contable_ajuste($linea);
+        $linea->delete();
+      }
+
+      // Si apareciera una relación no procesada, se aborta toda la operación
+      // para no marcar como anulado un cruce con saldos aún aplicados.
+      if (CxcAbono::where($array_wheres)->exists()) {
+        throw new \RuntimeException('No fue posible reversar todas las relaciones del cruce de CxC. No se realizó ningún cambio.');
+      }
+
+      $documento->update([
+        'estado' => 'Anulado',
+        'modificado_por' => Auth::user()->email
+      ]);
+
+      return redirect('doc_cruce/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))
+        ->with('flash_message', 'Documento de cruce anulado correctamente.');
+    });
   }
 
   public function anular_recaudo_cartera_estudiante($movimiento_afavor, $abono)
@@ -551,54 +606,39 @@ class DocCruceController extends TransaccionController
   // valor_abono siempre es positivo
   public function actualizar_mov_cxc($linea_movimiento, $linea_abono, $tipo_movimiento, $valor_abono)
   {
-    $valor_abonos_aplicados = 0;
-
     if ($linea_movimiento == null) {
       return 0;
     }
 
-    if ($linea_movimiento->estado == 'Pagado') {
-      // Se halla el total de todos los pagos que halla tenido (incluido el abono realizado por este pago)
-      // Ahi que diferenciar por el tercero
-      if ($tipo_movimiento == 'cartera') {
-        // Otro abonos realizados SOBRE el documento de cartera
-        $valor_abonos_aplicados = CxcAbono::where('doc_cxc_transacc_id', $linea_abono->doc_cxc_transacc_id)
-          ->where('doc_cxc_tipo_doc_id', $linea_abono->doc_cxc_tipo_doc_id)
-          ->where('doc_cxc_consecutivo', $linea_abono->doc_cxc_consecutivo)
-          ->where('core_tercero_id', $linea_abono->core_tercero_id)
-          ->sum('abono');
+    $valores = $this->calcular_reversion_mov_cxc($linea_movimiento, $tipo_movimiento, $valor_abono);
+    $linea_movimiento->valor_pagado = $valores['valor_pagado'];
+    $linea_movimiento->saldo_pendiente = $valores['saldo_pendiente'];
+    $linea_movimiento->estado = $valores['estado'];
+    $linea_movimiento->save();
+  }
 
-        //      $75.000        =          $90.000                   -         $20.360         +      $5.360
-        $nuevo_saldo_pendiente = $linea_movimiento->valor_documento - $valor_abonos_aplicados + $valor_abono;
-        //      $15.000     =           $20.360       -     $5.360
-        $nuevo_valor_pagado = $valor_abonos_aplicados - $valor_abono; // el valor_abonos_aplicados es como mínimo el valor de $valor_abono
-      } else {
-        // Otro abonos realizados POR el documento afavor, restando el del abono actual
-        //      $0              =         $5.360          -       $5.360
-        $valor_abonos_aplicados = CxcAbono::where('core_tipo_transaccion_id', $linea_abono->core_tipo_transaccion_id)
-          ->where('core_tipo_doc_app_id', $linea_abono->core_tipo_doc_app_id)
-          ->where('consecutivo', $linea_abono->consecutivo)
-          ->where('core_tercero_id', $linea_abono->core_tercero_id)
-          ->sum('abono') - $valor_abono;
-        //        5.360        =             5.360                   +         0 
-        $nuevo_saldo_pendiente = $linea_movimiento->valor_documento + $valor_abonos_aplicados;
-        $nuevo_valor_pagado = $valor_abonos_aplicados * -1; // el valor_abonos_aplicados es como mínimo el valor de $valor_abono
-      }
+  public function calcular_reversion_mov_cxc($linea_movimiento, $tipo_movimiento, $valor_abono)
+  {
+    if ($tipo_movimiento == 'cartera') {
+      $nuevo_valor_pagado = (float)$linea_movimiento->valor_pagado - (float)$valor_abono;
+      $nuevo_saldo_pendiente = (float)$linea_movimiento->saldo_pendiente + (float)$valor_abono;
     } else {
-      // Si la linea_movimiento aún tiene saldo pendiente
-      if ($tipo_movimiento == 'cartera') {
-        $nuevo_saldo_pendiente = $linea_movimiento->saldo_pendiente + $valor_abono;
-        $nuevo_valor_pagado = $linea_movimiento->valor_pagado - $valor_abono;
-      } else {
-        $nuevo_saldo_pendiente = $linea_movimiento->saldo_pendiente - $valor_abono;
-        $nuevo_valor_pagado = $linea_movimiento->valor_pagado + $valor_abono;
-      }
+      $nuevo_valor_pagado = (float)$linea_movimiento->valor_pagado + (float)$valor_abono;
+      $nuevo_saldo_pendiente = (float)$linea_movimiento->saldo_pendiente - (float)$valor_abono;
     }
 
-    $linea_movimiento->valor_pagado = $nuevo_valor_pagado;
-    $linea_movimiento->saldo_pendiente = $nuevo_saldo_pendiente;
-    $linea_movimiento->estado = 'Pendiente';
-    $linea_movimiento->save();
+    if (abs($nuevo_valor_pagado) < 0.01) {
+      $nuevo_valor_pagado = 0.0;
+    }
+    if (abs($nuevo_saldo_pendiente) < 0.01) {
+      $nuevo_saldo_pendiente = 0.0;
+    }
+
+    return [
+      'valor_pagado' => $nuevo_valor_pagado,
+      'saldo_pendiente' => $nuevo_saldo_pendiente,
+      'estado' => $nuevo_saldo_pendiente == 0.0 ? 'Pagado' : 'Pendiente'
+    ];
   }
 
   public function registrar_recaudo_cartera_estudiante($doc_encabezado_recaudo, $registro_cxc_pendiente, $abono)

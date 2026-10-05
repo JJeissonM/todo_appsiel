@@ -722,11 +722,7 @@ class RecaudoController extends TransaccionController
         if ( !empty( $tabla_existe ) )
         {
             // Está en un documento cruce de cartera?
-            $cantidad = CxcAbono::where($array_wheres)
-                                ->where('doc_cruce_transacc_id','<>',0)
-                                ->count();
-
-            if($cantidad != 0)
+            if (CxcAbono::estaEnCruceActivo($documento))
             {
                 return redirect( 'tesoreria/recaudos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Recaudo NO puede ser anulado. Está en documento cruce de cartera.');
             }
