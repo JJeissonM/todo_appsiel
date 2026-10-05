@@ -33,6 +33,37 @@ class PosInvoiceRoundingTest extends TestCase
         }
     }
 
+    public function test_residuo_historico_de_un_centavo_no_cambia_el_total_enviado()
+    {
+        foreach ([0, 5, 19] as $rate) {
+            foreach ([-0.01, 0.01] as $residue) {
+                $line = (object)[
+                    'precio_total' => 190000, 'base_impuesto_total' => (190000 + $residue) / (1 + $rate / 100),
+                    'cantidad' => 2.073846, 'tasa_impuesto' => $rate, 'tasa_descuento' => 10
+                ];
+                $originalBase = $line->base_impuesto_total;
+                $pos = new FacturaPos(); $pos->valor_total = 190000;
+                $pos->setRelation('lineas_registros', collect([$line]));
+                $service = new InvoiceTotalsService();
+                $this->assertTrue($service->validatePosBeforeConversion($pos));
+                $values = $service->getProviderLineValues($line, 2);
+                $projected = round($values->quantity * round($values->price, $values->decimals) * 0.9 * (1 + $rate / 100), 2);
+                $this->assertEquals(190000, $projected);
+                $this->assertSame($originalBase, $line->base_impuesto_total);
+            }
+        }
+    }
+
+    public function test_dos_centavos_no_se_tratan_como_residuo()
+    {
+        $pos = new FacturaPos(); $pos->valor_total = 190000;
+        $pos->setRelation('lineas_registros', collect([(object)[
+            'precio_total' => 190000, 'base_impuesto_total' => 190000.02, 'tasa_impuesto' => 0
+        ]]));
+        $this->setExpectedException('UnexpectedValueException');
+        (new InvoiceTotalsService())->validatePosBeforeConversion($pos);
+    }
+
     public function test_un_descuadre_real_sigue_bloqueando_la_conversion()
     {
         $pos = new FacturaPos();

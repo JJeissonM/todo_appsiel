@@ -29,7 +29,14 @@ class InvoiceTotalsService
 
         $taxRate = (float)$line->tasa_impuesto;
         $discountRate = max(0, min(100, (float)$line->tasa_descuento));
+        $this->validateStoredLine($line, 1);
         $taxableAmount = abs((float)$line->base_impuesto_total);
+        $total = round(abs((float)$line->precio_total), 2);
+        // Corregir únicamente el residuo de redondeo del payload, sin alterar
+        // importes persistidos ni cobrar un centavo adicional al cliente.
+        if (round($taxableAmount * (1 + $taxRate / 100), 2) != $total) {
+            $taxableAmount = $total / (1 + $taxRate / 100);
+        }
 
         $grossTaxableAmount = $taxableAmount;
         if ($discountRate > 0 && $discountRate < 100) {
@@ -157,14 +164,16 @@ class InvoiceTotalsService
         $this->assertSameAmount(
             abs((float)$line->precio_total),
             $calculatedTotal,
-            'La línea ' . $lineNumber . ' no cuadra entre base, impuesto y total'
+            'La línea ' . $lineNumber . ' no cuadra entre base, impuesto y total',
+            self::TOLERANCE
         );
     }
 
-    protected function assertSameAmount($expected, $actual, $message)
+    protected function assertSameAmount($expected, $actual, $message, $tolerance = 0)
     {
-        $difference = round(abs((float)$expected - (float)$actual), 2);
-        if ($difference >= self::TOLERANCE) {
+        $differenceCents = abs((int)round((float)$expected * 100) - (int)round((float)$actual * 100));
+        $difference = $differenceCents / 100;
+        if ($differenceCents > (int)round($tolerance * 100)) {
             throw new \UnexpectedValueException(
                 $message . '. Esperado: $' . number_format((float)$expected, 2, ',', '.') .
                 '; calculado: $' . number_format((float)$actual, 2, ',', '.') .
