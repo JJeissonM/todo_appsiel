@@ -247,11 +247,7 @@ class NotaCreditoDirectaController extends TransaccionController
             'consecutivo' => $documento->consecutivo];
 
         // Está en un documento cruce de cxp?
-        $cantidad = CxpAbono::where($array_wheres)
-                            ->where('doc_cruce_transacc_id','<>',0)
-                            ->count();
-
-        if($cantidad != 0)
+        if (CxpAbono::estaEnCruceActivo($documento))
         {
             return redirect( 'compras/'.$id.'?id='.$this->app->id.'&id_modelo='.$this->modelo->id.'&id_transaccion='.$this->transaccion->id.'&vista=compras.notas_credito.show')->with('mensaje_error','Nota NO puede ser anulada. Está en documento cruce de CxP.');
         }

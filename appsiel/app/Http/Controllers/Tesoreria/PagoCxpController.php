@@ -886,7 +886,9 @@ class PagoCxpController extends TransaccionController
     */
     public function anular_pago_cxp($id)
     {        
-        $pago = TesoDocEncabezado::find( $id );
+        $pago = TesoDocEncabezado::where('id', $id)
+                                  ->where('core_empresa_id', Auth::user()->empresa_id)
+                                  ->first();
 
         if (is_null($pago)) {
             return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))
@@ -898,20 +900,25 @@ class PagoCxpController extends TransaccionController
                             'core_tipo_doc_app_id' => $pago->core_tipo_doc_app_id,
                             'consecutivo' => $pago->consecutivo];
 
+        DB::beginTransaction();
+        try {
+        $pago = TesoDocEncabezado::where('id', $id)
+                                  ->where('core_empresa_id', Auth::user()->empresa_id)
+                                  ->lockForUpdate()
+                                  ->firstOrFail();
+
+        // Serializa la anulación con cualquier cruce que intente consumir
+        // simultáneamente un saldo a favor generado por este pago.
+        CxpMovimiento::where($array_wheres)->lockForUpdate()->get();
+
         // >>> Validaciones inciales
 
         // Está en un documento cruce de cxp?
-        $cantidad = CxpAbono::where($array_wheres)
-                            ->where('doc_cruce_transacc_id','<>',0)
-                            ->count();
-
-        if($cantidad != 0)
+        if (CxpAbono::estaEnCruceActivo($pago))
         {
+            DB::rollBack();
             return redirect( 'tesoreria/pagos_cxp/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Pago NO puede ser anulado. Está en documento cruce de CxP.');
         }
-
-        DB::beginTransaction();
-        try {
 
         // Se reversan los pagos hecho por este documento: aumenta el saldo_pendiente en el documento de CxP
 
@@ -961,47 +968,19 @@ class PagoCxpController extends TransaccionController
                 );
             }
 
-            if ( $documento_cxp_pendiente->estado == 'Pagado' )
-            {
-                // Se halla el total de todos los pagos que halla tenido (incluido el abono realizado por este pago)
-                // Ahi que diferenciar por el tercero
-                $array_wheres_abono_cxp = [
-                    ['core_empresa_id', '=', $registro_abono->core_empresa_id],
-                    ['doc_cxp_transacc_id', '=', $registro_abono->doc_cxp_transacc_id],
-                    ['doc_cxp_tipo_doc_id' , '=',  $registro_abono->doc_cxp_tipo_doc_id],
-                    ['doc_cxp_consecutivo' , '=',  $registro_abono->doc_cxp_consecutivo]
-                ];
+            $nuevo_saldo_pendiente = (float)$documento_cxp_pendiente->saldo_pendiente + (float)$registro_abono->abono;
+            $nuevo_valor_pagado = (float)$documento_cxp_pendiente->valor_pagado - (float)$registro_abono->abono;
 
-                if ( $registro_abono->modelo_referencia_tercero_index == '' ) 
-                {
-                    $array_wheres_abono_cxp = array_merge($array_wheres_abono_cxp, ['core_tercero_id' => $registro_abono->core_tercero_id ]);
-                }else{
-                    $array_wheres_abono_cxp = array_merge($array_wheres_abono_cxp, [
-                        'modelo_referencia_tercero_index' => $registro_abono->modelo_referencia_tercero_index,
-                        'referencia_tercero_id' => $registro_abono->referencia_tercero_id
-                    ]);
-                }
-
-                $valor_abonos_aplicados = CxpAbono::where( $array_wheres_abono_cxp )
-                                                ->sum('abono');
-
-                if ( $valor_abonos_aplicados > $documento_cxp_pendiente->valor_documento) {
-                    $valor_abonos_aplicados = $documento_cxp_pendiente->valor_documento;
-                }
-
-                $nuevo_saldo_pendiente = $documento_cxp_pendiente->valor_documento - $valor_abonos_aplicados + $registro_abono->abono;
-
-                $nuevo_valor_pagado = $valor_abonos_aplicados - $registro_abono->abono; // el valor_abonos_aplicados es como mínimo el valor de $registro_abono->abono
-
-            }else{
-                
-                $nuevo_saldo_pendiente = $documento_cxp_pendiente->saldo_pendiente + $registro_abono->abono;
-                $nuevo_valor_pagado = $documento_cxp_pendiente->valor_pagado - $registro_abono->abono;
+            if (abs($nuevo_saldo_pendiente) < 0.01) {
+                $nuevo_saldo_pendiente = 0.0;
+            }
+            if (abs($nuevo_valor_pagado) < 0.01) {
+                $nuevo_valor_pagado = 0.0;
             }
 
             $documento_cxp_pendiente->valor_pagado = $nuevo_valor_pagado;
             $documento_cxp_pendiente->saldo_pendiente = $nuevo_saldo_pendiente;
-            $documento_cxp_pendiente->estado = 'Pendiente';
+            $documento_cxp_pendiente->estado = $nuevo_saldo_pendiente == 0.0 ? 'Pagado' : 'Pendiente';
             $documento_cxp_pendiente->save();
             
             $documentos_cxp_ya_aplicados[] = $documento_cxp_pendiente->id;

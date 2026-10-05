@@ -22,6 +22,47 @@ class CxpAbono extends Model
 
     public $urls_acciones = '{"show":"no"}';
 
+    public static function queryDocumentoOrigen($documento)
+    {
+        return static::where('cxp_abonos.core_empresa_id', $documento->core_empresa_id)
+            ->where('cxp_abonos.core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
+            ->where('cxp_abonos.core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
+            ->where('cxp_abonos.consecutivo', $documento->consecutivo);
+    }
+
+    public static function depurarReferenciasCrucesAnulados($documento)
+    {
+        $ids = static::join('cxp_doc_encabezados AS cruce_anulado', function ($join) {
+                $join->on('cruce_anulado.core_empresa_id', '=', 'cxp_abonos.core_empresa_id')
+                    ->on('cruce_anulado.core_tipo_transaccion_id', '=', 'cxp_abonos.doc_cruce_transacc_id')
+                    ->on('cruce_anulado.core_tipo_doc_app_id', '=', 'cxp_abonos.doc_cruce_tipo_doc_id')
+                    ->on('cruce_anulado.consecutivo', '=', 'cxp_abonos.doc_cruce_consecutivo');
+            })
+            ->where('cxp_abonos.core_empresa_id', $documento->core_empresa_id)
+            ->where('cxp_abonos.core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
+            ->where('cxp_abonos.core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
+            ->where('cxp_abonos.consecutivo', $documento->consecutivo)
+            ->where('cxp_abonos.doc_cruce_transacc_id', '<>', 0)
+            ->where('cruce_anulado.estado', 'Anulado')
+            ->lists('cxp_abonos.id')
+            ->all();
+
+        if (empty($ids)) {
+            return 0;
+        }
+
+        return static::whereIn('id', $ids)->delete();
+    }
+
+    public static function estaEnCruceActivo($documento)
+    {
+        static::depurarReferenciasCrucesAnulados($documento);
+
+        return static::queryDocumentoOrigen($documento)
+            ->where('doc_cruce_transacc_id', '<>', 0)
+            ->exists();
+    }
+
     public function tipo_transaccion()
     {
         return $this->belongsTo('App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id');
@@ -213,9 +254,7 @@ class CxpAbono extends Model
     */
     public static function get_documentos_abonados( $doc_encabezado )
     {
-        $query = CxpAbono::where('cxp_abonos.core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
-                    ->where('cxp_abonos.core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
-                    ->where('cxp_abonos.consecutivo',$doc_encabezado->consecutivo);
+        $query = static::queryDocumentoOrigen($doc_encabezado);
 
         return $query->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_abonos.doc_cxp_tipo_doc_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxp_abonos.core_tercero_id')
