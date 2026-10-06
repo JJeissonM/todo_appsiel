@@ -138,3 +138,17 @@ if (! function_exists('enlace_show_documento'))
     }
 }
 
+/**
+ * 
+ */
+if (! function_exists('cantidad_meses'))
+{
+    function cantidad_meses( string $fecha_inicial, string $fecha_final )
+    {
+        $fecha_ini = Carbon::createFromFormat('Y-m-d', $fecha_inicial);
+        $fecha_fin = Carbon::createFromFormat('Y-m-d', $fecha_final );
+
+        return $fecha_ini->diffInMonths($fecha_fin, false);
+    }
+}
+

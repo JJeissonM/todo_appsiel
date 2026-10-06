@@ -1,0 +1,2 @@
+RESOLUCION DIAN # {{ $resolucion->numero_resolucion }}. PREFIJO {{ $resolucion->prefijo }}. RANGO SOLICITUD {{ strtoupper($resolucion->tipo_solicitud) }} DEL {{ $resolucion->prefijo }} {{ $resolucion->numero_fact_inicial }} AL {{ $resolucion->prefijo }} {{  $resolucion->numero_fact_final }}.
+VIG {{ cantidad_meses( $resolucion->fecha_expedicion, $resolucion->fecha_expiracion ) }} MESES DEL {{ $resolucion->fecha_expedicion }} AL {{ $resolucion->fecha_expiracion }}

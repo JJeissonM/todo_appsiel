@@ -152,7 +152,7 @@
                 @if( !is_null($resolucion) ) 
                     <tr>
                         <td colspan="4">
-                            Factura {{ $resolucion->tipo_solicitud }} por la DIAN. Resolución No. {{ $resolucion->numero_resolucion }} del {{ $resolucion->fecha_expedicion }}. Prefijo {{ $resolucion->prefijo }} desde {{ $resolucion->numero_fact_inicial }} hasta {{ $resolucion->numero_fact_final }}
+                            @include('ventas.incluir.factura_detalles_resolucion_dian', ['resolucion' => $resolucion])
                         </td>
                     </tr>
                 @endif
