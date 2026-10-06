@@ -250,7 +250,7 @@ class DocumentHeaderService
     {
         $status = 'success';
         $message = '';
-        $email = trim((string)$tercero->email);
+        $email = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($tercero->email);
 
         /*
         if ( $tercero->direccion1 == '' || strlen( $tercero->direccion1 ) < 2 )

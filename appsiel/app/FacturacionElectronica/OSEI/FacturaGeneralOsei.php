@@ -190,7 +190,7 @@ class FacturaGeneralOsei
 
     protected function isValidEmail($email)
     {
-        $email = trim((string)$email);
+        $email = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($email);
 
         return $email != '' && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
@@ -427,7 +427,7 @@ class FacturaGeneralOsei
         $send_dian = 'true';
         $send_email = config('facturacion_electronica.enviar_email_clientes');
 
-        $email_cliente = trim((string)$this->doc_encabezado->cliente->tercero->email);
+        $email_cliente = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($this->doc_encabezado->cliente->tercero->email);
         $email_copia = trim((string)config('facturacion_electronica.email_copia_factura'));
         $lista_emails = $email_cliente;
         if ($email_copia != '') {
@@ -451,7 +451,7 @@ class FacturaGeneralOsei
         $send_dian = 'true';
         $send_email = config('facturacion_electronica.enviar_email_clientes');
 
-        $email_cliente = trim((string)$this->doc_encabezado->cliente->tercero->email);
+        $email_cliente = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($this->doc_encabezado->cliente->tercero->email);
         $email_copia = trim((string)config('facturacion_electronica.email_copia_factura'));
         $lista_emails = $email_cliente;
         if ($email_copia != '') {
@@ -739,6 +739,6 @@ class FacturaGeneralOsei
 
         $party_identification_type = $cliente->tercero->id_tipo_documento_id;
 
-        return '{"email": ' . $this->jsonString(trim((string)$cliente->tercero->email)) . ',"phone": ' . $this->jsonString($cliente->tercero->telefono1) . ',"type": ' . $this->jsonString($party_type) . ',"legal_name": ' . $this->jsonString($legal_name) . ',"trade_name":' . $this->jsonString($trade_name) . ',"identification_number": ' . $this->jsonString($cliente->tercero->numero_identificacion) . ',"identification_type": ' . $this->jsonString($party_identification_type) . ',"verification_digit": ' . $this->jsonString($verification_digit) . ',"tax_level_code": ' . $this->jsonString($tax_level_code) . ',"tax_scheme_id": ' . $this->jsonString($tax_scheme_id) . ',"department": ' . $this->jsonString($department_id) . ',"city": ' . $this->jsonString($city_id) . ',"address_line": ' . $this->jsonString($address_line) . '}';
+        return '{"email": ' . $this->jsonString(\App\FacturacionElectronica\Services\EmailNormalizer::normalize($cliente->tercero->email)) . ',"phone": ' . $this->jsonString($cliente->tercero->telefono1) . ',"type": ' . $this->jsonString($party_type) . ',"legal_name": ' . $this->jsonString($legal_name) . ',"trade_name":' . $this->jsonString($trade_name) . ',"identification_number": ' . $this->jsonString($cliente->tercero->numero_identificacion) . ',"identification_type": ' . $this->jsonString($party_identification_type) . ',"verification_digit": ' . $this->jsonString($verification_digit) . ',"tax_level_code": ' . $this->jsonString($tax_level_code) . ',"tax_scheme_id": ' . $this->jsonString($tax_scheme_id) . ',"department": ' . $this->jsonString($department_id) . ',"city": ' . $this->jsonString($city_id) . ',"address_line": ' . $this->jsonString($address_line) . '}';
     }
 }
