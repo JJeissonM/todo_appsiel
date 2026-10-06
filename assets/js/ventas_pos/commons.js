@@ -1474,6 +1474,7 @@ function reset_estado_boton_guardar_factura()
  */
 function activar_boton_guardar_factura()
 {
+  $("#btn_efectivo_exacto").toggle($("#forma_pago").val() === "contado");
   disable_boton_guardar_factura();
   $("#div_efectivo_recibido").show();
   $("#div_total_cambio").show();
@@ -1596,6 +1597,8 @@ $(document).ready(function () {
   $('#total_valor_total').actualizar_medio_recaudo();
 
   $(document).prop('title', $('#vendedor_id').attr('data-vendedor_descripcion').toUpperCase() );
+
+  $("#btn_efectivo_exacto").toggle($("#forma_pago").val() === "contado");
 
   $("#forma_pago").on("change", function () {
       activar_boton_guardar_factura();
