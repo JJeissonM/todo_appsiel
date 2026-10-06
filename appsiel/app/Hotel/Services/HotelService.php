@@ -777,10 +777,14 @@ class HotelService
         });
 
         if ($convertToElectronic) {
-            $doc->hotel_factura_electronica_url = $service->convertPosInvoiceToElectronic($doc);
-            $salesDoc = $service->electronicSalesInvoiceForPos($doc);
-            if (!is_null($salesDoc)) {
-                HotelOrderHeader::where('id', $order->id)->update(array('sales_doc_id' => $salesDoc->id));
+            try {
+                $doc->hotel_factura_electronica_url = $service->convertPosInvoiceToElectronic($doc);
+            } finally {
+                // La conversion puede crear la factura aunque el envio falle.
+                $salesDoc = $service->electronicSalesInvoiceForPos($doc);
+                if (!is_null($salesDoc)) {
+                    HotelOrderHeader::where('id', $order->id)->update(array('sales_doc_id' => $salesDoc->id));
+                }
             }
         }
 
@@ -832,13 +836,20 @@ class HotelService
 
     private function convertPosInvoiceToElectronic(FacturaPos $doc)
     {
-        $url = (new FacturaElectronicaController())->convertir_en_factura_electronica($doc->id);
+        $response = (new FacturaElectronicaController())->convertir_en_factura_electronica($doc->id);
 
-        if (trim((string)$url) == '' || strpos((string)$url, '/vtas_imprimir/') === false) {
-            throw new \Exception('La factura POS fue generada, pero no fue posible convertirla a factura electronica. Revise la configuracion de facturacion electronica y el documento POS ' . $doc->get_label_documento() . '.');
+        return $this->electronicConversionUrl($response, $doc);
+    }
+
+    protected function electronicConversionUrl($response, FacturaPos $doc)
+    {
+        $data = $response->getData(true);
+        if ($response->getStatusCode() !== 200 || !isset($data['status']) || $data['status'] !== 'success' || empty($data['url_print'])) {
+            $message = isset($data['message']) ? $data['message'] : 'No fue posible convertir o enviar la factura electronica.';
+            throw new \Exception('Factura POS ' . $doc->get_label_documento() . ': ' . $message);
         }
 
-        return $url;
+        return $data['url_print'];
     }
 
     private function electronicSalesInvoiceForPos(FacturaPos $doc)
@@ -848,9 +859,14 @@ class HotelService
             return null;
         }
 
+        $transactionTypeId = (int)config('facturacion_electronica.transaction_type_id_default');
+        if ((int)$doc->core_tipo_transaccion_id !== $transactionTypeId) {
+            return null;
+        }
+
         if (Schema::hasColumn('vtas_doc_encabezados', 'ventas_doc_relacionado_id')) {
             $salesDoc = VtasDocEncabezado::where('core_empresa_id', $doc->core_empresa_id)
-                ->where('core_tipo_transaccion_id', 52)
+                ->where('core_tipo_transaccion_id', $transactionTypeId)
                 ->where('ventas_doc_relacionado_id', $doc->id)
                 ->orderBy('id', 'DESC')
                 ->first();

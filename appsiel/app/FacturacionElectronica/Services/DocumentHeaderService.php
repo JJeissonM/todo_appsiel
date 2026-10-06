@@ -45,6 +45,12 @@ class DocumentHeaderService
                     ];
                 }
 
+                try {
+                    (new \App\VentasPos\Services\InvoiceCustomerService())->validateInvoice($original_document_header);
+                } catch (\InvalidArgumentException $e) {
+                    return (object)['status' => 'mensaje_error', 'message' => $e->getMessage()];
+                }
+
                 if (!(int)config('facturacion_electronica.enviar_facturas_clientes_internos') &&
                     isset($original_document_header->cliente->tercero) &&
                     $original_document_header->cliente->tercero->tipo === 'Interno') {

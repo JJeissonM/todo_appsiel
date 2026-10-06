@@ -800,6 +800,12 @@ class FacturaPosController extends TransaccionController
      */
     public function update(Request $request, $id)
     {
+        try {
+            (new \App\VentasPos\Services\InvoiceCustomerService())->normalizeRequest($request);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
+        }
+
         $this->aplicar_excedente_transferencia_como_otros_recaudos($request);
         $lineas_registros = json_decode($request->lineas_registros);
         $total_factura = $this->get_total_factura_from_arr_lineas_registros($lineas_registros);
