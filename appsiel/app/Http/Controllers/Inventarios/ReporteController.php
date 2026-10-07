@@ -286,7 +286,10 @@ class ReporteController extends Controller
         foreach ($sql_productos as $fila)
         {
             $productos[$i]['fecha'] = $fila->fecha;
-            $productos[$i]['hora'] = $this->formatearRangoHorasMovimiento($fila->hora_inicio, $fila->hora_finalizacion, $fila->created_at);
+            // Los movimientos con turno se presentan en su cierre operativo.
+            $productos[$i]['hora'] = !is_null($fila->turno_operativo_id) || (int)$fila->core_tipo_transaccion_id === 28
+                ? ReportTimeFormatter::time($fila->fecha_hora_efectiva)
+                : $this->formatearRangoHorasMovimiento($fila->hora_inicio, $fila->hora_finalizacion, $fila->created_at);
             $productos[$i]['documento_id'] = $fila->documento_id;
             $productos[$i]['documento'] = $fila->documento;
             $productos[$i]['tercero'] = $fila->tercero;

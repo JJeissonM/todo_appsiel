@@ -172,24 +172,8 @@ class InvMovimiento extends Model
         $fechaHoraInicio = $fechaInicio . ' ' . ($horaInicio ?: '00:00:00');
         $fechaHoraFinal = $fechaFinal . ' ' . ($horaFinalizacion ?: '23:59:59');
 
-        return $query->where(function ($query) use ($fechaHoraInicio, $fechaHoraFinal) {
-            $query->where(function ($query) use ($fechaHoraInicio, $fechaHoraFinal) {
-                $query->whereNull('inv_movimientos.hora_inicio')
-                    ->whereNull('inv_movimientos.hora_finalizacion')
-                    ->whereBetween('inv_movimientos.created_at', [$fechaHoraInicio, $fechaHoraFinal]);
-            })->orWhere(function ($query) use ($fechaHoraInicio, $fechaHoraFinal) {
-                $query->where(function ($query) {
-                    $query->whereNotNull('inv_movimientos.hora_inicio')
-                        ->orWhereNotNull('inv_movimientos.hora_finalizacion');
-                })->whereRaw(
-                    'TIMESTAMP(inv_movimientos.fecha, COALESCE(inv_movimientos.hora_inicio, inv_movimientos.hora_finalizacion)) >= ?',
-                    [$fechaHoraInicio]
-                )->whereRaw(
-                    'TIMESTAMP(inv_movimientos.fecha, COALESCE(inv_movimientos.hora_finalizacion, inv_movimientos.hora_inicio)) <= ?',
-                    [$fechaHoraFinal]
-                );
-            });
-        });
+        return $query->whereRaw(self::fechaHoraReporteMovimientosSql(true) . ' >= ?', [$fechaHoraInicio])
+            ->whereRaw(self::fechaHoraReporteMovimientosSql(false) . ' <= ?', [$fechaHoraFinal]);
     }
 
     /** Saldo inmediatamente anterior al inicio horario del reporte. */
@@ -204,26 +188,12 @@ class InvMovimiento extends Model
 
         $fechaHoraInicio = $fechaInicio . ' ' . $horaInicio;
 
-        return $query->where(function ($query) use ($fechaHoraInicio) {
-            $query->where(function ($query) use ($fechaHoraInicio) {
-                $query->whereNull('inv_movimientos.hora_inicio')
-                    ->whereNull('inv_movimientos.hora_finalizacion')
-                    ->where('inv_movimientos.created_at', '<', $fechaHoraInicio);
-            })->orWhere(function ($query) use ($fechaHoraInicio) {
-                $query->where(function ($query) {
-                    $query->whereNotNull('inv_movimientos.hora_inicio')
-                        ->orWhereNotNull('inv_movimientos.hora_finalizacion');
-                })->whereRaw(
-                    'TIMESTAMP(inv_movimientos.fecha, COALESCE(inv_movimientos.hora_finalizacion, inv_movimientos.hora_inicio)) < ?',
-                    [$fechaHoraInicio]
-                );
-            });
-        });
+        return $query->whereRaw(self::fechaHoraReporteMovimientosSql(false) . ' < ?', [$fechaHoraInicio]);
     }
 
     /**
      * Movimientos que ocurrieron durante la apertura y cierre de un Inventario
-     * Fisico. Replica el criterio del arqueo de caja usando created_at.
+     * Fisico. Los movimientos con turno se imputan a su cierre operativo.
      */
     public function scopeDuranteTurnoInventarioFisico($query, $fecha, $horaInicio = null, $horaFinalizacion = null)
     {
@@ -237,7 +207,7 @@ class InvMovimiento extends Model
         }
 
         return $query->whereBetween('inv_movimientos.fecha', [$range['opening_date'], $range['closing_date']])
-            ->whereBetween('inv_movimientos.created_at', [$range['opening_at'], $range['closing_at']]);
+            ->whereRaw(self::fechaHoraEfectivaInventarioSql() . ' BETWEEN ? AND ?', [$range['opening_at'], $range['closing_at']]);
     }
 
     /**
@@ -278,7 +248,7 @@ class InvMovimiento extends Model
             $query->where('inv_movimientos.fecha', '<', $range['opening_date'])
                 ->orWhere(function ($query) use ($range) {
                     $query->where('inv_movimientos.fecha', '=', $range['opening_date'])
-                        ->where('inv_movimientos.created_at', '<', $range['opening_at']);
+                        ->whereRaw(self::fechaHoraEfectivaInventarioSql() . ' < ?', [$range['opening_at']]);
                 });
         });
     }
@@ -299,7 +269,7 @@ class InvMovimiento extends Model
             $query->where('inv_movimientos.fecha', '<', $range['opening_date'])
                 ->orWhere(function ($query) use ($range) {
                     $query->whereBetween('inv_movimientos.fecha', [$range['opening_date'], $range['closing_date']])
-                        ->where('inv_movimientos.created_at', '<=', $range['closing_at']);
+                        ->whereRaw(self::fechaHoraEfectivaInventarioSql() . ' <= ?', [$range['closing_at']]);
                 });
         });
     }
@@ -741,6 +711,7 @@ class InvMovimiento extends Model
                                         'inv_movimientos.hora_inicio',
                                         'inv_movimientos.hora_finalizacion',
                                         'inv_movimientos.created_at',
+                                        DB::raw(self::fechaHoraEfectivaInventarioSql() . ' AS fecha_hora_efectiva'),
                                         'inv_movimientos.turno_operativo_id',
                                         'kardex_turno_operativo.cerrado_en AS turno_cerrado_en',
                                         DB::raw(self::cierreTurnoAjusteOrigenSql() . ' AS turno_origen_ajuste_cerrado_en'),
@@ -804,6 +775,33 @@ class InvMovimiento extends Model
             . "AND relacion_origen.tipo_relacion = '" . InvDocumentoRelacionado::TIPO_IF_AJUSTE . "' "
             . 'AND inventario_fisico_origen.core_empresa_id = inv_movimientos.core_empresa_id '
             . 'ORDER BY relacion_origen.id DESC LIMIT 1)';
+    }
+
+    /** Los movimientos asociados a un turno afectan su cierre operativo. */
+    public static function fechaHoraEfectivaInventarioSql()
+    {
+        return 'CASE WHEN inv_movimientos.turno_operativo_id IS NOT NULL '
+            . 'OR inv_movimientos.core_tipo_transaccion_id = 28 THEN COALESCE('
+            . '(SELECT turno_ajuste.cerrado_en FROM core_turnos_operativos turno_ajuste '
+            . 'WHERE turno_ajuste.id = inv_movimientos.turno_operativo_id '
+            . 'AND turno_ajuste.core_empresa_id = inv_movimientos.core_empresa_id), '
+            . 'CASE WHEN inv_movimientos.core_tipo_transaccion_id = 28 THEN '
+            . self::cierreTurnoAjusteOrigenSql() . ' ELSE NULL END, inv_movimientos.created_at) '
+            . 'ELSE inv_movimientos.created_at END';
+    }
+
+    /** Mantiene los rangos explícitos para movimientos sin turno. */
+    public static function fechaHoraReporteMovimientosSql($inicio = false)
+    {
+        $horas = $inicio
+            ? 'inv_movimientos.hora_inicio, inv_movimientos.hora_finalizacion'
+            : 'inv_movimientos.hora_finalizacion, inv_movimientos.hora_inicio';
+
+        return 'CASE WHEN inv_movimientos.turno_operativo_id IS NOT NULL '
+            . 'OR inv_movimientos.core_tipo_transaccion_id = 28 THEN '
+            . self::fechaHoraEfectivaInventarioSql() . ' ELSE COALESCE('
+            . 'TIMESTAMP(inv_movimientos.fecha, COALESCE(' . $horas . ')), '
+            . 'inv_movimientos.created_at) END';
     }
 
     public static function get_movimiento_transacciones_ventas( $fecha_inicial, $fecha_final )
