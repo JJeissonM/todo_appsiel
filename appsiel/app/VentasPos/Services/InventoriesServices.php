@@ -81,15 +81,18 @@ class InventoriesServices
         return $bodega_id;
     }
 
+    /** Ensambles y remisiones deben resolver la misma bodega para el platillo. */
+    public function get_bodega_id_linea($linea, $bodega_default_id, $buscar_bodega_cocina = true)
+    {
+        $bodega_id = !empty($linea->inv_bodega_id) ? (int)$linea->inv_bodega_id : (int)$bodega_default_id;
+        return $this->get_bodega_id_producto($linea->inv_producto_id, $bodega_id, $buscar_bodega_cocina);
+    }
+
     public function agregar_bodega_a_cantidades_facturadas( $cantidades_facturadas, $bodega_default_id, $buscar_bodega_cocina = true )
     {
         foreach ($cantidades_facturadas as $linea)
         {
-            if (!empty($linea->inv_bodega_id)) {
-                continue;
-            }
-
-            $linea->inv_bodega_id = $this->get_bodega_id_producto($linea->inv_producto_id, $bodega_default_id, $buscar_bodega_cocina);
+            $linea->inv_bodega_id = $this->get_bodega_id_linea($linea, $bodega_default_id, $buscar_bodega_cocina);
         }
 
         return $cantidades_facturadas;
@@ -326,7 +329,7 @@ class InventoriesServices
 
         foreach ($datos_remision['invoice_doc_lines'] as $linea)
         {
-            $datos_remision['invoice_doc_line_bodega_ids'][$linea->id] = !empty($linea->inv_bodega_id) ? (int)$linea->inv_bodega_id : $this->get_bodega_id_producto($linea->inv_producto_id, $bodega_default_id, $buscar_bodega_cocina);
+            $datos_remision['invoice_doc_line_bodega_ids'][$linea->id] = $this->get_bodega_id_linea($linea, $bodega_default_id, $buscar_bodega_cocina);
         }
 
         $bodegas_lineas = array_unique(array_values($datos_remision['invoice_doc_line_bodega_ids']));

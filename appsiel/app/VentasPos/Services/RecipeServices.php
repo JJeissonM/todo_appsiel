@@ -24,6 +24,7 @@ class RecipeServices
     const INV_DOC_HEADER_MODEL_NAME = 'documentos_inventario';
 
     protected $items_con_receta = [];
+    protected $bodegas_cocina_por_ingrediente = [];
     protected $bodegas_candidatas_por_ingrediente = [];
 
     // item_ingrediente_id: el que se compra
@@ -390,6 +391,14 @@ class RecipeServices
         $bodega_default_id = (int)$bodega_default_id;
         $cantidad_requerida = (float)$cantidad_requerida;
 
+        // La cocina del propio ingrediente define dónde se consulta, prepara y consume.
+        // No se cambia a otra bodega por falta de stock: el ensamble anidado
+        // debe reponer el ingrediente en esta misma bodega, si tiene receta.
+        $bodega_cocina_id = $this->get_bodega_cocina_ingrediente($item_ingrediente_id);
+        if ($bodega_cocina_id !== null) {
+            return $bodega_cocina_id;
+        }
+
         if ( !$this->item_tiene_receta($item_ingrediente_id) )
         {
             return $bodega_default_id;
@@ -425,6 +434,24 @@ class RecipeServices
         }
 
         return $bodega_default_id;
+    }
+
+    protected function get_bodega_cocina_ingrediente($item_ingrediente_id)
+    {
+        $item_ingrediente_id = (int)$item_ingrediente_id;
+        if (!array_key_exists($item_ingrediente_id, $this->bodegas_cocina_por_ingrediente)) {
+            $bodega_id = RestauranteCocina::join('inv_productos', 'inv_productos.inv_grupo_id', '=', 'vtas_restaurante_cocinas.grupo_inventarios_id')
+                ->where('inv_productos.id', $item_ingrediente_id)
+                ->where('inv_productos.inv_grupo_id', '>', 0)
+                ->where('vtas_restaurante_cocinas.estado', 'Activo')
+                ->where('vtas_restaurante_cocinas.bodega_default_id', '>', 0)
+                ->orderBy('vtas_restaurante_cocinas.id')
+                ->value('bodega_default_id');
+
+            $this->bodegas_cocina_por_ingrediente[$item_ingrediente_id] = is_null($bodega_id) ? null : (int)$bodega_id;
+        }
+
+        return $this->bodegas_cocina_por_ingrediente[$item_ingrediente_id];
     }
 
     protected function item_tiene_receta($item_id)
