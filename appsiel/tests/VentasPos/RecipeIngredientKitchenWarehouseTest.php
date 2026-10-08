@@ -26,7 +26,7 @@ class RecipeIngredientKitchenWarehouseTest extends TestCase
             'CREATE TABLE inv_costo_prom_productos (inv_producto_id INTEGER, inv_bodega_id INTEGER, costo_promedio REAL)',
             "INSERT INTO inv_productos VALUES (383,4,'MENU INFANTIL','UND',4000),(384,5,'JUGO INFANTIL','UND',1050),(50,6,'INSUMO JUGO','UND',100)",
             'INSERT INTO inv_recetas_cocina VALUES (1,383,384,1)',
-            "INSERT INTO vtas_restaurante_cocinas VALUES (2,4,20,'Activo'),(3,5,1,'Activo')",
+            "INSERT INTO vtas_restaurante_cocinas VALUES (3,5,1,'Activo')",
             "INSERT INTO inv_motivos VALUES (3,'Consumo'),(4,'Producto final')",
             // La bodega del platillo tiene stock abundante: no debe ganar prioridad.
             "INSERT INTO inv_movimientos VALUES (1,384,20,'2026-10-07',100)",
@@ -34,6 +34,8 @@ class RecipeIngredientKitchenWarehouseTest extends TestCase
         ] as $sql) {
             DB::statement($sql);
         }
+        require_once __DIR__.'/../../database/migrations/2026_10_07_000001_add_bodega_default_id_to_inv_productos.php';
+        (new AddBodegaDefaultIdToInvProductos())->up();
     }
 
     protected function tearDown()
@@ -50,6 +52,183 @@ class RecipeIngredientKitchenWarehouseTest extends TestCase
             20, ['motivo_salida_id' => 3, 'motivo_entrada_id' => 4], '2026-10-07', 51107
         );
         return (new InvDocumentsLinesService())->preparar_array_lineas_registros(20, $json, null);
+    }
+
+    public function test_cocina_del_platillo_tiene_prioridad_sobre_bodega_y_cocina_del_ingrediente()
+    {
+        DB::statement("INSERT INTO vtas_restaurante_cocinas VALUES (2,4,20,'Activo')");
+        DB::statement('UPDATE inv_productos SET bodega_default_id=30 WHERE id=384');
+        $lines = $this->generarLineas(new RecipeServices());
+        $this->assertEquals(20, $lines[0]->inv_bodega_id);
+        $this->assertEquals(900, $lines[0]->costo_unitario);
+    }
+
+    public function test_sin_stock_en_cocina_del_platillo_consume_de_la_siguiente_bodega_sin_ensamblar()
+    {
+        DB::statement("INSERT INTO vtas_restaurante_cocinas VALUES (2,4,20,'Activo')");
+        DB::statement('UPDATE inv_productos SET bodega_default_id=30 WHERE id=384');
+        DB::statement('DELETE FROM inv_movimientos WHERE inv_producto_id=384');
+        DB::statement("INSERT INTO inv_movimientos VALUES (1,384,30,'2026-10-07',100)");
+        DB::statement('INSERT INTO inv_recetas_cocina VALUES (2,384,50,3)');
+        $service = new RecipeKitchenNestedDocumentSpy();
+        $lines = $this->generarLineas($service);
+        $this->assertCount(0, $service->documents);
+        $this->assertEquals(30, $lines[0]->inv_bodega_id);
+    }
+
+    public function test_ingrediente_compartido_conserva_la_bodega_de_cada_platillo()
+    {
+        DB::statement("INSERT INTO vtas_restaurante_cocinas VALUES (2,4,20,'Activo'),(4,7,40,'Activo')");
+        DB::statement("INSERT INTO inv_productos (id,inv_grupo_id,descripcion,unidad_medida1,precio_compra) VALUES (400,7,'OTRO PLATILLO','UND',4000)");
+        DB::statement('INSERT INTO inv_recetas_cocina VALUES (3,400,384,1)');
+        DB::statement("INSERT INTO inv_movimientos VALUES (1,384,40,'2026-10-07',100)");
+        $service = new RecipeServices();
+        $quantities = $service->get_obj_cantidad_facturada_item(383, 1)->merge($service->get_obj_cantidad_facturada_item(400, 1));
+        $json = $service->get_lineas_registros_ensamble($quantities, 20, ['motivo_salida_id' => 3, 'motivo_entrada_id' => 4], '2026-10-07');
+        $lines = (new InvDocumentsLinesService())->preparar_array_lineas_registros(20, $json, null);
+        $this->assertEquals(384, $lines[0]->inv_producto_id);
+        $this->assertEquals(20, $lines[0]->inv_bodega_id);
+        $this->assertEquals(384, $lines[2]->inv_producto_id);
+        $this->assertEquals(40, $lines[2]->inv_bodega_id);
+    }
+
+    public function test_bodega_por_defecto_del_producto_prevalece_sobre_cocina_y_existencias()
+    {
+        DB::statement('UPDATE inv_productos SET bodega_default_id=30 WHERE id=384');
+        DB::statement('INSERT INTO inv_costo_prom_productos VALUES (384,30,1200)');
+        DB::statement("INSERT INTO inv_movimientos VALUES (1,384,30,'2026-10-07',2)");
+        $lines = $this->generarLineas(new RecipeServices());
+        $this->assertEquals(30, $lines[0]->inv_bodega_id);
+        $this->assertEquals(1200, $lines[0]->costo_unitario);
+        $this->assertEquals(20, $lines[1]->inv_bodega_id);
+    }
+
+    public function test_si_bodega_default_no_tiene_stock_consume_de_la_cocina_del_ingrediente()
+    {
+        DB::statement('UPDATE inv_productos SET bodega_default_id=30 WHERE id=384');
+        DB::statement('INSERT INTO inv_recetas_cocina VALUES (2,384,50,3)');
+        // Stock en la cocina no sustituye el faltante en la bodega elegida por el producto.
+        DB::statement("INSERT INTO inv_movimientos VALUES (1,384,1,'2026-10-07',100)");
+        $service = new RecipeKitchenNestedDocumentSpy();
+        $lines = $this->generarLineas($service);
+        $this->assertCount(0, $service->documents);
+        $this->assertEquals(1, $lines[0]->inv_bodega_id);
+    }
+
+    /** @dataProvider stocksPorPrioridad */
+    public function test_consume_stock_parcial_en_orden_y_solo_ensambla_faltante($stockFinal, $faltante)
+    {
+        DB::statement("INSERT INTO vtas_restaurante_cocinas VALUES (2,4,20,'Activo')");
+        DB::statement('UPDATE inv_productos SET bodega_default_id=30 WHERE id=384');
+        DB::statement('DELETE FROM inv_movimientos');
+        DB::table('inv_movimientos')->insert([
+            ['core_empresa_id'=>1,'inv_producto_id'=>384,'inv_bodega_id'=>20,'fecha'=>'2026-10-07','cantidad'=>0.5],
+            ['core_empresa_id'=>1,'inv_producto_id'=>384,'inv_bodega_id'=>30,'fecha'=>'2026-10-07','cantidad'=>0.5],
+            ['core_empresa_id'=>1,'inv_producto_id'=>384,'inv_bodega_id'=>1,'fecha'=>'2026-10-07','cantidad'=>$stockFinal]
+        ]);
+        DB::statement('INSERT INTO inv_recetas_cocina VALUES (2,384,50,3)');
+        DB::statement('INSERT INTO inv_costo_prom_productos VALUES (384,30,1200)');
+        $service = new RecipeKitchenNestedDocumentSpy();
+        $lines = $this->generarLineas($service);
+        $this->assertCount(4, $lines);
+        $this->assertEquals(20, $lines[0]->inv_bodega_id);
+        $this->assertEquals(0.5, $lines[0]->cantidad);
+        $this->assertEquals(30, $lines[1]->inv_bodega_id);
+        $this->assertEquals(0.5, $lines[1]->cantidad);
+        $this->assertEquals(1, $lines[2]->inv_bodega_id);
+        $this->assertEquals($stockFinal + $faltante, $lines[2]->cantidad);
+        $this->assertEquals(2, $lines[3]->cantidad);
+        $this->assertEquals($lines[0]->costo_total + $lines[1]->costo_total + $lines[2]->costo_total, $lines[3]->costo_total);
+        $this->assertCount($faltante > 0 ? 1 : 0, $service->documents);
+        if ($faltante > 0) {
+            $nested = $service->documents[0];
+            $this->assertEquals(1, $nested['warehouse']);
+            $this->assertEquals($faltante, $nested['lines'][1]->cantidad);
+            $this->assertEquals(1, $nested['lines'][1]->inv_bodega_id);
+        }
+    }
+
+    /** @dataProvider prioridadesEnsamble */
+    public function test_prioridad_de_ensamble_independiente_del_orden_de_consumo($cocinaIngrediente, $defaultIngrediente, $cocinaPlatillo, $esperada)
+    {
+        DB::statement('DELETE FROM inv_movimientos');
+        if (!$cocinaIngrediente) {
+            DB::statement('DELETE FROM vtas_restaurante_cocinas WHERE grupo_inventarios_id=5');
+        }
+        if ($cocinaPlatillo) {
+            DB::statement("INSERT INTO vtas_restaurante_cocinas VALUES (2,4,20,'Activo')");
+        }
+        DB::table('inv_productos')->where('id', 384)->update(['bodega_default_id' => $defaultIngrediente]);
+        DB::statement('INSERT INTO inv_recetas_cocina VALUES (2,384,50,3)');
+        $service = new RecipeKitchenNestedDocumentSpy();
+        $lines = $this->generarLineas($service);
+        $this->assertCount(1, $service->documents);
+        $this->assertEquals($esperada, $service->documents[0]['warehouse']);
+        $this->assertEquals($esperada, $service->documents[0]['lines'][1]->inv_bodega_id);
+        $this->assertEquals(2, $service->documents[0]['lines'][1]->cantidad);
+        $this->assertEquals($esperada, $lines[0]->inv_bodega_id);
+        $this->assertEquals(2, $lines[0]->cantidad);
+    }
+
+    public function prioridadesEnsamble()
+    {
+        return [
+            'cocina ingrediente' => [true, 30, true, 1],
+            'default ingrediente' => [false, 30, true, 30],
+            'cocina platillo' => [false, null, true, 20],
+            'documento' => [false, null, false, 20]
+        ];
+    }
+
+    public function stocksPorPrioridad()
+    {
+        return [[1, 0], [0.25, 0.75]];
+    }
+
+    public function test_no_reserva_dos_veces_stock_compartido_por_platillos()
+    {
+        DB::statement("INSERT INTO vtas_restaurante_cocinas VALUES (2,4,20,'Activo'),(4,7,40,'Activo')");
+        DB::statement("INSERT INTO inv_productos (id,inv_grupo_id,descripcion,unidad_medida1,precio_compra) VALUES (400,7,'OTRO','UND',4000)");
+        DB::statement('INSERT INTO inv_recetas_cocina VALUES (3,400,384,1)');
+        DB::statement('UPDATE inv_productos SET bodega_default_id=30 WHERE id=384');
+        DB::statement('DELETE FROM inv_movimientos');
+        DB::statement("INSERT INTO inv_movimientos VALUES (1,384,30,'2026-10-07',1),(1,384,1,'2026-10-07',1)");
+        $service = new RecipeServices();
+        $quantities = $service->get_obj_cantidad_facturada_item(383, 1)->merge($service->get_obj_cantidad_facturada_item(400, 1));
+        $json = $service->get_lineas_registros_ensamble($quantities, 20, ['motivo_salida_id'=>3,'motivo_entrada_id'=>4], '2026-10-07');
+        $lines = (new InvDocumentsLinesService())->preparar_array_lineas_registros(20, $json, null);
+        $this->assertEquals(30, $lines[0]->inv_bodega_id);
+        $this->assertEquals(1, $lines[0]->cantidad);
+        $this->assertEquals(1, $lines[2]->inv_bodega_id);
+        $this->assertEquals(1, $lines[2]->cantidad);
+    }
+
+    public function test_bodega_opcional_se_guarda_y_se_puede_limpiar()
+    {
+        $item = \App\Inventarios\InvProducto::find(384);
+        $this->assertNull($item->bodega_default_id);
+        $item->fill(['bodega_default_id' => '30']);
+        $this->assertSame(30, $item->bodega_default_id);
+        $item->fill(['bodega_default_id' => '']);
+        $this->assertNull($item->bodega_default_id);
+        $item->fill(['bodega_default_id' => null]);
+        $this->assertNull($item->bodega_default_id);
+    }
+
+    public function test_migracion_registra_selector_opcional_del_catalogo_sin_duplicados()
+    {
+        DB::statement('CREATE TABLE sys_modelos (id INTEGER, name_space TEXT)');
+        DB::table('sys_modelos')->insert(['id' => 21, 'name_space' => 'App\\Inventarios\\InvProducto']);
+        DB::statement('CREATE TABLE sys_campos (id INTEGER PRIMARY KEY AUTOINCREMENT, descripcion TEXT, tipo TEXT, name TEXT, opciones TEXT, value TEXT, atributos TEXT, definicion TEXT, requerido INTEGER, editable INTEGER, unico INTEGER, created_at TEXT, updated_at TEXT)');
+        DB::statement('CREATE TABLE sys_modelo_tiene_campos (core_modelo_id INTEGER, core_campo_id INTEGER, orden INTEGER)');
+        $migration = new AddBodegaDefaultIdToInvProductos();
+        $migration->up();
+        $migration->up();
+        $field = DB::table('sys_campos')->where('name', 'bodega_default_id')->first();
+        $this->assertNotNull($field);
+        $this->assertEquals(0, $field->requerido);
+        $this->assertSame('model_App\\Inventarios\\InvBodega', $field->opciones);
+        $this->assertEquals(1, DB::table('sys_modelo_tiene_campos')->where('core_modelo_id', 21)->count());
     }
 
     public function test_guardado_preserva_la_bodega_del_ingrediente_en_documento_y_kardex()
@@ -95,6 +274,7 @@ class RecipeIngredientKitchenWarehouseTest extends TestCase
         }
         // La remisión descuenta el platillo en su cocina aunque la factura
         // conserve la bodega predeterminada del PDV. La siguiente venta debe ensamblar.
+        DB::statement("INSERT INTO vtas_restaurante_cocinas VALUES (2,4,20,'Activo')");
         $invoiceLine = new \App\VentasPos\DocRegistro();
         $invoiceLine->forceFill(['id' => 10, 'inv_producto_id' => 383, 'inv_bodega_id' => 1, 'cantidad' => 2, 'vtas_motivo_id' => 17]);
         $inventory = new \App\VentasPos\Services\InventoriesServices();
@@ -177,7 +357,7 @@ class RecipeIngredientKitchenWarehouseTest extends TestCase
         $this->assertEquals(2, $lines[0]->cantidad);
     }
 
-    public function test_ingredientes_del_ensamble_anidado_resuelven_su_propia_cocina()
+    public function test_faltante_sin_receta_anidada_se_imputa_a_la_cocina_del_ingrediente()
     {
         DB::statement('INSERT INTO inv_recetas_cocina VALUES (2,384,50,3)');
         DB::statement("INSERT INTO vtas_restaurante_cocinas VALUES (4,6,30,'Activo')");

@@ -23,9 +23,7 @@ class RecipeServices
     const INV_APPLICATION_ID = 8; // Inventarios
     const INV_DOC_HEADER_MODEL_NAME = 'documentos_inventario';
 
-    protected $items_con_receta = [];
-    protected $bodegas_cocina_por_ingrediente = [];
-    protected $bodegas_candidatas_por_ingrediente = [];
+    protected $bodegas_cocina_por_producto = [];
 
     // item_ingrediente_id: el que se compra
     // item_platillo_id: el que se vende
@@ -69,9 +67,12 @@ class RecipeServices
             $planes_ensamble[] = (object)[
                 'item_platillo' => $item_platillo,
                 'lineas_receta_platillo' => $lineas_receta_platillo,
-                'cantidad_a_ingresar' => $cantidad_a_ingresar_platillo_facturado
+                'cantidad_a_ingresar' => $cantidad_a_ingresar_platillo_facturado,
+                'requerimientos_ingredientes' => []
             ];
 
+            $plan_index = count($planes_ensamble) - 1;
+            $bodega_cocina_platillo = $this->get_bodega_cocina_producto($item_platillo_id);
             foreach ($lineas_receta_platillo as $linea_receta) {
                 $cantidad_a_sacar_ingrediente = $linea_receta->cantidad_porcion * $cantidad_a_ingresar_platillo_facturado;
 
@@ -81,13 +82,19 @@ class RecipeServices
                 }
 
                 $ingrediente_id = (int)$linea_receta->item_ingrediente_id;
-                if ( !isset($requerimientos_ingredientes[$ingrediente_id]) )
-                {
-                    $requerimientos_ingredientes[$ingrediente_id] = 0;
+                $bodegas = $this->get_bodegas_consumo_ingrediente(
+                    $linea_receta->item_ingrediente, $bodega_default_id, $bodega_cocina_platillo
+                );
+                $bodega_ensamble = $this->get_bodega_ensamble_ingrediente(
+                    $linea_receta->item_ingrediente, $bodega_default_id, $bodega_cocina_platillo
+                );
+                $key = $ingrediente_id . ':' . implode(',', $bodegas) . ':' . $bodega_ensamble;
+                $planes_ensamble[$plan_index]->requerimientos_ingredientes[$linea_receta->id] = $key;
+                if (!isset($requerimientos_ingredientes[$key])) {
+                    $requerimientos_ingredientes[$key] = ['cantidad' => 0, 'bodegas' => $bodegas, 'bodega_ensamble' => $bodega_ensamble];
                 }
-
-                $requerimientos_ingredientes[$ingrediente_id] += $cantidad_a_sacar_ingrediente;
-                $items_ingredientes[$ingrediente_id] = $linea_receta->item_ingrediente;
+                $requerimientos_ingredientes[$key]['cantidad'] += $cantidad_a_sacar_ingrediente;
+                $items_ingredientes[$key] = $linea_receta->item_ingrediente;
             }
         }
 
@@ -96,27 +103,38 @@ class RecipeServices
             return 99; // Type integer
         }
 
-        $bodegas_ingredientes = [];
-        foreach ($requerimientos_ingredientes as $ingrediente_id => $cantidad_requerida) {
-            $bodega_ingrediente_id = $this->get_bodega_consumo_ingrediente(
-                $ingrediente_id,
-                $bodega_default_id,
-                $cantidad_requerida,
-                $fecha
-            );
-
-            $bodegas_ingredientes[$ingrediente_id] = $bodega_ingrediente_id;
-
-            // ---------------- Ensambles anidados
-            $this->create_document_making_for_ingredient(
-                $items_ingredientes[$ingrediente_id],
-                $bodega_ingrediente_id,
-                $fecha,
-                $parametros_config_inventarios,
-                $cantidad_requerida,
-                $factura_pos_id
-            );
-            // ----------------
+        $consumos = [];
+        $disponibles = [];
+        foreach ($requerimientos_ingredientes as $key => $requerimiento) {
+            $ingrediente = $items_ingredientes[$key];
+            $pendiente = (float)$requerimiento['cantidad'];
+            $consumos[$key] = [];
+            foreach ($requerimiento['bodegas'] as $bodega_id) {
+                $stock_key = $ingrediente->id . ':' . $bodega_id;
+                if (!array_key_exists($stock_key, $disponibles)) {
+                    $disponibles[$stock_key] = max(0, InvMovimiento::get_cantidad_existencia_item($ingrediente->id, $bodega_id, $fecha));
+                }
+                $cantidad = min($pendiente, $disponibles[$stock_key]);
+                if ($cantidad > 0) {
+                    $consumos[$key][$bodega_id] = $cantidad;
+                    $disponibles[$stock_key] -= $cantidad;
+                    $pendiente -= $cantidad;
+                }
+                if ($pendiente <= 0.00000001) {
+                    break;
+                }
+            }
+            if ($pendiente > 0.00000001) {
+                $bodega_id = $requerimiento['bodega_ensamble'];
+                // La existencia aún incluye cantidades reservadas por este documento.
+                // Se pide el saldo actual más el faltante para ensamblar solo lo necesario.
+                $saldo = max(0, InvMovimiento::get_cantidad_existencia_item($ingrediente->id, $bodega_id, $fecha));
+                $this->create_document_making_for_ingredient(
+                    $ingrediente, $bodega_id, $fecha, $parametros_config_inventarios,
+                    $saldo + $pendiente, $factura_pos_id
+                );
+                $consumos[$key][$bodega_id] = ($consumos[$key][$bodega_id] ?? 0) + $pendiente;
+            }
         }
 
         foreach ($planes_ensamble as $plan_ensamble)
@@ -130,14 +148,18 @@ class RecipeServices
 
                 $ingrediente_id = (int)$linea_receta->item_ingrediente_id;
                 $cantidad_a_sacar_ingrediente = $linea_receta->cantidad_porcion * $plan_ensamble->cantidad_a_ingresar;
-                $bodega_ingrediente_id = $bodegas_ingredientes[$ingrediente_id];
-
-                $costo_unitario_ingrediente = $linea_receta->item_ingrediente->get_costo_promedio( $bodega_ingrediente_id );
-
-                $costo_total_ingredientes += $costo_unitario_ingrediente * $linea_receta->cantidad_porcion;
-
-                // Una linea de salida por cada ingrediente
-                $lineas_desarme .= ',{"inv_bodega_id":"' . $bodega_ingrediente_id . '","inv_producto_id":"' . $linea_receta->item_ingrediente_id . '","Producto":"' . $linea_receta->item_ingrediente_id . ' ' . $linea_receta->item_ingrediente->descripcion . ' (' . $linea_receta->item_ingrediente->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_ingrediente . '","cantidad":"' . $cantidad_a_sacar_ingrediente . ' UND","costo_total":"$' . ($cantidad_a_sacar_ingrediente * $costo_unitario_ingrediente) . '"}';
+                $key = $plan_ensamble->requerimientos_ingredientes[$linea_receta->id];
+                foreach ($consumos[$key] as $bodega_ingrediente_id => $cantidad_disponible) {
+                    $cantidad_consumida = min($cantidad_a_sacar_ingrediente, $cantidad_disponible);
+                    if ($cantidad_consumida <= 0) {
+                        continue;
+                    }
+                    $consumos[$key][$bodega_ingrediente_id] -= $cantidad_consumida;
+                    $cantidad_a_sacar_ingrediente -= $cantidad_consumida;
+                    $costo_unitario_ingrediente = $linea_receta->item_ingrediente->get_costo_promedio($bodega_ingrediente_id);
+                    $costo_total_ingredientes += $costo_unitario_ingrediente * $cantidad_consumida / $plan_ensamble->cantidad_a_ingresar;
+                    $lineas_desarme .= ',{"inv_bodega_id":"' . $bodega_ingrediente_id . '","inv_producto_id":"' . $linea_receta->item_ingrediente_id . '","Producto":"' . $linea_receta->item_ingrediente_id . ' ' . $linea_receta->item_ingrediente->descripcion . ' (' . $linea_receta->item_ingrediente->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_ingrediente . '","cantidad":"' . $cantidad_consumida . ' UND","costo_total":"$' . ($cantidad_consumida * $costo_unitario_ingrediente) . '"}';
+                }
             }
 
             $lineas_desarme .= ',';
@@ -385,122 +407,46 @@ class RecipeServices
         return $cantidades2;
     }
 
-    protected function get_bodega_consumo_ingrediente($item_ingrediente_id, $bodega_default_id, $cantidad_requerida, $fecha)
+    /** Bodegas únicas en orden de prioridad; el documento respalda productos sin configuración. */
+    protected function get_bodegas_consumo_ingrediente($ingrediente, $bodega_default_id, $bodega_cocina_platillo = null)
     {
-        $item_ingrediente_id = (int)$item_ingrediente_id;
-        $bodega_default_id = (int)$bodega_default_id;
-        $cantidad_requerida = (float)$cantidad_requerida;
-
-        // La cocina del propio ingrediente define dónde se consulta, prepara y consume.
-        // No se cambia a otra bodega por falta de stock: el ensamble anidado
-        // debe reponer el ingrediente en esta misma bodega, si tiene receta.
-        $bodega_cocina_id = $this->get_bodega_cocina_ingrediente($item_ingrediente_id);
-        if ($bodega_cocina_id !== null) {
-            return $bodega_cocina_id;
-        }
-
-        if ( !$this->item_tiene_receta($item_ingrediente_id) )
-        {
-            return $bodega_default_id;
-        }
-
-        $existencia_bodega_actual = InvMovimiento::get_cantidad_existencia_item($item_ingrediente_id, $bodega_default_id, $fecha);
-        if ( $existencia_bodega_actual >= $cantidad_requerida )
-        {
-            return $bodega_default_id;
-        }
-
-        $bodega_con_mayor_existencia = null;
-        $mayor_existencia = null;
-
-        foreach ( $this->get_bodegas_candidatas_ingrediente($item_ingrediente_id, $bodega_default_id) as $bodega_id )
-        {
-            $existencia_bodega = InvMovimiento::get_cantidad_existencia_item($item_ingrediente_id, $bodega_id, $fecha);
-            if ( $existencia_bodega >= $cantidad_requerida )
-            {
-                return (int)$bodega_id;
-            }
-
-            if ( is_null($mayor_existencia) || $existencia_bodega > $mayor_existencia )
-            {
-                $mayor_existencia = $existencia_bodega;
-                $bodega_con_mayor_existencia = (int)$bodega_id;
-            }
-        }
-
-        if ( !is_null($bodega_con_mayor_existencia) )
-        {
-            return $bodega_con_mayor_existencia;
-        }
-
-        return $bodega_default_id;
+        $bodegas = array_values(array_unique(array_filter([
+            $bodega_cocina_platillo, $ingrediente->bodega_default_id,
+            $this->get_bodega_cocina_producto($ingrediente->id)
+        ], function ($id) { return (int)$id > 0; })));
+        return empty($bodegas) ? [(int)$bodega_default_id] : array_map('intval', $bodegas);
     }
 
-    protected function get_bodega_cocina_ingrediente($item_ingrediente_id)
+    /** Para reponer el faltante se prioriza la cocina del ingrediente. */
+    protected function get_bodega_ensamble_ingrediente($ingrediente, $bodega_default_id, $bodega_cocina_platillo = null)
+    {
+        foreach ([
+            $this->get_bodega_cocina_producto($ingrediente->id),
+            $ingrediente->bodega_default_id, $bodega_cocina_platillo
+        ] as $bodega_id) {
+            if ((int)$bodega_id > 0) {
+                return (int)$bodega_id;
+            }
+        }
+        return (int)$bodega_default_id;
+    }
+
+    protected function get_bodega_cocina_producto($item_ingrediente_id)
     {
         $item_ingrediente_id = (int)$item_ingrediente_id;
-        if (!array_key_exists($item_ingrediente_id, $this->bodegas_cocina_por_ingrediente)) {
+        if (!array_key_exists($item_ingrediente_id, $this->bodegas_cocina_por_producto)) {
             $bodega_id = RestauranteCocina::join('inv_productos', 'inv_productos.inv_grupo_id', '=', 'vtas_restaurante_cocinas.grupo_inventarios_id')
                 ->where('inv_productos.id', $item_ingrediente_id)
                 ->where('inv_productos.inv_grupo_id', '>', 0)
                 ->where('vtas_restaurante_cocinas.estado', 'Activo')
                 ->where('vtas_restaurante_cocinas.bodega_default_id', '>', 0)
                 ->orderBy('vtas_restaurante_cocinas.id')
-                ->value('bodega_default_id');
+                ->getQuery()->value('vtas_restaurante_cocinas.bodega_default_id');
 
-            $this->bodegas_cocina_por_ingrediente[$item_ingrediente_id] = is_null($bodega_id) ? null : (int)$bodega_id;
+            $this->bodegas_cocina_por_producto[$item_ingrediente_id] = is_null($bodega_id) ? null : (int)$bodega_id;
         }
 
-        return $this->bodegas_cocina_por_ingrediente[$item_ingrediente_id];
+        return $this->bodegas_cocina_por_producto[$item_ingrediente_id];
     }
 
-    protected function item_tiene_receta($item_id)
-    {
-        $item_id = (int)$item_id;
-
-        if ( !isset($this->items_con_receta[$item_id]) )
-        {
-            $this->items_con_receta[$item_id] = RecetaCocina::where('item_platillo_id', $item_id)->exists();
-        }
-
-        return $this->items_con_receta[$item_id];
-    }
-
-    protected function get_bodegas_candidatas_ingrediente($item_ingrediente_id, $bodega_default_id)
-    {
-        $item_ingrediente_id = (int)$item_ingrediente_id;
-        $bodega_default_id = (int)$bodega_default_id;
-
-        if ( isset($this->bodegas_candidatas_por_ingrediente[$item_ingrediente_id]) )
-        {
-            return $this->bodegas_candidatas_por_ingrediente[$item_ingrediente_id];
-        }
-
-        $grupos_platillos = RecetaCocina::where('item_ingrediente_id', $item_ingrediente_id)
-            ->join('inv_productos', 'inv_productos.id', '=', 'inv_recetas_cocina.item_platillo_id')
-            ->whereNotNull('inv_productos.inv_grupo_id')
-            ->where('inv_productos.inv_grupo_id', '<>', 0)
-            ->pluck('inv_productos.inv_grupo_id')
-            ->unique()
-            ->all();
-
-        $bodegas = [];
-        if ( !empty($grupos_platillos) )
-        {
-            $bodegas = RestauranteCocina::whereIn('grupo_inventarios_id', $grupos_platillos)
-                ->where('estado', 'Activo')
-                ->whereNotNull('bodega_default_id')
-                ->where('bodega_default_id', '<>', 0)
-                ->pluck('bodega_default_id')
-                ->unique()
-                ->filter(function ($bodega_id) use ($bodega_default_id) {
-                    return (int)$bodega_id != $bodega_default_id;
-                })
-                ->values()
-                ->all();
-        }
-
-        $this->bodegas_candidatas_por_ingrediente[$item_ingrediente_id] = $bodegas;
-        return $bodegas;
-    }
 }
