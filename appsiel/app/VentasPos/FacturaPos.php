@@ -260,13 +260,13 @@ class FacturaPos extends Model
 
     public static function consultar_registros($nro_registros, $search)
     {
-        $core_tipo_transaccion_id = 47; // Facturas POS
+        $tipos_factura = array_unique([47, 52, 55, (int)config('facturacion_electronica.transaction_type_id_default', 52)]); // POS y electrónicas originadas en POS
 
         $query = FacturaPos::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_doc_encabezados.core_tercero_id')
             ->leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_doc_encabezados.pdv_id')
             ->where('vtas_pos_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-            ->where('vtas_pos_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+            ->whereIn('vtas_pos_doc_encabezados.core_tipo_transaccion_id', $tipos_factura)
             ->select(
                 'vtas_pos_doc_encabezados.fecha AS campo1',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo) AS campo2'),
@@ -299,7 +299,7 @@ class FacturaPos extends Model
 
     public static function sqlString($search)
     {
-        $core_tipo_transaccion_id = 47; // Facturas POS
+        $tipos_factura = array_unique([47, 52, 55, (int)config('facturacion_electronica.transaction_type_id_default', 52)]); // POS y electrónicas originadas en POS
         
         $texto_busqueda = '%' . str_replace( " ", "%", $search ) . '%';
 
@@ -307,7 +307,7 @@ class FacturaPos extends Model
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_doc_encabezados.core_tercero_id')
             ->leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_doc_encabezados.pdv_id')
             ->where('vtas_pos_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-            ->where('vtas_pos_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+            ->whereIn('vtas_pos_doc_encabezados.core_tipo_transaccion_id', $tipos_factura)
             ->select(
                 DB::raw('CONCAT( vtas_pos_doc_encabezados.fecha, " ", core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo, " ", core_terceros.descripcion, " ", vtas_pos_doc_encabezados.descripcion, " ", ' . self::valor_total_factura_expression() . ', " ", vtas_pos_doc_encabezados.forma_pago, " ", vtas_pos_doc_encabezados.estado) AS nueva_cadena'),
                 'vtas_pos_doc_encabezados.fecha AS FECHA',
@@ -338,13 +338,13 @@ class FacturaPos extends Model
 
     public static function consultar_registros2($nro_registros, $search)
     {
-        $core_tipo_transaccion_id = 47; // Facturas POS
+        $tipos_factura = array_unique([47, 52, 55, (int)config('facturacion_electronica.transaction_type_id_default', 52)]); // POS y electrónicas originadas en POS
 
         $query = FacturaPos::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_doc_encabezados.core_tercero_id')
             ->leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_doc_encabezados.pdv_id')
             ->where('vtas_pos_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-            ->where('vtas_pos_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+            ->whereIn('vtas_pos_doc_encabezados.core_tipo_transaccion_id', $tipos_factura)
             ->select(
                 'vtas_pos_doc_encabezados.fecha AS campo1',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo) AS campo2'),
