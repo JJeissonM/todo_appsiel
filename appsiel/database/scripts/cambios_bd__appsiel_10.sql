@@ -759,18 +759,28 @@ INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `valu
 ALTER TABLE `vtas_pos_doc_registros` ADD `inv_bodega_id` INT(10) UNSIGNED NULL AFTER `inv_producto_id`;
 ALTER TABLE `vtas_pos_doc_registros` ADD INDEX `inv_bodega_id` (`inv_bodega_id`);
 
--- nuevo permiso
+-- Permisos hoteleros: el ID de la aplicacion varia entre instalaciones.
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
-SELECT NULL, '22', '0', 'hotel_pedido_retirar_producto_habitacion', 'Hotel pedido Retirar producto Habitacion', 'web', '0', '15', '0', '', '2026-07-01 10:18:25', NULL
-WHERE NOT EXISTS (
+SELECT NULL, hotel_app.`id`, '0', 'hotel_pedido_retirar_producto_habitacion', 'Hotel pedido Retirar producto Habitacion', 'web', '0', '15', '0', '', '2026-07-01 10:18:25', NULL
+FROM `sys_aplicaciones` AS hotel_app
+WHERE (hotel_app.`app` IN ('hotel', 'hotel/stays')
+    OR hotel_app.`descripcion` IN ('Gestion Hotelera', 'Gestión Hotelera'))
+AND NOT EXISTS (
     SELECT 1 FROM `permissions` WHERE `name` = 'hotel_pedido_retirar_producto_habitacion' LIMIT 1
-);
+)
+ORDER BY hotel_app.`id`
+LIMIT 1;
 
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
-SELECT NULL, '22', '0', 'hotel_pedido_anular', 'Anular pedido hotelero', 'hotel/orders/id_fila/cancel', '0', '18', '0', 'ban', '2026-07-21 00:00:00', NULL
-WHERE NOT EXISTS (
+SELECT NULL, hotel_app.`id`, '0', 'hotel_pedido_anular', 'Anular pedido hotelero', 'hotel/orders/id_fila/cancel', '0', '18', '0', 'ban', '2026-07-21 00:00:00', NULL
+FROM `sys_aplicaciones` AS hotel_app
+WHERE (hotel_app.`app` IN ('hotel', 'hotel/stays')
+    OR hotel_app.`descripcion` IN ('Gestion Hotelera', 'Gestión Hotelera'))
+AND NOT EXISTS (
     SELECT 1 FROM `permissions` WHERE `name` = 'hotel_pedido_anular' LIMIT 1
-);
+)
+ORDER BY hotel_app.`id`
+LIMIT 1;
 
 SET @hotel_pedido_anular_permission_id := (
     SELECT `id` FROM `permissions`
