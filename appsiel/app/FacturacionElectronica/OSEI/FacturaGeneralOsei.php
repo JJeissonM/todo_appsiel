@@ -202,9 +202,9 @@ class FacturaGeneralOsei
 
         if (is_array($decodedBody)) {
             if (!empty($decodedBody['message'])) {
-                $errorMessage = $decodedBody['message'];
+                $errorMessage = is_array($decodedBody['message']) ? json_encode($decodedBody['message'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $decodedBody['message'];
             } elseif (!empty($decodedBody['error'])) {
-                $errorMessage = $decodedBody['error'];
+                $errorMessage = is_array($decodedBody['error']) ? json_encode($decodedBody['error'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $decodedBody['error'];
             } elseif (!empty($decodedBody['errors'])) {
                 $errorMessage = is_array($decodedBody['errors']) ? json_encode($decodedBody['errors'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $decodedBody['errors'];
             } else {
@@ -214,7 +214,12 @@ class FacturaGeneralOsei
             $errorMessage = trim($responseBody);
         }
 
-        return $errorMessage;
+        // El aviso se renderiza como HTML: nunca insertar paginas de error del proveedor.
+        if (preg_match('/<\s*(?:!doctype|html|head|body|iframe|script|style|div|pre|h[1-6])\b/i', $errorMessage)) {
+            return 'El servidor OSEI no pudo procesar la solicitud. Intente nuevamente. Si el error persiste, contacte al soporte.';
+        }
+
+        return htmlspecialchars($errorMessage, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     public function procesar_envio_factura($factura_doc_encabezado)
