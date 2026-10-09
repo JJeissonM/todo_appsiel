@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\TurnoOperativo;
+use App\User;
 use App\VentasPos\Pdv;
 use App\VentasPos\Services\ReportsServices;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -64,7 +65,76 @@ class ArqueoCajaMovimientosBancariosTest extends TestCase
         $this->assertContains($movementId, $ids);
     }
 
-    protected function crearTurno($pdv, $date)
+    public function test_config_permite_excluir_movimientos_bancarios_de_usuarios_distintos_al_cajero_del_turno()
+    {
+        $configuracionOriginal = config('tesoreria.excluir_movimientos_bancarios_otros_usuarios');
+
+        try {
+            $pdv = Pdv::whereNotNull('caja_default_id')->first();
+            $this->assertNotNull($pdv);
+
+            $cajero = User::where('empresa_id', (int)$pdv->core_empresa_id)->first();
+            $this->assertNotNull($cajero);
+
+            $turno = $this->crearTurno($pdv, '2099-09-11', (int)$cajero->id);
+            $movimientoCajeroId = $this->crearMovimientoBancario(
+                $pdv,
+                $turno->id,
+                8,
+                (int)$pdv->id,
+                41000,
+                $cajero->email
+            );
+            $movimientoAdministrativoId = $this->crearMovimientoBancario(
+                $pdv,
+                $turno->id,
+                8,
+                (int)$pdv->id,
+                42000,
+                'administrativo-externo@appsiel.test'
+            );
+
+            config(array('tesoreria.excluir_movimientos_bancarios_otros_usuarios' => 0));
+            $sinFiltro = (new ReportsServices())->get_movimentos_cuentas_bancarias(
+                '2099-09-11',
+                (int)$pdv->caja_default_id,
+                'creador-arqueo@appsiel.test',
+                (int)$turno->id,
+                (int)$pdv->core_empresa_id
+            )->flatten(1)->pluck('id')->map(function ($id) {
+                return (int)$id;
+            })->all();
+
+            $this->assertContains($movimientoCajeroId, $sinFiltro);
+            $this->assertContains($movimientoAdministrativoId, $sinFiltro, 'La modalidad por defecto debe conservar el comportamiento actual.');
+
+            config(array('tesoreria.excluir_movimientos_bancarios_otros_usuarios' => 1));
+            $conFiltro = (new ReportsServices())->get_movimentos_cuentas_bancarias(
+                '2099-09-11',
+                (int)$pdv->caja_default_id,
+                'creador-arqueo@appsiel.test',
+                (int)$turno->id,
+                (int)$pdv->core_empresa_id
+            )->flatten(1)->pluck('id')->map(function ($id) {
+                return (int)$id;
+            })->all();
+
+            $this->assertContains($movimientoCajeroId, $conFiltro);
+            $this->assertNotContains($movimientoAdministrativoId, $conFiltro);
+        } finally {
+            config(array('tesoreria.excluir_movimientos_bancarios_otros_usuarios' => $configuracionOriginal));
+        }
+    }
+
+    public function test_configuracion_de_filtro_bancario_existe_y_se_muestra_en_tesoreria()
+    {
+        $this->assertSame(0, (int)config('tesoreria.excluir_movimientos_bancarios_otros_usuarios'));
+
+        $vista = file_get_contents(resource_path('views/core/config_aplicacion/tesoreria.blade.php'));
+        $this->assertContains("Form::bsSelect('excluir_movimientos_bancarios_otros_usuarios'", $vista);
+    }
+
+    protected function crearTurno($pdv, $date, $cajeroId = null)
     {
         return TurnoOperativo::create(array(
             'core_empresa_id' => (int)$pdv->core_empresa_id,
@@ -75,6 +145,7 @@ class ArqueoCajaMovimientosBancariosTest extends TestCase
             'fecha_operativa' => $date,
             'abierto_en' => $date . ' 06:00:00',
             'cerrado_en' => $date . ' 14:00:00',
+            'abierto_por' => is_null($cajeroId) ? null : (int)$cajeroId,
             'estado' => TurnoOperativo::ESTADO_CERRADO,
             'codigo' => 'TEST-ARQUEO-BANCO-' . uniqid(),
         ));

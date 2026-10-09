@@ -887,3 +887,8 @@ UPDATE `sys_modelos` SET `enlaces` = '{\"0\":{\"tag_html\":\"a\",\"title\":\"Dup
 -- 11 septiembre 2026
 ALTER TABLE `teso_movimientos` CHANGE `codigo_referencia_tercero` `codigo_referencia_tercero` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT '';
 ALTER TABLE `contab_movimientos` CHANGE `codigo_referencia_tercero` `codigo_referencia_tercero` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT '';
+
+
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES (1700, 'Label Categoría Impuesto', 'select', 'tax_category', '{\"IVA\":\"IVA\",\"INC\":\"INC\"}', 'null', '', '', '0', '1', '0', '2026-10-09 15:21:42', NULL);
+INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_campo_id`) VALUES (NULL, '13', '140', '1700');
+

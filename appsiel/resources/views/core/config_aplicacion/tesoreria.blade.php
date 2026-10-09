@@ -128,7 +128,17 @@
 					</div>
 
 					<div class="col-md-6">
-						&nbsp;
+						<div class="row" style="padding:5px;">
+							<?php
+								$excluir_movimientos_bancarios_otros_usuarios = 0;
+								if ( isset($parametros['excluir_movimientos_bancarios_otros_usuarios']) )
+								{
+									$excluir_movimientos_bancarios_otros_usuarios = $parametros['excluir_movimientos_bancarios_otros_usuarios'];
+								}
+							?>
+							{{ Form::bsSelect('excluir_movimientos_bancarios_otros_usuarios', $excluir_movimientos_bancarios_otros_usuarios, 'Excluir movimientos bancarios de otros usuarios', ['0' => 'No, incluir todos (actual)', '1' => 'Sí, incluir solo los del cajero'], ['class'=>'form-control']) }}
+							<small class="help-block">Al seleccionar Sí, el arqueo solo incluye en cuentas bancarias los movimientos creados por el cajero que abrió el turno del punto de venta.</small>
+						</div>
 					</div>
 				</div>
 				

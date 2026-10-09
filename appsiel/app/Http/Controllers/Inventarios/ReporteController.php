@@ -116,7 +116,11 @@ class ReporteController extends Controller
         $movement_serv = new MovementService();
         
         //$productos = $movement_serv->build_array_of_stocks_old( (object)$request->all() );
-        $productos = $movement_serv->build_array_of_stocks_new( (object)$request->all() );
+        try {
+            $productos = $movement_serv->build_array_of_stocks_new((object)$request->all());
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         $bodega = $movement_serv->descripcion_bodega;
 

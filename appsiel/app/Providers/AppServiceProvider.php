@@ -57,6 +57,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $parametros = [
             'generar_detalle_pago_cxp_desde_documentos' => 0,
+            'excluir_movimientos_bancarios_otros_usuarios' => 0,
         ];
         $ruta = config_path('tesoreria.php');
 
