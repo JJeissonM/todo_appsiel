@@ -532,11 +532,7 @@ class LibretaPagoController extends ModeloController
     // AUMENTAR EL CONSECUTIVO Y OBTENERLO AUMENTADO
     public function get_consecutivo($core_empresa_id, $core_tipo_doc_app_id)
     {
-        // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
-        $consecutivo = TipoDocApp::get_consecutivo_actual($core_empresa_id, $core_tipo_doc_app_id) + 1;
-
-        // Se incementa el consecutivo para ese tipo de documento y la empresa
-        TipoDocApp::aumentar_consecutivo($core_empresa_id, $core_tipo_doc_app_id);
+        $consecutivo = TipoDocApp::reservar_consecutivo($core_empresa_id, $core_tipo_doc_app_id);
 
         return $consecutivo;
     }

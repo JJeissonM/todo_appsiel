@@ -126,6 +126,8 @@ class ProcesosControllerTest extends TestCase
         }
         DB::statement('CREATE TABLE sys_modelos (id INTEGER, name_space TEXT)');
         DB::table('sys_modelos')->insert(['id' => 47, 'name_space' => 'App\\Contabilidad\\ContabDocEncabezado']);
+        DB::statement('CREATE TABLE core_tipos_docs_apps (id INTEGER PRIMARY KEY)');
+        DB::table('core_tipos_docs_apps')->insert(['id' => 1]);
         $consecutivos = (new App\Core\ConsecutivoDocumento)->getTable();
         Illuminate\Support\Facades\Schema::create($consecutivos, function ($tabla) {
             $tabla->increments('id');

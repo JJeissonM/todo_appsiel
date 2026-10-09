@@ -637,8 +637,7 @@ class HotelService
 
             $tipoTransaccionId = (int)config('ventas.factura_ventas_tipo_transaccion_id', 23);
             $tipoDocAppId = (int)config('ventas.factura_ventas_tipo_doc_app_id', 18);
-            $consecutivo = TipoDocApp::get_consecutivo_actual($order->empresa_id, $tipoDocAppId) + 1;
-            TipoDocApp::aumentar_consecutivo($order->empresa_id, $tipoDocAppId);
+            $consecutivo = TipoDocApp::reservar_consecutivo($order->empresa_id, $tipoDocAppId);
 
             $turno = $service->turnoForHotelOperation($order->empresa_id, $order->pdv_id);
             $turnoId = is_null($turno) ? null : $turno->id;
@@ -714,8 +713,7 @@ class HotelService
                 throw new \Exception('No existe un vendedor valido para generar y contabilizar la factura POS.');
             }
 
-            $consecutivo = TipoDocApp::get_consecutivo_actual($order->empresa_id, $tipoDocAppId) + 1;
-            TipoDocApp::aumentar_consecutivo($order->empresa_id, $tipoDocAppId);
+            $consecutivo = TipoDocApp::reservar_consecutivo($order->empresa_id, $tipoDocAppId);
             $totalOrder = $order->lines->sum('line_total');
             $hasAnticipos = $service->hasAdvancePayments($objectAnticipos);
             $formaPago = $service->normalizePaymentType($formaPago);

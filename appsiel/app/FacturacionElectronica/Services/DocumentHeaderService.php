@@ -2,9 +2,10 @@
 
 namespace App\FacturacionElectronica\Services;
 
+use App\Core\TipoDocApp;
+
 use App\Contabilidad\ContabMovimiento;
 use App\Core\EncabezadoDocumentoTransaccion;
-use App\Core\ConsecutivoDocumento;
 use App\CxC\CxcAbono;
 use App\CxC\CxcMovimiento;
 
@@ -101,22 +102,7 @@ class DocumentHeaderService
                 ];
             }
 
-            $consecutivo = ConsecutivoDocumento::where('core_empresa_id', $original_document_header->core_empresa_id)
-                ->where('core_documento_app_id', $fe_document_type_id_default)
-                ->lockForUpdate()
-                ->first();
-
-            if (is_null($consecutivo)) {
-                $consecutivo = new ConsecutivoDocumento();
-                $consecutivo->core_empresa_id = $original_document_header->core_empresa_id;
-                $consecutivo->core_documento_app_id = $fe_document_type_id_default;
-                $consecutivo->consecutivo_actual = 0;
-                $consecutivo->save();
-            }
-
-            $new_consecutivo = (int)$consecutivo->consecutivo_actual + 1;
-            $consecutivo->consecutivo_actual = $new_consecutivo;
-            $consecutivo->save();
+            $new_consecutivo = TipoDocApp::reservar_consecutivo($original_document_header->core_empresa_id, $fe_document_type_id_default);
 
             $contab_movim = ContabMovimiento::where($array_wheres)->get();
             foreach ($contab_movim as $line_movin) {

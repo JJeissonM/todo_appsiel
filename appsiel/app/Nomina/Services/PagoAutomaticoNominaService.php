@@ -3,7 +3,6 @@
 namespace App\Nomina\Services;
 
 use App\Contabilidad\ContabMovimiento;
-use App\Core\ConsecutivoDocumento;
 use App\Core\Tercero;
 use App\Core\TipoDocApp;
 use App\CxP\CxpAbono;
@@ -309,21 +308,7 @@ class PagoAutomaticoNominaService
 
     protected function crearEncabezadoPago($documento, TipoDocApp $tipoDocumento, $fecha, $medioId, $destino, $terceroId, $total, $email)
     {
-        $consecutivo = ConsecutivoDocumento::where('core_empresa_id', $documento->core_empresa_id)
-            ->where('core_documento_app_id', $tipoDocumento->id)
-            ->lockForUpdate()
-            ->first();
-
-        if (is_null($consecutivo)) {
-            $consecutivo = ConsecutivoDocumento::create([
-                'core_empresa_id' => $documento->core_empresa_id,
-                'core_documento_app_id' => $tipoDocumento->id,
-                'consecutivo_actual' => 0
-            ]);
-        }
-        $numero = (int) $consecutivo->consecutivo_actual + 1;
-        $consecutivo->consecutivo_actual = $numero;
-        $consecutivo->save();
+        $numero = TipoDocApp::reservar_consecutivo($documento->core_empresa_id, $tipoDocumento->id);
 
         return TesoDocEncabezado::create([
             'core_tipo_transaccion_id' => self::TRANSACCION_PAGO_CXP,

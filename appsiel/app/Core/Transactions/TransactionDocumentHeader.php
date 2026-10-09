@@ -5,6 +5,7 @@ namespace App\Core\Transactions;
 use App\Sistema\Modelo;
 
 use App\Core\TipoDocApp;
+use App\Core\Services\DocumentSequenceTransaction;
 
 class TransactionDocumentHeader
 {
@@ -20,9 +21,10 @@ class TransactionDocumentHeader
 
 	public function create( array $data )
 	{
-		$this->store( $data );
-		$this->assign_sequence();
-		$this->increment_sequence_document_type();
+		DocumentSequenceTransaction::run(function () use ($data) {
+			$data['consecutivo'] = TipoDocApp::reservar_consecutivo($data['core_empresa_id'], $data['core_tipo_doc_app_id']);
+			$this->store($data);
+		});
 	}
 
 	public function store( $data )
@@ -30,15 +32,4 @@ class TransactionDocumentHeader
         $this->document_header = app( $this->model->name_space )->create( $data );
 	}
 
-	public function assign_sequence()
-	{
-        $this->document_header->consecutivo = TipoDocApp::get_consecutivo_actual( $this->document_header->core_empresa_id, $this->document_header->core_tipo_doc_app_id ) + 1;
-        $this->document_header->save();
-	}
-
-	public function increment_sequence_document_type()
-	{
-		// Se incementa el consecutivo para ese tipo de documento y la empresa
-        TipoDocApp::aumentar_consecutivo( $this->document_header->core_empresa_id, $this->document_header->core_tipo_doc_app_id );
-	}
 }
