@@ -176,6 +176,8 @@
         </tr>
     </table>
     
+    @include('ventas_pos.formatos_impresion.hora_impresion')
+
     <br><br>
 
     <script type="text/javascript">

@@ -257,6 +257,8 @@
 
     @yield('pagina_adicional')
 
+    @include('ventas_pos.formatos_impresion.hora_impresion')
+
     <script type="text/javascript">
         window.onkeydown = function( event ) {
             // Si se presiona la tecla q (Quit)
