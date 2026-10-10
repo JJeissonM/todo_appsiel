@@ -54,6 +54,43 @@ class RecipeIngredientKitchenWarehouseTest extends TestCase
         return (new InvDocumentsLinesService())->preparar_array_lineas_registros(20, $json, null);
     }
 
+    /** @dataProvider saldosPlatillo */
+    public function test_saldo_negativo_no_aumenta_ensamble_de_la_factura($saldo, $cantidadEsperada)
+    {
+        DB::table('inv_movimientos')->insert([
+            'core_empresa_id'=>1, 'inv_producto_id'=>383, 'inv_bodega_id'=>20,
+            'fecha'=>'2026-10-07', 'cantidad'=>$saldo
+        ]);
+        $service = new RecipeServices();
+        $json = $service->get_lineas_registros_ensamble(
+            $service->get_obj_cantidad_facturada_item(383, 1), 20,
+            ['motivo_salida_id'=>3,'motivo_entrada_id'=>4], '2026-10-07'
+        );
+        if ($cantidadEsperada == 0) {
+            $this->assertSame(99, $json);
+            return;
+        }
+        $lines = (new InvDocumentsLinesService())->preparar_array_lineas_registros(20, $json, null);
+        $this->assertEquals($cantidadEsperada, $lines[count($lines)-1]->cantidad);
+        $this->assertEquals($cantidadEsperada, collect($lines)->where('inv_producto_id', '384')->sum('cantidad'));
+    }
+
+    public function saldosPlatillo()
+    {
+        return ['caso POS 21077'=>[-10,1], 'sin stock'=>[0,1], 'stock parcial'=>[0.5,0.5], 'stock suficiente'=>[1,0]];
+    }
+
+    public function test_saldo_negativo_del_ingrediente_no_aumenta_el_ensamble_anidado()
+    {
+        DB::statement('INSERT INTO inv_recetas_cocina VALUES (2,384,50,3)');
+        DB::statement("INSERT INTO inv_movimientos VALUES (1,384,1,'2026-10-07',-10)");
+        $service = new RecipeKitchenNestedDocumentSpy();
+        $this->generarLineas($service);
+        $this->assertCount(1, $service->documents);
+        $this->assertEquals(2, $service->documents[0]['lines'][1]->cantidad);
+        $this->assertEquals(6, $service->documents[0]['lines'][0]->cantidad);
+    }
+
     public function test_cocina_del_platillo_tiene_prioridad_sobre_bodega_y_cocina_del_ingrediente()
     {
         DB::statement("INSERT INTO vtas_restaurante_cocinas VALUES (2,4,20,'Activo')");

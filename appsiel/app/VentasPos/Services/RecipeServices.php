@@ -52,7 +52,8 @@ class RecipeServices
             
             // Verificar las existencias actuales del producto terminado (platillo).
             $existencia_actual = InvMovimiento::get_cantidad_existencia_item( $item_platillo_id, $bodega_default_id, $fecha );
-            $cantidad_a_ingresar_platillo_facturado = $cantidad_facturada - $existencia_actual;
+            // Un saldo negativo histórico no aumenta la preparación de esta factura.
+            $cantidad_a_ingresar_platillo_facturado = $cantidad_facturada - max(0, $existencia_actual);
             
             if ($cantidad_a_ingresar_platillo_facturado <= 0) {
                 continue;
