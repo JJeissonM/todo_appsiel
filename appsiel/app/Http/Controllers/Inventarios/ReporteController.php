@@ -293,7 +293,7 @@ class ReporteController extends Controller
             // Conserva la hora de creación dentro del turno y usa el cierre fuera de él.
             $productos[$i]['hora'] = !is_null($fila->turno_operativo_id) || (int)$fila->core_tipo_transaccion_id === 28
                 ? ReportTimeFormatter::time($fila->fecha_hora_efectiva)
-                : $this->formatearRangoHorasMovimiento($fila->hora_inicio, $fila->hora_finalizacion, $fila->created_at);
+                : $this->formatearRangoHorasMovimiento($fila->hora_inicio, $fila->hora_finalizacion, $fila->documento_created_at ?: $fila->created_at);
             $productos[$i]['documento_id'] = $fila->documento_id;
             $productos[$i]['documento'] = $fila->documento;
             $productos[$i]['tercero'] = $fila->tercero;
@@ -401,7 +401,8 @@ class ReporteController extends Controller
         $horaInicio = InvMovimiento::normalizarHoraFiltro($horaInicio);
         $horaFinalizacion = InvMovimiento::normalizarHoraFiltro($horaFinalizacion);
 
-        if (is_null($horaInicio) && is_null($horaFinalizacion)) {
+        if ((is_null($horaInicio) || $horaInicio === '00:00:00')
+            && (is_null($horaFinalizacion) || $horaFinalizacion === '00:00:00')) {
             return ReportTimeFormatter::time($createdAt);
         }
 

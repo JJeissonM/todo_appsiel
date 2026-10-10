@@ -711,6 +711,7 @@ class InvMovimiento extends Model
                                         'inv_movimientos.hora_inicio',
                                         'inv_movimientos.hora_finalizacion',
                                         'inv_movimientos.created_at',
+                                        'inv_doc_encabezados.created_at AS documento_created_at',
                                         DB::raw(self::fechaHoraEfectivaInventarioSql() . ' AS fecha_hora_efectiva'),
                                         'inv_movimientos.turno_operativo_id',
                                         'kardex_turno_operativo.cerrado_en AS turno_cerrado_en',
@@ -746,7 +747,7 @@ class InvMovimiento extends Model
                 $join->on('kardex_turno_operativo.id', '=', 'inv_movimientos.turno_operativo_id')
                     ->on('kardex_turno_operativo.core_empresa_id', '=', 'inv_movimientos.core_empresa_id');
             })
-            ->orderByRaw(self::fechaHoraEfectivaInventarioSql() . ' ASC')
+            ->orderByRaw(self::fechaHoraReporteMovimientosSql(false) . ' ASC')
             ->orderBy('inv_movimientos.created_at', 'ASC')
             ->orderBy('inv_movimientos.id', 'ASC');
     }
@@ -802,11 +803,23 @@ class InvMovimiento extends Model
             ? 'inv_movimientos.hora_inicio, inv_movimientos.hora_finalizacion'
             : 'inv_movimientos.hora_finalizacion, inv_movimientos.hora_inicio';
 
+        $creacion = self::fechaHoraCreacionDocumentoSql();
         return 'CASE WHEN inv_movimientos.turno_operativo_id IS NOT NULL '
             . 'OR inv_movimientos.core_tipo_transaccion_id = 28 THEN '
-            . self::fechaHoraEfectivaInventarioSql() . ' ELSE COALESCE('
+            . self::fechaHoraEfectivaInventarioSql()
+            . " WHEN COALESCE(inv_movimientos.hora_inicio, '00:00:00') = '00:00:00' "
+            . "AND COALESCE(inv_movimientos.hora_finalizacion, '00:00:00') = '00:00:00' THEN "
+            . $creacion . ' ELSE COALESCE('
             . 'TIMESTAMP(inv_movimientos.fecha, COALESCE(' . $horas . ')), '
-            . 'inv_movimientos.created_at) END';
+            . $creacion . ') END';
+    }
+
+    /** La edición puede recrear los movimientos sin cambiar la creación del documento. */
+    public static function fechaHoraCreacionDocumentoSql()
+    {
+        return 'COALESCE((SELECT documento_kardex.created_at FROM inv_doc_encabezados documento_kardex '
+            . 'WHERE documento_kardex.id = inv_movimientos.inv_doc_encabezado_id '
+            . 'AND documento_kardex.core_empresa_id = inv_movimientos.core_empresa_id), inv_movimientos.created_at)';
     }
 
     public static function get_movimiento_transacciones_ventas( $fecha_inicial, $fecha_final )

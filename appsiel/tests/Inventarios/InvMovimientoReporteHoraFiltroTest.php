@@ -135,11 +135,21 @@ class InvMovimientoReporteHoraFiltroTest extends TestCase
 
         $sql = strtolower($query->toSql());
 
-        $this->assertContains('order by ' . strtolower(InvMovimiento::fechaHoraEfectivaInventarioSql()) . ' asc', $sql);
+        $this->assertContains('order by ' . strtolower(InvMovimiento::fechaHoraReporteMovimientosSql(false)) . ' asc', $sql);
         $this->assertContains('inventario_fisico_origen.core_tipo_transaccion_id = 27', $sql);
         $this->assertContains('order by relacion_origen.id desc limit 1', $sql);
         $this->assertNotContains('left join `inv_documentos_relacionados`', $sql);
         $this->assertContains('`inv_movimientos`.`created_at` asc', $sql);
         $this->assertContains('`inv_movimientos`.`id` asc', $sql);
     }
+    public function test_horas_en_cero_usan_creacion_del_documento_y_no_medianoche()
+    {
+        $controller = new \App\Http\Controllers\Inventarios\ReporteController();
+        $formatter = new ReflectionMethod($controller, 'formatearRangoHorasMovimiento');
+        $formatter->setAccessible(true);
+        $expected = \App\Support\ReportTimeFormatter::time('2026-10-08 18:35:06');
+        $this->assertSame($expected, $formatter->invoke($controller, '00:00:00', '00:00:00', '2026-10-08 18:35:06'));
+        $this->assertSame($expected, $formatter->invoke($controller, null, null, '2026-10-08 18:35:06'));
+    }
+
 }
