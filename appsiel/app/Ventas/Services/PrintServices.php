@@ -134,7 +134,7 @@ class PrintServices
                 'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
                 'lbl_consecutivo_doc_encabezado' => $doc_encabezado->consecutivo,
                 'lbl_fecha' => $fecha_doc_encabezado,
-                'lbl_hora' => explode(" ", $doc_encabezado->created_at)[1],
+                'lbl_hora' => !empty($doc_encabezado->created_at) ? date('h:i a', strtotime($doc_encabezado->created_at)) : date('h:i a'),
                 'lbl_condicion_pago' => $doc_encabezado->condicion_pago,
                 'lbl_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
                 'lbl_descripcion_doc_encabezado' => $doc_encabezado->descripcion,
