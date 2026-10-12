@@ -24,7 +24,6 @@ use App\VentasPos\DocRegistro;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\Pdv;
 use App\VentasPos\Services\AccumulationService;
-use App\VentasPos\Services\CxCService;
 use App\VentasPos\Services\TreasuryService;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMotivo;
@@ -689,6 +688,17 @@ class HotelService
             if (is_null($cliente) || count($order->lines) == 0) {
                 throw new \Exception('El pedido no tiene cliente valido o lineas para facturar.');
             }
+            $hasAnticipos = $service->hasAdvancePayments($objectAnticipos);
+            $guest = null;
+            if ($hasAnticipos) {
+                $guest = Cliente::find($order->cliente_id);
+                if (is_null($guest)) {
+                    throw new \Exception('El huésped del pedido no tiene un cliente valido para aplicar anticipos.');
+                }
+                $objectAnticipos = $service->normalizeAdvancePayments($objectAnticipos);
+                (new HotelAdvancePaymentService())->validate($objectAnticipos, $order->empresa_id,
+                    $guest->core_tercero_id, $cliente->core_tercero_id, $order->lines->sum('line_total'));
+            }
             $service->validateStockForOpenOrder($order);
 
             $pdv = $service->pdvForHotelOrderInvoice($order);
@@ -713,15 +723,16 @@ class HotelService
                 throw new \Exception('No existe un vendedor valido para generar y contabilizar la factura POS.');
             }
 
-            $consecutivo = TipoDocApp::reservar_consecutivo($order->empresa_id, $tipoDocAppId);
             $totalOrder = $order->lines->sum('line_total');
-            $hasAnticipos = $service->hasAdvancePayments($objectAnticipos);
             $formaPago = $service->normalizePaymentType($formaPago);
             if ($hasAnticipos) {
-                $objectAnticipos = $service->normalizeAdvancePayments($objectAnticipos);
                 $formaPago = 'credito';
             }
             $lineasRegistrosMediosRecaudos = $service->normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $formaPago, $pdv, $hasAnticipos);
+            if ($hasAnticipos) {
+                $service->validateAdvancePaymentLines($objectAnticipos, $lineasRegistrosMediosRecaudos);
+            }
+            $consecutivo = TipoDocApp::reservar_consecutivo($order->empresa_id, $tipoDocAppId);
 
             $turno = $service->turnoForHotelOperation($order->empresa_id, $pdv->id);
 
@@ -761,7 +772,7 @@ class HotelService
             $accumulationService->accumulate_one_invoice($doc->id);
 
             if ($hasAnticipos) {
-                (new CxCService())->crear_cruce_con_anticipos($doc, $objectAnticipos);
+                (new HotelAdvancePaymentService())->apply($doc, $objectAnticipos, $guest->core_tercero_id, $order->document_number);
                 (new TreasuryService())->crear_abonos_documento($doc, $lineasRegistrosMediosRecaudos);
             }
 
@@ -1315,5 +1326,23 @@ class HotelService
         }
 
         return implode(',', $parts);
+    }
+
+    protected function validateAdvancePaymentLines($objectAnticipos, $paymentLines)
+    {
+        $advanceTotal = 0;
+        foreach (json_decode('[' . $objectAnticipos . ']', true) as $advance) {
+            $advanceTotal += abs((float)$advance['valor_aplicar']);
+        }
+        $paymentAdvanceTotal = 0;
+        foreach (json_decode($paymentLines, true) as $line) {
+            $parts = explode('-', $line['teso_medio_recaudo_id']);
+            if ((int)$parts[0] === 0) {
+                $paymentAdvanceTotal += $this->parsePaymentValue($line['valor']);
+            }
+        }
+        if (abs($advanceTotal - $paymentAdvanceTotal) > 0.01) {
+            throw new \Exception('El valor del medio de pago Anticipo no coincide con los anticipos seleccionados.');
+        }
     }
 }

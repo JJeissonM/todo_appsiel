@@ -24,6 +24,9 @@
                             $id_modelo = 153; // Recaudos de CxC
                             $app_id = Input::get('id');
                             switch ( $linea->core_tipo_transaccion_id ) {
+                                case '32': // Recaudos de CxC: usar la aplicación del recaudo, no la de la factura
+                                    $app_id = 3; // Tesorería
+                                    break;
                                 
                                 case '8': // Recaudos generales de tesorería
                                     $prefix_url = 'tesoreria/recaudos/';

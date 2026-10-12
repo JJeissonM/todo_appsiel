@@ -30,7 +30,7 @@
 
 @section('botones_acciones')
 	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->condicion_pago != 'contado'  )
-	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>
+	    <a href="{{ url('tesoreria/recaudos_cxc/create?id=3&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>
 	@endif
 
 	@if( !$docs_relacionados[1] && $doc_encabezado->estado == 'Enviada' )

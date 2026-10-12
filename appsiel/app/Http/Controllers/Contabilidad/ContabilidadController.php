@@ -502,7 +502,7 @@ class ContabilidadController extends TransaccionController
                 $tipo_transaccion_linea = $mov_contab_linea_registro_doc->tipo_transaccion;
             }
 
-            if ( $tipo_transaccion_linea == 'crear_cxc' )
+            if ( $tipo_transaccion_linea == 'crear_cxc' || $tipo_transaccion_linea == 'crear_anticipo_cxc' )
             {
                 $tiene_lineas_cxc = true;
             }
@@ -524,9 +524,17 @@ class ContabilidadController extends TransaccionController
         {
             // Si hay un abono aplicado no se puede anular el documento.
             $tiene_abonos_cxc = CxcAbono::where('core_empresa_id', $doc_encabezado->core_empresa_id)
-                                        ->where('doc_cxc_transacc_id', $doc_encabezado->core_tipo_transaccion_id)
-                                        ->where('doc_cxc_tipo_doc_id', $doc_encabezado->core_tipo_doc_app_id)
-                                        ->where('doc_cxc_consecutivo', $doc_encabezado->consecutivo)
+                                        ->where(function ($query) use ($doc_encabezado) {
+                                            $query->where(function ($target) use ($doc_encabezado) {
+                                                $target->where('doc_cxc_transacc_id', $doc_encabezado->core_tipo_transaccion_id)
+                                                    ->where('doc_cxc_tipo_doc_id', $doc_encabezado->core_tipo_doc_app_id)
+                                                    ->where('doc_cxc_consecutivo', $doc_encabezado->consecutivo);
+                                            })->orWhere(function ($source) use ($doc_encabezado) {
+                                                $source->where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+                                                    ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+                                                    ->where('consecutivo', $doc_encabezado->consecutivo);
+                                            });
+                                        })
                                         ->exists();
 
             if ( $tiene_abonos_cxc )

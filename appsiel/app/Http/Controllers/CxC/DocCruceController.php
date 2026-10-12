@@ -92,6 +92,14 @@ class DocCruceController extends TransaccionController
    */
   public function store(Request $request)
   {
+    $doc_encabezado = $this->guardar_cruce($request);
+
+    return redirect('doc_cruce/' . $doc_encabezado->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+  }
+
+  // Permite reutilizar el cruce desde servicios sin construir una respuesta HTTP.
+  public function guardar_cruce(Request $request)
+  {
     return DB::transaction(function () use ($request) {
     $obj_accou_serv = new AccountingServices();
     $cxc_move_note_id = $obj_accou_serv->create_accounting_note_doc($request->tabla_documentos_a_cancelar, $request->fecha, $request->core_tercero_id);
@@ -143,8 +151,7 @@ class DocCruceController extends TransaccionController
     // Se crean los registros que relacionan cada documento de cartera con el recaudo por el cual fue cancelado
     $this->creacion_abonos_cxc($doc_encabezado, $vector_cartera, $vector_afavor);
 
-    // se llama la vista de DocCruceController@show
-    return redirect('doc_cruce/' . $doc_encabezado->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+    return $doc_encabezado;
     });
   }
 

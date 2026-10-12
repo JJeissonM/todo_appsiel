@@ -13,7 +13,7 @@ class CxCService
      */
     public function crear_cruce_con_anticipos( $doc_encabezado, $object_anticipos)
     {
-        (new DocCruceController())->store( $this->build_request_object($doc_encabezado, $object_anticipos) );
+        return (new DocCruceController())->guardar_cruce( $this->build_request_object($doc_encabezado, $object_anticipos) );
     }
 
     /**
@@ -23,11 +23,17 @@ class CxCService
     {
         $request = new Request();
 
-        $cxc_movimiento_id = CxcMovimiento::where('core_empresa_id', $doc_encabezado->core_empresa_id)
+        $movimiento_cartera = CxcMovimiento::where('core_empresa_id', $doc_encabezado->core_empresa_id)
             ->where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
             ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
             ->where('consecutivo', $doc_encabezado->consecutivo)
-            ->first()->id;
+            ->where('core_tercero_id', $doc_encabezado->core_tercero_id)
+            ->where('valor_documento', '>', 0)
+            ->first();
+        if (is_null($movimiento_cartera)) {
+            throw new \RuntimeException('No se encontró la cartera de la factura para aplicar los anticipos.');
+        }
+        $cxc_movimiento_id = $movimiento_cartera->id;
 
         $valor_aplicar_factura = 0;
         $json_object_anticipos = json_decode( '[' . $object_anticipos . ']', true);

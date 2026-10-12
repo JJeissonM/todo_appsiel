@@ -131,12 +131,7 @@ class TreasuryService
 
                 $teso_caja_id = explode("-", $linea->teso_caja_id)[0];
 
-                $recaudos_cxc_motivo_id = $teso_motivo_id;
-
-                if( (int)config('tesoreria.recaudos_cxc_motivo_id') != 0 )
-                {
-                    $recaudos_cxc_motivo_id = (int)config('tesoreria.recaudos_cxc_motivo_id');
-                }
+                $recaudos_cxc_motivo_id = $this->resolveReceivablePaymentReason($teso_motivo_id);
 
                 if ( $teso_caja_id == 0 )
                 {
@@ -161,5 +156,29 @@ class TreasuryService
             'lineas_registros_transferencia_consignacion' => $lineas_registros_transferencia_consignacion,
             'valor_abono' => $valor_abono
         ];
+    }
+
+    protected function resolveReceivablePaymentReason($selectedReasonId)
+    {
+        $configuredReasonId = (int)config('tesoreria.recaudos_cxc_motivo_id');
+        $errors = array();
+        foreach (array('configurado en Tesorería para recaudos de CxC' => $configuredReasonId,
+            'seleccionado en el medio de pago' => (int)$selectedReasonId) as $source => $reasonId) {
+            if ($reasonId <= 0) {
+                $errors[] = 'El motivo ' . $source . ' no está definido.';
+                continue;
+            }
+            $reason = TesoMotivo::find($reasonId);
+            if (!is_null($reason) && $reason->movimiento == 'entrada' && $reason->teso_tipo_motivo == 'recaudo-cartera') {
+                return (int)$reason->id;
+            }
+            $errors[] = 'El motivo ' . $source . ' (ID ' . $reasonId . ') ' .
+                (is_null($reason) ? 'no existe en el catálogo.' :
+                    'no corresponde a una entrada de Recaudo de cartera (movimiento: ' .
+                    ($reason->movimiento ?: 'sin definir') . '; tipo: ' . ($reason->teso_tipo_motivo ?: 'sin definir') . ').');
+        }
+
+        throw new \RuntimeException('No existe un motivo válido de entrada para el recaudo de cartera; no se pudo preparar el recaudo del pago restante de la factura. ' .
+            implode(' ', $errors) . ' Para continuar, seleccione Recaudo clientes en la columna Motivo del medio de pago, o solicite al administrador corregir el motivo de recaudos de CxC en la configuración de Tesorería. Debe existir en el catálogo, tener movimiento Entrada y tipo Recaudo de cartera. Después vuelva a guardar la factura.');
     }
 }

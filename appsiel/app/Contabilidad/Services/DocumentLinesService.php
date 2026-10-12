@@ -60,6 +60,7 @@ class DocumentLinesService
             }
 
             $datos = array_merge( $document_head->toArray(), [
+                                                            'core_tercero_id' => $core_tercero_id,
                                                             'id_registro_doc_tipo_transaccion' => $registro_doc->id,
                                                             'fecha_vencimiento' => $tabla_registros_documento[$i]->fecha_vencimiento,
                                                             'documento_soporte' => $tabla_registros_documento[$i]->documento_soporte_tercero,

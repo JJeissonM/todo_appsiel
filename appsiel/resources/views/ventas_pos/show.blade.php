@@ -8,7 +8,7 @@
 	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Pendiente' )
 
 		@if($doc_encabezado->condicion_pago != 'contado')
-	    	<a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>
+        <a href="{{ url('tesoreria/recaudos_cxc/create?id=3&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>
 		@endif
 
 		@if( $doc_encabezado->estado != 'Enviada' && $doc_encabezado->estado != 'Contabilizado - Sin enviar' )
