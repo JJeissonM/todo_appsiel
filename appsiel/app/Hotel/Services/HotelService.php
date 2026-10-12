@@ -744,7 +744,7 @@ class HotelService
                 'consecutivo' => $consecutivo,
                 'fecha' => date('Y-m-d'),
                 'core_tercero_id' => $cliente->core_tercero_id,
-                'cliente_id' => $cliente->id,
+                'cliente_id' => $order->cliente_id,
                 'vendedor_id' => $vendedorId,
                 'pdv_id' => $pdv->id,
                 'turno_operativo_id' => is_null($turno) ? null : $turno->id,
@@ -772,7 +772,7 @@ class HotelService
             $accumulationService->accumulate_one_invoice($doc->id);
 
             if ($hasAnticipos) {
-                (new HotelAdvancePaymentService())->apply($doc, $objectAnticipos, $guest->core_tercero_id, $order->document_number);
+                (new HotelAdvancePaymentService())->applyDirect($doc, $objectAnticipos, $guest->core_tercero_id, $order->document_number);
                 (new TreasuryService())->crear_abonos_documento($doc, $lineasRegistrosMediosRecaudos);
             }
 

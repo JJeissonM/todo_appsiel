@@ -184,7 +184,7 @@ class AccountingServices
                 foreach ($documento->lineas_registros as $linea) {
                     $summary['lineas_procesadas']++;
 
-                    if ($this->recalcular_linea_documento($linea, (int)$documento->cliente_id)) {
+                    if ($this->recalcular_linea_documento($linea, (int)$documento->cliente_facturacion->id)) {
                         $summary['lineas_actualizadas']++;
                     }
                 }
@@ -207,9 +207,9 @@ class AccountingServices
 
                 $documento->load(['lineas_registros', 'cliente.vendedor', 'pdv']);
                 $datos = $documento->toArray();
-                $datos['zona_id'] = $documento->cliente->zona_id;
-                $datos['clase_cliente_id'] = $documento->cliente->clase_cliente_id;
-                $datos['equipo_ventas_id'] = $documento->cliente->vendedor ? $documento->cliente->vendedor->equipo_ventas_id : 0;
+                $datos['zona_id'] = $documento->cliente_facturacion->zona_id;
+                $datos['clase_cliente_id'] = $documento->cliente_facturacion->clase_cliente_id;
+                $datos['equipo_ventas_id'] = $documento->cliente_facturacion->vendedor ? $documento->cliente_facturacion->vendedor->equipo_ventas_id : 0;
                 $datos['inv_bodega_id'] = $documento->pdv ? $documento->pdv->bodega_default_id : 0;
 
                 foreach ($documento->lineas_registros as $linea) {

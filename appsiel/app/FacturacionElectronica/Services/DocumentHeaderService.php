@@ -53,8 +53,8 @@ class DocumentHeaderService
                 }
 
                 if (!(int)config('facturacion_electronica.enviar_facturas_clientes_internos') &&
-                    isset($original_document_header->cliente->tercero) &&
-                    $original_document_header->cliente->tercero->tipo === 'Interno') {
+                    isset($original_document_header->cliente_facturacion->tercero) &&
+                    $original_document_header->cliente_facturacion->tercero->tipo === 'Interno') {
                     return (object)[
                         'status' => 'mensaje_error',
                         'message' => 'Los clientes internos deben conservar su factura POS; no se permite convertirla a electrónica.'
@@ -283,7 +283,7 @@ class DocumentHeaderService
 
     public function get_cliente( $vtas_doc_encabezado )
     {
-        $cliente = $vtas_doc_encabezado->cliente;
+        $cliente = $vtas_doc_encabezado->cliente_facturacion;
 
         if ( (int)config('facturacion_electronica.enviar_facturas_clientes_internos') && $cliente->tercero->tipo == 'Interno' ) {
             $cliente_consumidor_final = Cliente::find( (int)config('facturacion_electronica.cliente_consumidor_final_id') );

@@ -14,6 +14,21 @@ use Illuminate\Support\Facades\DB;
 
 class HotelAdvancePaymentService
 {
+    public function applyDirect($invoice, $objectAnticipos, $guestTerceroId, $orderLabel)
+    {
+        return DB::transaction(function () use ($invoice, $objectAnticipos, $guestTerceroId, $orderLabel) {
+            $selection = $this->validate($objectAnticipos, $invoice->core_empresa_id, $guestTerceroId,
+                $invoice->core_tercero_id, $invoice->valor_total);
+            $parts = array();
+            foreach ($selection as $item) {
+                $parts[] = json_encode(array('cxc_movimiento_id' => $item['movement']->id, 'valor_aplicar' => -$item['amount']));
+            }
+            $request = (new CxCService())->build_request_object($invoice, implode(',', $parts));
+            $request['descripcion'] = 'Aplicación directa de anticipos. Pedido ' . $orderLabel . '.';
+            return (new DocCruceController())->guardar_cruce_hotel($request, $guestTerceroId);
+        });
+    }
+
     // Solo se admiten anticipos del huésped del pedido o del destinatario.
     // La consulta bloquea los movimientos hasta finalizar la factura.
     public function validate($objectAnticipos, $empresaId, $guestTerceroId, $invoiceTerceroId, $invoiceTotal)
@@ -64,6 +79,8 @@ class HotelAdvancePaymentService
         return $selection;
     }
 
+    // Flujo anterior de traslado, conservado para compatibilidad y regresión.
+    // La facturación hotelera utiliza applyDirect().
     public function apply($invoice, $objectAnticipos, $guestTerceroId, $orderLabel)
     {
         return DB::transaction(function () use ($invoice, $objectAnticipos, $guestTerceroId, $orderLabel) {

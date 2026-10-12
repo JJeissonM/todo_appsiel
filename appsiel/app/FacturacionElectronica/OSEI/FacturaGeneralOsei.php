@@ -432,7 +432,7 @@ class FacturaGeneralOsei
         $send_dian = 'true';
         $send_email = config('facturacion_electronica.enviar_email_clientes');
 
-        $email_cliente = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($this->doc_encabezado->cliente->tercero->email);
+        $email_cliente = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($this->doc_encabezado->cliente_facturacion->tercero->email);
         $email_copia = trim((string)config('facturacion_electronica.email_copia_factura'));
         $lista_emails = $email_cliente;
         if ($email_copia != '') {
@@ -456,7 +456,7 @@ class FacturaGeneralOsei
         $send_dian = 'true';
         $send_email = config('facturacion_electronica.enviar_email_clientes');
 
-        $email_cliente = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($this->doc_encabezado->cliente->tercero->email);
+        $email_cliente = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($this->doc_encabezado->cliente_facturacion->tercero->email);
         $email_copia = trim((string)config('facturacion_electronica.email_copia_factura'));
         $lista_emails = $email_cliente;
         if ($email_copia != '') {

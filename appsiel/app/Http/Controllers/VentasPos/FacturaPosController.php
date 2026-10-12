@@ -485,7 +485,7 @@ class FacturaPosController extends TransaccionController
             'doc_encabezado_valor_total' => (float)$doc_encabezado->valor_total,
             'total_efectivo_recibido' => (float)$doc_encabezado->total_efectivo_recibido,
             'valor_total_cambio' => (float)$doc_encabezado->valor_total_cambio,
-            'doc_encabezado_tercero_nombre_completo' => $doc_encabezado->cliente->tercero->descripcion,
+            'doc_encabezado_tercero_nombre_completo' => $doc_encabezado->cliente_facturacion->tercero->descripcion,
             'doc_encabezado_vendedor_descripcion' => $doc_encabezado->vendedor->tercero->descripcion,
             'cantidad_total_productos' => count($doc_encabezado->lineas_registros),
             'doc_encabezado_descripcion' => $doc_encabezado->descripcion,
@@ -495,11 +495,11 @@ class FacturaPosController extends TransaccionController
             ]),
             'etiquetas' => $etiquetas,
             'resolucion' => $arr_resolucion,
-            'cliente_info' => array_merge( $doc_encabezado->cliente->tercero->toArray(), [
-                'descripcion_tipo_documento_identidad' => $doc_encabezado->cliente->tercero->tipo_doc_identidad->abreviatura,
-                'descripcion_ciudad' => $doc_encabezado->cliente->tercero->ciudad->descripcion,
+            'cliente_info' => array_merge( $doc_encabezado->cliente_facturacion->tercero->toArray(), [
+                'descripcion_tipo_documento_identidad' => $doc_encabezado->cliente_facturacion->tercero->tipo_doc_identidad->abreviatura,
+                'descripcion_ciudad' => $doc_encabezado->cliente_facturacion->tercero->ciudad->descripcion,
             ]),
-            'saldo_pendiente_cxc' => (new CxCServices())->get_movimiento_documentos_pendientes_fecha_corte($doc_encabezado->cliente->core_tercero_id, $fecha_doc_encabezado),
+            'saldo_pendiente_cxc' => (new CxCServices())->get_movimiento_documentos_pendientes_fecha_corte($doc_encabezado->cliente_facturacion->core_tercero_id, $fecha_doc_encabezado),
             'lbl_creado_por_fecha_y_hora' => explode('@', $doc_encabezado->creado_por)[0]
         ];        
     }
@@ -758,7 +758,7 @@ class FacturaPosController extends TransaccionController
 
         $redondear_centena = config('ventas_pos.redondear_centena');
         
-        $cliente = $factura->cliente;
+        $cliente = $factura->cliente_facturacion;
         $vendedor = $factura->vendedor;
 
         $pedido_id = 0;

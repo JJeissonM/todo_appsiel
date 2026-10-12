@@ -134,6 +134,88 @@ class HotelAdvancePaymentTransferTest extends PHPUnit_Framework_TestCase
         return (new HotelAdvancePaymentService())->apply($this->invoice, $this->advances($amount), 2173, 'HOT-542');
     }
 
+    public function test_cruce_directo_del_huesped_a_la_empresa_sin_nota_contable()
+    {
+        $cross = (new HotelAdvancePaymentService())->applyDirect($this->invoice, $this->advances(), 2173, 'HOT-542');
+        $this->assertSame(0, ContabDocEncabezado::count());
+        $this->assertSame(1, CxcDocEncabezado::count());
+        $this->assertSame(1, CxcAbono::count());
+        $this->assertEquals(2173, CxcAbono::first()->core_tercero_id);
+        $this->assertEquals(2176, $cross->core_tercero_id);
+        $this->assertEquals(0, $this->advance->fresh()->saldo_pendiente);
+        $this->assertEquals(0, CxcMovimiento::where('core_tipo_transaccion_id', 47)->value('saldo_pendiente'));
+        $this->assertEquals(2173, ContabMovimiento::where('core_tipo_transaccion_id', 39)->where('valor_debito', '>', 0)->value('core_tercero_id'));
+        $this->assertEquals(2176, ContabMovimiento::where('core_tipo_transaccion_id', 39)->where('valor_credito', '<', 0)->value('core_tercero_id'));
+    }
+
+    public function test_reversion_del_cruce_directo_restaura_los_dos_terceros()
+    {
+        $container = Container::getInstance();
+        $container->instance('request', new Illuminate\Http\Request());
+        $response = Mockery::mock();
+        $response->shouldReceive('with')->andReturnSelf();
+        $redirector = Mockery::mock();
+        $redirector->shouldReceive('to')->andReturn($response);
+        $container->instance('redirect', $redirector);
+        Schema::create('teso_recaudos_libretas', function ($table) {
+            $table->integer('core_tipo_transaccion_id'); $table->integer('core_tipo_doc_app_id');
+            $table->integer('consecutivo'); $table->double('valor_recaudo');
+        });
+        $cross = (new HotelAdvancePaymentService())->applyDirect($this->invoice, $this->advances(), 2173, 'HOT-542');
+        (new DocCruceController())->anular_doc_cruce($cross->id);
+        $this->assertEquals(-120000, $this->advance->fresh()->saldo_pendiente);
+        $this->assertEquals(120000, CxcMovimiento::where('core_tipo_transaccion_id', 47)->value('saldo_pendiente'));
+        $this->assertSame(0, CxcAbono::count());
+        $this->assertEquals('Anulado', $cross->fresh()->estado);
+    }
+
+    public function test_cruce_directo_fallido_revierte_saldos_y_consecutivo()
+    {
+        ContabMovimiento::where('core_tipo_transaccion_id', 47)->delete();
+        try {
+            (new HotelAdvancePaymentService())->applyDirect($this->invoice, $this->advances(), 2173, 'HOT-542');
+            $this->fail('Debe exigir la cuenta de cartera.');
+        } catch (RuntimeException $error) {
+            $this->assertContains('cuenta contable', $error->getMessage());
+        }
+        $this->assertSame(0, CxcDocEncabezado::count());
+        $this->assertSame(0, CxcAbono::count());
+        $this->assertEquals(-120000, $this->advance->fresh()->saldo_pendiente);
+        $this->assertSame(0, DB::table('core_consecutivos_documentos')->count());
+    }
+
+    public function test_cruce_directo_parcial_conserva_el_saldo_restante()
+    {
+        (new HotelAdvancePaymentService())->applyDirect($this->invoice, $this->advances(70000), 2173, 'HOT-542');
+        $this->assertEquals(-50000, $this->advance->fresh()->saldo_pendiente);
+        $this->assertEquals(50000, CxcMovimiento::where('core_tipo_transaccion_id', 47)->value('saldo_pendiente'));
+        $this->assertSame(0, ContabDocEncabezado::count());
+        $this->assertSame(1, CxcDocEncabezado::count());
+    }
+
+    public function test_cliente_huesped_y_destinatario_electronico_se_conservan_separados()
+    {
+        Schema::create('vtas_clientes', function ($table) { $table->integer('id'); $table->integer('core_tercero_id'); });
+        Schema::create('core_terceros', function ($table) { $table->integer('id'); $table->string('tipo'); });
+        Schema::create('hotel_order_headers', function ($table) {
+            $table->integer('id'); $table->integer('empresa_id'); $table->integer('cliente_id'); $table->integer('pos_doc_id');
+        });
+        DB::table('vtas_clientes')->insert(array(array('id' => 1, 'core_tercero_id' => 2173), array('id' => 2, 'core_tercero_id' => 2176)));
+        DB::table('core_terceros')->insert(array(array('id' => 2173, 'tipo' => 'Persona natural'), array('id' => 2176, 'tipo' => 'Persona jurídica')));
+        DB::table('hotel_order_headers')->insert(array('id' => 1, 'empresa_id' => 1, 'cliente_id' => 1, 'pos_doc_id' => 42));
+        $pos = new App\VentasPos\FacturaPos(array('core_empresa_id' => 1, 'cliente_id' => 1, 'core_tercero_id' => 2176));
+        $pos->id = 42;
+        $recipient = (new App\VentasPos\Services\InvoiceCustomerService())->validateInvoice($pos);
+        $this->assertEquals(2, $recipient->id);
+        $this->assertEquals(1, $pos->cliente->id);
+        $fe = new VtasDocEncabezado(array('cliente_id' => 1, 'core_tercero_id' => 2176));
+        $this->assertEquals(2, (new App\FacturacionElectronica\Services\DocumentHeaderService())->get_cliente($fe)->id);
+        $this->assertEquals(1, $fe->cliente_id);
+        DB::table('hotel_order_headers')->delete();
+        $this->setExpectedException('InvalidArgumentException', 'no corresponde al cliente asociado');
+        (new App\VentasPos\Services\InvoiceCustomerService())->validateInvoice($pos);
+    }
+
     public function test_vista_cruce_encuentra_nota_con_encabezado_de_otro_tercero()
     {
         $result = $this->apply();

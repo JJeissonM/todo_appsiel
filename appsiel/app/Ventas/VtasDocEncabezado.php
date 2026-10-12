@@ -64,6 +64,11 @@ class VtasDocEncabezado extends Model
         return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
+    public function cliente_facturacion()
+    {
+        return $this->belongsTo(Cliente::class, 'core_tercero_id', 'core_tercero_id');
+    }
+
     public function contacto_cliente()
     {
         return $this->belongsTo(ContactoCliente::class, 'contacto_cliente_id');

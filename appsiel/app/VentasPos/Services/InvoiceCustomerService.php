@@ -23,6 +23,13 @@ class InvoiceCustomerService
     {
         $cliente = $this->findCustomer($invoice->cliente_id);
         if ((int)$invoice->core_tercero_id !== (int)$cliente->core_tercero_id) {
+            if (\App\Hotel\HotelOrderHeader::where('empresa_id', $invoice->core_empresa_id)
+                ->where('pos_doc_id', $invoice->id)->where('cliente_id', $invoice->cliente_id)->exists()) {
+                $billingCustomer = $invoice->cliente_facturacion;
+                if (!is_null($billingCustomer)) {
+                    return $this->findCustomer($billingCustomer->id);
+                }
+            }
             throw new \InvalidArgumentException('El tercero de la factura POS no corresponde al cliente asociado. Revise el documento antes de convertirlo a factura electronica.');
         }
 

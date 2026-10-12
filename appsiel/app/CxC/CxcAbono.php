@@ -47,8 +47,7 @@ class CxcAbono extends Model
                 $join->on('cruce_anulado.core_empresa_id', '=', 'cxc_abonos.core_empresa_id')
                     ->on('cruce_anulado.core_tipo_transaccion_id', '=', 'cxc_abonos.doc_cruce_transacc_id')
                     ->on('cruce_anulado.core_tipo_doc_app_id', '=', 'cxc_abonos.doc_cruce_tipo_doc_id')
-                    ->on('cruce_anulado.consecutivo', '=', 'cxc_abonos.doc_cruce_consecutivo')
-                    ->on('cruce_anulado.core_tercero_id', '=', 'cxc_abonos.core_tercero_id');
+                    ->on('cruce_anulado.consecutivo', '=', 'cxc_abonos.doc_cruce_consecutivo');
             })
             ->where('cxc_abonos.core_empresa_id', $documento->core_empresa_id)
             ->where('cxc_abonos.core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)

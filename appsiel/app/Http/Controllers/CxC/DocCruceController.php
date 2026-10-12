@@ -41,6 +41,17 @@ use SebastianBergmann\Environment\Console;
 class DocCruceController extends TransaccionController
 {
   protected $datos = [];
+  protected $tercero_anticipo_hotel_id = null;
+
+  public function guardar_cruce_hotel(Request $request, $tercero_huesped_id)
+  {
+    $this->tercero_anticipo_hotel_id = (int)$tercero_huesped_id;
+    try {
+      return $this->guardar_cruce($request);
+    } finally {
+      $this->tercero_anticipo_hotel_id = null;
+    }
+  }
 
   /**
    * Display a listing of the resource.
@@ -187,7 +198,8 @@ class DocCruceController extends TransaccionController
         if ($valor_afavor != 0) {
           $movimiento_afavor = CxcMovimiento::where('id', $vector_afavor[$j]['cxc_movimiento_id'])
             ->where('core_empresa_id', $doc_encabezado->core_empresa_id)
-            ->where('core_tercero_id', $doc_encabezado->core_tercero_id)
+            ->whereIn('core_tercero_id', array($doc_encabezado->core_tercero_id,
+              $this->tercero_anticipo_hotel_id ?: $doc_encabezado->core_tercero_id))
             ->lockForUpdate()
             ->first();
 
@@ -287,7 +299,7 @@ class DocCruceController extends TransaccionController
     $contab_cuenta_id = (new CxcAccountingAccountResolver())->getAdvanceAccountId($movimiento_afavor);
     $valor_debito = $valor_aplicar;
     $valor_credito = 0;
-    $this->contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
+    $this->contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, 0, 0, $movimiento_afavor->core_tercero_id);
   }
 
   public function contabilizar_credito($movimiento_cartera, $valor_aplicar, $detalle_operacion)
@@ -296,7 +308,7 @@ class DocCruceController extends TransaccionController
     $contab_cuenta_id = (new CxcAccountingAccountResolver())->getReceivableAccountId($movimiento_cartera);
     $valor_debito = 0;
     $valor_credito = $valor_aplicar;
-    $this->contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
+    $this->contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, 0, 0, $movimiento_cartera->core_tercero_id);
   }
 
   /**
@@ -331,7 +343,6 @@ class DocCruceController extends TransaccionController
       ->where('doc_cruce_transacc_id', $doc_encabezado->core_tipo_transaccion_id)
       ->where('doc_cruce_tipo_doc_id', $doc_encabezado->core_tipo_doc_app_id)
       ->where('doc_cruce_consecutivo', $doc_encabezado->consecutivo)
-      ->where('core_tercero_id', $doc_encabezado->core_tercero_id)
       ->get();
 
     //dd( $registros_cruce );
@@ -348,7 +359,7 @@ class DocCruceController extends TransaccionController
 
       $transaccion_cartera = TipoTransaccion::find($registro->doc_cxc_transacc_id);
       $doc_cartera = $this->buscar_documento_cruzado($transaccion_cartera, $array_wheres_cartera,
-        $registro->core_empresa_id, $registro->core_tercero_id);
+        $registro->core_empresa_id, $doc_encabezado->core_tercero_id);
 
       $doc_app_cartera = 'nulo';
       $fecha_doc_app_cartera = '';
@@ -491,14 +502,14 @@ class DocCruceController extends TransaccionController
   /**
    * 
    */
-  function contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)
+  function contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0, $tercero_id = null)
   {
     if ($contab_cuenta_id == null) {
       throw new \RuntimeException('No se pudo determinar la cuenta contable del documento involucrado en el cruce de CxC.');
     }
 
     ContabMovimiento::create(
-      $this->datos +
+      array_replace($this->datos, is_null($tercero_id) ? array() : array('core_tercero_id' => $tercero_id)) +
         ['contab_cuenta_id' => $contab_cuenta_id] +
         ['detalle_operacion' => $detalle_operacion] +
         ['valor_debito' => $valor_debito] +
@@ -520,7 +531,6 @@ class DocCruceController extends TransaccionController
 
       $array_wheres = [
         'core_empresa_id' => $documento->core_empresa_id,
-        'core_tercero_id' => $documento->core_tercero_id,
         'doc_cruce_transacc_id' => $documento->core_tipo_transaccion_id,
         'doc_cruce_tipo_doc_id' => $documento->core_tipo_doc_app_id,
         'doc_cruce_consecutivo' => $documento->consecutivo
@@ -553,7 +563,7 @@ class DocCruceController extends TransaccionController
           ->where('core_tipo_transaccion_id', $linea->doc_cxc_transacc_id)
           ->where('core_tipo_doc_app_id', $linea->doc_cxc_tipo_doc_id)
           ->where('consecutivo', $linea->doc_cxc_consecutivo)
-          ->where('core_tercero_id', $linea->core_tercero_id)
+          ->where('core_tercero_id', $documento->core_tercero_id)
           ->lockForUpdate()
           ->first();
 

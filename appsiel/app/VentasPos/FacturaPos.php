@@ -61,6 +61,11 @@ class FacturaPos extends Model
         return $this->belongsTo('App\Ventas\Cliente', 'cliente_id');
     }
 
+    public function cliente_facturacion()
+    {
+        return $this->belongsTo('App\Ventas\Cliente', 'core_tercero_id', 'core_tercero_id');
+    }
+
     public function vendedor()
     {
         return $this->belongsTo('App\Ventas\Vendedor', 'vendedor_id');
