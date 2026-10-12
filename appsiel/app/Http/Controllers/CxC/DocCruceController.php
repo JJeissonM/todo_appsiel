@@ -29,6 +29,7 @@ use App\Tesoreria\TesoRecaudosLibreta;
 use App\Tesoreria\TesoDocEncabezadoRecaudo;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Contabilidad\ContabDocEncabezado;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -326,6 +327,7 @@ class DocCruceController extends TransaccionController
   public function vista_preliminar_doc_cruce($doc_encabezado)
   {
     $registros_cruce = DB::table('cxc_abonos')
+      ->where('core_empresa_id', $doc_encabezado->core_empresa_id)
       ->where('doc_cruce_transacc_id', $doc_encabezado->core_tipo_transaccion_id)
       ->where('doc_cruce_tipo_doc_id', $doc_encabezado->core_tipo_doc_app_id)
       ->where('doc_cruce_consecutivo', $doc_encabezado->consecutivo)
@@ -344,15 +346,9 @@ class DocCruceController extends TransaccionController
         'consecutivo' => $registro->doc_cxc_consecutivo
       ];
 
-      if ($registro->core_tipo_transaccion_id != 14) // Doc. Nomina
-      {
-        $array_wheres_cartera = array_merge($array_wheres_cartera, ['core_tercero_id' => $registro->core_tercero_id]);
-      }
       $transaccion_cartera = TipoTransaccion::find($registro->doc_cxc_transacc_id);
-      $doc_cartera = app($transaccion_cartera->modelo_encabezados_documentos)
-        ->where($array_wheres_cartera)
-        ->get()
-        ->first();
+      $doc_cartera = $this->buscar_documento_cruzado($transaccion_cartera, $array_wheres_cartera,
+        $registro->core_empresa_id, $registro->core_tercero_id);
 
       $doc_app_cartera = 'nulo';
       $fecha_doc_app_cartera = '';
@@ -370,16 +366,9 @@ class DocCruceController extends TransaccionController
         'consecutivo' => $registro->consecutivo
       ];
 
-      if ($registro->core_tipo_transaccion_id != 14) // Doc. Nomina
-      {
-        $array_wheres_recaudos = array_merge($array_wheres_recaudos, ['core_tercero_id' => $registro->core_tercero_id]);
-      }
-
       $transaccion_recaudo = TipoTransaccion::find($registro->core_tipo_transaccion_id);
-      $doc_recaudo = app($transaccion_recaudo->modelo_encabezados_documentos)
-        ->where($array_wheres_recaudos)
-        ->get()
-        ->first();
+      $doc_recaudo = $this->buscar_documento_cruzado($transaccion_recaudo, $array_wheres_recaudos,
+        $registro->core_empresa_id, $registro->core_tercero_id);
 
       $doc_app_recaudo = 'nulo';
       $fecha_doc_app_recaudo = '';
@@ -397,6 +386,22 @@ class DocCruceController extends TransaccionController
     }
 
     return View::make('cxc.documento_cruce.documento_vista', compact('registros'))->render();
+  }
+
+  protected function buscar_documento_cruzado($transaccion, array $identidad, $empresa_id, $tercero_id)
+  {
+    if (is_null($transaccion) || empty($transaccion->modelo_encabezados_documentos)) {
+      return null;
+    }
+
+    $modelo = app($transaccion->modelo_encabezados_documentos);
+    $query = $modelo->where($identidad)->where('core_empresa_id', $empresa_id);
+    // La nota puede contener líneas de varios terceros: el tercero del abono
+    // corresponde a la línea de CxC, no necesariamente al encabezado de la nota.
+    if (!($modelo instanceof ContabDocEncabezado) && (int)$transaccion->id !== 14) {
+      $query->where('core_tercero_id', $tercero_id);
+    }
+    return $query->first();
   }
 
 

@@ -134,6 +134,20 @@ class HotelAdvancePaymentTransferTest extends PHPUnit_Framework_TestCase
         return (new HotelAdvancePaymentService())->apply($this->invoice, $this->advances($amount), 2173, 'HOT-542');
     }
 
+    public function test_vista_cruce_encuentra_nota_con_encabezado_de_otro_tercero()
+    {
+        $result = $this->apply();
+        $method = new ReflectionMethod(DocCruceController::class, 'buscar_documento_cruzado');
+        $method->setAccessible(true);
+        $transaction = (object)array('id' => 9, 'modelo_encabezados_documentos' => ContabDocEncabezado::class);
+        $identity = array('core_tipo_transaccion_id' => 9, 'core_tipo_doc_app_id' => 15,
+            'consecutivo' => $result['note']->consecutivo);
+        $note = $method->invoke(new DocCruceController(), $transaction, $identity, 1, 2176);
+        $this->assertEquals($result['note']->id, $note->id);
+        $this->assertEquals(2173, $note->core_tercero_id);
+        $this->assertNull($method->invoke(new DocCruceController(), $transaction, $identity, 2, 2176));
+    }
+
     public function test_abonos_de_factura_muestran_recaudo_original_del_traslado()
     {
         $this->apply(50000);
