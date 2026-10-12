@@ -6,12 +6,14 @@
             <tbody>
                 <?php
                     $total_abono = 0;
+                    $abonos_vista = (new App\Ventas\Services\InvoicePaymentDisplayService())->resolve($abonos);
                 ?>
-                @foreach($abonos as $linea )
+                @foreach($abonos_vista as $linea )
                     <tr>
 
                         <?php
                             $el_documento = app( App\Sistema\TipoTransaccion::find( $linea->core_tipo_transaccion_id )->modelo_encabezados_documentos )->where('core_tipo_transaccion_id',$linea->core_tipo_transaccion_id)
+                            ->where('core_empresa_id', $linea->core_empresa_id)
                             ->where('core_tipo_doc_app_id',$linea->core_tipo_doc_app_id)
                             ->where('consecutivo',$linea->consecutivo)
                             ->get()->first();

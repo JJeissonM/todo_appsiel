@@ -95,9 +95,9 @@ class HotelAdvancePaymentTransferTest extends PHPUnit_Framework_TestCase
         $this->advance = $this->movement(8, 3, 672, 2173, -120000, 219);
         DB::table('teso_motivos')->insert(array('id' => 1, 'descripcion' => 'Recaudo clientes', 'movimiento' => 'entrada', 'teso_tipo_motivo' => 'recaudo-cartera'));
         $this->movement(47, 18, 42, 2176, 120000, 27);
-        $this->invoice = (object)array('core_empresa_id' => 1, 'core_tipo_transaccion_id' => 47,
+        $this->invoice = new HotelTransferDisplayTestInvoice(array('core_empresa_id' => 1, 'core_tipo_transaccion_id' => 47,
             'core_tipo_doc_app_id' => 18, 'consecutivo' => 42, 'core_tercero_id' => 2176,
-            'fecha' => '2026-10-11', 'valor_total' => 120000, 'creado_por' => 'test@example.com');
+            'fecha' => '2026-10-11', 'valor_total' => 120000, 'creado_por' => 'test@example.com'));
     }
 
     protected function tearDown()
@@ -132,6 +132,38 @@ class HotelAdvancePaymentTransferTest extends PHPUnit_Framework_TestCase
     private function apply($amount = 120000)
     {
         return (new HotelAdvancePaymentService())->apply($this->invoice, $this->advances($amount), 2173, 'HOT-542');
+    }
+
+    public function test_abonos_de_factura_muestran_recaudo_original_del_traslado()
+    {
+        $this->apply(50000);
+        $payments = CxcAbono::where('doc_cxc_transacc_id', 47)->get();
+        $display = (new App\Ventas\Services\InvoicePaymentDisplayService())->resolve($payments);
+        $this->assertCount(1, $display);
+        $this->assertEquals(8, $display[0]->core_tipo_transaccion_id);
+        $this->assertEquals(672, $display[0]->consecutivo);
+        $this->assertEquals(50000, $display[0]->abono);
+        $this->assertEquals(9, $payments[0]->core_tipo_transaccion_id);
+        $this->assertSame(2, CxcAbono::count());
+    }
+
+    public function test_abonos_de_varias_cuentas_no_duplican_el_total_del_traslado()
+    {
+        $second = $this->movement(8, 3, 673, 2173, -40000, 220);
+        (new HotelAdvancePaymentService())->apply($this->invoice, $this->advances(80000) . ',' .
+            json_encode(array('cxc_movimiento_id' => $second->id, 'valor_aplicar' => -40000)), 2173, 'HOT-542');
+        $display = (new App\Ventas\Services\InvoicePaymentDisplayService())->resolve(CxcAbono::where('doc_cxc_transacc_id', 47)->get());
+        $this->assertEquals(120000, $display->sum('abono'));
+        $this->assertEquals(array(672, 673), $display->pluck('consecutivo')->unique()->values()->all());
+    }
+
+    public function test_trazabilidad_incompleta_conserva_la_nota_y_su_importe()
+    {
+        $result = $this->apply();
+        CxcDocEncabezado::where('id', $result['source_cross']->id)->update(array('estado' => 'Anulado'));
+        $display = (new App\Ventas\Services\InvoicePaymentDisplayService())->resolve(CxcAbono::where('doc_cxc_transacc_id', 47)->get());
+        $this->assertEquals(9, $display[0]->core_tipo_transaccion_id);
+        $this->assertEquals(120000, $display->sum('abono'));
     }
 
     public function test_crea_nota_con_terceros_correctos_y_dos_cruces_sin_mover_dinero()
@@ -411,5 +443,20 @@ class HotelPaymentRequestTestService extends TreasuryService
     protected function storeReceivablePayment(Illuminate\Http\Request $request)
     {
         return $request;
+    }
+}
+
+class HotelTransferDisplayTestInvoice
+{
+    public function __construct(array $attributes)
+    {
+        foreach ($attributes as $key => $value) {
+            $this->$key = $value;
+        }
+    }
+
+    public function get_label_documento()
+    {
+        return 'POS ' . $this->consecutivo;
     }
 }

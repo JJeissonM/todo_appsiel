@@ -86,10 +86,8 @@ class HotelAdvancePaymentService
             $note = null;
             $sourceCross = null;
             if (count($sourceAdvances) > 0) {
-                $detail = 'Traslado interno de anticipo hotelero. Pedido ' . $orderLabel .
-                    '. Factura ' . $invoice->core_tipo_transaccion_id . '-' . $invoice->core_tipo_doc_app_id . '-' . $invoice->consecutivo .
-                    '. Terceros ' . $guestTerceroId . ' a ' . $invoice->core_tercero_id .
-                    '. Movimientos origen ' . implode(',', array_column($sourceAdvances, 'cxc_movimiento_id')) . '.';
+                $detail = 'Se hace nota contable para trasladar saldo del anticipo a nombre del huested hacia el cliente de la factura. Pedido ' . $orderLabel .
+                    '. Factura ' . $invoice->get_label_documento();
                 $note = $this->createTransferNote($invoice, $guestTerceroId, $accounts, $detail);
                 $noteMovements = CxcMovimiento::where('core_empresa_id', $note->core_empresa_id)
                     ->where('core_tipo_transaccion_id', $note->core_tipo_transaccion_id)
