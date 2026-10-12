@@ -362,8 +362,7 @@ class RecaudoController extends TransaccionController
                 $join->on('documento_cruce.core_empresa_id', '=', 'cxc_abonos.core_empresa_id')
                     ->on('documento_cruce.core_tipo_transaccion_id', '=', 'cxc_abonos.doc_cruce_transacc_id')
                     ->on('documento_cruce.core_tipo_doc_app_id', '=', 'cxc_abonos.doc_cruce_tipo_doc_id')
-                    ->on('documento_cruce.consecutivo', '=', 'cxc_abonos.doc_cruce_consecutivo')
-                    ->on('documento_cruce.core_tercero_id', '=', 'cxc_abonos.core_tercero_id');
+                    ->on('documento_cruce.consecutivo', '=', 'cxc_abonos.doc_cruce_consecutivo');
             })
             ->join('core_tipos_docs_apps AS tipo_documento_cruce', 'tipo_documento_cruce.id', '=', 'documento_cruce.core_tipo_doc_app_id')
             ->join('sys_tipos_transacciones AS transaccion_cruce', 'transaccion_cruce.id', '=', 'documento_cruce.core_tipo_transaccion_id')
@@ -376,6 +375,7 @@ class RecaudoController extends TransaccionController
             ->where('cxc_abonos.doc_cruce_transacc_id', '<>', 0)
             ->select(
                 'documento_cruce.id',
+                'documento_cruce.fecha',
                 'documento_cruce.consecutivo',
                 'tipo_documento_cruce.prefijo',
                 'transaccion_cruce.core_app_id',
