@@ -392,6 +392,17 @@ class FacturaPosController extends TransaccionController
                 $obj_acumm_serv->accumulate_one_invoice( $doc_encabezado->id );
             }
 
+            // Confirmar la factura solo después de aplicar sus anticipos y pagos.
+            if( $crear_cruce_con_anticipos )
+            {
+                (new CxCService())->crear_cruce_con_anticipos( $doc_encabezado, $request->object_anticipos );
+            }
+
+            if ( $crear_abonos) {
+                $datos = $doc_encabezado->toArray();
+                (new TreasuryService())->crear_abonos_documento( $doc_encabezado, $datos['lineas_registros_medios_recaudos'] );
+            }
+
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -406,16 +417,6 @@ class FacturaPosController extends TransaccionController
             }
 
             throw $e;
-        }
-
-        if( $crear_cruce_con_anticipos )
-        {
-            (new CxCService())->crear_cruce_con_anticipos( $doc_encabezado, $request->object_anticipos );
-        }
-
-        if ( $crear_abonos) {
-            $datos = $doc_encabezado->toArray();
-            (new TreasuryService())->crear_abonos_documento( $doc_encabezado, $datos['lineas_registros_medios_recaudos'] );
         }
 
         $response = $this->build_json_doc_encabezado($doc_encabezado);
