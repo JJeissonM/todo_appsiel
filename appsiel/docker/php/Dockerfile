@@ -1,19 +1,37 @@
 FROM php:7.3-apache
 
-ENV COMPOSER_ALLOW_SUPERUSER=1
+# ============================================================
+# Debian Bullseye legacy repositories
+# Appsiel 1.0 requiere una plataforma PHP antigua.
+# Usamos archive.debian.org para evitar fallos por paquetes
+# retirados de los mirrors activos.
+# ============================================================
 
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    unzip \
-    nano \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    zlib1g-dev \
-    libzip-dev \
-    libicu-dev \
-    libxml2-dev \
+RUN printf '%s\n' \
+    'deb http://archive.debian.org/debian bullseye main' \
+    'deb http://archive.debian.org/debian bullseye-updates main' \
+    'deb http://archive.debian.org/debian-security bullseye-security main' \
+    > /etc/apt/sources.list \
+    && printf 'Acquire::Check-Valid-Until "false";\n' \
+    > /etc/apt/apt.conf.d/99no-check-valid
+
+# ============================================================
+# Dependencias del sistema
+# ============================================================
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git \
+        curl \
+        unzip \
+        nano \
+        libpng-dev \
+        libjpeg62-turbo-dev \
+        libfreetype6-dev \
+        zlib1g-dev \
+        libzip-dev \
+        libicu-dev \
+        libxml2-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
