@@ -21,7 +21,9 @@
     $item_description = isset($item['descripcion']) ? trim((string)$item['descripcion']) : '';
     $item_is_reports_menu = $menu_ancestor_is_reports_menu || stripos($item_description, 'reporte') !== false || stripos($item_url, 'vista_reporte') !== false;
 
-    $item_permission_name = isset($item['name']) ? trim((string)$item['name']) : '';
+    // El nombre debe coincidir exactamente con el registrado en permissions.
+    // Algunos permisos existentes contienen espacios al final.
+    $item_permission_name = isset($item['name']) ? (string)$item['name'] : '';
     $item_can_show = ($item_permission_name != '' && isset($menu_permission_names) && in_array($item_permission_name, $menu_permission_names) && $menu_user != null && $menu_user->hasPermissionTo($item_permission_name)) || ($menu_usuario_administrador_reportes && $item_is_reports_menu);
 ?>
 
@@ -43,7 +45,7 @@
                         $submenu_url = isset($submenu['url']) ? trim((string)$submenu['url']) : '';
                         $submenu_description = isset($submenu['descripcion']) ? trim((string)$submenu['descripcion']) : '';
                         $submenu_is_reports_menu = $item_is_reports_menu || stripos($submenu_description, 'reporte') !== false || stripos($submenu_url, 'vista_reporte') !== false;
-                        $submenu_permission_name = isset($submenu['name']) ? trim((string)$submenu['name']) : '';
+                        $submenu_permission_name = isset($submenu['name']) ? (string)$submenu['name'] : '';
                         $submenu_can_show = ($submenu_permission_name != '' && isset($menu_permission_names) && in_array($submenu_permission_name, $menu_permission_names) && $menu_user != null && $menu_user->hasPermissionTo($submenu_permission_name)) || ($menu_usuario_administrador_reportes && $submenu_is_reports_menu);
                     ?>
                     @if($submenu_can_show)
