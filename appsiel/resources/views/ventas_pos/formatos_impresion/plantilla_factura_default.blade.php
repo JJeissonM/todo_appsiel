@@ -146,7 +146,7 @@
         <?php
             $tercero_cliente = !is_null($cliente) ? $cliente->tercero : null;
 
-            if( $doc_encabezado->core_tercero_id != $tercero_cliente->id )
+            if (isset($doc_encabezado) && (is_null($tercero_cliente) || $doc_encabezado->core_tercero_id != $tercero_cliente->id))
             {
                 $tercero_cliente = $doc_encabezado->tercero;
             }
