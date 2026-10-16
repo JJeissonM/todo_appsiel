@@ -145,6 +145,12 @@
     <div style="border: solid 1px #ddd;">
         <?php
             $tercero_cliente = !is_null($cliente) ? $cliente->tercero : null;
+
+            if( $doc_encabezado->core_tercero_id != $tercero_cliente->id )
+            {
+                $tercero_cliente = $doc_encabezado->tercero;
+            }
+
             $vendedor_documento = isset($doc_encabezado) ? $doc_encabezado->vendedor : (isset($vendedor) ? $vendedor : null);
             $tercero_vendedor = !is_null($vendedor_documento) ? $vendedor_documento->tercero : null;
             $cliente_descripcion = !is_null($tercero_cliente) ? $tercero_cliente->descripcion : '';
