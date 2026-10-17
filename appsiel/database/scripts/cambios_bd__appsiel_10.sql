@@ -602,7 +602,7 @@ ALTER TABLE `contab_cuenta_grupos` ADD `codigo` VARCHAR(10) NOT NULL AFTER `desc
 ALTER TABLE `contab_cuenta_grupos` CHANGE `codigo` `codigo` VARCHAR(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
 
 DELETE FROM `sys_campos` WHERE `sys_campos`.`id` = 590;
-INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('590', 'Tiempo a liquidar', 'select', 'tiempo_a_liquidar', '{\"\":\"\",\"110\":\"Una Quincena (110 horas)\",\"220\":\"Un mes (220 horas)\",\"9999\":\"Órdenes de trabajo\"}', 'null', '', '', '1', '1', '0', '2019-12-20 00:36:57', '2025-01-21 18:08:27');
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('590', 'Tiempo a liquidar', 'select', 'tiempo_a_liquidar', '{\"\":\"\",\"105\":\"Una Quincena (105 horas)\",\"210\":\"Un mes (210 horas)\"}', 'null', '', '', '1', '1', '0', '2019-12-20 00:36:57', '2025-01-21 18:08:27');
 
 UPDATE `permissions` SET `modelo_id` = '337' WHERE `name` = 'nomina.turnos.importar';
 
