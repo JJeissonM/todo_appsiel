@@ -388,8 +388,6 @@ class ComprasDocEncabezado extends Model
 
         $ids_documentos_relacionados = explode(',', $doc_encabezado->entrada_almacen_id);
 
-        $app_id = 9;
-
         $cant_registros = count($ids_documentos_relacionados);
 
         $lista = '';
@@ -399,6 +397,8 @@ class ComprasDocEncabezado extends Model
             if (!is_null($un_documento)) {
                 $transaccion = TipoTransaccion::find($un_documento->core_tipo_transaccion_id);
 
+                // El enlace debe usar la aplicación de la transacción relacionada.
+                $app_id = $transaccion->core_app_id;
                 $modelo_doc_relacionado_id = $transaccion->core_modelo_id;
                 $transaccion_doc_relacionado_id = $transaccion->id;
 

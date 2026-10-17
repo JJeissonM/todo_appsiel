@@ -77,7 +77,16 @@ class NotaCreditoDirectaController extends TransaccionController
             return $nota_credito;
         });
 
-        return redirect('compras_notas_credito_directa/'.$nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
+        $url = url('compras_notas_credito_directa/' . $nota_credito->id)
+            . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo
+            . '&id_transaccion=' . $request->url_id_transaccion;
+
+        // El formulario compartido de compras espera JSON al guardar por AJAX.
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['redirect_url' => $url]);
+        }
+
+        return redirect($url);
     }
 
     /*
