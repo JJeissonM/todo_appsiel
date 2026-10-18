@@ -278,6 +278,12 @@ class CompraController extends TransaccionController
             $lineas_registros = $this->recalcular_lineas_registros(json_decode($request->lineas_registros));
         }
 
+        // La factura directa recibe todos los productos en la bodega final del
+        // encabezado. Las líneas pueden conservar la bodega de su captura.
+        foreach ($lineas_registros as $linea) {
+            $linea->inv_bodega_id = (int)$request->inv_bodega_id;
+        }
+
         // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
         $tipo_transaccion_id_original = $request['core_tipo_transaccion_id'];
         $core_tipo_doc_app_id_original = $request['core_tipo_doc_app_id'];
