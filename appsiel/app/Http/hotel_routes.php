@@ -37,6 +37,8 @@ Route::group(array('middleware' => array('auth'), 'prefix' => 'hotel'), function
     Route::post('orders/{id}/generate-standard-invoice', 'Hotel\HotelOrderController@generateStandardInvoice');
     Route::post('orders/{id}/generate-pos-invoice', 'Hotel\HotelOrderController@generatePosInvoice');
 
+    Route::post('reports/receivable-stays', 'Hotel\HotelReportController@receivableStays');
+    Route::post('reports/reservations', 'Hotel\HotelReportController@reservations');
     Route::post('reports/rooms', 'Hotel\HotelReportController@rooms');
     Route::post('reports/stays', 'Hotel\HotelReportController@stays');
     Route::post('reports/migration', 'Hotel\HotelReportController@migration');
