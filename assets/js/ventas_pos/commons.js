@@ -1120,7 +1120,18 @@ function llenar_resumen_impuestos() {
  * 
  * @returns 
  */
+function formatear_caja_banco_impresion(caja, banco) {
+  if (!banco) {
+    return caja;
+  }
+  var partes = banco.split("-");
+  var nombre_banco = partes.shift().trim();
+  var cuenta = partes.join("-").trim();
+  return cuenta ? nombre_banco + " (" + cuenta + ")" : nombre_banco;
+}
+
 function llenar_resumen_medios_recaudo() {
+  var total_pagos_impresion = 0;
   if ($("#forma_pago").val() == "credito") {
     $("#div_resumen_medios_pago").hide();
     return 0;
@@ -1143,6 +1154,8 @@ function llenar_resumen_medios_recaudo() {
     var lbl_valor_medio_pago =
       $("#total_efectivo_recibido").val() - $("#valor_total_cambio").val();
 
+    total_pagos_impresion = Math.abs(parseFloat(lbl_valor_medio_pago)) || 0;
+
     $("#tabla_resumen_medios_pago")
       .find("tbody:last")
       .append(
@@ -1157,11 +1170,11 @@ function llenar_resumen_medios_recaudo() {
     $("#ingreso_registros_medios_recaudo > tbody > tr").each(function () {
       var array_celdas = $(this).find("td");
       var lbl_medio_pago = array_celdas.eq(0).find("span").eq(1).text();
-      var lbl_caja_banco =
-        array_celdas.eq(2).find("span").eq(1).text() +
-        " - " +
-        array_celdas.eq(3).find("span").eq(1).text();
+      var lbl_caja = array_celdas.eq(2).find("span").eq(1).text().trim();
+      var lbl_banco = array_celdas.eq(3).find("span").eq(1).text().trim();
+      var lbl_caja_banco = formatear_caja_banco_impresion(lbl_caja, lbl_banco);
       var lbl_valor_medio_pago = array_celdas.eq(4).text().substring(1);
+      total_pagos_impresion += Math.abs(parseFloat(lbl_valor_medio_pago)) || 0;
       
       $("#tabla_resumen_medios_pago")
         .find("tbody:last")
@@ -1176,6 +1189,9 @@ function llenar_resumen_medios_recaudo() {
         );
     });
   }
+  $("#total_resumen_medios_pago").text(
+    "$" + new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 }).format(total_pagos_impresion)
+  );
 }
 
 /**

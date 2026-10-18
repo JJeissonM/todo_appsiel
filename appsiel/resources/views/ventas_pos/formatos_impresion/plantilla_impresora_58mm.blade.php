@@ -45,6 +45,8 @@
     @endif
 
     <div style="margin-top: 12px !important; font-size: {{ $tamanino_fuente_2 }};" width="100%">
+    @include('ventas_pos.formatos_impresion.hora_impresion')
+
         <b>{{ $tipo_doc_app->descripcion }} No.</b> 
         @if( !is_null( $resolucion ) )
             {{ $resolucion->prefijo }}
@@ -176,7 +178,6 @@
         </tr>
     </table>
     
-    @include('ventas_pos.formatos_impresion.hora_impresion')
 
     <br><br>
 

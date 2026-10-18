@@ -64,6 +64,8 @@
         </table>
     @endif
 
+    @include('ventas_pos.formatos_impresion.hora_impresion')
+
     <table border="0" style="margin-top: 12px !important; font-size: {{ $tamanino_fuente_2 }};" width="100%">
             <tr>
                 <td>
@@ -263,7 +265,6 @@
 
     @yield('pagina_adicional')
 
-    @include('ventas_pos.formatos_impresion.hora_impresion')
 
     <script type="text/javascript">
         window.onkeydown = function( event ) {
