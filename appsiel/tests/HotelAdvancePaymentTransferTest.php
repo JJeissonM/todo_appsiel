@@ -134,6 +134,61 @@ class HotelAdvancePaymentTransferTest extends PHPUnit_Framework_TestCase
         return (new HotelAdvancePaymentService())->apply($this->invoice, $this->advances($amount), 2173, 'HOT-542');
     }
 
+    public function test_nota_credito_electronica_permite_turno_distinto_a_factura_y_pos()
+    {
+        Schema::create('vtas_pos_doc_encabezados', function ($table) {
+            $table->integer('id'); $table->integer('core_empresa_id'); $table->integer('turno_operativo_id');
+        });
+        Schema::create('core_turnos_operativos', function ($table) {
+            $table->integer('id'); $table->integer('core_empresa_id'); $table->string('estado')->nullable(); $table->timestamp('cerrado_en')->nullable();
+        });
+        DB::table('core_turnos_operativos')->insert(array(array('id' => 10, 'core_empresa_id' => 1, 'estado' => 'CERRADO'), array('id' => 20, 'core_empresa_id' => 1, 'estado' => 'ABIERTO')));
+        DB::table('vtas_doc_encabezados')->insert(array('id' => 5, 'core_empresa_id' => 1, 'turno_operativo_id' => 10));
+        DB::table('vtas_pos_doc_encabezados')->insert(array('id' => 5, 'core_empresa_id' => 1, 'turno_operativo_id' => 20));
+        $note = new App\FacturacionElectronica\NotaCredito(array('core_empresa_id' => 1,
+            'core_tipo_transaccion_id' => 53, 'ventas_doc_relacionado_id' => 5, 'turno_operativo_id' => 20));
+        $this->assertEquals(20, $note->turno_operativo_id);
+        $class = new ReflectionClass(App\Core\Services\TurnoAssignmentResolver::class);
+        $method = $class->getMethod('fromPersistedOrigin');
+        $method->setAccessible(true);
+        $origin = $method->invoke($class->newInstanceWithoutConstructor(), $note);
+        $this->assertNull($origin);
+        Container::getInstance()->instance('request', new Illuminate\Http\Request());
+        $resolver = new App\Core\Services\TurnoAssignmentResolver(new App\Core\Services\TurnoContext(),
+            Mockery::mock(App\Core\Services\TurnoManager::class), new App\Core\Services\TurnoModeResolver());
+        $this->assertEquals(20, $resolver->assign($note, 'facturacion_electronica'));
+        Schema::create('inv_doc_encabezados', function ($table) {
+            $table->integer('id'); $table->integer('core_empresa_id'); $table->integer('turno_operativo_id');
+        });
+        DB::table('inv_doc_encabezados')->insert(array('id' => 6, 'core_empresa_id' => 1, 'turno_operativo_id' => 10));
+        $context = new App\Core\Services\TurnoContext();
+        $derivedResolver = new App\Core\Services\TurnoAssignmentResolver($context,
+            Mockery::mock(App\Core\Services\TurnoManager::class), new App\Core\Services\TurnoModeResolver());
+        $devolution = new App\Inventarios\InvDocEncabezado(array('core_empresa_id' => 1, 'turno_operativo_id' => 20));
+        $devolution->inv_doc_encabezado_id = 6;
+        $context->runFromOrigin(App\Core\TurnoOperativo::find(20), get_class($note), 7, function () use ($derivedResolver, $devolution) {
+            $this->assertEquals(20, $derivedResolver->assign($devolution, 'inventarios'));
+        });
+        $this->assertNull($context->current());
+    }
+
+    public function test_formulario_nota_credito_permite_seleccionar_turno_y_motivo()
+    {
+        $url = Mockery::mock();
+        $url->shouldReceive('to')->andReturn('http://localhost/turnos/operativos/validar-seleccion');
+        Container::getInstance()->instance('url', $url);
+        Container::getInstance()->instance(Illuminate\Contracts\Routing\UrlGenerator::class, $url);
+        $service = new ElectronicNoteOriginFormTestService(new App\Core\Services\TurnoModeResolver());
+        config(array('turnos.simple_company_mode' => true, 'turnos.manual_assignment_models' =>
+            array(App\FacturacionElectronica\NotaCredito::class => 'facturacion_electronica')));
+        $note = new App\FacturacionElectronica\NotaCredito(array('core_empresa_id' => 1));
+        $fields = $service->decorate((object)array('name_space' => App\FacturacionElectronica\NotaCredito::class), $note, 'create', array());
+        $this->assertEquals('turno_operativo_id', $fields[0]['name']);
+        $this->assertEquals('input_lista_sugerencias', $fields[0]['tipo']);
+        $this->assertArrayNotHasKey('disabled', $fields[0]['atributos']);
+        $this->assertEquals('turno_ajuste_motivo', $fields[1]['name']);
+    }
+
     public function test_cruce_directo_del_huesped_a_la_empresa_sin_nota_contable()
     {
         $cross = (new HotelAdvancePaymentService())->applyDirect($this->invoice, $this->advances(), 2173, 'HOT-542');
@@ -540,6 +595,18 @@ class HotelPaymentRequestTestService extends TreasuryService
     {
         return $request;
     }
+}
+
+class ElectronicNoteOriginFormTestService extends App\Core\Services\TurnoFormService
+{
+    protected function options($empresaId, $module, $persistedTurnId, $isEdit)
+    {
+        return array(10 => 'Turno de la factura');
+    }
+    protected function selectionLockedForCurrentUser() { return false; }
+    protected function canRegisterAdjustment() { return true; }
+    protected function hasTurnosScope($empresaId, $module) { return true; }
+
 }
 
 class HotelTransferDisplayTestInvoice

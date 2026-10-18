@@ -205,16 +205,8 @@ class NotaCreditoController extends TransaccionController
         VtasDocEncabezado::where('id', $request->ventas_doc_relacionado_id)->lockForUpdate()->firstOrFail();
     	$datos = $request->all();
     	$factura = VtasDocEncabezado::get_registro_impresion( $request->ventas_doc_relacionado_id ); 
-
-    	// Paso 1
         $datos['remision_doc_encabezado_id'] = 0;
-        if (!in_array($factura->remision_doc_encabezado_id, [null, 0, '']))
-        {
-            $devolucion = new DevolucionVentas;
-            $documento_devolucion = $devolucion->crear_nueva( $datos, $factura->remision_doc_encabezado_id );
-            $datos['remision_doc_encabezado_id'] = $documento_devolucion->id;
-            $request['remision_doc_encabezado_id'] = $documento_devolucion->id;
-        }
+        $request['remision_doc_encabezado_id'] = 0;
 
     	// Paso 2
     	$datos['creado_por'] = Auth::user()->email;
@@ -224,11 +216,29 @@ class NotaCreditoController extends TransaccionController
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
         $encabezado_nota_credito = $encabezado_documento->crear_nuevo( $datos );
 
-        // Paso 3 ( este falta refactorizar: separar la creación de lineas de registros de la contabilización y de otras transacciones )
-        NotaCreditoController::crear_registros_nota_credito( $request, $encabezado_nota_credito, $factura );
-
-        // Paso 4 (Se está haciendo en el Paso 3)
-        //$this->contabilizar( $encabezado_documento );
+        // Los derivados siguen la operación de la nota, no el turno de la venta.
+        $registrar_derivados = function () use ($request, $datos, $encabezado_nota_credito, $factura) {
+            $datos['turno_operativo_id'] = $encabezado_nota_credito->turno_operativo_id;
+            $request->merge(array('turno_operativo_id' => $encabezado_nota_credito->turno_operativo_id));
+            if (!in_array($factura->remision_doc_encabezado_id, array(null, 0, ''))) {
+                $documento_devolucion = (new DevolucionVentas())->crear_nueva($datos, $factura->remision_doc_encabezado_id);
+                if ((int)$documento_devolucion->turno_operativo_id !== (int)$encabezado_nota_credito->turno_operativo_id) {
+                    throw new \App\Core\Exceptions\TurnoIntegrityException('Seleccione un turno operativo para la nota crédito. La devolución y la nota deben registrarse en el mismo turno.');
+                }
+                $encabezado_nota_credito->remision_doc_encabezado_id = $documento_devolucion->id;
+                $encabezado_nota_credito->save();
+                $request['remision_doc_encabezado_id'] = $documento_devolucion->id;
+            }
+            NotaCreditoController::crear_registros_nota_credito($request, $encabezado_nota_credito, $factura);
+        };
+        if (!empty($encabezado_nota_credito->turno_operativo_id)) {
+            $turno_nota = \App\Core\TurnoOperativo::findOrFail($encabezado_nota_credito->turno_operativo_id);
+            app(\App\Core\Services\TurnoContext::class)->runFromOrigin(
+                $turno_nota, get_class($encabezado_nota_credito), $encabezado_nota_credito->id, $registrar_derivados
+            );
+        } else {
+            $registrar_derivados();
+        }
 
         return [$encabezado_nota_credito, $factura];
         });

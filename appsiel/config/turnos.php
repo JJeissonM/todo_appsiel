@@ -53,6 +53,7 @@ return array(
         'App\\Ventas\\NotaCreditoDirecta' => 'ventas',
         'App\\Matriculas\\FacturaEstudiante' => 'ventas',
         'App\\FacturacionElectronica\\Factura' => 'facturacion_electronica',
+        'App\\FacturacionElectronica\\NotaCredito' => 'facturacion_electronica',
         'App\\FacturacionElectronica\\FacturaContingencia' => 'facturacion_electronica',
         'App\\Inventarios\\InvDocEncabezado' => 'inventarios',
         'App\\Inventarios\\InvFisico' => 'inventarios',

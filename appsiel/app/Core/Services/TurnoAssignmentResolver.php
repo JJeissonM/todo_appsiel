@@ -230,6 +230,12 @@ class TurnoAssignmentResolver
 
     protected function fromPersistedOrigin(Model $model)
     {
+        // Una nota crédito es una nueva operación; la factura es su referencia
+        // comercial y no determina el turno en que se registra la devolución.
+        if ($model instanceof VtasDocEncabezado && (int)$model->core_tipo_transaccion_id === 53) {
+            return null;
+        }
+
         $references = array(
             'inv_doc_encabezado_id' => array(InvDocEncabezado::class),
             'vtas_doc_encabezado_origen_id' => array(FacturaPos::class, VtasDocEncabezado::class),
