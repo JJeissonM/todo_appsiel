@@ -64,16 +64,29 @@ class NotaCreditoDirectaController extends TransaccionController
      */
     public function store(Request $request)
     {
-        // 1ro. Crear documento de Salida de inventarios (Devolución) con base en la entrada y las cantidades a devolver
-        // WARNING. HECHO MANUALMENTE
-        $request['remision_doc_encabezado_id'] = $this->crear_devolucion( $request );
-
-        // 2do. Crear encabezado del documento de Ventas (Nota Crédito)
-        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
-        $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
-
-        // 3ro. Crear líneas de registros del documento
-        NotaCreditoDirectaController::crear_registros_nota_credito( $request, $nota_credito );
+        $nota_credito = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $request['remision_doc_encabezado_id'] = 0;
+            $nota_credito = (new EncabezadoDocumentoTransaccion($request->url_id_modelo))->crear_nuevo($request->all());
+            $registrar = function () use ($request, $nota_credito) {
+                $request['turno_operativo_id'] = $nota_credito->turno_operativo_id;
+                $devolucion_id = $this->crear_devolucion($request);
+                $devolucion = InvDocEncabezado::findOrFail($devolucion_id);
+                if ((int)$devolucion->turno_operativo_id !== (int)$nota_credito->turno_operativo_id) {
+                    throw new \App\Core\Exceptions\TurnoIntegrityException('Seleccione un turno operativo para la nota y su devolución.');
+                }
+                $request['remision_doc_encabezado_id'] = $devolucion_id;
+                $nota_credito->remision_doc_encabezado_id = $devolucion_id;
+                $nota_credito->save();
+                self::crear_registros_nota_credito($request, $nota_credito);
+            };
+            if (!empty($nota_credito->turno_operativo_id)) {
+                app(\App\Core\Services\TurnoContext::class)->runFromOrigin(
+                    \App\Core\TurnoOperativo::findOrFail($nota_credito->turno_operativo_id), get_class($nota_credito), $nota_credito->id, $registrar);
+            } else {
+                $registrar();
+            }
+            return $nota_credito;
+        });
 
         return redirect('ventas_notas_credito_directa/'.$nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
     }

@@ -232,7 +232,8 @@ class TurnoAssignmentResolver
     {
         // Una nota crédito es una nueva operación; la factura es su referencia
         // comercial y no determina el turno en que se registra la devolución.
-        if ($model instanceof VtasDocEncabezado && (int)$model->core_tipo_transaccion_id === 53) {
+        if ($model instanceof \App\Ventas\NotaCredito || $model instanceof \App\Ventas\NotaCreditoDirecta
+            || ($model instanceof VtasDocEncabezado && in_array((int)$model->core_tipo_transaccion_id, array(38, 41, 53), true))) {
             return null;
         }
 

@@ -51,6 +51,7 @@ return array(
         'App\\Ventas\\VtasCotizacion' => 'ventas',
         'App\\Ventas\\VtasFacturaMedica' => 'ventas',
         'App\\Ventas\\NotaCreditoDirecta' => 'ventas',
+        'App\\Ventas\\NotaCredito' => 'ventas',
         'App\\Matriculas\\FacturaEstudiante' => 'ventas',
         'App\\FacturacionElectronica\\Factura' => 'facturacion_electronica',
         'App\\FacturacionElectronica\\NotaCredito' => 'facturacion_electronica',

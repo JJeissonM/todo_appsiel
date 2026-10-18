@@ -157,6 +157,12 @@ class HotelAdvancePaymentTransferTest extends PHPUnit_Framework_TestCase
         $resolver = new App\Core\Services\TurnoAssignmentResolver(new App\Core\Services\TurnoContext(),
             Mockery::mock(App\Core\Services\TurnoManager::class), new App\Core\Services\TurnoModeResolver());
         $this->assertEquals(20, $resolver->assign($note, 'facturacion_electronica'));
+        foreach (array(App\Ventas\NotaCredito::class => 38, App\Ventas\NotaCreditoDirecta::class => 41) as $noteClass => $transaction) {
+            $salesNote = new $noteClass(array('core_empresa_id' => 1, 'core_tipo_transaccion_id' => $transaction,
+                'ventas_doc_relacionado_id' => 5, 'turno_operativo_id' => 20));
+            $this->assertEquals('ventas', $salesNote->getTurnoModuleName());
+            $this->assertEquals(20, $resolver->assign($salesNote, 'ventas'));
+        }
         Schema::create('inv_doc_encabezados', function ($table) {
             $table->integer('id'); $table->integer('core_empresa_id'); $table->integer('turno_operativo_id');
         });
