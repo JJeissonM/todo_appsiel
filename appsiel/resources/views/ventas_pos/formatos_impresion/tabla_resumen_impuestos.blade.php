@@ -20,7 +20,7 @@
 </style>
     <div id="div_resumen_impuestos" style="display: none;">
         <br>
-        <div style="text-align: center; width: 100%; font-weight: bold; font-size: 12px;">Detalle impuestos</div>
+        <div style="text-align: center; width: 100%; font-weight: bold; background: #ddd;">Impuestos</div>
         <div class="table-responsive">
             <table class="tabla_resumen_impuestos" id="tabla_resumen_impuestos">
                 <thead>

@@ -150,7 +150,7 @@ class PrintServices
                 'lbl_creado_por_fecha_y_hora' => 'Elaboró: ' . explode('@', $doc_encabezado->creado_por)[0],
                 'lineas_registros' => View::make( 'ventas.formatos_impresion.cuerpo_tabla_lineas_registros', compact('doc_registros') )->render(),
                 'obj_lineas_registros' => $doc_registros,
-                'lineas_impuesto' => View::make( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros') )->render(),
+                'lineas_impuesto' => View::make( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros', 'doc_encabezado') )->render(),
                 'saldo_pendiente_cxc' => (new CxCServices())->get_movimiento_documentos_pendientes_fecha_corte($doc_encabezado->cliente->core_tercero_id, $doc_encabezado->fecha)
             ];
     
