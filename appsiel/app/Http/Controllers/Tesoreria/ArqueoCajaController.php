@@ -543,7 +543,10 @@ class ArqueoCajaController extends ModeloController
         $sin_detalle_entradas = empty((array)$registro->detalles_mov_entradas);
         $sin_detalle_salidas = empty((array)$registro->detalles_mov_salidas);
 
-        if ( (float)$registro->total_mov_entradas != 0 || (float)$registro->total_mov_salidas != 0 || !$sin_detalle_entradas || !$sin_detalle_salidas ) {
+        // Algunos arqueos históricos conservaron los totales enviados por el
+        // formulario, pero no el detalle. En ese caso show/print deben volver a
+        // consultar el sistema aunque alguno de los totales sea diferente de cero.
+        if ( !$sin_detalle_entradas && !$sin_detalle_salidas ) {
             return $registro;
         }
 
