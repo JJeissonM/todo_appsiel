@@ -364,6 +364,14 @@ class TesoMovimiento extends Model
 
     public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null, $turno_operativo_id = null)
     {
+        // Los arqueos tradicionales históricos pueden guardar 0 cuando no
+        // existe turno. Solo un identificador positivo representa un turno
+        // real; consultar turno_operativo_id = 0 excluiría movimientos cuyo
+        // valor correcto en la tabla es NULL.
+        $turno_operativo_id = (int)$turno_operativo_id > 0
+            ? (int)$turno_operativo_id
+            : null;
+
         if (!is_null($turno_operativo_id)) {
             $fecha_hora_apertura = null;
             $fecha_hora_cierre = null;

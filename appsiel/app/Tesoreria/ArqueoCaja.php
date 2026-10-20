@@ -259,6 +259,11 @@ class ArqueoCaja extends Model
             return;
         }
 
+        // En la modalidad tradicional no existe un turno operativo. Persistir
+        // NULL evita que el valor centinela 0 sea interpretado después como una
+        // relación real al consultar los movimientos del arqueo.
+        $request->merge(array('turno_operativo_id' => null));
+
         if ( !TesoMovimiento::usarMovimientosTesoreriaPorHora() ) {
             $request->merge([
                 'fecha_hora_apertura' => null,

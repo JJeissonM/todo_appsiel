@@ -39,7 +39,9 @@ class ArqueoCajaMovimientosSistemaTest extends TestCase
             $registro->core_empresa_id = (int)$caja->core_empresa_id;
             $registro->teso_caja_id = (int)$caja->id;
             $registro->pdv_id = 0;
-            $registro->turno_operativo_id = null;
+            // Es el valor observado en producción para arqueos tradicionales.
+            // Debe interpretarse como ausencia de turno, no como turno ID 0.
+            $registro->turno_operativo_id = 0;
             $registro->fecha_hora_apertura = null;
             $registro->fecha_hora_cierre = null;
             $registro->base = 0;
