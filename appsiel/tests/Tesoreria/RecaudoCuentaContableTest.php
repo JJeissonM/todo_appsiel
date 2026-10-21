@@ -56,6 +56,29 @@ class RecaudoCuentaContableTest extends TestCase
         $this->assertSame(0, DB::table('recaudos_prueba')->count());
     }
 
+    public function test_motivo_sin_cuenta_devuelve_error_ajax_sin_redireccion_ni_guardado()
+    {
+        $request = $this->solicitud();
+        $request->headers->set('X-Requested-With', 'XMLHttpRequest');
+        $response = $this->controlador()->store($request);
+
+        $this->assertSame(422, $response->getStatusCode());
+        $this->assertContains('CONSIGNACIONES', $response->getData(true)['message']);
+        $this->assertFalse($response->headers->has('Location'));
+        $this->assertSame(0, DB::table('recaudos_prueba')->count());
+    }
+
+    public function test_sin_registros_devuelve_error_ajax_sin_guardado()
+    {
+        $request = new Request(['lineas_registros_medios_recaudo' => '[]']);
+        $request->headers->set('X-Requested-With', 'XMLHttpRequest');
+        $response = $this->controlador()->store($request);
+
+        $this->assertSame(422, $response->getStatusCode());
+        $this->assertContains('Debe ingresar', $response->getData(true)['message']);
+        $this->assertSame(0, DB::table('recaudos_prueba')->count());
+    }
+
     public function test_error_de_contabilizacion_revierte_lo_guardado()
     {
         DB::table('contab_cuentas')->insert(['id' => 10]);

@@ -119,7 +119,7 @@ class RecaudoController extends TransaccionController
 
         $lineas = json_decode($request->lineas_registros_medios_recaudo);
         if (!is_array($lineas) || count($lineas) < 2) {
-            return redirect()->back()->withInput()->with('mensaje_error', 'Debe ingresar los registros del recaudo.');
+            return $this->error_validacion_recaudo($request, 'Debe ingresar los registros del recaudo.');
         }
 
         // La última fila contiene el total, no un medio de recaudo.
@@ -128,13 +128,28 @@ class RecaudoController extends TransaccionController
             $motivo = TesoMotivo::find($motivoId);
             if (!$motivo || !DB::table('contab_cuentas')->where('id', $motivo->contab_cuenta_id)->exists()) {
                 $nombre = $motivo ? $motivo->descripcion : $motivoId;
-                return redirect()->back()->withInput()->with('mensaje_error', 'El motivo ' . $nombre . ' no tiene una cuenta contable válida configurada. Configure la cuenta antes de guardar el recaudo.');
+                return $this->error_validacion_recaudo($request, 'El motivo ' . $nombre . ' no tiene una cuenta contable válida configurada. Configure la cuenta antes de guardar el recaudo.');
             }
         }
 
-        return DB::transaction(function () use ($request) {
+        $respuesta = DB::transaction(function () use ($request) {
             return $this->guardar_recaudo($request);
         });
+
+        if ($request->ajax()) {
+            return response()->json(['redirect' => $respuesta->getTargetUrl()]);
+        }
+
+        return $respuesta;
+    }
+
+    protected function error_validacion_recaudo(Request $request, $mensaje)
+    {
+        if ($request->ajax()) {
+            return response()->json(['message' => $mensaje], 422);
+        }
+
+        return redirect()->back()->withInput()->with('mensaje_error', $mensaje);
     }
 
     protected function guardar_recaudo(Request $request)
