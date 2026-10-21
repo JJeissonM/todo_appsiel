@@ -141,6 +141,7 @@ class NotaCreditoController extends TransaccionController
      */
     public function store(Request $request)
     {
+        try {
         $nota_credito = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
             $factura = VtasDocEncabezado::where('id', $request->ventas_doc_relacionado_id)->lockForUpdate()->firstOrFail();
             $request['creado_por'] = Auth::user()->email;
@@ -167,6 +168,10 @@ class NotaCreditoController extends TransaccionController
             }
             return $nota_credito;
         });
+
+        } catch (\InvalidArgumentException $error) {
+            return redirect()->back()->withInput()->with('mensaje_error', $error->getMessage());
+        }
 
         return redirect('ventas_notas_credito_directa/'.$nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
     }
@@ -196,6 +201,9 @@ class NotaCreditoController extends TransaccionController
     {
         $nota_credito_service = new NotaCreditoServices();
 
+        $lineService = new \App\FacturacionElectronica\Services\CreditNoteLineService();
+        $selection = !empty($datos['doc_registros_ids']) ? $lineService->requestedLines($factura->id, $datos) : null;
+        $usedInvoiceLines = array();
         $total_documento = 0;
         // Por cada remisión pendiente
         $cantidad_registros = count( $lineas_registros );
@@ -213,10 +221,14 @@ class NotaCreditoController extends TransaccionController
                 $cantidad = $un_registro->cantidad * -1; // Fue una entrada de inventarios, se vuelve la cantidad negativa, porque es una diminución de las ventas
 
                 // Los precios se deben traer de la linea de la factura
+                if (!is_null($selection)) {
+                    $linea_factura = $lineService->matchRequestedLine($selection, $usedInvoiceLines, $un_registro->inv_producto_id, $cantidad);
+                } else {
                 $linea_factura = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $factura->id)
                                                 ->where( 'inv_producto_id', $un_registro->inv_producto_id )
                                                 ->get()
                                                 ->first();
+                }
 
                 $precio_unitario = $linea_factura->precio_unitario;
 

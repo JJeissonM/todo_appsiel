@@ -201,6 +201,7 @@ class NotaCreditoController extends TransaccionController
     {
     	// WARNING: si la factura tiene varias entradas, no se puede hacer la nota
 
+        try {
         list($encabezado_nota_credito, $factura) = DB::transaction(function () use ($request) {
         VtasDocEncabezado::where('id', $request->ventas_doc_relacionado_id)->lockForUpdate()->firstOrFail();
     	$datos = $request->all();
@@ -242,6 +243,10 @@ class NotaCreditoController extends TransaccionController
 
         return [$encabezado_nota_credito, $factura];
         });
+
+        } catch (\InvalidArgumentException $error) {
+            return redirect()->back()->withInput()->with('mensaje_error', $error->getMessage());
+        }
 
         // Paso 5: Enviar nota electrónica
         $mensaje = $this->enviar_nota_credito_electronica( $encabezado_nota_credito->id, $factura );
@@ -476,6 +481,9 @@ class NotaCreditoController extends TransaccionController
     {
         $nota_credito_service = new NotaCreditoServices();
 
+        $lineService = new \App\FacturacionElectronica\Services\CreditNoteLineService();
+        $selection = !empty($datos['doc_registros_ids']) ? $lineService->requestedLines($factura->id, $datos) : null;
+        $usedInvoiceLines = array();
         $total_documento = 0;
         // Por cada remisión pendiente
         $cantidad_registros = count( $lineas_registros );
@@ -493,10 +501,14 @@ class NotaCreditoController extends TransaccionController
                 $cantidad = $un_registro->cantidad * -1; // Fue una entrada de inventarios, se vuelve la cantidad negativa, porque es una diminución de las ventas
 
                 // Los precios se deben traer de la linea de la factura
+                if (!is_null($selection)) {
+                    $linea_factura = $lineService->matchRequestedLine($selection, $usedInvoiceLines, $un_registro->inv_producto_id, $cantidad);
+                } else {
                 $linea_factura = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $factura->id)
                                                 ->where( 'inv_producto_id', $un_registro->inv_producto_id )
                                                 ->get()
                                                 ->first();
+                }
 
                 $linea_datos = (new CreditNoteLineService())->calculate($linea_factura, abs($cantidad)) + [
                     'inv_bodega_id' => $un_registro->inv_bodega_id,

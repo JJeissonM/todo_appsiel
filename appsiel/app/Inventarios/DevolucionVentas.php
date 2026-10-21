@@ -108,6 +108,28 @@ class DevolucionVentas extends InvDocEncabezado
         // Obtener registros de la remisión de la factura de ventas
         // Se harán la devoluciones a cada línea de estos registros (si se le ingresó cantidad a devolver)
         $registros_rm = InvDocRegistro::where( 'inv_doc_encabezado_id', $encabezado_remision_id )->get();
+        if (!empty($datos['doc_registros_ids'])) {
+            $selection = (new \App\FacturacionElectronica\Services\CreditNoteLineService())
+                ->requestedLines($datos['ventas_doc_relacionado_id'], $datos);
+            $used = array();
+            foreach ($selection as $item) {
+                $matches = $registros_rm->filter(function ($row) use ($item) {
+                    return (int)$row->inv_producto_id === (int)$item['line']->inv_producto_id;
+                });
+                $source = $matches->filter(function ($row) use ($used) { return !isset($used[$row->id]); })->first();
+                if (is_null($source)) { $source = $matches->first(); }
+                if (is_null($source)) {
+                    throw new \InvalidArgumentException('La línea ' . $item['line']->id . ' no tiene un producto correspondiente en la remisión origen.');
+                }
+                $used[$source->id] = true;
+                $row = $source->toArray();
+                $row['cantidad'] = $item['quantity'];
+                $row['costo_total'] = $item['quantity'] * $source->costo_unitario;
+                $row['inv_motivo_id'] = (int)explode('-', $datos['motivos_ids'][$item['index']])[0];
+                $lineas_registros[] = (object)$row;
+            }
+            return $lineas_registros;
+        }
         $l = 0; // Contador para las lineas a devolver
         $regs = 0; // Contador para los registro de la remisión, es la misma cantidad de registros enviados en $datos[]
         foreach ($registros_rm as $linea)

@@ -54,4 +54,37 @@ class CreditNoteLineServiceTest extends PHPUnit_Framework_TestCase
         $line->cantidad_devuelta = 2;
         (new CreditNoteLineService())->calculate($line, 2);
     }
+
+    public function test_producto_repetido_usa_la_linea_seleccionada_y_su_cantidad()
+    {
+        $first = $this->line();
+        $first->id = 10;
+        $first->inv_producto_id = 7;
+        $second = clone $first;
+        $second->id = 11;
+        $second->cantidad = 17.25;
+        $selection = array(array('line' => $first, 'quantity' => 3), array('line' => $second, 'quantity' => 17.25));
+        $used = array();
+        $service = new CreditNoteLineService();
+        $this->assertSame(11, $service->matchRequestedLine($selection, $used, 7, 17.25)->id);
+        $this->assertSame(10, $service->matchRequestedLine($selection, $used, 7, 3)->id);
+        $this->setExpectedException('InvalidArgumentException', 'No se pudo relacionar');
+        $service->matchRequestedLine($selection, $used, 7, 3);
+    }
+
+    public function test_error_de_saldo_indica_linea_y_cantidades()
+    {
+        $line = $this->line();
+        $line->id = 237861;
+        $line->cantidad = 17.25;
+        $line->cantidad_devuelta = 1;
+        try {
+            (new CreditNoteLineService())->calculate($line, 17.25);
+            $this->fail('Debe impedir devolver más del saldo.');
+        } catch (InvalidArgumentException $error) {
+            $this->assertContains('237861', $error->getMessage());
+            $this->assertContains('disponible 16.25', $error->getMessage());
+            $this->assertContains('solicitada 17.25', $error->getMessage());
+        }
+    }
 }
