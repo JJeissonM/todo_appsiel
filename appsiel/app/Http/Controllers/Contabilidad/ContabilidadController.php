@@ -214,11 +214,20 @@ class ContabilidadController extends TransaccionController
             $fecha_vencimiento = date('Y-m-d');
             $documento_soporte_tercero = '';
 
-            $mov_contab_linea_registro_doc = ContabMovimiento::where( 'id_registro_doc_tipo_transaccion', $linea->id )->get()->first();
+            // Los ID de registros se repiten entre los distintos tipos de documentos.
+            $encabezado = $linea->encabezado_documento;
+            $mov_contab_linea_registro_doc = ContabMovimiento::where( 'id_registro_doc_tipo_transaccion', $linea->id )
+                ->where('core_empresa_id', $encabezado->core_empresa_id)
+                ->where('core_tipo_transaccion_id', $encabezado->core_tipo_transaccion_id)
+                ->where('core_tipo_doc_app_id', $encabezado->core_tipo_doc_app_id)
+                ->where('consecutivo', $encabezado->consecutivo)
+                ->first();
             
             if ( !is_null( $mov_contab_linea_registro_doc ) )
             {
-                $tipo_transaccion_linea = $mov_contab_linea_registro_doc->tipo_transaccion;
+                if (!empty($mov_contab_linea_registro_doc->tipo_transaccion)) {
+                    $tipo_transaccion_linea = $mov_contab_linea_registro_doc->tipo_transaccion;
+                }
                 $fecha_vencimiento = $mov_contab_linea_registro_doc->fecha_vencimiento;
                 $documento_soporte_tercero = $mov_contab_linea_registro_doc->documento_soporte;
             }
