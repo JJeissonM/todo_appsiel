@@ -176,13 +176,14 @@ class ArqueoCaja extends Model
     {
         $datos = $this->applyStoredShiftData($datos, $arqueocaja);
 
-        if ( self::usuario_tiene_bloqueo_movimientos_sistema() ) {
-            $datos = $this->get_datos_adicionales( $datos );
-            $arqueocaja->total_mov_entradas = $datos['total_mov_entradas'];
-            $arqueocaja->total_mov_salidas = $datos['total_mov_salidas'];
-            $arqueocaja->lbl_total_sistema = $datos['lbl_total_sistema'];
-            $arqueocaja->total_saldo = $datos['total_saldo'];
-        }
+        // El permiso únicamente controla si el usuario ve los movimientos
+        // durante la captura. Los valores almacenados siempre deben provenir
+        // del sistema y no depender de que el navegador haya pulsado "Obtener".
+        $datos = $this->get_datos_adicionales( $datos );
+        $arqueocaja->total_mov_entradas = $datos['total_mov_entradas'];
+        $arqueocaja->total_mov_salidas = $datos['total_mov_salidas'];
+        $arqueocaja->lbl_total_sistema = $datos['lbl_total_sistema'];
+        $arqueocaja->total_saldo = $datos['total_saldo'];
 
         $arqueocaja->billetes_contados = json_encode($datos['billetes']);
         $arqueocaja->monedas_contadas = json_encode($datos['monedas']);
@@ -249,10 +250,19 @@ class ArqueoCaja extends Model
                 'fecha' => $turno->fecha_operativa,
                 'fecha_hora_apertura' => $this->turnoDateValue($turno->abierto_en),
                 'fecha_hora_cierre' => $this->turnoDateValue($turno->cerrado_en),
-                'base' => $turno->saldo_inicial
+                'base' => TesoMovimiento::calcularSaldoInicialArqueoPorTurno(
+                    $empresaId,
+                    (int)$request->teso_caja_id,
+                    $turno
+                )
             ));
             return;
         }
+
+        // En la modalidad tradicional no existe un turno operativo. Persistir
+        // NULL evita que el valor centinela 0 sea interpretado después como una
+        // relación real al consultar los movimientos del arqueo.
+        $request->merge(array('turno_operativo_id' => null));
 
         if ( !TesoMovimiento::usarMovimientosTesoreriaPorHora() ) {
             $request->merge([
@@ -411,13 +421,11 @@ class ArqueoCaja extends Model
         $arqueocaja = ArqueoCaja::find($doc_encabezado_id);
         $datos = $this->applyStoredShiftData($datos, $arqueocaja);
 
-        if ( self::usuario_tiene_bloqueo_movimientos_sistema() ) {
-            $datos = $this->get_datos_adicionales( $datos );
-            $arqueocaja->total_mov_entradas = $datos['total_mov_entradas'];
-            $arqueocaja->total_mov_salidas = $datos['total_mov_salidas'];
-            $arqueocaja->lbl_total_sistema = $datos['lbl_total_sistema'];
-            $arqueocaja->total_saldo = $datos['total_saldo'];
-        }
+        $datos = $this->get_datos_adicionales( $datos );
+        $arqueocaja->total_mov_entradas = $datos['total_mov_entradas'];
+        $arqueocaja->total_mov_salidas = $datos['total_mov_salidas'];
+        $arqueocaja->lbl_total_sistema = $datos['lbl_total_sistema'];
+        $arqueocaja->total_saldo = $datos['total_saldo'];
 
         $arqueocaja->billetes_contados = json_encode($datos['billetes']);
         $arqueocaja->monedas_contadas = json_encode($datos['monedas']);

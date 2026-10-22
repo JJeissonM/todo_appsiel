@@ -214,11 +214,20 @@ class ContabilidadController extends TransaccionController
             $fecha_vencimiento = date('Y-m-d');
             $documento_soporte_tercero = '';
 
-            $mov_contab_linea_registro_doc = ContabMovimiento::where( 'id_registro_doc_tipo_transaccion', $linea->id )->get()->first();
+            // Los ID de registros se repiten entre los distintos tipos de documentos.
+            $encabezado = $linea->encabezado_documento;
+            $mov_contab_linea_registro_doc = ContabMovimiento::where( 'id_registro_doc_tipo_transaccion', $linea->id )
+                ->where('core_empresa_id', $encabezado->core_empresa_id)
+                ->where('core_tipo_transaccion_id', $encabezado->core_tipo_transaccion_id)
+                ->where('core_tipo_doc_app_id', $encabezado->core_tipo_doc_app_id)
+                ->where('consecutivo', $encabezado->consecutivo)
+                ->first();
             
             if ( !is_null( $mov_contab_linea_registro_doc ) )
             {
-                $tipo_transaccion_linea = $mov_contab_linea_registro_doc->tipo_transaccion;
+                if (!empty($mov_contab_linea_registro_doc->tipo_transaccion)) {
+                    $tipo_transaccion_linea = $mov_contab_linea_registro_doc->tipo_transaccion;
+                }
                 $fecha_vencimiento = $mov_contab_linea_registro_doc->fecha_vencimiento;
                 $documento_soporte_tercero = $mov_contab_linea_registro_doc->documento_soporte;
             }
@@ -381,11 +390,7 @@ class ContabilidadController extends TransaccionController
             Al duplicar el documento no se realiza contabilización, por tanto se puede duplicar aunque tenga movimientos de cxc o cxp. Pero los registros de con estos movimientos, se llamaran como registros de causacion en el formulario de editar.
         */
 
-        // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
-        $consecutivo = TipoDocApp::get_consecutivo_actual( $doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id) + 1;
-
-        // Se incementa el consecutivo para ese tipo de documento y la empresa
-        TipoDocApp::aumentar_consecutivo($doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id);
+        $consecutivo = TipoDocApp::reservar_consecutivo( $doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id);
 
         $nuevo_doc_encabezado = $doc_encabezado->replicate();
         $nuevo_doc_encabezado->consecutivo = $consecutivo;
@@ -426,11 +431,7 @@ class ContabilidadController extends TransaccionController
                             'consecutivo' => $doc_encabezado->consecutivo];
 
         // Está en un documento cruce de cxp?
-        $cantidad = CxpAbono::where($array_wheres)
-                            ->where('doc_cruce_transacc_id','<>',0)
-                            ->count();
-
-        if($cantidad != 0)
+        if (CxpAbono::estaEnCruceActivo($doc_encabezado))
         {
             return redirect( 'contabilidad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Documento NO puede ser anulado. Está en documento cruce de CxP.');
         }
@@ -510,7 +511,7 @@ class ContabilidadController extends TransaccionController
                 $tipo_transaccion_linea = $mov_contab_linea_registro_doc->tipo_transaccion;
             }
 
-            if ( $tipo_transaccion_linea == 'crear_cxc' )
+            if ( $tipo_transaccion_linea == 'crear_cxc' || $tipo_transaccion_linea == 'crear_anticipo_cxc' )
             {
                 $tiene_lineas_cxc = true;
             }
@@ -532,9 +533,17 @@ class ContabilidadController extends TransaccionController
         {
             // Si hay un abono aplicado no se puede anular el documento.
             $tiene_abonos_cxc = CxcAbono::where('core_empresa_id', $doc_encabezado->core_empresa_id)
-                                        ->where('doc_cxc_transacc_id', $doc_encabezado->core_tipo_transaccion_id)
-                                        ->where('doc_cxc_tipo_doc_id', $doc_encabezado->core_tipo_doc_app_id)
-                                        ->where('doc_cxc_consecutivo', $doc_encabezado->consecutivo)
+                                        ->where(function ($query) use ($doc_encabezado) {
+                                            $query->where(function ($target) use ($doc_encabezado) {
+                                                $target->where('doc_cxc_transacc_id', $doc_encabezado->core_tipo_transaccion_id)
+                                                    ->where('doc_cxc_tipo_doc_id', $doc_encabezado->core_tipo_doc_app_id)
+                                                    ->where('doc_cxc_consecutivo', $doc_encabezado->consecutivo);
+                                            })->orWhere(function ($source) use ($doc_encabezado) {
+                                                $source->where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+                                                    ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+                                                    ->where('consecutivo', $doc_encabezado->consecutivo);
+                                            });
+                                        })
                                         ->exists();
 
             if ( $tiene_abonos_cxc )

@@ -11,11 +11,27 @@
 	$calificacion_nivelacion = '';
 	$escala_valoracion_nivelacion = '';
 
-	if( !is_null( $linea->calificacion->nota_nivelacion() ) )
-	{
-		$calificacion_nivelacion = $linea->calificacion->nota_nivelacion()->calificacion;
-		$escala_valoracion_nivelacion = $linea->calificacion->nota_nivelacion()->escala_valoracion()->nombre_escala;
-	}
+    $tiene_nivelacion = false;
+    if (in_array($mostrar_nota_nivelacion, [
+        'solo_nota_nivelacion_con_etiqueta', 'solo_nota_nivelacion_sin_etiqueta', 'ambas_notas'
+    ], true)) {
+        if (property_exists($linea, 'calificacion_nivelacion')) {
+            // preparar_datos_boletin ya cargó las nivelaciones y su escala.
+            $tiene_nivelacion = $linea->calificacion_nivelacion !== null;
+            if ($tiene_nivelacion) {
+                $calificacion_nivelacion = $linea->calificacion_nivelacion;
+                $escala_valoracion_nivelacion = $linea->escala_valoracion->nombre_escala;
+            }
+        } else {
+            // Compatibilidad con vistas que construyen sus propias líneas.
+            $nota_nivelacion = $linea->calificacion->nota_nivelacion();
+            $tiene_nivelacion = $nota_nivelacion !== null;
+            if ($tiene_nivelacion) {
+                $calificacion_nivelacion = $nota_nivelacion->calificacion;
+                $escala_valoracion_nivelacion = $nota_nivelacion->escala_valoracion()->nombre_escala;
+            }
+        }
+    }
 
 	$lbl_peso_asignatura = '';
 
@@ -53,7 +69,7 @@
 	switch ( $mostrar_nota_nivelacion )
 	{
 		case 'solo_nota_nivelacion_con_etiqueta':
-			if ( !is_null( $linea->calificacion->nota_nivelacion() ) )
+			if ( $tiene_nivelacion )
 			{
 				echo $lbl_nivelacion . '<sup>n</sup>';
 			}else{
@@ -62,7 +78,7 @@
 			break;
 		
 		case 'solo_nota_nivelacion_sin_etiqueta':
-			if ( !is_null( $linea->calificacion->nota_nivelacion() ) )
+			if ( $tiene_nivelacion )
 			{
 				echo $lbl_nivelacion;
 			}else{
@@ -71,7 +87,7 @@
 			break;
 		
 		case 'ambas_notas':
-			if ( !is_null( $linea->calificacion->nota_nivelacion() ) )
+			if ( $tiene_nivelacion )
 			{
 				echo '<span style="color: gray">' . $lbl_nota_original . '</span> &nbsp;' . $lbl_nivelacion . '<sup>n</sup>';
 			}else{

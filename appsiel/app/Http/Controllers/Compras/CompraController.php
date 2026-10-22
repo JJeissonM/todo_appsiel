@@ -108,8 +108,19 @@ class CompraController extends TransaccionController
      */
     public function store(Request $request)
     {
+        \App\Compras\Services\CantidadLineasService::prepararRequest($request);
         $this->validar_cuenta_por_pagar_directa($request);
-        $this->validate($request, ['reteica_retencion_id' => 'integer|min:0']);
+        $this->validate($request, [
+            'reteica_retencion_id' => 'integer|min:0',
+            'reteica_base_manual' => 'boolean',
+            'reteica_base' => ((int)$request->input('reteica_retencion_id') > 0 ? 'required|' : '') . 'numeric|min:0|max:9999999999999.99|regex:/^\d+(\.\d{1,2})?$/',
+        ]);
+        if (!(int)$request->input('reteica_retencion_id')) {
+            $request->merge(['reteica_base_manual' => 0, 'reteica_base' => 0]);
+        } else {
+            // La base confirmada por el frontend es la fuente del guardado, incluso si era automática.
+            $request->merge(['reteica_base_manual' => 1]);
+        }
         try {
             (new \App\Compras\Services\ReteicaService())->validar_seleccion(
                 $request->input('reteica_retencion_id', 0), $request->core_tipo_transaccion_id
@@ -133,14 +144,14 @@ class CompraController extends TransaccionController
             return $this->respuesta_error_guardado($request, $e->getMessage());
         }
         $lineas_registros_originales = json_decode($request->all()['lineas_registros']);
-        if (is_array($lineas_registros_originales)) {
-            $lineas_registros_originales = (new RetencionFuenteService())->liquidar_lineas_request(
-                $lineas_registros_originales,
-                $request->fecha,
-                $request->proveedor_id
+        try {
+            $lineas_registros_originales = (new RetencionFuenteService())->validar_lineas_enviadas(
+                is_array($lineas_registros_originales) ? $lineas_registros_originales : [], $request->fecha
             );
-            $request->merge(['lineas_registros' => json_encode($lineas_registros_originales)]);
+        } catch (\InvalidArgumentException $e) {
+            return $this->respuesta_error_guardado($request, $e->getMessage());
         }
+        $request->merge(['lineas_registros' => json_encode($lineas_registros_originales)]);
 
         $doc_encabezado = DB::transaction(function () use ($request, $lineas_registros_originales) {
             // La FK seleccionada en la factura viaja intacta a la entrada de
@@ -228,38 +239,10 @@ class CompraController extends TransaccionController
             return 0;
         }
 
-        $proveedor = $proveedor_id ? Proveedor::find((int)$proveedor_id) : null;
-
         foreach ($lineas_registros as $linea_registro) {
-            if (!isset($linea_registro->contab_retencion_id)) {
-                continue;
+            if (isset($linea_registro->contab_retencion_id) && (int)$linea_registro->contab_retencion_id > 0) {
+                $total_retenciones += (float)$linea_registro->valor_retencion;
             }
-
-            $contab_retencion_id = (int)$linea_registro->contab_retencion_id;
-            if ($contab_retencion_id <= 0) {
-                continue;
-            }
-
-            $retencion = Retencion::find($contab_retencion_id);
-            if (is_null($retencion)) {
-                continue;
-            }
-
-            if (
-                (isset($linea_registro->retencion_fuente_concepto_anual_id) && (int)$linea_registro->retencion_fuente_concepto_anual_id > 0) ||
-                (isset($linea_registro->retencion_fuente_codigo) && $linea_registro->retencion_fuente_codigo != '')
-            ) {
-                $datos_retencion = $service->liquidar_linea($linea_registro, $fecha, null, $proveedor);
-            } else {
-                $datos_retencion = $service->calcular_valor_retencion_linea(
-                    (float)$linea_registro->precio_unitario,
-                    (float)$linea_registro->cantidad,
-                    (float)$linea_registro->tasa_impuesto,
-                    (float)$retencion->tasa_retencion
-                );
-            }
-
-            $total_retenciones += (float)$datos_retencion['valor_retencion'];
         }
 
         return round($total_retenciones, 2);
@@ -293,6 +276,12 @@ class CompraController extends TransaccionController
 
         if (!(int)$request->liquida_impuestos && (int)config('configuracion.liquidacion_impuestos')) {
             $lineas_registros = $this->recalcular_lineas_registros(json_decode($request->lineas_registros));
+        }
+
+        // La factura directa recibe todos los productos en la bodega final del
+        // encabezado. Las líneas pueden conservar la bodega de su captura.
+        foreach ($lineas_registros as $linea) {
+            $linea->inv_bodega_id = (int)$request->inv_bodega_id;
         }
 
         // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
@@ -417,34 +406,8 @@ class CompraController extends TransaccionController
                         $retencion_fuente_codigo = $lineas_registros_originales[$linea]->retencion_fuente_codigo;
                     }
                     if ($contab_retencion_id > 0) {
-                        $retencion = Retencion::find($contab_retencion_id);
-                        if (!is_null($retencion)) {
-                            if ($retencion_fuente_concepto_anual_id > 0 || $retencion_fuente_codigo != '') {
-                                $datos_retencion = $retencion_service->liquidar_linea(
-                                    (object)[
-                                        'inv_producto_id' => $un_registro->inv_producto_id,
-                                        'precio_unitario' => $precio_unitario,
-                                        'cantidad' => $cantidad,
-                                        'tasa_impuesto' => $tasa_impuesto,
-                                        'retencion_fuente_concepto_anual_id' => $retencion_fuente_concepto_anual_id,
-                                        'retencion_fuente_codigo' => $retencion_fuente_codigo,
-                                    ],
-                                    $doc_encabezado->fecha,
-                                    null,
-                                    $doc_encabezado->proveedor
-                                );
-
-                                $tasa_retencion = (float)$datos_retencion['tasa_retencion'];
-                                $valor_retencion = (float)$datos_retencion['valor_retencion'];
-                                $contab_retencion_id = (int)$datos_retencion['contab_retencion_id'];
-                            } else {
-                                $tasa_retencion = (float)$retencion->tasa_retencion;
-                                $datos_retencion = $retencion_service->calcular_valor_retencion_linea($precio_unitario, $cantidad, $tasa_impuesto, $tasa_retencion);
-                                $valor_retencion = (float)$datos_retencion['valor_retencion'];
-                            }
-                        } else {
-                            $contab_retencion_id = 0;
-                        }
+                        $tasa_retencion = (float)$lineas_registros_originales[$linea]->tasa_retencion;
+                        $valor_retencion = (float)$lineas_registros_originales[$linea]->valor_retencion;
                     }
                 }
 
@@ -464,6 +427,7 @@ class CompraController extends TransaccionController
 
                 if ($campos_retencion_disponibles) {
                     $linea_datos = $linea_datos +
+                        ['base_retencion' => $maneja_retenciones && isset($lineas_registros_originales[$linea]->base_retencion) ? $lineas_registros_originales[$linea]->base_retencion : null] +
                         ['contab_retencion_id' => $contab_retencion_id] +
                         ['tasa_retencion' => $tasa_retencion] +
                         ['valor_retencion' => $valor_retencion] +

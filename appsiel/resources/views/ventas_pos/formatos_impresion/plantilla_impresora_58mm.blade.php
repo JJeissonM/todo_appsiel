@@ -45,6 +45,8 @@
     @endif
 
     <div style="margin-top: 12px !important; font-size: {{ $tamanino_fuente_2 }};" width="100%">
+    @include('ventas_pos.formatos_impresion.hora_impresion')
+
         <b>{{ $tipo_doc_app->descripcion }} No.</b> 
         @if( !is_null( $resolucion ) )
             {{ $resolucion->prefijo }}
@@ -70,8 +72,8 @@
     <div style="border: solid 1px #ddd;">
         <?php
             $tercero_cliente = !is_null($cliente) ? $cliente->tercero : null;
-            $vendedor_cliente = !is_null($cliente) ? $cliente->vendedor : null;
-            $tercero_vendedor = !is_null($vendedor_cliente) ? $vendedor_cliente->tercero : null;
+            $vendedor_documento = isset($doc_encabezado) ? $doc_encabezado->vendedor : (isset($vendedor) ? $vendedor : null);
+            $tercero_vendedor = !is_null($vendedor_documento) ? $vendedor_documento->tercero : null;
             $cliente_descripcion = !is_null($tercero_cliente) ? $tercero_cliente->descripcion : '';
             $cliente_identificacion = !is_null($tercero_cliente) ? $tercero_cliente->numero_identificacion : '';
             $cliente_direccion = !is_null($tercero_cliente) ? $tercero_cliente->direccion1 : '';
@@ -152,7 +154,7 @@
                 @if( !is_null($resolucion) ) 
                     <tr>
                         <td colspan="4">
-                            Factura {{ $resolucion->tipo_solicitud }} por la DIAN. Resolución No. {{ $resolucion->numero_resolucion }} del {{ $resolucion->fecha_expedicion }}. Prefijo {{ $resolucion->prefijo }} desde {{ $resolucion->numero_fact_inicial }} hasta {{ $resolucion->numero_fact_final }}
+                            @include('ventas.incluir.factura_detalles_resolucion_dian', ['resolucion' => $resolucion])
                         </td>
                     </tr>
                 @endif
@@ -176,6 +178,7 @@
         </tr>
     </table>
     
+
     <br><br>
 
     <script type="text/javascript">

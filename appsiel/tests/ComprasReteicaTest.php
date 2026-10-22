@@ -48,6 +48,81 @@ class ComprasReteicaTest extends TestCase
         return [$doc, $retencion];
     }
 
+    public function test_retefuente_conserva_valor_enviado_en_contabilidad_y_control()
+    {
+        foreach ([25, 48] as $tipo) {
+            list($doc, $retencion) = $this->preparar($tipo);
+            config(['contabilidad.categoria_reteica_id'=>0, 'contabilidad.tercero_dian_id'=>$doc->core_tercero_id]);
+            $enviada = (object)[
+                'contab_retencion_id'=>$retencion->id, 'tasa_retencion'=>1.23,
+                'base_retencion'=>10036.59, 'valor_retencion'=>123.45, 'precio_unitario'=>5355000, 'cantidad'=>1, 'tasa_impuesto'=>19,
+            ];
+            $service = new App\Compras\Services\RetencionFuenteService();
+            $lineas = $service->validar_lineas_enviadas([$enviada], $doc->fecha);
+            $this->assertSame(123.45, (new CompraController())->get_total_retenciones_desde_lineas_registros($lineas, $doc->fecha));
+            $linea = ComprasDocRegistro::where('compras_doc_encabezado_id', $doc->id)->firstOrFail();
+            $linea->update((array)$enviada);
+            (new ContabilidadService())->aplicar_retenciones_por_linea_compras($doc);
+            $registro = RegistroRetencion::where('compras_doc_registro_id', $linea->id)->firstOrFail();
+            $control = ComprasRetencionLiquidacion::where('compras_doc_registro_id', $linea->id)->firstOrFail();
+            $this->assertEquals(123.45, $registro->valor);
+            $this->assertEquals(10036.59, $registro->valor_base_retencion);
+            $this->assertEquals(10036.59, $control->base_retencion);
+            $this->assertEquals(1.23, $registro->tasa_retencion);
+            $this->assertEquals(123.45, $control->valor_retencion);
+            $this->assertEquals(1.23, $control->tasa_retencion);
+            $this->assertEquals(123.45, $linea->fresh()->valor_retencion);
+            $this->assertEquals(-123.45, ContabMovimiento::where('core_tipo_transaccion_id',$tipo)->where('consecutivo',$doc->consecutivo)->sum('valor_credito'));
+            $this->assertEquals(123.45, CxpMovimiento::where('core_tipo_transaccion_id',$tipo)->where('consecutivo',$doc->consecutivo)->sum('saldo_pendiente'));
+            $sinRetencion = (object)['contab_retencion_id'=>0, 'valor_retencion'=>0, 'tasa_retencion'=>0];
+            $this->assertEquals(0, $service->validar_lineas_enviadas([$sinRetencion], $doc->fecha)[0]->contab_retencion_id);
+        }
+    }
+
+    public function test_base_retencion_invalida_no_se_normaliza_ni_se_guarda()
+    {
+        list($doc, $retencion) = $this->preparar();
+        config(['contabilidad.categoria_reteica_id'=>0]);
+        foreach (['', -1, 'abc', '1.234', null] as $base) {
+            try {
+                (new App\Compras\Services\RetencionFuenteService())->validar_lineas_enviadas([
+                    (object)['contab_retencion_id'=>$retencion->id, 'base_retencion'=>$base,
+                        'tasa_retencion'=>1.23, 'valor_retencion'=>123.45]
+                ], $doc->fecha);
+                $this->fail('La base inválida debe rechazarse.');
+            } catch (InvalidArgumentException $e) {
+                $this->assertContains('base', $e->getMessage());
+            }
+        }
+    }
+
+    public function test_retefuente_rechaza_valor_negativo_enviado()
+    {
+        list($doc, $retencion) = $this->preparar();
+        config(['contabilidad.categoria_reteica_id'=>0]);
+        $this->setExpectedException(InvalidArgumentException::class);
+        (new App\Compras\Services\RetencionFuenteService())->validar_lineas_enviadas([
+            (object)['contab_retencion_id'=>$retencion->id, 'base_retencion'=>100, 'tasa_retencion'=>1, 'valor_retencion'=>-1]
+        ], $doc->fecha);
+    }
+
+    public function test_reteica_conserva_base_manual_incluso_cero()
+    {
+        foreach ([25, 48] as $tipo) {
+            list($doc) = $this->preparar($tipo);
+            $doc->update(['reteica_base_manual'=>1, 'reteica_base'=>1000000]);
+            $service = new ReteicaService();
+            $this->assertEquals(4140, $service->liquidar_documento($doc));
+            $service->contabilizar($doc);
+            $registro = (new ContabilidadService())->get_retenciones($doc)->first();
+            $this->assertEquals(1000000, $registro->valor_base_retencion);
+            $this->assertEquals(4140, $registro->valor);
+            $doc->update(['reteica_base'=>0]);
+            $this->assertEquals(0, $service->liquidar_documento($doc));
+            $this->assertEquals(0, $doc->fresh()->reteica_base);
+        }
+    }
+
     public function test_calculo_por_mil_y_redondeo()
     {
         $s = new ReteicaService();

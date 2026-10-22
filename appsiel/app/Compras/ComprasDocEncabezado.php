@@ -22,6 +22,8 @@ class ComprasDocEncabezado extends Model
     protected $fillable = [
         'cta_x_pagar_id',
         'reteica_retencion_id',
+        'reteica_base',
+        'reteica_base_manual',
         'core_tipo_transaccion_id',
         'core_tipo_doc_app_id',
         'consecutivo',
@@ -386,7 +388,8 @@ class ComprasDocEncabezado extends Model
 
         $ids_documentos_relacionados = explode(',', $doc_encabezado->entrada_almacen_id);
 
-        $app_id = 9;
+        // Entradas y devoluciones se consultan con los permisos de Inventarios.
+        $app_id = 8;
 
         $cant_registros = count($ids_documentos_relacionados);
 

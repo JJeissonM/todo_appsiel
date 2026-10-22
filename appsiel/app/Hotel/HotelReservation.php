@@ -3,6 +3,7 @@
 namespace App\Hotel;
 
 use App\CxC\CxcMovimiento;
+use App\Hotel\Services\HotelReservationService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -62,12 +63,13 @@ class HotelReservation extends Model
         ), array(
             'cliente_id.required' => 'Debe seleccionar el huesped.',
             'room_id.required' => 'Debe seleccionar una habitacion.',
-            'reserved_from.required' => 'Debe ingresar la fecha desde de la reserva.',
-            'reserved_until.required' => 'Debe ingresar la fecha hasta de la reserva.',
+            'reserved_from.required' => 'Debe ingresar la fecha y hora de inicio de la reserva.',
+            'reserved_until.required' => 'Debe ingresar la fecha y hora de finalizacion de la reserva.',
         ));
 
         $validator = \Validator::make($request->all(), array());
         $validator->after(function ($validator) use ($request, $id) {
+            $service = app(HotelReservationService::class);
             $reservation = new self;
             $reservation->id = $id;
             $reservation->empresa_id = $request->empresa_id;
@@ -77,17 +79,18 @@ class HotelReservation extends Model
 
             $reservation->cliente_id = $request->cliente_id;
             $reservation->room_id = $request->room_id;
-            $reservation->reserved_from = !empty($request->reserved_from) ? substr($request->reserved_from, 0, 10) : '';
-            $reservation->reserved_until = !empty($request->reserved_until) ? substr($request->reserved_until, 0, 10) : '';
+            $reservation->reserved_from = $request->reserved_from;
+            $reservation->reserved_until = $request->reserved_until;
             $reservation->status = in_array($request->status, self::statuses()) ? $request->status : self::STATUS_ACTIVA;
 
-            $message = self::getPreparationError($reservation);
+            $service->prepare($reservation);
+            $message = $service->getPreparationError($reservation);
             if (is_null($message)) {
-                $message = self::getAvailabilityError($reservation);
+                $message = $service->getAvailabilityError($reservation);
             }
 
             if (!is_null($message)) {
-                $validator->errors()->add('room_id', $message);
+                $validator->errors()->add('reserved_from', $message);
             }
         });
 
@@ -108,15 +111,9 @@ class HotelReservation extends Model
             $reservation->status = self::STATUS_ACTIVA;
         }
 
-        if (!empty($reservation->reserved_from)) {
-            $reservation->reserved_from = substr($reservation->reserved_from, 0, 10);
-        }
-
-        if (!empty($reservation->reserved_until)) {
-            $reservation->reserved_until = substr($reservation->reserved_until, 0, 10);
-        }
-
-        $message = self::getPreparationError($reservation);
+        $service = app(HotelReservationService::class);
+        $service->prepare($reservation);
+        $message = $service->getPreparationError($reservation);
 
         if (!is_null($message)) {
             throw new \Exception($message);
@@ -125,81 +122,11 @@ class HotelReservation extends Model
 
     private static function validateAvailability($reservation)
     {
-        $message = self::getAvailabilityError($reservation);
+        $message = app(HotelReservationService::class)->getAvailabilityError($reservation);
 
         if (!is_null($message)) {
             throw new \Exception($message);
         }
-    }
-
-    private static function getPreparationError($reservation)
-    {
-        if (empty($reservation->reserved_from) || empty($reservation->reserved_until)) {
-            return 'Debe ingresar la fecha desde y la fecha hasta de la reserva.';
-        }
-
-        if ($reservation->reserved_until < $reservation->reserved_from) {
-            return 'La fecha hasta de la reserva no puede ser menor que la fecha desde.';
-        }
-
-        return null;
-    }
-
-    private static function getAvailabilityError($reservation)
-    {
-        if ($reservation->status != self::STATUS_ACTIVA) {
-            return null;
-        }
-
-        if (empty($reservation->room_id) || empty($reservation->reserved_from) || empty($reservation->reserved_until)) {
-            return null;
-        }
-
-        $room = HotelRoom::where('empresa_id', $reservation->empresa_id)
-            ->where('id', $reservation->room_id)
-            ->first();
-
-        if (is_null($room)) {
-            return 'La habitacion seleccionada no existe.';
-        }
-
-        if ((int)$room->is_active != 1) {
-            return 'La habitacion seleccionada esta inactiva y no puede reservarse.';
-        }
-
-        if ($room->status == HotelRoom::STATUS_BLOQUEADA) {
-            return 'La habitacion seleccionada esta bloqueada y no puede reservarse.';
-        }
-
-        $query = self::where('empresa_id', $reservation->empresa_id)
-            ->where('room_id', $reservation->room_id)
-            ->whereNotIn('status', array(self::STATUS_ANULADA, self::STATUS_CUMPLIDA))
-            ->where('reserved_from', '<=', $reservation->reserved_until)
-            ->where('reserved_until', '>=', $reservation->reserved_from);
-
-        if (!empty($reservation->id)) {
-            $query->where('id', '<>', $reservation->id);
-        }
-
-        if ($query->count() > 0) {
-            return 'La habitacion ya tiene una reserva activa en ese rango de fechas.';
-        }
-
-        $activeStay = HotelStay::where('empresa_id', $reservation->empresa_id)
-            ->where('room_id', $reservation->room_id)
-            ->where('status', HotelStay::STATUS_ACTIVA)
-            ->where('check_in_at', '<=', $reservation->reserved_until . ' 23:59:59')
-            ->where(function ($q) use ($reservation) {
-                $q->whereNull('expected_check_out_at')
-                    ->orWhere('expected_check_out_at', '>=', $reservation->reserved_from . ' 00:00:00');
-            })
-            ->count();
-
-        if ($activeStay > 0) {
-            return 'La habitacion tiene una estadia activa en ese rango de fechas.';
-        }
-
-        return null;
     }
 
     public function store_adicional($datos, $registro)
@@ -421,7 +348,7 @@ class HotelReservation extends Model
 
     public function syncRoomStatus()
     {
-        if (!in_array($this->status, array(self::STATUS_ANULADA, self::STATUS_CUMPLIDA)) && $this->coversDate(date('Y-m-d'))) {
+        if (!in_array($this->status, array(self::STATUS_ANULADA, self::STATUS_CUMPLIDA)) && $this->coversMoment(date('Y-m-d H:i:s'))) {
             $room = $this->room;
             if (!is_null($room) && $room->status == HotelRoom::STATUS_DISPONIBLE) {
                 $room->status = HotelRoom::STATUS_RESERVADA;
@@ -441,11 +368,12 @@ class HotelReservation extends Model
             return;
         }
 
+        $now = date('Y-m-d H:i:s');
         $hasTodayReservation = self::where('empresa_id', $this->empresa_id)
             ->where('room_id', $this->room_id)
             ->whereNotIn('status', array(self::STATUS_ANULADA, self::STATUS_CUMPLIDA))
-            ->where('reserved_from', '<=', date('Y-m-d'))
-            ->where('reserved_until', '>=', date('Y-m-d'))
+            ->where('reserved_from', '<=', $now)
+            ->where('reserved_until', '>', $now)
             ->count() > 0;
 
         if (!$hasTodayReservation) {
@@ -454,9 +382,14 @@ class HotelReservation extends Model
         }
     }
 
+    public function coversMoment($moment)
+    {
+        return app(HotelReservationService::class)->coversMoment($this, $moment);
+    }
+
     public function coversDate($date)
     {
-        return $this->reserved_from <= $date && $this->reserved_until >= $date;
+        return $this->coversMoment($date);
     }
 
     public function room()

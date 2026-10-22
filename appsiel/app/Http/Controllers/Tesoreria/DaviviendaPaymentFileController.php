@@ -16,13 +16,13 @@ class DaviviendaPaymentFileController extends Controller
         $this->middleware('auth');
     }
 
-    public function download($id, DaviviendaMassPaymentFileService $service)
+    public function download($pago_cxp_id, DaviviendaMassPaymentFileService $service)
     {
         if (!Auth::user()->can('teso_pagos_cxp')) {
             abort(403, 'No tiene permiso para descargar archivos bancarios de Pagos de CxP.');
         }
 
-        $payment = TesoDocEncabezado::where('id', (int) $id)
+        $payment = TesoDocEncabezado::where('id', (int) $pago_cxp_id)
             ->where('core_empresa_id', Auth::user()->empresa_id)
             ->where('core_tipo_transaccion_id', 33)
             ->firstOrFail();

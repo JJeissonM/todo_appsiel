@@ -43,6 +43,7 @@ class DocumentHeaderService
 
         // Verificar si la factura tiene abonos, si tiene no se puede eliminar
         $abonos = CxcAbono::where('doc_cxc_transacc_id',$document_header->core_tipo_transaccion_id)
+                            ->where('core_empresa_id', $document_header->core_empresa_id)
                             ->where('doc_cxc_tipo_doc_id',$document_header->core_tipo_doc_app_id)
                             ->where('doc_cxc_consecutivo',$document_header->consecutivo)
                             ->get();
@@ -50,11 +51,15 @@ class DocumentHeaderService
         if (!empty($abonos->toArray())) {
             $lista_abonos = '';
             foreach ($abonos as $abono) {
-                $lista_abonos .= ' *** ' . $abono->payment_document_header()->get_label_documento();
+                // El origen puede ser una nota contable, cuyo encabezado no
+                // implementa get_label_documento(), o un documento histórico ausente.
+                $tipo_documento = $abono->tipo_documento_app;
+                $prefijo = is_null($tipo_documento) ? 'Tipo documento ' . $abono->core_tipo_doc_app_id : $tipo_documento->prefijo;
+                $lista_abonos .= ' *** ' . $prefijo . ' ' . $abono->consecutivo;
             }
             return (object)[
                 'status'=>'mensaje_error',
-                'message'=>'Factura ' . $document_header->get_label_documento()  . ' NO puede ser eliminada. Se le han hecho Recaudos de CXC (Tesorería): ' . $lista_abonos
+                'message'=>'Factura ' . $document_header->get_label_documento() . ' NO puede ser anulada porque tiene abonos de CxC (recaudos o cruces): ' . $lista_abonos . '. Antes de anular la factura, revise y revierta los recaudos o documentos de cruce asociados desde Tesorería o CxC.'
             ];
         }
 

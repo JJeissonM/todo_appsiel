@@ -62,6 +62,33 @@ class CxpAccountingAccountResolverTest extends PHPUnit_Framework_TestCase
         $this->assertSame(29, $resolver->getAdvanceAccountId($advance));
     }
 
+    public function testPayableMarkerHasPriorityOverAnotherCreditForTheSameThirdParty()
+    {
+        $payable = $this->insertCxpMovement(14, 21, 3, 5250678);
+
+        // La deducción de un anticipo puede aparecer antes que el pasivo real.
+        $this->insertAccountingLine(14, 21, 3, 136526, 0, -800000, '');
+        $this->insertAccountingLine(14, 21, 3, 250501, 0, -5250678, 'crear_cxp');
+
+        $this->assertSame(
+            250501,
+            (new CxpAccountingAccountResolver())->getPayableAccountId($payable)
+        );
+    }
+
+    public function testHistoricalPayableWithoutMarkerIsResolvedByItsUniqueAmount()
+    {
+        $payable = $this->insertCxpMovement(14, 21, 4, 5250678);
+
+        $this->insertAccountingLine(14, 21, 4, 136526, 0, -800000, '');
+        $this->insertAccountingLine(14, 21, 4, 250501, 0, -5250678, '');
+
+        $this->assertSame(
+            250501,
+            (new CxpAccountingAccountResolver())->getPayableAccountId($payable)
+        );
+    }
+
     public function testCruceRejectsAnUnresolvedAccountingAccount()
     {
         $this->setExpectedException(

@@ -392,6 +392,17 @@ class FacturaPosController extends TransaccionController
                 $obj_acumm_serv->accumulate_one_invoice( $doc_encabezado->id );
             }
 
+            // Confirmar la factura solo después de aplicar sus anticipos y pagos.
+            if( $crear_cruce_con_anticipos )
+            {
+                (new CxCService())->crear_cruce_con_anticipos( $doc_encabezado, $request->object_anticipos );
+            }
+
+            if ( $crear_abonos) {
+                $datos = $doc_encabezado->toArray();
+                (new TreasuryService())->crear_abonos_documento( $doc_encabezado, $datos['lineas_registros_medios_recaudos'] );
+            }
+
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -406,16 +417,6 @@ class FacturaPosController extends TransaccionController
             }
 
             throw $e;
-        }
-
-        if( $crear_cruce_con_anticipos )
-        {
-            (new CxCService())->crear_cruce_con_anticipos( $doc_encabezado, $request->object_anticipos );
-        }
-
-        if ( $crear_abonos) {
-            $datos = $doc_encabezado->toArray();
-            (new TreasuryService())->crear_abonos_documento( $doc_encabezado, $datos['lineas_registros_medios_recaudos'] );
         }
 
         $response = $this->build_json_doc_encabezado($doc_encabezado);
@@ -485,7 +486,7 @@ class FacturaPosController extends TransaccionController
             'doc_encabezado_valor_total' => (float)$doc_encabezado->valor_total,
             'total_efectivo_recibido' => (float)$doc_encabezado->total_efectivo_recibido,
             'valor_total_cambio' => (float)$doc_encabezado->valor_total_cambio,
-            'doc_encabezado_tercero_nombre_completo' => $doc_encabezado->cliente->tercero->descripcion,
+            'doc_encabezado_tercero_nombre_completo' => $doc_encabezado->cliente_facturacion->tercero->descripcion,
             'doc_encabezado_vendedor_descripcion' => $doc_encabezado->vendedor->tercero->descripcion,
             'cantidad_total_productos' => count($doc_encabezado->lineas_registros),
             'doc_encabezado_descripcion' => $doc_encabezado->descripcion,
@@ -495,11 +496,11 @@ class FacturaPosController extends TransaccionController
             ]),
             'etiquetas' => $etiquetas,
             'resolucion' => $arr_resolucion,
-            'cliente_info' => array_merge( $doc_encabezado->cliente->tercero->toArray(), [
-                'descripcion_tipo_documento_identidad' => $doc_encabezado->cliente->tercero->tipo_doc_identidad->abreviatura,
-                'descripcion_ciudad' => $doc_encabezado->cliente->tercero->ciudad->descripcion,
+            'cliente_info' => array_merge( $doc_encabezado->cliente_facturacion->tercero->toArray(), [
+                'descripcion_tipo_documento_identidad' => $doc_encabezado->cliente_facturacion->tercero->tipo_doc_identidad->abreviatura,
+                'descripcion_ciudad' => $doc_encabezado->cliente_facturacion->tercero->ciudad->descripcion,
             ]),
-            'saldo_pendiente_cxc' => (new CxCServices())->get_movimiento_documentos_pendientes_fecha_corte($doc_encabezado->cliente->core_tercero_id, $fecha_doc_encabezado),
+            'saldo_pendiente_cxc' => (new CxCServices())->get_movimiento_documentos_pendientes_fecha_corte($doc_encabezado->cliente_facturacion->core_tercero_id, $fecha_doc_encabezado),
             'lbl_creado_por_fecha_y_hora' => explode('@', $doc_encabezado->creado_por)[0]
         ];        
     }
@@ -758,7 +759,7 @@ class FacturaPosController extends TransaccionController
 
         $redondear_centena = config('ventas_pos.redondear_centena');
         
-        $cliente = $factura->cliente;
+        $cliente = $factura->cliente_facturacion;
         $vendedor = $factura->vendedor;
 
         $pedido_id = 0;
@@ -800,6 +801,12 @@ class FacturaPosController extends TransaccionController
      */
     public function update(Request $request, $id)
     {
+        try {
+            (new \App\VentasPos\Services\InvoiceCustomerService())->normalizeRequest($request);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
+        }
+
         $this->aplicar_excedente_transferencia_como_otros_recaudos($request);
         $lineas_registros = json_decode($request->lineas_registros);
         $total_factura = $this->get_total_factura_from_arr_lineas_registros($lineas_registros);
@@ -1513,23 +1520,16 @@ class FacturaPosController extends TransaccionController
 
         $modelo = Modelo::find($request->id_modelo);
 
-        // Guardar encabezado del documento
-        $doc_encabezado = app($modelo->name_space)->create($this->datos);
-
         $valor_movimiento = $request->col_valor;
-
-        // Si se está almacenando una transacción que maneja consecutivo
-        if (isset($request->consecutivo) and isset($request->core_tipo_doc_app_id)) {
-            // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
-            $consecutivo = TipoDocApp::get_consecutivo_actual($request->core_empresa_id, $request->core_tipo_doc_app_id) + 1;
-
-            // Se incementa el consecutivo para ese tipo de documento y la empresa
-            TipoDocApp::aumentar_consecutivo($request->core_empresa_id, $request->core_tipo_doc_app_id);
-
-            $doc_encabezado->consecutivo = $consecutivo;
-            $doc_encabezado->valor_total = $valor_movimiento;
-            $doc_encabezado->save();
-        }
+        $datos_encabezado = $this->datos;
+        $doc_encabezado = \App\Core\Services\DocumentSequenceTransaction::run(function () use ($request, $modelo, $datos_encabezado, $valor_movimiento) {
+            $datos = $datos_encabezado;
+            if (isset($request->consecutivo) && isset($request->core_tipo_doc_app_id)) {
+                $datos['consecutivo'] = TipoDocApp::reservar_consecutivo($request->core_empresa_id, $request->core_tipo_doc_app_id);
+                $datos['valor_total'] = $valor_movimiento;
+            }
+            return app($modelo->name_space)->create($datos);
+        });
 
         // Guardar registro del documentos
         $tipo_transaccion = TipoTransaccion::find($request->core_tipo_transaccion_id);

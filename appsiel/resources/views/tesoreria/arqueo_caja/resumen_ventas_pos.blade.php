@@ -49,7 +49,7 @@
                 </tr>
                 <tr> 
                     <td style="color: black !important; text-align: center; background-color: #f2f2f2;">
-                        <b>QR/Transf.</b>
+                        <b>QR/Transf./Tarj.</b>
                     </td>
                 </tr>
                 <tr>

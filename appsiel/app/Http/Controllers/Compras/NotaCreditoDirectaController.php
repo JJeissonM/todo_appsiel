@@ -30,6 +30,7 @@ use App\CxP\CxpAbono;
 
 use App\Contabilidad\Impuesto;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class NotaCreditoDirectaController extends TransaccionController
 {
@@ -61,18 +62,31 @@ class NotaCreditoDirectaController extends TransaccionController
      */
     public function store(Request $request)
     {
-        // 1ro. Crear documento de Salida de inventarios (Devolución) con base en la entrada y las cantidades a devolver
-        // WARNING. HECHO MANUALMENTE
-        $request['entrada_almacen_id'] = $this->crear_devolucion( $request );
+        \App\Compras\Services\CantidadLineasService::prepararRequest($request);
+        // La nota directa usa la cuenta del proveedor, no la opción de las facturas.
+        $request->merge(['cta_x_pagar_id' => null]);
 
-        // 2do. Crear encabezado del documento de Compras (Nota Crédito)
-        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
-        $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
+        $nota_credito = DB::transaction(function () use ($request) {
+            $request['entrada_almacen_id'] = $this->crear_devolucion($request);
 
-        // 3ro. Crear líneas de registros del documento
-        NotaCreditoDirectaController::crear_registros_nota_credito( $request, $nota_credito );
+            $encabezado_documento = new EncabezadoDocumentoTransaccion($request->url_id_modelo);
+            $nota_credito = $encabezado_documento->crear_nuevo($request->all());
 
-        return redirect('compras_notas_credito_directa/'.$nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
+            NotaCreditoDirectaController::crear_registros_nota_credito($request, $nota_credito);
+
+            return $nota_credito;
+        });
+
+        $url = url('compras_notas_credito_directa/' . $nota_credito->id)
+            . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo
+            . '&id_transaccion=' . $request->url_id_transaccion;
+
+        // El formulario compartido de compras espera JSON al guardar por AJAX.
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['redirect_url' => $url]);
+        }
+
+        return redirect($url);
     }
 
     /*
@@ -242,11 +256,7 @@ class NotaCreditoDirectaController extends TransaccionController
             'consecutivo' => $documento->consecutivo];
 
         // Está en un documento cruce de cxp?
-        $cantidad = CxpAbono::where($array_wheres)
-                            ->where('doc_cruce_transacc_id','<>',0)
-                            ->count();
-
-        if($cantidad != 0)
+        if (CxpAbono::estaEnCruceActivo($documento))
         {
             return redirect( 'compras/'.$id.'?id='.$this->app->id.'&id_modelo='.$this->modelo->id.'&id_transaccion='.$this->transaccion->id.'&vista=compras.notas_credito.show')->with('mensaje_error','Nota NO puede ser anulada. Está en documento cruce de CxP.');
         }

@@ -54,7 +54,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\DB;
-use NumerosEnLetras;
+use App\Tesoreria\Services\ImporteChequeEnLetras;
 
 class PagoCxpController extends TransaccionController
 {
@@ -139,6 +139,8 @@ class PagoCxpController extends TransaccionController
     {
         try {
             $doc_encabezado = DB::transaction(function () use ($request) {
+                $this->completar_detalle_encabezado_desde_documentos($request);
+
                 $doc = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
                 $totalAbonos = $this->almacenar_registros_cxp($request, $doc);
@@ -204,6 +206,101 @@ class PagoCxpController extends TransaccionController
         return redirect($urlDocumento);
     }
 
+    protected function completar_detalle_encabezado_desde_documentos(Request $request)
+    {
+        if ((int)config('tesoreria.generar_detalle_pago_cxp_desde_documentos', 0) !== 1
+            || trim((string)$request->descripcion) !== '') {
+            return;
+        }
+
+        $lineas = json_decode((string)$request->lineas_registros);
+        if (!is_array($lineas)) {
+            return;
+        }
+
+        $detalles = [];
+        foreach ($lineas as $linea) {
+            $documentoId = is_object($linea) && isset($linea->id_doc)
+                ? (int)$linea->id_doc
+                : 0;
+
+            if ($documentoId <= 0) {
+                continue;
+            }
+
+            $documento = CxpMovimiento::find($documentoId);
+            if (is_null($documento)) {
+                continue;
+            }
+
+            $detalle = $this->obtener_detalle_documento_cxp($documento);
+            if ($detalle !== '') {
+                $detalles[] = $detalle;
+            }
+        }
+
+        if (!empty($detalles)) {
+            $request->merge(['descripcion' => implode(' | ', array_unique($detalles))]);
+        }
+    }
+
+    /**
+     * Obtiene el detalle a nivel de documento, no únicamente el de la fila de
+     * cartera seleccionada. Un documento puede generar varias filas en
+     * cxp_movimientos y la fila principal normalmente no tiene detalle.
+     */
+    protected function obtener_detalle_documento_cxp(CxpMovimiento $documento)
+    {
+        $detalle = trim((string)$documento->detalle);
+        if ($detalle !== '') {
+            return $detalle;
+        }
+
+        $tipoTransaccion = TipoTransaccion::with('modelo')->find($documento->core_tipo_transaccion_id);
+        $nombreModelo = !is_null($tipoTransaccion) && !is_null($tipoTransaccion->modelo)
+            ? trim((string)$tipoTransaccion->modelo->name_space)
+            : '';
+
+        if ($nombreModelo !== '' && class_exists($nombreModelo)) {
+            $modeloOrigen = app($nombreModelo);
+            $tablaOrigen = $modeloOrigen->getTable();
+            $camposIdentidad = [
+                'core_empresa_id',
+                'core_tipo_transaccion_id',
+                'core_tipo_doc_app_id',
+                'consecutivo'
+            ];
+            $tieneIdentidadDocumento = true;
+
+            foreach ($camposIdentidad as $campoIdentidad) {
+                if (!Schema::hasColumn($tablaOrigen, $campoIdentidad)) {
+                    $tieneIdentidadDocumento = false;
+                    break;
+                }
+            }
+
+            $documentoOrigen = $tieneIdentidadDocumento
+                ? $modeloOrigen->newQuery()
+                    ->where('core_empresa_id', $documento->core_empresa_id)
+                    ->where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
+                    ->where('core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
+                    ->where('consecutivo', $documento->consecutivo)
+                    ->first()
+                : null;
+
+            if (!is_null($documentoOrigen)) {
+                foreach (['descripcion', 'detalle'] as $campoDetalle) {
+                    $detalle = trim((string)$documentoOrigen->getAttribute($campoDetalle));
+                    if ($detalle !== '') {
+                        return $detalle;
+                    }
+                }
+            }
+        }
+
+        return '';
+    }
+
     protected function validar_balance_contable($doc_encabezado)
     {
         $filtros = [
@@ -227,24 +324,51 @@ class PagoCxpController extends TransaccionController
 
     public function almacenar_registros_cxp( Request $request, $doc_encabezado )
     {
-        $lineas_registros = json_decode($request->lineas_registros);
+        $jsonLineasRegistros = trim((string)$request->lineas_registros);
 
-        array_pop($lineas_registros);
+        // Los pagos directos no requieren aplicar valores a documentos de CxP.
+        if ($jsonLineasRegistros === '') {
+            return 0;
+        }
+
+        $lineas_registros = json_decode($jsonLineasRegistros);
+
+        if (!is_array($lineas_registros)) {
+            throw new \InvalidArgumentException('El detalle de documentos por pagar no tiene un formato válido.');
+        }
 
         $total_abonos_cxc = 0;
-        
-        $cantidad = count($lineas_registros);
-        for ($i=0; $i < $cantidad; $i++) 
+
+        foreach ($lineas_registros as $linea_registro)
         {
-            $abono = (float)$lineas_registros[$i]->abono;
-            $registro_movimiento_cxp = CxpMovimiento::find( (int)$lineas_registros[$i]->id_doc );
+            // tableToJSON incluye la fila de totales, que no representa un documento.
+            $idDocumento = is_object($linea_registro) && isset($linea_registro->id_doc)
+                ? (int)$linea_registro->id_doc
+                : 0;
+
+            if ($idDocumento <= 0) {
+                continue;
+            }
+
+            $abono = isset($linea_registro->abono) ? (float)$linea_registro->abono : 0;
+            if ($abono <= 0) {
+                throw new \InvalidArgumentException('El valor aplicado al documento por pagar debe ser mayor que cero.');
+            }
+
+            $registro_movimiento_cxp = CxpMovimiento::find($idDocumento);
+            if (is_null($registro_movimiento_cxp)) {
+                throw new \InvalidArgumentException('El documento por pagar seleccionado ya no existe.');
+            }
             
             // Almacenar registro de abono
             $datos = ['core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id]+
                         ['core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id]+
                         ['consecutivo' => $doc_encabezado->consecutivo]+
                         ['core_empresa_id' => $doc_encabezado->core_empresa_id]+
-                        ['core_tercero_id' => $doc_encabezado->core_tercero_id]+
+                        // El tercero del abono debe ser el de la línea de CxP.
+                        // Un mismo pago puede incluir documentos de terceros
+                        // diferentes al tercero del encabezado.
+                        ['core_tercero_id' => $registro_movimiento_cxp->core_tercero_id]+
                         ['modelo_referencia_tercero_index' => $registro_movimiento_cxp->modelo_referencia_tercero_index]+
                         ['referencia_tercero_id' => $registro_movimiento_cxp->referencia_tercero_id]+
                         ['fecha' => $doc_encabezado->fecha]+
@@ -417,6 +541,8 @@ class PagoCxpController extends TransaccionController
         }
 
         $conceptLines = $this->build_apm_concept_lines($encabezado, $registros);
+        $accountingSummary = $this->build_apm_accounting_summary($encabezado);
+        $importeCheque = ImporteChequeEnLetras::redondear($encabezado->valor_total);
         $createdBy = strtoupper(explode('@', (string) $encabezado->creado_por)[0]);
 
         return [
@@ -430,8 +556,8 @@ class PagoCxpController extends TransaccionController
                     'Number' => is_null($cheque) ? '' : (string) $cheque->numero_cheque,
                     'DateInfo' => $dateInfo,
                     'PayTo' => $receiverName,
-                    'AmountText' => strtoupper(trim(NumerosEnLetras::convertir((float) $encabezado->valor_total, 'pesos', false))) . ' MCTE.',
-                    'Amount' => number_format((float) $encabezado->valor_total, 2, ',', '.'),
+                    'AmountText' => ImporteChequeEnLetras::convertir($importeCheque),
+                    'Amount' => number_format($importeCheque, 0, ',', '.'),
                     'City' => strtoupper($city)
                 ],
                 'egreso' => [
@@ -443,9 +569,9 @@ class PagoCxpController extends TransaccionController
                     'ReceiverId' => (string) $receiverId,
                     'Concept' => $conceptLines,
                     'Description' => trim(strip_tags((string) $encabezado->documento_soporte)),
-                    'Items' => $this->build_apm_items($encabezado, $registros),
-                    'TotalDebit' => $this->format_apm_money($encabezado->valor_total),
-                    'TotalCredit' => $this->format_apm_money($encabezado->valor_total),
+                    'Items' => $accountingSummary['items'],
+                    'TotalDebit' => $this->format_apm_money($accountingSummary['total_debit'], $accountingSummary['decimals']),
+                    'TotalCredit' => $this->format_apm_money($accountingSummary['total_credit'], $accountingSummary['decimals']),
                     'CreatedBy' => $createdBy
                 ]
             ]
@@ -454,34 +580,126 @@ class PagoCxpController extends TransaccionController
 
     protected function build_apm_items($encabezado, $registros)
     {
+        $summary = $this->build_apm_accounting_summary($encabezado);
+
+        return $summary['items'];
+    }
+
+    protected function build_apm_accounting_summary($encabezado)
+    {
+        return $this->build_apm_accounting_summary_from_movements(
+            $encabezado->get_accounting_movement(),
+            CxpAbono::get_documentos_abonados($encabezado)
+        );
+    }
+
+    protected function build_apm_accounting_summary_from_movements($contab_mov, $doc_pagados)
+    {
         $items = [];
 
-        $contab_mov = $encabezado->get_accounting_movement();
-        $doc_pagados = CxpAbono::get_documentos_abonados($encabezado);
+        $debitCents = 0;
+        $creditCents = 0;
+        $displayAmounts = [];
 
         $abonosTomados = [];
+        $lines_quantity_max = 8;
+        $lines_quantity_count = 0;
+        $debitos_restantes_centavos = 0;
+        $creditos_restantes_centavos = 0;
         foreach ($contab_mov as $registro) {
 
             $valor_debito = (float) $registro->valor_debito;
             $valor_credito = (float) $registro->valor_credito;
-
+            $roundedDebit = $valor_debito > 0 ? (int)round($valor_debito, 0, PHP_ROUND_HALF_UP) : 0;
+            $roundedCredit = $valor_credito != 0 ? (int)round(abs($valor_credito), 0, PHP_ROUND_HALF_UP) : 0;
+            $lineDebitCents = $valor_debito > 0 ? (int)round($valor_debito * 100, 0, PHP_ROUND_HALF_UP) : 0;
+            $lineCreditCents = (int)round(abs($valor_credito) * 100, 0, PHP_ROUND_HALF_UP);
+            $debitCents += $lineDebitCents;
+            $creditCents += $lineCreditCents;
             $reference = $this->find_apm_reference($doc_pagados, $abonosTomados, $valor_debito);
 
             if (!is_null($reference)) {
                 $abonosTomados[] = (int)$reference->id;
             }
+            $lines_quantity_count++;
+            if ($lines_quantity_count <= $lines_quantity_max) {
+                $displayAmounts[] = [$lineDebitCents, $lineCreditCents];
+                $items[] = [
+                    'Account' => $registro->cuenta ? (string) $registro->cuenta->codigo : 'Cta Contable null',
+                    'CO' => '-',
+                    'ThirdParty' => $registro->tercero ? (string) $registro->tercero->numero_identificacion : 'Tercero null',
+                    'Reference' => !is_null($reference) ? (string) $reference->documento_prefijo_consecutivo : '-',
+                    'Debit' => $this->format_apm_money($roundedDebit, 0),
+                    'Credit' => $this->format_apm_money($roundedCredit, 0)
+                ];
+            }else {
+                $debitos_restantes_centavos += $lineDebitCents;
+                $creditos_restantes_centavos += $lineCreditCents;
+            }
+        }
 
+        if ($debitos_restantes_centavos > 0 || $creditos_restantes_centavos > 0) {
+            $displayAmounts[] = [$debitos_restantes_centavos, $creditos_restantes_centavos];
             $items[] = [
-                'Account' => $registro->cuenta ? (string) $registro->cuenta->codigo : 'Cta Contable null',
+                'Account' => '...',
                 'CO' => '-',
-                'ThirdParty' => $registro->tercero ? (string) $registro->tercero->numero_identificacion : 'Tercero null',
-                'Reference' => !is_null($reference) ? (string) $reference->documento_prefijo_consecutivo : '-',
-                'Debit' => $valor_debito > 0 ? $this->format_apm_money($valor_debito) : $this->format_apm_money(0),
-                'Credit' => $valor_credito != 0 ? $this->format_apm_money(abs($valor_credito)) : $this->format_apm_money(0)
+                'ThirdParty' => '...',
+                'Reference' => '...',
+                'Debit' => '$0',
+                'Credit' => '$0'
             ];
         }
 
-        return $items;
+        if ($debitCents !== $creditCents) {
+            throw new \RuntimeException(
+                'No se puede generar el comprobante APM porque los movimientos contables están descuadrados. ' .
+                'Débitos: ' . $this->format_apm_money($debitCents / 100, 2) .
+                '; créditos: ' . $this->format_apm_money($creditCents / 100, 2) . '.'
+            );
+        }
+
+        // Repartir los pesos residuales segun las mayores fracciones para que
+        // cada columna sume el total redondeado sin imprimir centavos.
+        $debits = $this->round_apm_column_to_pesos(array_column($displayAmounts, 0));
+        $credits = $this->round_apm_column_to_pesos(array_column($displayAmounts, 1));
+        foreach ($items as $index => &$item) {
+            $item['Debit'] = $this->format_apm_money($debits[$index], 0);
+            $item['Credit'] = $this->format_apm_money($credits[$index], 0);
+        }
+        unset($item);
+        $totalDebit = array_sum($debits);
+        $totalCredit = array_sum($credits);
+        $decimals = 0;
+
+        return [
+            'items' => $items,
+            'total_debit' => $totalDebit,
+            'total_credit' => $totalCredit,
+            'decimals' => $decimals
+        ];
+    }
+
+    protected function round_apm_column_to_pesos(array $cents)
+    {
+        $pesos = [];
+        $fractions = [];
+        foreach ($cents as $index => $value) {
+            $pesos[$index] = (int) floor($value / 100);
+            $fractions[$index] = $value % 100;
+        }
+        $remaining = (int) round(array_sum($cents) / 100, 0, PHP_ROUND_HALF_UP) - array_sum($pesos);
+        $indices = array_keys($cents);
+        usort($indices, function ($a, $b) use ($fractions) {
+            return $fractions[$a] === $fractions[$b] ? $a - $b : $fractions[$b] - $fractions[$a];
+        });
+        foreach ($indices as $index) {
+            if ($remaining <= 0) {
+                break;
+            }
+            $pesos[$index]++;
+            $remaining--;
+        }
+        return $pesos;
     }
 
     protected function find_apm_reference($documentosPagados, array $abonosTomados, $valorDebito)
@@ -501,38 +719,116 @@ class PagoCxpController extends TransaccionController
 
     protected function build_apm_concept_lines($encabezado, $registros)
     {
-        $lines = [];
-        $baseConcept = trim(strip_tags((string) $encabezado->descripcion));
+        $conceptParts = [];
+        $baseConcept = trim(strip_tags((string)$encabezado->descripcion));
 
         if ($baseConcept !== '') {
             foreach (preg_split("/(\r\n|\n|\r)/", $baseConcept) as $line) {
                 $line = trim($line);
                 if ($line !== '') {
-                    $lines[] = strtoupper($line);
+                    $conceptParts[] = $line;
                 }
             }
         }
 
         foreach ($registros as $registro) {
-            if (count($lines) >= 4) {
-                break;
-            }
-
-            $detalle = trim((string) $registro->detalle_operacion);
+            $detalle = trim(strip_tags((string)$registro->detalle_operacion));
             if ($detalle !== '') {
-                $lines[] = strtoupper($detalle);
+                $conceptParts[] = $detalle;
             }
         }
 
-        if (empty($lines)) {
-            $lines[] = 'PAGO DE CUENTAS POR PAGAR';
+        if (empty($conceptParts)) {
+            $conceptParts[] = 'PAGO DE CUENTAS POR PAGAR';
         }
 
-        while (count($lines) < 4) {
-            $lines[] = '';
+        $concept = preg_replace('/\s+/u', ' ', implode(' ', $conceptParts));
+        $concept = $this->normalize_apm_printable_text($concept);
+        $concept = $this->truncate_apm_concept($concept, 800);
+
+        // Concept es una sección repetida en APM: cada elemento del arreglo
+        // ocupa exactamente un renglón. Enviar cadenas multilínea, bloques
+        // agrupados o elementos vacíos hace que el renderizador vuelva a
+        // envolver el texto y genera desplazamientos o espacios verticales.
+        return $this->wrap_apm_concept_by_words($concept, 60);
+    }
+
+    protected function normalize_apm_printable_text($text)
+    {
+        $text = strtr($text, [
+            'Á' => 'A', 'À' => 'A', 'Â' => 'A', 'Ä' => 'A', 'Ã' => 'A',
+            'á' => 'a', 'à' => 'a', 'â' => 'a', 'ä' => 'a', 'ã' => 'a',
+            'É' => 'E', 'È' => 'E', 'Ê' => 'E', 'Ë' => 'E',
+            'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
+            'Í' => 'I', 'Ì' => 'I', 'Î' => 'I', 'Ï' => 'I',
+            'í' => 'i', 'ì' => 'i', 'î' => 'i', 'ï' => 'i',
+            'Ó' => 'O', 'Ò' => 'O', 'Ô' => 'O', 'Ö' => 'O', 'Õ' => 'O',
+            'ó' => 'o', 'ò' => 'o', 'ô' => 'o', 'ö' => 'o', 'õ' => 'o',
+            'Ú' => 'U', 'Ù' => 'U', 'Û' => 'U', 'Ü' => 'U',
+            'ú' => 'u', 'ù' => 'u', 'û' => 'u', 'ü' => 'u',
+            'Ñ' => 'N', 'ñ' => 'n', 'Ç' => 'C', 'ç' => 'c',
+            '¿' => '', '¡' => ''
+        ]);
+
+        $ascii = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+        if ($ascii !== false) {
+            $text = $ascii;
         }
 
-        return array_slice($lines, 0, 4);
+        $text = preg_replace('/[^\x20-\x7E]/', '', $text);
+
+        return strtoupper(trim(preg_replace('/\s+/', ' ', $text)));
+    }
+
+    protected function truncate_apm_concept($concept, $maxLength)
+    {
+        if (mb_strlen($concept, 'UTF-8') <= $maxLength) {
+            return $concept;
+        }
+
+        $contentLength = max(0, (int)$maxLength - 3);
+        $truncated = rtrim(mb_substr($concept, 0, $contentLength, 'UTF-8'));
+        $nextCharacter = mb_substr($concept, $contentLength, 1, 'UTF-8');
+
+        // Si el corte quedó dentro de una palabra, se retira esa fracción
+        // para que el indicador de truncamiento tampoco divida palabras.
+        if ($truncated !== ''
+            && $nextCharacter !== ''
+            && !preg_match('/\s/u', $nextCharacter)
+            && !preg_match('/\s/u', mb_substr($truncated, -1, 1, 'UTF-8'))) {
+            $lastSpace = mb_strrpos($truncated, ' ', 0, 'UTF-8');
+            if ($lastSpace !== false) {
+                $truncated = rtrim(mb_substr($truncated, 0, $lastSpace, 'UTF-8'));
+            }
+        }
+
+        return $truncated . '...';
+    }
+
+    protected function wrap_apm_concept_by_words($concept, $lineLength)
+    {
+        $words = preg_split('/\s+/u', trim($concept), -1, PREG_SPLIT_NO_EMPTY);
+        $lines = [];
+        $currentLine = '';
+
+        foreach ($words as $word) {
+            $candidate = $currentLine === '' ? $word : $currentLine . ' ' . $word;
+
+            if ($currentLine !== ''
+                && mb_strlen($candidate, 'UTF-8') > $lineLength) {
+                $lines[] = $currentLine;
+                $currentLine = $word;
+                continue;
+            }
+
+            $currentLine = $candidate;
+        }
+
+        if ($currentLine !== '') {
+            $lines[] = $currentLine;
+        }
+
+        return $lines;
     }
 
     protected function build_apm_date_info($fecha)
@@ -549,9 +845,9 @@ class PagoCxpController extends TransaccionController
         ];
     }
 
-    protected function format_apm_money($value)
+    protected function format_apm_money($value, $decimals = 2)
     {
-        return '$' . number_format((float) $value, 2, '.', ',');
+        return '$' . number_format((float) $value, (int)$decimals, '.', ',');
     }
 
     public function get_documentos_pendientes_cxp()
@@ -590,7 +886,9 @@ class PagoCxpController extends TransaccionController
     */
     public function anular_pago_cxp($id)
     {        
-        $pago = TesoDocEncabezado::find( $id );
+        $pago = TesoDocEncabezado::where('id', $id)
+                                  ->where('core_empresa_id', Auth::user()->empresa_id)
+                                  ->first();
 
         if (is_null($pago)) {
             return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))
@@ -602,81 +900,87 @@ class PagoCxpController extends TransaccionController
                             'core_tipo_doc_app_id' => $pago->core_tipo_doc_app_id,
                             'consecutivo' => $pago->consecutivo];
 
+        DB::beginTransaction();
+        try {
+        $pago = TesoDocEncabezado::where('id', $id)
+                                  ->where('core_empresa_id', Auth::user()->empresa_id)
+                                  ->lockForUpdate()
+                                  ->firstOrFail();
+
+        // Serializa la anulación con cualquier cruce que intente consumir
+        // simultáneamente un saldo a favor generado por este pago.
+        CxpMovimiento::where($array_wheres)->lockForUpdate()->get();
+
         // >>> Validaciones inciales
 
         // Está en un documento cruce de cxp?
-        $cantidad = CxpAbono::where($array_wheres)
-                            ->where('doc_cruce_transacc_id','<>',0)
-                            ->count();
-
-        if($cantidad != 0)
+        if (CxpAbono::estaEnCruceActivo($pago))
         {
+            DB::rollBack();
             return redirect( 'tesoreria/pagos_cxp/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Pago NO puede ser anulado. Está en documento cruce de CxP.');
         }
 
-        DB::beginTransaction();
-        try {
-
         // Se reversan los pagos hecho por este documento: aumenta el saldo_pendiente en el documento de CxP
 
-        $documentos_abonados = CxpAbono::get_documentos_abonados( $pago );
+        // Para reversar se deben usar los abonos originales. La consulta
+        // get_documentos_abonados() contiene joins para presentación y puede
+        // repetir un abono cuando el documento de CxP tiene varias líneas con
+        // la misma transacción, tipo y consecutivo.
+        $documentos_abonados = CxpAbono::where($array_wheres)
+                                ->orderBy('id')
+                                ->lockForUpdate()
+                                ->get();
         
         $documentos_cxp_ya_aplicados = [];
         foreach ($documentos_abonados as $registro_abono)
         {
             // Se verifica si cada documento abonado por este pago aún tiene saldo pendiente por pagar
-            $documento_cxp_pendiente = CxpMovimiento::where('core_tipo_transaccion_id', $registro_abono->doc_cxp_transacc_id)
+            $consulta_movimiento_cxp = CxpMovimiento::where('core_empresa_id', $registro_abono->core_empresa_id)
+                                    ->where('core_tipo_transaccion_id', $registro_abono->doc_cxp_transacc_id)
                                     ->where('core_tipo_doc_app_id', $registro_abono->doc_cxp_tipo_doc_id)
-                                    ->where('consecutivo', $registro_abono->doc_cxp_consecutivo)
-                                    ->where('core_tercero_id', $registro_abono->core_tercero_id)
-                                    ->whereNotIn('id',$documentos_cxp_ya_aplicados)
-                                    ->get()
-                                    ->first();
+                                    ->where('consecutivo', $registro_abono->doc_cxp_consecutivo);
 
-            if ( $documento_cxp_pendiente->estado == 'Pagado' )
-            {
-                // Se halla el total de todos los pagos que halla tenido (incluido el abono realizado por este pago)
-                // Ahi que diferenciar por el tercero
-                /*
+            // Los registros históricos tomaban el tercero del encabezado del
+            // pago. La referencia especializada sí se copiaba desde el
+            // movimiento de CxP y permite encontrar correctamente esas líneas.
+            if ($registro_abono->modelo_referencia_tercero_index != ''
+                && (int)$registro_abono->referencia_tercero_id > 0) {
+                $consulta_movimiento_cxp
+                    ->where('modelo_referencia_tercero_index', $registro_abono->modelo_referencia_tercero_index)
+                    ->where('referencia_tercero_id', $registro_abono->referencia_tercero_id);
+            } else {
+                $consulta_movimiento_cxp->where('core_tercero_id', $registro_abono->core_tercero_id);
+            }
 
-                    ERROR. CUANDO SE PAGAN VARIOS REGISTROS DEL MISMO DOCUMENTO SOLO REVERSA UN REGISTRO DE CXC
-                    EJEMPLO, CONTABILIZACIO DE LA NOMINA: UNA EPS TIENE VARIOS REGISTROS DE CXP CON EL MISMO DOC. 
-                    SI HAGO EL PAGO DE CXC DE TODOS LOS REGISTRO Y LUEGO ANULO ESE PAGO, SOLO ME "REVIVE" UN REGISTRO DE CXP
+            if (!empty($documentos_cxp_ya_aplicados)) {
+                $consulta_movimiento_cxp->whereNotIn('id', $documentos_cxp_ya_aplicados);
+            }
 
-                */
-                $array_wheres_abono_cxp = [
-                    ['doc_cxp_transacc_id', '=', $registro_abono->doc_cxp_transacc_id],
-                    ['doc_cxp_tipo_doc_id' , '=',  $registro_abono->doc_cxp_tipo_doc_id],
-                    ['doc_cxp_consecutivo' , '=',  $registro_abono->doc_cxp_consecutivo]
-                ];
+            $documento_cxp_pendiente = $consulta_movimiento_cxp
+                                        ->orderBy('id')
+                                        ->lockForUpdate()
+                                        ->first();
 
-                if ( $registro_abono->modelo_referencia_tercero_index == '' ) 
-                {
-                    $array_wheres_abono_cxp = array_merge($array_wheres_abono_cxp, ['core_tercero_id' => $registro_abono->core_tercero_id ]);
-                }else{
-                    $array_wheres_abono_cxp = array_merge($array_wheres_abono_cxp, ['referencia_tercero_id' => $registro_abono->referencia_tercero_id ]);
-                }
+            if (is_null($documento_cxp_pendiente)) {
+                throw new \RuntimeException(
+                    'No se encontró el movimiento de CxP asociado al abono #' . $registro_abono->id
+                    . ' (documento ' . $registro_abono->doc_cxp_consecutivo . ').'
+                );
+            }
 
-                $valor_abonos_aplicados = CxpAbono::where( $array_wheres_abono_cxp )
-                                                ->sum('abono');
+            $nuevo_saldo_pendiente = (float)$documento_cxp_pendiente->saldo_pendiente + (float)$registro_abono->abono;
+            $nuevo_valor_pagado = (float)$documento_cxp_pendiente->valor_pagado - (float)$registro_abono->abono;
 
-                if ( $valor_abonos_aplicados > $documento_cxp_pendiente->valor_documento) {
-                    $valor_abonos_aplicados = $documento_cxp_pendiente->valor_documento;
-                }
-
-                $nuevo_saldo_pendiente = $documento_cxp_pendiente->valor_documento - $valor_abonos_aplicados + $registro_abono->abono;
-
-                $nuevo_valor_pagado = $valor_abonos_aplicados - $registro_abono->abono; // el valor_abonos_aplicados es como mínimo el valor de $registro_abono->abono
-
-            }else{
-                
-                $nuevo_saldo_pendiente = $documento_cxp_pendiente->saldo_pendiente + $registro_abono->abono;
-                $nuevo_valor_pagado = $documento_cxp_pendiente->valor_pagado - $registro_abono->abono;
+            if (abs($nuevo_saldo_pendiente) < 0.01) {
+                $nuevo_saldo_pendiente = 0.0;
+            }
+            if (abs($nuevo_valor_pagado) < 0.01) {
+                $nuevo_valor_pagado = 0.0;
             }
 
             $documento_cxp_pendiente->valor_pagado = $nuevo_valor_pagado;
             $documento_cxp_pendiente->saldo_pendiente = $nuevo_saldo_pendiente;
-            $documento_cxp_pendiente->estado = 'Pendiente';
+            $documento_cxp_pendiente->estado = $nuevo_saldo_pendiente == 0.0 ? 'Pagado' : 'Pendiente';
             $documento_cxp_pendiente->save();
             
             $documentos_cxp_ya_aplicados[] = $documento_cxp_pendiente->id;

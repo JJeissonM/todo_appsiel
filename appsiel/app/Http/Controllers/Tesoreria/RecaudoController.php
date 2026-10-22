@@ -117,6 +117,43 @@ class RecaudoController extends TransaccionController
         $this->validar_tercero($request);
         $this->validar_punto_venta($request);
 
+        $lineas = json_decode($request->lineas_registros_medios_recaudo);
+        if (!is_array($lineas) || count($lineas) < 2) {
+            return $this->error_validacion_recaudo($request, 'Debe ingresar los registros del recaudo.');
+        }
+
+        // La última fila contiene el total, no un medio de recaudo.
+        foreach (array_slice($lineas, 0, -1) as $linea) {
+            $motivoId = (int) explode('-', isset($linea->teso_motivo_id) ? $linea->teso_motivo_id : '')[0];
+            $motivo = TesoMotivo::find($motivoId);
+            if (!$motivo || !DB::table('contab_cuentas')->where('id', $motivo->contab_cuenta_id)->exists()) {
+                $nombre = $motivo ? $motivo->descripcion : $motivoId;
+                return $this->error_validacion_recaudo($request, 'El motivo ' . $nombre . ' no tiene una cuenta contable válida configurada. Configure la cuenta antes de guardar el recaudo.');
+            }
+        }
+
+        $respuesta = DB::transaction(function () use ($request) {
+            return $this->guardar_recaudo($request);
+        });
+
+        if ($request->ajax()) {
+            return response()->json(['redirect' => $respuesta->getTargetUrl()]);
+        }
+
+        return $respuesta;
+    }
+
+    protected function error_validacion_recaudo(Request $request, $mensaje)
+    {
+        if ($request->ajax()) {
+            return response()->json(['message' => $mensaje], 422);
+        }
+
+        return redirect()->back()->withInput()->with('mensaje_error', $mensaje);
+    }
+
+    protected function guardar_recaudo(Request $request)
+    {
         $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
         $this->datos = array_merge( $request->all(), 
@@ -362,8 +399,7 @@ class RecaudoController extends TransaccionController
                 $join->on('documento_cruce.core_empresa_id', '=', 'cxc_abonos.core_empresa_id')
                     ->on('documento_cruce.core_tipo_transaccion_id', '=', 'cxc_abonos.doc_cruce_transacc_id')
                     ->on('documento_cruce.core_tipo_doc_app_id', '=', 'cxc_abonos.doc_cruce_tipo_doc_id')
-                    ->on('documento_cruce.consecutivo', '=', 'cxc_abonos.doc_cruce_consecutivo')
-                    ->on('documento_cruce.core_tercero_id', '=', 'cxc_abonos.core_tercero_id');
+                    ->on('documento_cruce.consecutivo', '=', 'cxc_abonos.doc_cruce_consecutivo');
             })
             ->join('core_tipos_docs_apps AS tipo_documento_cruce', 'tipo_documento_cruce.id', '=', 'documento_cruce.core_tipo_doc_app_id')
             ->join('sys_tipos_transacciones AS transaccion_cruce', 'transaccion_cruce.id', '=', 'documento_cruce.core_tipo_transaccion_id')
@@ -376,6 +412,7 @@ class RecaudoController extends TransaccionController
             ->where('cxc_abonos.doc_cruce_transacc_id', '<>', 0)
             ->select(
                 'documento_cruce.id',
+                'documento_cruce.fecha',
                 'documento_cruce.consecutivo',
                 'tipo_documento_cruce.prefijo',
                 'transaccion_cruce.core_app_id',
@@ -722,11 +759,7 @@ class RecaudoController extends TransaccionController
         if ( !empty( $tabla_existe ) )
         {
             // Está en un documento cruce de cartera?
-            $cantidad = CxcAbono::where($array_wheres)
-                                ->where('doc_cruce_transacc_id','<>',0)
-                                ->count();
-
-            if($cantidad != 0)
+            if (CxcAbono::estaEnCruceActivo($documento))
             {
                 return redirect( 'tesoreria/recaudos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Recaudo NO puede ser anulado. Está en documento cruce de cartera.');
             }

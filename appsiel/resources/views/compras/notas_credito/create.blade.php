@@ -77,6 +77,19 @@
 				<br/>
 
 			    {!! $tabla !!}
+				
+				<div style="text-align: right;">
+	            	<table style="display: inline;">
+	            		<tr>
+	            			<td style="text-align: right; font-weight: bold;"> 
+								Total: &nbsp; 
+							</td>
+							<td> 
+								<div id="total_nota"> $ 0 </div> 
+							</td>
+	            		</tr>
+	            	</table>
+				</div>
 
 			{{ Form::close() }}
 			
@@ -95,6 +108,7 @@
 			$('#fecha').focus( );
 
 			var continuar = true;
+			var guardando = false;
 
 			$('.cantidad_devolver').on('keyup',function(){
 
@@ -123,20 +137,28 @@
 					$('#btn_guardar').show();
                     $('#popup_alerta_danger').hide();
 					validacion_saldo_movimientos_posteriores( fila );
-
+					calcular_total_nota();
 				}
 			});
 
 			$('.cantidad_devolver').on('blur',function(){
 				var fila = $(this).closest('tr');
 				validacion_saldo_movimientos_posteriores( fila );
+				calcular_total_nota();
 			});
-
-
 
 			// GUARDAR EL FORMULARIO
 			$('#btn_guardar').click(function(event){
 				event.preventDefault();
+				$('#form_create').trigger('submit');
+			});
+
+			$('#form_create').on('submit', function(event){
+				event.preventDefault();
+
+				if (guardando) {
+					return false;
+				}
 
 				if ( !continuar )
 				{
@@ -154,10 +176,31 @@
 					return false;	
 				}
 
-				// Enviar formulario
-				//console.log( 'Enviar formulario' );
-				$('#form_create').submit();
-					
+				guardando = true;
+				$('#btn_guardar').hide();
+
+				var formulario = $(this);
+				$.ajax({
+					url: formulario.attr('action'),
+					type: 'POST',
+					data: formulario.serialize(),
+					dataType: 'json'
+				}).done(function(respuesta) {
+					window.location.href = respuesta.redirect;
+				}).fail(function(xhr) {
+					var mensaje = 'No fue posible guardar la nota crédito.';
+					if (xhr.responseJSON && xhr.responseJSON.message) {
+						mensaje = xhr.responseJSON.message;
+					}
+
+					$('#popup_alerta').show();
+					$('#popup_alerta').css('background-color', 'red');
+					$('#popup_alerta').text(mensaje);
+					$('#btn_guardar').show();
+					guardando = false;
+				});
+
+				return false;
 			});
 
 			function validar_cantidades_devolver()
@@ -227,6 +270,24 @@
                         }
                     });
             }
+            
+            function calcular_total_nota()
+            {
+            	var total_nota = 0;
+
+				$('.linea_registro').each(function () {
+
+					var valor_linea, cantidad_devolver;
+
+					valor_linea = $(this).find('.valor_linea').val() || 0;
+					cantidad_devolver = $(this).find('.cantidad_devolver').val() || 0;
+
+					console.log( valor_linea, cantidad_devolver );
+					total_nota += parseFloat(valor_linea) * parseFloat(cantidad_devolver);
+				});
+
+				$('#total_nota').text( '$ ' + total_nota.toLocaleString("es-CO") );
+			}
 
 			/*function calcula_nuevo_saldo_a_la_fecha( fila )
 			{

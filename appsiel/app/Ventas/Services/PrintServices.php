@@ -134,7 +134,7 @@ class PrintServices
                 'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
                 'lbl_consecutivo_doc_encabezado' => $doc_encabezado->consecutivo,
                 'lbl_fecha' => $fecha_doc_encabezado,
-                'lbl_hora' => explode(" ", $doc_encabezado->created_at)[1],
+                'lbl_hora' => !empty($doc_encabezado->created_at) ? date('h:i a', strtotime($doc_encabezado->created_at)) : date('h:i a'),
                 'lbl_condicion_pago' => $doc_encabezado->condicion_pago,
                 'lbl_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
                 'lbl_descripcion_doc_encabezado' => $doc_encabezado->descripcion,
@@ -150,7 +150,7 @@ class PrintServices
                 'lbl_creado_por_fecha_y_hora' => 'Elaboró: ' . explode('@', $doc_encabezado->creado_por)[0],
                 'lineas_registros' => View::make( 'ventas.formatos_impresion.cuerpo_tabla_lineas_registros', compact('doc_registros') )->render(),
                 'obj_lineas_registros' => $doc_registros,
-                'lineas_impuesto' => View::make( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros') )->render(),
+                'lineas_impuesto' => View::make( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros', 'doc_encabezado') )->render(),
                 'saldo_pendiente_cxc' => (new CxCServices())->get_movimiento_documentos_pendientes_fecha_corte($doc_encabezado->cliente->core_tercero_id, $doc_encabezado->fecha)
             ];
     

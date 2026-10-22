@@ -80,6 +80,14 @@ class Authenticate
                 ->get();
 
             if(sizeof($permisos) == 0){
+                Log::warning('AUTH_APP_MODEL_DENIED', [
+                    'path' => $request->path(),
+                    'method' => $request->method(),
+                    'user_id' => $user->id,
+                    'app_id' => $request->id,
+                    'modelo_id' => $id_modelo,
+                    'transaccion_id' => $request->input('id_transaccion'),
+                ]);
                 return redirect()->back()->with('flash_message','1. Restricción App y Modelo. Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles');
             }
 

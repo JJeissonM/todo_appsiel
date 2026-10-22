@@ -31,11 +31,22 @@ class InvProducto extends Model
     //protected $table = 'inv_productos'; 
 
     // tipo = { producto | servicio }
-    protected $fillable = ['core_empresa_id','descripcion','tipo','unidad_medida1','unidad_medida2','categoria_id','inv_grupo_id','impuesto_id','precio_compra','precio_venta','estado','referencia','codigo_barras','imagen','mostrar_en_pagina_web','creado_por','modificado_por', 'detalle', 'prefijo_referencia_id'];
+    protected $fillable = ['core_empresa_id','descripcion','tipo','unidad_medida1','unidad_medida2','categoria_id','inv_grupo_id','bodega_default_id','impuesto_id','precio_compra','precio_venta','estado','referencia','codigo_barras','imagen','mostrar_en_pagina_web','creado_por','modificado_por', 'detalle', 'prefijo_referencia_id'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código',  'Referencia', 'Descripción', 'U.M.', 'Grupo inventario', 'IVA', 'Tipo', 'Mostrar en Página Web', 'Cod. Barras', 'Estado'];
 
     public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
+
+    public function bodega_default()
+    {
+        return $this->belongsTo(InvBodega::class, 'bodega_default_id');
+    }
+
+    public function setBodegaDefaultIdAttribute($value)
+    {
+        $this->attributes['bodega_default_id'] = trim((string)$value) === '' || (int)$value === 0
+            ? null : (int)$value;
+    }
 
     public function grupo_inventario()
     {

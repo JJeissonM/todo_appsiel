@@ -3,14 +3,17 @@ var redondear_centena, numero_linea;
 var productos, precios, descuentos, clientes, cliente_default, forma_pago_default, fecha_vencimiento_default;
 
 $(document).ready(function () {
+    var versionCargaPedido = 0;
 
     //Al hacer click en alguna de las sugerencias (escoger un producto)
-    $(document).on('click', '.cargar_pedido_para_facturar', function () {
-        
+    $(document).on('click', '.cargar_pedido_para_facturar', function (event) {
+        event.preventDefault();
+        var version = ++versionCargaPedido;
         var url = $(this).attr('data-href');
 
         $.get( url )
             .done(function (data) {
+                if (version !== versionCargaPedido) { return; }
                 
                 seleccionar_cliente_pedido(data.cliente);
                 agregar_lineas_pedido(data.lineas_registros);
@@ -41,6 +44,7 @@ $(document).ready(function () {
                 $("#efectivo_recibido").focus();
             })
             .fail(function (xhr) {
+                if (version !== versionCargaPedido) { return; }
                 var response_json = (xhr && typeof xhr.responseJSON === "object") ? xhr.responseJSON : null;
                 var warning_message = "El pedido ya no está disponible para facturar. Actualice la lista de pendientes.";
                 if (response_json && typeof response_json.message === "string" && response_json.message !== "") {
@@ -59,6 +63,7 @@ $(document).ready(function () {
     $(document).on('click', '#btn_cancelar_pedido', function (e) {
         e.preventDefault();
 
+        versionCargaPedido++;
         $("#pedido_id").val(0);
 
         resetear_ventana2();

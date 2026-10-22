@@ -95,12 +95,13 @@
         @if( !is_null($resolucion) ) 
             <tr>
                 <td colspan="4">
-                    Documento con tipo de solicitud {{ $resolucion->tipo_solicitud }} por la DIAN. Resolución No. {{ $resolucion->numero_resolucion }} del {{ $resolucion->fecha_expedicion }}. Prefijo {{ $resolucion->prefijo }} desde {{ $resolucion->numero_fact_inicial }} hasta {{ $resolucion->numero_fact_final }}
+                    @include('ventas.incluir.factura_detalles_resolucion_dian', ['resolucion' => $resolucion])
                 </td>
             </tr>
         @endif
 
     </table>
+@include('compras.incluir.retenciones_aplicadas')
 <?php $retenciones_impresion = (new \App\Compras\Services\ContabilidadService())->get_valor_retenciones($doc_encabezado); ?>
 @if($retenciones_impresion > 0)
 <p style="text-align:right">Retenciones: $ {{ number_format($retenciones_impresion, 2, ',', '.') }}<br>

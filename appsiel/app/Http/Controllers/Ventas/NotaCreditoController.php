@@ -141,23 +141,37 @@ class NotaCreditoController extends TransaccionController
      */
     public function store(Request $request)
     {
-        $factura = VtasDocEncabezado::get_registro_impresion( $request->ventas_doc_relacionado_id ); // WARNING: si la factura tiene varias entradas, no se puede hacer la nota
+        try {
+        $nota_credito = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $factura = VtasDocEncabezado::where('id', $request->ventas_doc_relacionado_id)->lockForUpdate()->firstOrFail();
+            $request['creado_por'] = Auth::user()->email;
+            $request['vendedor_id'] = $factura->vendedor_id;
+            $request['ventas_doc_relacionado_id'] = $factura->id;
+            $request['remision_doc_encabezado_id'] = 0;
+            $nota_credito = (new EncabezadoDocumentoTransaccion($request->url_id_modelo))->crear_nuevo($request->all());
+            $registrar = function () use ($request, $nota_credito, $factura) {
+                $request['turno_operativo_id'] = $nota_credito->turno_operativo_id;
+                $devolucion = (new DevolucionVentas())->crear_nueva($request->all(), $factura->remision_doc_encabezado_id);
+                if ((int)$devolucion->turno_operativo_id !== (int)$nota_credito->turno_operativo_id) {
+                    throw new \App\Core\Exceptions\TurnoIntegrityException('Seleccione un turno operativo para la nota y su devolución.');
+                }
+                $nota_credito->remision_doc_encabezado_id = $devolucion->id;
+                $nota_credito->save();
+                $request['remision_doc_encabezado_id'] = $devolucion->id;
+                self::crear_registros_nota_credito($request, $nota_credito, $factura);
+            };
+            if (!empty($nota_credito->turno_operativo_id)) {
+                app(\App\Core\Services\TurnoContext::class)->runFromOrigin(
+                    \App\Core\TurnoOperativo::findOrFail($nota_credito->turno_operativo_id), get_class($nota_credito), $nota_credito->id, $registrar);
+            } else {
+                $registrar();
+            }
+            return $nota_credito;
+        });
 
-        $request['creado_por'] = Auth::user()->email;
-        $request['vendedor_id'] = $factura->vendedor_id;
-
-        // 1ro. Crear documento de Entrada de inventarios (Devolución) con base en la remisión y las cantidades a devolver
-        $devolucion = new DevolucionVentas;
-        $documento_devolucion = $devolucion->crear_nueva( $request->all(), $factura->remision_doc_encabezado_id );
-
-        // 2do. Crear encabezado del documento de ventas (Nota Crédito)
-        $request['remision_doc_encabezado_id'] = $documento_devolucion->id;
-        $request['ventas_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura
-        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
-        $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
-
-        // 3ro. Crear líneas de registros del documento
-        NotaCreditoController::crear_registros_nota_credito( $request, $nota_credito, $factura );
+        } catch (\InvalidArgumentException $error) {
+            return redirect()->back()->withInput()->with('mensaje_error', $error->getMessage());
+        }
 
         return redirect('ventas_notas_credito_directa/'.$nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
     }
@@ -187,6 +201,9 @@ class NotaCreditoController extends TransaccionController
     {
         $nota_credito_service = new NotaCreditoServices();
 
+        $lineService = new \App\FacturacionElectronica\Services\CreditNoteLineService();
+        $selection = !empty($datos['doc_registros_ids']) ? $lineService->requestedLines($factura->id, $datos) : null;
+        $usedInvoiceLines = array();
         $total_documento = 0;
         // Por cada remisión pendiente
         $cantidad_registros = count( $lineas_registros );
@@ -204,10 +221,14 @@ class NotaCreditoController extends TransaccionController
                 $cantidad = $un_registro->cantidad * -1; // Fue una entrada de inventarios, se vuelve la cantidad negativa, porque es una diminución de las ventas
 
                 // Los precios se deben traer de la linea de la factura
+                if (!is_null($selection)) {
+                    $linea_factura = $lineService->matchRequestedLine($selection, $usedInvoiceLines, $un_registro->inv_producto_id, $cantidad);
+                } else {
                 $linea_factura = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $factura->id)
                                                 ->where( 'inv_producto_id', $un_registro->inv_producto_id )
                                                 ->get()
                                                 ->first();
+                }
 
                 $precio_unitario = $linea_factura->precio_unitario;
 

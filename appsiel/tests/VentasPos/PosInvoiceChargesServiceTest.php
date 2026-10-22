@@ -55,6 +55,30 @@ class PosInvoiceChargesServiceTest extends TestCase
         $service->getCharges($invoice);
     }
 
+    public function test_osei_consolida_bolsas_propina_comision_y_redondeo()
+    {
+        config(['facturacion_electronica.proveedor_tecnologico_default' => 'OSEI']);
+        list($service, $invoice) = $this->scenario(8900, 8930, -25);
+        $invoice->valor_total_bolsas = 400;
+        $lines = json_decode($service->pos->lineas_registros_medios_recaudos, true);
+        $lines[0]['valor'] = '$178970';
+        $service->pos->lineas_registros_medios_recaudos = json_encode($lines);
+        $global = $service->getOseiGlobalAllowanceCharge($invoice);
+        $this->assertSame('charge', $global['type']);
+        $this->assertEquals(18205, $global['amount']);
+        $this->assertContains('BOLSAS: 400.00', $global['reason']);
+        $this->assertContains('REDONDEO: -25.00', $global['reason']);
+    }
+
+    public function test_osei_redondeo_negativo_es_descuento_y_cero_omite_bloque()
+    {
+        config(['facturacion_electronica.proveedor_tecnologico_default' => 'OSEI']);
+        list($service, $invoice) = $this->scenario(0, 0, -25);
+        $this->assertSame('discount', $service->getOseiGlobalAllowanceCharge($invoice)['type']);
+        list($service, $invoice) = $this->scenario(0, 0, 0);
+        $this->assertNull($service->getOseiGlobalAllowanceCharge($invoice));
+    }
+
     private function scenario($tip, $fee, $adjustment)
     {
         $invoice = new VtasDocEncabezado();

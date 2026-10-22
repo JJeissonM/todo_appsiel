@@ -75,37 +75,24 @@ class TipoDocApp extends Model
         return $vec;
     }
 
+    // Reading a counter is a preview, never a reservation.
     public static function get_consecutivo_actual($core_empresa_id, $tipo_doc_app_id)
     {
-
-        $consecutivo = ConsecutivoDocumento::where('core_empresa_id', $core_empresa_id)
+        $value = ConsecutivoDocumento::where('core_empresa_id', $core_empresa_id)
             ->where('core_documento_app_id', $tipo_doc_app_id)
-            ->get()
-            ->first();
+            ->value('consecutivo_actual');
 
-        // Si no hay un consecutivo creado para es tipo de documento en esa empresa, se crea el registro en la BD
-        if (is_null($consecutivo)) {
-            $consecutivo = new ConsecutivoDocumento;
-            $consecutivo->core_empresa_id = $core_empresa_id;
-            $consecutivo->core_documento_app_id = $tipo_doc_app_id;
-            $consecutivo->consecutivo_actual = 0;
-            $consecutivo->save();
-            $consecutivo = 0;
-        } else {
-            $consecutivo = $consecutivo->consecutivo_actual;
-        }
-
-        return $consecutivo;
+        return $value === null ? 0 : (int)$value;
     }
 
-    /*
-        Esta función es llamada inmediatamente despues de get_consecutivo_actual
-        Warning: es posible que haya conclifcto cuando varios usuariios estan haciendo documentos? que uno llame get_consecutivo_actual y otros usuario aumente el consecutivo ante de que lo haga el primer usuario?  
-    */
+    public static function reservar_consecutivo($core_empresa_id, $tipo_doc_app_id)
+    {
+        return \App\Core\Services\DocumentSequenceService::reserve($core_empresa_id, $tipo_doc_app_id);
+    }
+
+    /** @deprecated Use reservar_consecutivo and its returned number directly. */
     public static function aumentar_consecutivo($core_empresa_id, $tipo_doc_app_id)
     {
-        ConsecutivoDocumento::where('core_empresa_id', $core_empresa_id)
-            ->where('core_documento_app_id', $tipo_doc_app_id)
-            ->increment('consecutivo_actual');
+        throw new \LogicException('Use reservar_consecutivo y su número retornado; la lectura y el incremento separados no son seguros.');
     }
 }

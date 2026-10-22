@@ -74,22 +74,20 @@ class InvDocumentsService
                             ['cantidad' => $cantidad] +
                             ['costo_total' => $costo_total];
 
-            InvDocRegistro::create(
-                                    $datos +
-                                    $linea_datos +
-                                    ['inv_doc_encabezado_id' => $doc_encabezado->id]
-                                );
+            // Los valores de la línea prevalecen sobre los del encabezado,
+            // especialmente la bodega de consumo en ensambles de varias cocinas.
+            $datos_linea = array_replace($datos, $linea_datos, [
+                'inv_doc_encabezado_id' => $doc_encabezado->id
+            ]);
+            InvDocRegistro::create($datos_linea);
 
             // Solo se almacena el movimiento para productos almacenables
             $tipo_producto = InvProducto::find($lineas_registros[$i]->inv_producto_id)->tipo;
             if ( $tipo_producto == 'producto' )
             {
                 $datos['consecutivo'] = $doc_encabezado->consecutivo;
-                InvMovimiento::create(
-                                        $datos +
-                                        $linea_datos +
-                                        ['inv_doc_encabezado_id' => $doc_encabezado->id]
-                                    );
+                $datos_linea['consecutivo'] = $doc_encabezado->consecutivo;
+                InvMovimiento::create($datos_linea);
                                     
                 if ($motivo->movimiento == 'entrada')
                 {
@@ -122,7 +120,7 @@ class InvDocumentsService
                 continue; // Si no es un producto, saltar la contabilización de abajo.
             }
 
-            $datos = $encabezado_documento->toArray() + $linea->toArray();
+            $datos = array_replace($encabezado_documento->toArray(), $linea->toArray());
 
             // Si el movimiento es de ENTRADA de inventarios, se DEBITA la cta. de inventarios vs la cta. contrapartida
             $valor_debito = abs( $linea->costo_total );

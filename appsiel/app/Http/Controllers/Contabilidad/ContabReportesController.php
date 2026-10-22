@@ -465,6 +465,8 @@ class ContabReportesController extends Controller
 
         $core_tercero_id = $request->core_tercero_id;
 
+        $totalizar_por_documento = (int)$request->input('totalizar_por_documento', 0) === 1;
+
         $agrupar_por_cuenta = (int)$request->input('agrupar_por_cuenta', 0) === 1;
 
         if ( $clase_cuenta_id == '' )
@@ -496,7 +498,7 @@ class ContabReportesController extends Controller
         {
             $saldos_iniciales = ContabMovimiento::get_saldos_iniciales_por_cuenta( $fecha_desde, $contab_cuenta_id, $core_tercero_id, $grupo_cuenta_id, $clase_cuenta_id );
 
-            $movimiento_contable = ContabMovimiento::get_movimiento_contable( $fecha_desde, $fecha_hasta, $contab_cuenta_id, $core_tercero_id, $grupo_cuenta_id, $clase_cuenta_id );
+            $movimiento_contable = ContabMovimiento::get_movimiento_contable( $fecha_desde, $fecha_hasta, $contab_cuenta_id, $core_tercero_id, $grupo_cuenta_id, $clase_cuenta_id, $totalizar_por_documento );
 
             $movimiento_contable = $movimiento_contable->sortBy(function ($linea) {
                 $cuenta_codigo = !is_null($linea->cuenta) ? $linea->cuenta->codigo : '';
@@ -508,7 +510,7 @@ class ContabReportesController extends Controller
 
         $saldo_inicial = ContabMovimiento::get_saldo_inicial_v2( $fecha_desde, $contab_cuenta_id, $core_tercero_id,$grupo_cuenta_id, $clase_cuenta_id );
 
-        $movimiento_contable = ContabMovimiento::get_movimiento_contable( $fecha_desde, $fecha_hasta, $contab_cuenta_id, $core_tercero_id, $grupo_cuenta_id, $clase_cuenta_id );
+        $movimiento_contable = ContabMovimiento::get_movimiento_contable( $fecha_desde, $fecha_hasta, $contab_cuenta_id, $core_tercero_id, $grupo_cuenta_id, $clase_cuenta_id, $totalizar_por_documento );
 
         return View::make( 'contabilidad.incluir.tabla_movimiento_contable', compact( 'movimiento_contable','fecha_desde', 'saldo_inicial' ) )->render();
     }

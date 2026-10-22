@@ -88,7 +88,7 @@ class RunSqlFileWithChecks extends Command
 
         if (in_array($type, ['update', 'delete', 'alter_table', 'drop_table', 'create_table'])) {
             $table = $this->extractTableName($sqlStmt, $type);
-            if ($table && !$this->tableExists($table)) {
+            if ($type !== 'create_table' && $table && !$this->tableExists($table)) {
                 $this->warn("{$label} TABLA NO EXISTE: {$table} (se omite)");
                 return 'skipped';
             }
@@ -104,7 +104,8 @@ class RunSqlFileWithChecks extends Command
             }
 
             if ($type === 'alter_table' && $table) {
-                if ($this->shouldSkipAlter($sqlStmt, $table)) {
+                $sqlStmt = $this->filterAlterStatement($sqlStmt, $table);
+                if ($sqlStmt === null) {
                     $this->warn("{$label} ALTER NO APLICA (se omite)");
                     return 'skipped';
                 }
@@ -544,7 +545,9 @@ class RunSqlFileWithChecks extends Command
             foreach ($pkColumns as $col) {
                 $query->where($col, $row[$col]);
             }
-            return $query->exists();
+            if ($query->exists()) {
+                return true;
+            }
         }
 
         foreach ($uniqueIndexes as $indexColumns) {
@@ -565,15 +568,77 @@ class RunSqlFileWithChecks extends Command
     protected function rowHasColumns(array $row, array $columns)
     {
         foreach ($columns as $col) {
-            if (!array_key_exists($col, $row)) {
+            if (!array_key_exists($col, $row) || $row[$col] === null) {
                 return false;
             }
         }
         return true;
     }
 
+    protected function filterAlterStatement($sqlStmt, $table)
+    {
+        if (!preg_match('/^(ALTER\s+TABLE\s+`?[^`\s]+`?\s+)(.*)$/is', $sqlStmt, $matches)) {
+            return $sqlStmt;
+        }
+
+        // Separar operaciones, conservando comas dentro de cadenas y parentesis.
+        $clauses = [];
+        $start = 0;
+        $depth = 0;
+        $quote = null;
+        $body = $matches[2];
+        for ($i = 0, $length = strlen($body); $i < $length; $i++) {
+            $char = $body[$i];
+            if ($quote !== null) {
+                if ($char === '\\' && $quote !== '`') {
+                    $i++;
+                } elseif ($char === $quote) {
+                    if ($i + 1 < $length && $body[$i + 1] === $quote) {
+                        $i++;
+                    } else {
+                        $quote = null;
+                    }
+                }
+                continue;
+            }
+            if ($char === "'" || $char === '"' || $char === '`') {
+                $quote = $char;
+            } elseif ($char === '(') {
+                $depth++;
+            } elseif ($char === ')') {
+                $depth--;
+            } elseif ($char === ',' && $depth === 0) {
+                $clauses[] = trim(substr($body, $start, $i - $start));
+                $start = $i + 1;
+            }
+        }
+        $clauses[] = trim(substr($body, $start));
+        $pending = [];
+        foreach ($clauses as $clause) {
+            if (!$this->shouldSkipAlter($clause, $table)) {
+                $this->validateForeignKeyData($clause, $table);
+                $pending[] = $clause;
+            }
+        }
+        return empty($pending) ? null : $matches[1] . implode(', ', $pending);
+    }
+
     protected function shouldSkipAlter($sqlStmt, $table)
     {
+        $foreignKey = $this->parseForeignKeyClause($sqlStmt);
+        if ($foreignKey && $this->foreignKeyDefinitionExists($table, $foreignKey)) {
+            return true;
+        }
+        if (preg_match('/^ADD\s+CONSTRAINT\s+`?([^`\s]+)`?\s+FOREIGN\s+KEY\b/i', trim($sqlStmt), $m)) {
+            return $this->foreignKeyExists($table, $m[1]);
+        }
+        if (preg_match('/^ADD\s+PRIMARY\s+KEY\b/i', trim($sqlStmt))) {
+            return !empty($this->getPrimaryKeyColumns($table));
+        }
+        if (preg_match('/^ADD\s+(?:UNIQUE\s+)?(?:INDEX|KEY)\s+`?([a-zA-Z0-9_]+)`?\s*\(/i', trim($sqlStmt), $m)) {
+            return $this->indexExists($table, $m[1]);
+        }
+
         if (preg_match('/DROP\\s+FOREIGN\\s+KEY\\s+`?([^`\\s]+)`?/i', $sqlStmt, $m)) {
             $fk = $m[1];
             if (!$this->foreignKeyExists($table, $fk)) {
@@ -581,7 +646,7 @@ class RunSqlFileWithChecks extends Command
             }
         }
 
-        if (preg_match('/ADD\\s+(?:COLUMN\\s+)?(?!UNIQUE|INDEX|KEY|CONSTRAINT|FOREIGN)\\s*`?([a-zA-Z0-9_]+)`?/i', $sqlStmt, $m)) {
+        if (preg_match('/ADD\\s+(?:COLUMN\\s+)?(?!UNIQUE\b|INDEX\b|KEY\b|CONSTRAINT\b|FOREIGN\b|PRIMARY\b)\\s*`?([a-zA-Z0-9_]+)`?/i', $sqlStmt, $m)) {
             $col = $m[1];
             if ($this->columnExists($table, $col)) {
                 return true;
@@ -627,6 +692,69 @@ class RunSqlFileWithChecks extends Command
         }
 
         return false;
+    }
+
+    protected function parseForeignKeyClause($clause)
+    {
+        if (!preg_match('/^ADD\s+(?:CONSTRAINT\s+`?[a-zA-Z0-9_]+`?\s+)?FOREIGN\s+KEY\s*\(([^)]+)\)\s+REFERENCES\s+`?([a-zA-Z0-9_]+)`?\s*\(([^)]+)\)/i', trim($clause), $m)) {
+            return null;
+        }
+        $columns = $this->splitColumns($m[1]);
+        $references = $this->splitColumns($m[3]);
+        if (count($columns) !== count($references)) {
+            return null;
+        }
+        foreach (array_merge($columns, $references) as $column) {
+            if (!preg_match('/^[a-zA-Z0-9_]+$/', $column)) {
+                return null;
+            }
+        }
+        return ['columns' => $columns, 'table' => $m[2], 'references' => $references];
+    }
+
+    protected function foreignKeyDefinitionExists($table, array $foreignKey)
+    {
+        $rows = DB::table('information_schema.key_column_usage')
+            ->where('table_schema', DB::getDatabaseName())
+            ->where('table_name', $table)
+            ->where('referenced_table_schema', DB::getDatabaseName())
+            ->where('referenced_table_name', $foreignKey['table'])
+            ->orderBy('ordinal_position')->get();
+        $keys = [];
+        foreach ($rows as $row) {
+            $keys[$row->constraint_name]['columns'][] = $row->column_name;
+            $keys[$row->constraint_name]['references'][] = $row->referenced_column_name;
+        }
+        foreach ($keys as $key) {
+            if ($key['columns'] === $foreignKey['columns'] && $key['references'] === $foreignKey['references']) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected function validateForeignKeyData($clause, $table)
+    {
+        $foreignKey = $this->parseForeignKeyClause($clause);
+        if (!$foreignKey) {
+            return;
+        }
+        $join = [];
+        $conditions = [];
+        foreach ($foreignKey['columns'] as $i => $column) {
+            $join[] = 'child.`' . $column . '` = parent.`' . $foreignKey['references'][$i] . '`';
+            $conditions[] = 'child.`' . $column . '` IS NOT NULL';
+        }
+        $conditions[] = 'parent.`' . $foreignKey['references'][0] . '` IS NULL';
+        $query = 'FROM `' . str_replace('`', '``', $table) . '` child LEFT JOIN `' . $foreignKey['table'] . '` parent ON '
+            . implode(' AND ', $join) . ' WHERE ' . implode(' AND ', $conditions);
+        $rows = DB::select('SELECT COUNT(*) AS total ' . $query);
+        if ((int) $rows[0]->total > 0) {
+            throw new \RuntimeException('No se puede crear la clave foranea de ' . $table . ' ('
+                . implode(', ', $foreignKey['columns']) . '): ' . $rows[0]->total
+                . ' registros sin referencia en ' . $foreignKey['table']
+                . '. Corrija los datos y vuelva a ejecutar. Consulta de diagnostico: SELECT child.* ' . $query);
+        }
     }
 
     protected function tableExists($table)

@@ -64,6 +64,11 @@ class VtasDocEncabezado extends Model
         return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
+    public function cliente_facturacion()
+    {
+        return $this->belongsTo(Cliente::class, 'core_tercero_id', 'core_tercero_id');
+    }
+
     public function contacto_cliente()
     {
         return $this->belongsTo(ContactoCliente::class, 'contacto_cliente_id');
@@ -108,6 +113,9 @@ class VtasDocEncabezado extends Model
     // Doc. desde el cual fue generado
     public function documento_ventas_padre()
     {
+        if (in_array((int)$this->core_tipo_transaccion_id, [42, 60]) && $this->estado === 'Facturado') {
+            return (new \App\Ventas\Services\OrderInvoiceResolver())->resolve($this);
+        }
         /**
          * NOTA 1: Se puede dar el Caso en que el ID de registro en FacturaPos sea igual al ID de un Pedido (VtasDocEncabezado). Por tanto al buscar el doc_padre en VtasDocEncabezado arrojará el registro de un Pedido cualquiera ($doc_padre != null) y no se buscará la factura real en FacturaPos. Para esto se busca nuevamente en FacturaPos cuando la transaccion de Pedido es igual a la transaccion del doc_padre
          */

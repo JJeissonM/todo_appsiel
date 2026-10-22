@@ -116,7 +116,11 @@ class ReporteController extends Controller
         $movement_serv = new MovementService();
         
         //$productos = $movement_serv->build_array_of_stocks_old( (object)$request->all() );
-        $productos = $movement_serv->build_array_of_stocks_new( (object)$request->all() );
+        try {
+            $productos = $movement_serv->build_array_of_stocks_new((object)$request->all());
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         $bodega = $movement_serv->descripcion_bodega;
 
@@ -286,7 +290,10 @@ class ReporteController extends Controller
         foreach ($sql_productos as $fila)
         {
             $productos[$i]['fecha'] = $fila->fecha;
-            $productos[$i]['hora'] = $this->formatearRangoHorasMovimiento($fila->hora_inicio, $fila->hora_finalizacion, $fila->created_at);
+            // Conserva la hora de creación dentro del turno y usa el cierre fuera de él.
+            $productos[$i]['hora'] = !is_null($fila->turno_operativo_id) || (int)$fila->core_tipo_transaccion_id === 28
+                ? ReportTimeFormatter::time($fila->fecha_hora_efectiva)
+                : $this->formatearRangoHorasMovimiento($fila->hora_inicio, $fila->hora_finalizacion, $fila->documento_created_at ?: $fila->created_at);
             $productos[$i]['documento_id'] = $fila->documento_id;
             $productos[$i]['documento'] = $fila->documento;
             $productos[$i]['tercero'] = $fila->tercero;
@@ -394,7 +401,8 @@ class ReporteController extends Controller
         $horaInicio = InvMovimiento::normalizarHoraFiltro($horaInicio);
         $horaFinalizacion = InvMovimiento::normalizarHoraFiltro($horaFinalizacion);
 
-        if (is_null($horaInicio) && is_null($horaFinalizacion)) {
+        if ((is_null($horaInicio) || $horaInicio === '00:00:00')
+            && (is_null($horaFinalizacion) || $horaFinalizacion === '00:00:00')) {
             return ReportTimeFormatter::time($createdAt);
         }
 

@@ -2,9 +2,10 @@
 
 namespace App\FacturacionElectronica\Services;
 
+use App\Core\TipoDocApp;
+
 use App\Contabilidad\ContabMovimiento;
 use App\Core\EncabezadoDocumentoTransaccion;
-use App\Core\ConsecutivoDocumento;
 use App\CxC\CxcAbono;
 use App\CxC\CxcMovimiento;
 
@@ -42,6 +43,21 @@ class DocumentHeaderService
                     return (object)[
                         'status' => 'mensaje_error',
                         'message' => 'Documento POS no encontrado para convertir a Factura ElectrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³nica.'
+                    ];
+                }
+
+                try {
+                    (new \App\VentasPos\Services\InvoiceCustomerService())->validateInvoice($original_document_header);
+                } catch (\InvalidArgumentException $e) {
+                    return (object)['status' => 'mensaje_error', 'message' => $e->getMessage()];
+                }
+
+                if (!(int)config('facturacion_electronica.enviar_facturas_clientes_internos') &&
+                    isset($original_document_header->cliente_facturacion->tercero) &&
+                    $original_document_header->cliente_facturacion->tercero->tipo === 'Interno') {
+                    return (object)[
+                        'status' => 'mensaje_error',
+                        'message' => 'Los clientes internos deben conservar su factura POS; no se permite convertirla a electrónica.'
                     ];
                 }
 
@@ -86,22 +102,7 @@ class DocumentHeaderService
                 ];
             }
 
-            $consecutivo = ConsecutivoDocumento::where('core_empresa_id', $original_document_header->core_empresa_id)
-                ->where('core_documento_app_id', $fe_document_type_id_default)
-                ->lockForUpdate()
-                ->first();
-
-            if (is_null($consecutivo)) {
-                $consecutivo = new ConsecutivoDocumento();
-                $consecutivo->core_empresa_id = $original_document_header->core_empresa_id;
-                $consecutivo->core_documento_app_id = $fe_document_type_id_default;
-                $consecutivo->consecutivo_actual = 0;
-                $consecutivo->save();
-            }
-
-            $new_consecutivo = (int)$consecutivo->consecutivo_actual + 1;
-            $consecutivo->consecutivo_actual = $new_consecutivo;
-            $consecutivo->save();
+            $new_consecutivo = TipoDocApp::reservar_consecutivo($original_document_header->core_empresa_id, $fe_document_type_id_default);
 
             $contab_movim = ContabMovimiento::where($array_wheres)->get();
             foreach ($contab_movim as $line_movin) {
@@ -241,7 +242,7 @@ class DocumentHeaderService
     {
         $status = 'success';
         $message = '';
-        $email = trim((string)$tercero->email);
+        $email = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($tercero->email);
 
         /*
         if ( $tercero->direccion1 == '' || strlen( $tercero->direccion1 ) < 2 )
@@ -282,7 +283,7 @@ class DocumentHeaderService
 
     public function get_cliente( $vtas_doc_encabezado )
     {
-        $cliente = $vtas_doc_encabezado->cliente;
+        $cliente = $vtas_doc_encabezado->cliente_facturacion;
 
         if ( (int)config('facturacion_electronica.enviar_facturas_clientes_internos') && $cliente->tercero->tipo == 'Interno' ) {
             $cliente_consumidor_final = Cliente::find( (int)config('facturacion_electronica.cliente_consumidor_final_id') );

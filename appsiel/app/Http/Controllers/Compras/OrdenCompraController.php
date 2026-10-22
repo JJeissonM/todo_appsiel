@@ -62,6 +62,7 @@ class OrdenCompraController extends TransaccionController
      */
     public function store(Request $request)
     {
+        \App\Compras\Services\CantidadLineasService::prepararRequest($request);
         // 1ro. No tiene documento de ENTRADA de inventarios
         $request['entrada_almacen_id'] = 0;
 

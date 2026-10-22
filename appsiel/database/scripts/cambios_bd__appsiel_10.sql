@@ -602,7 +602,7 @@ ALTER TABLE `contab_cuenta_grupos` ADD `codigo` VARCHAR(10) NOT NULL AFTER `desc
 ALTER TABLE `contab_cuenta_grupos` CHANGE `codigo` `codigo` VARCHAR(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
 
 DELETE FROM `sys_campos` WHERE `sys_campos`.`id` = 590;
-INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('590', 'Tiempo a liquidar', 'select', 'tiempo_a_liquidar', '{\"\":\"\",\"110\":\"Una Quincena (110 horas)\",\"220\":\"Un mes (220 horas)\",\"9999\":\"Órdenes de trabajo\"}', 'null', '', '', '1', '1', '0', '2019-12-20 00:36:57', '2025-01-21 18:08:27');
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('590', 'Tiempo a liquidar', 'select', 'tiempo_a_liquidar', '{\"\":\"\",\"105\":\"Una Quincena (105 horas)\",\"210\":\"Un mes (210 horas)\"}', 'null', '', '', '1', '1', '0', '2019-12-20 00:36:57', '2025-01-21 18:08:27');
 
 UPDATE `permissions` SET `modelo_id` = '337' WHERE `name` = 'nomina.turnos.importar';
 
@@ -759,18 +759,28 @@ INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `valu
 ALTER TABLE `vtas_pos_doc_registros` ADD `inv_bodega_id` INT(10) UNSIGNED NULL AFTER `inv_producto_id`;
 ALTER TABLE `vtas_pos_doc_registros` ADD INDEX `inv_bodega_id` (`inv_bodega_id`);
 
--- nuevo permiso
+-- Permisos hoteleros: el ID de la aplicacion varia entre instalaciones.
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
-SELECT NULL, '22', '0', 'hotel_pedido_retirar_producto_habitacion', 'Hotel pedido Retirar producto Habitacion', 'web', '0', '15', '0', '', '2026-07-01 10:18:25', NULL
-WHERE NOT EXISTS (
+SELECT NULL, hotel_app.`id`, '0', 'hotel_pedido_retirar_producto_habitacion', 'Hotel pedido Retirar producto Habitacion', 'web', '0', '15', '0', '', '2026-07-01 10:18:25', NULL
+FROM `sys_aplicaciones` AS hotel_app
+WHERE (hotel_app.`app` IN ('hotel', 'hotel/stays')
+    OR hotel_app.`descripcion` IN ('Gestion Hotelera', 'Gestión Hotelera'))
+AND NOT EXISTS (
     SELECT 1 FROM `permissions` WHERE `name` = 'hotel_pedido_retirar_producto_habitacion' LIMIT 1
-);
+)
+ORDER BY hotel_app.`id`
+LIMIT 1;
 
 INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`)
-SELECT NULL, '22', '0', 'hotel_pedido_anular', 'Anular pedido hotelero', 'hotel/orders/id_fila/cancel', '0', '18', '0', 'ban', '2026-07-21 00:00:00', NULL
-WHERE NOT EXISTS (
+SELECT NULL, hotel_app.`id`, '0', 'hotel_pedido_anular', 'Anular pedido hotelero', 'hotel/orders/id_fila/cancel', '0', '18', '0', 'ban', '2026-07-21 00:00:00', NULL
+FROM `sys_aplicaciones` AS hotel_app
+WHERE (hotel_app.`app` IN ('hotel', 'hotel/stays')
+    OR hotel_app.`descripcion` IN ('Gestion Hotelera', 'Gestión Hotelera'))
+AND NOT EXISTS (
     SELECT 1 FROM `permissions` WHERE `name` = 'hotel_pedido_anular' LIMIT 1
-);
+)
+ORDER BY hotel_app.`id`
+LIMIT 1;
 
 SET @hotel_pedido_anular_permission_id := (
     SELECT `id` FROM `permissions`
@@ -884,6 +894,11 @@ INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `valu
 UPDATE `sys_modelos` SET `enlaces` = '' WHERE `sys_modelos`.`id` = 3;
 UPDATE `sys_modelos` SET `enlaces` = '{\"0\":{\"tag_html\":\"a\",\"title\":\"Duplicar\",\"url\":\"duplicar/id_fila?id=2&id_modelo=116\",\"color_bootstrap\":\"default\",\"faicon\":\"clone\",\"size\":\"xs\"}}' WHERE `sys_modelos`.`id` = 116;
 
-// 11 septiembre 2026
-ALTER TABLE `teso_movimientos` CHANGE `codigo_referencia_tercero` `codigo_referencia_tercero` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT 'En PH= Código del inmueble. En Colegio=Código Matricula';
-ALTER TABLE `contab_movimientos` CHANGE `codigo_referencia_tercero` `codigo_referencia_tercero` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT 'En PH= Código del inmueble. En Colegio=Código Matricula';
+-- 11 septiembre 2026
+ALTER TABLE `teso_movimientos` CHANGE `codigo_referencia_tercero` `codigo_referencia_tercero` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT '';
+ALTER TABLE `contab_movimientos` CHANGE `codigo_referencia_tercero` `codigo_referencia_tercero` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT '';
+
+
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES (1700, 'Label Categoría Impuesto', 'select', 'tax_category', '{\"IVA\":\"IVA\",\"INC\":\"INC\"}', 'null', '', '', '0', '1', '0', '2026-10-09 15:21:42', NULL);
+INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_campo_id`) VALUES (NULL, '13', '140', '1700');
+

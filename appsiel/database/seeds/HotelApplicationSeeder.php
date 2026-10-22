@@ -179,8 +179,8 @@ class HotelApplicationSeeder extends Seeder
         $this->seedModelFields('reservations', array(
             $this->field(1, 'Cliente', 'cliente_autocomplete', 'cliente_id', '', 'null', $textAttrs, 1),
             $this->field(2, 'Habitacion', 'select', 'room_id', 'model_App\\Hotel\\HotelRoom', 'null', $comboAttrs, 1),
-            $this->field(3, 'Fecha desde', 'fecha', 'reserved_from', '', 'null', $textAttrs, 1),
-            $this->field(4, 'Fecha hasta', 'fecha', 'reserved_until', '', 'null', $textAttrs, 1),
+            $this->field(3, 'Reserva desde', 'fecha_hora', 'reserved_from', '', 'null', $textAttrs, 1),
+            $this->field(4, 'Reserva hasta', 'fecha_hora', 'reserved_until', '', 'null', $textAttrs, 1),
             $this->field(5, 'Estado', 'select', 'status', $reservationStatuses, 'ACTIVA', $comboAttrs, 1),
             $this->field(6, 'Notas', 'bsTextArea', 'notes', '', 'null', $textAttrs, 0),
         ));

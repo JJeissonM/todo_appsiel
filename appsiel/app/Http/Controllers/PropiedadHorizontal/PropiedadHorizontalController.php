@@ -138,16 +138,13 @@ class PropiedadHorizontalController extends Controller
             $cant_propiedades++;
 
             // 1. SE CREA EL ENCABEZADO DEL DOCUMENTO (DocumentoCxC)
-            // 1.1. Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
-            $consecutivo = TipoDocApp::get_consecutivo_actual($request->core_empresa_id,$request->core_tipo_doc_app_id) + 1;
+            $consecutivo = TipoDocApp::reservar_consecutivo($request->core_empresa_id,$request->core_tipo_doc_app_id);
 
             // Se obtiene el primer documento generado para la impresión por lotes
             if ($primer_registro==0) {
                 $primer_registro = $consecutivo;
             }
 
-            // 1.2. incementamos el consecutivo para ese tipo de documento y empresa
-            TipoDocApp::aumentar_consecutivo($request->core_empresa_id,$request->core_tipo_doc_app_id);
 
             // 1.3. Se REEMPLAZA el consecutivo en los datos del request
             // Tambien se adiciona el codigo_referencia_tercero

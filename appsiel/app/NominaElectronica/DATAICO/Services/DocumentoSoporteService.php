@@ -175,12 +175,9 @@ class DocumentoSoporteService
       $core_empresa_id = Auth::user()->empresa_id;
 
       $app_doc_type = new AppDocType();
-      $consecutivo = $app_doc_type->get_consecutivo_actual( $core_empresa_id, $core_tipo_doc_app->id ) + 1;
-
-      if( $almacenar_registros )
-      {
-         $app_doc_type->aumentar_consecutivo( $core_empresa_id, $core_tipo_doc_app->id );
-      }
+      $consecutivo = $almacenar_registros
+         ? $app_doc_type->reservar_consecutivo($core_empresa_id, $core_tipo_doc_app->id)
+         : $app_doc_type->get_consecutivo_actual($core_empresa_id, $core_tipo_doc_app->id) + 1;
 
       return $this->build_arr_head_data( $empleado, $lapso, $core_tipo_doc_app, $consecutivo );
    }

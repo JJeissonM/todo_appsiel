@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -133,39 +134,83 @@ class RecaudoCxcController extends Controller
      */
     public function store(Request $request)
     {
-        $pdv_id = PdvResolver::normalize($request->input('pdv_id'));
+        try {
+            $this->validarMediosRecaudoSolicitados($request);
 
-        $request['creado_por'] = Auth::user()->email;
-        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
-        $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
+            return DB::transaction(function () use ($request) {
+                $pdv_id = PdvResolver::normalize($request->input('pdv_id'));
 
-        $total_abonos_cxc = $doc_encabezado->almacenar_y_contabilizar_abonos_cxc( $request );
-        
-        $retenciones = new RegistroRetencion();
-        $retenciones->almacenar_nuevos_registros( $request->lineas_registros_retenciones, $doc_encabezado, $total_abonos_cxc, 'sufrida' );
-        
-        $descuentos_pronto_pago = new RegistroDescuentoProntoPago();
-        $descuentos_pronto_pago->almacenar_nuevos_registros( $request->lineas_registros_descuento_pronto_pagos, $doc_encabezado, 'concedido' );
+                $request['creado_por'] = Auth::user()->email;
+                $encabezado_documento = new EncabezadoDocumentoTransaccion($request->url_id_modelo);
+                $doc_encabezado = $encabezado_documento->crear_nuevo($request->all());
 
-        $efectivo = new RegistroDeEfectivo();
-        $efectivo->almacenar_registros( $request->lineas_registros_efectivo, $doc_encabezado, $pdv_id );
+                $total_abonos_cxc = $doc_encabezado->almacenar_y_contabilizar_abonos_cxc($request);
 
-        $transferencia_consignacion = new RegistroDeTransferenciaConsignacion();
-        $transferencia_consignacion->almacenar_registros( $request->lineas_registros_transferencia_consignacion, $doc_encabezado, $pdv_id );
+                $retenciones = new RegistroRetencion();
+                $retenciones->almacenar_nuevos_registros($request->lineas_registros_retenciones, $doc_encabezado, $total_abonos_cxc, 'sufrida');
 
-        $tarjeta_debito = new RegistroDeTarjetaDebito();
-        $tarjeta_debito->almacenar_registros( $request->lineas_registros_tarjeta_debito, $doc_encabezado, $pdv_id );
+                $descuentos_pronto_pago = new RegistroDescuentoProntoPago();
+                $descuentos_pronto_pago->almacenar_nuevos_registros($request->lineas_registros_descuento_pronto_pagos, $doc_encabezado, 'concedido');
 
-        $tarjeta_credito = new RegistroDeTarjetaCredito();
-        $tarjeta_credito->almacenar_registros( $request->lineas_registros_tarjeta_credito, $doc_encabezado, $pdv_id );
+                $efectivo = new RegistroDeEfectivo();
+                $efectivo->almacenar_registros($request->lineas_registros_efectivo, $doc_encabezado, $pdv_id);
 
-        $cheques = new RegistroDeCheque();
-        $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 'cheque_tercero', 'Recibido', 'de_tercero', $pdv_id );
+                $transferencia_consignacion = new RegistroDeTransferenciaConsignacion();
+                $transferencia_consignacion->almacenar_registros($request->lineas_registros_transferencia_consignacion, $doc_encabezado, $pdv_id);
 
-        $doc_encabezado->actualizar_valor_total();
+                $tarjeta_debito = new RegistroDeTarjetaDebito();
+                $tarjeta_debito->almacenar_registros($request->lineas_registros_tarjeta_debito, $doc_encabezado, $pdv_id);
 
-        // se llama la vista de RecaudoCxcController@show
-        return redirect( 'tesoreria/recaudos_cxc/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+                $tarjeta_credito = new RegistroDeTarjetaCredito();
+                $tarjeta_credito->almacenar_registros($request->lineas_registros_tarjeta_credito, $doc_encabezado, $pdv_id);
+
+                $cheques = new RegistroDeCheque();
+                $cheques->almacenar_registros($request->lineas_registros_cheques, $doc_encabezado, 'cheque_tercero', 'Recibido', 'de_tercero', $pdv_id);
+
+                $doc_encabezado->actualizar_valor_total();
+
+                // se llama la vista de RecaudoCxcController@show
+                return redirect('tesoreria/recaudos_cxc/' . $doc_encabezado->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+            });
+        } catch (\InvalidArgumentException $exception) {
+            return redirect()->back()
+                ->withInput($request->except('_token'))
+                ->with('mensaje_error', 'No fue posible registrar el recaudo: ' . $exception->getMessage());
+        }
+    }
+
+    /**
+     * Verifica antes de crear el encabezado que cada pestaña con registros
+     * tenga un medio de recaudo activo que permita procesarla.
+     */
+    protected function validarMediosRecaudoSolicitados(Request $request)
+    {
+        $campos = [
+            'lineas_registros_efectivo' => 'efectivo',
+            'lineas_registros_transferencia_consignacion' => 'transferencia_consignacion',
+            'lineas_registros_tarjeta_debito' => 'tarjeta_debito',
+            'lineas_registros_tarjeta_credito' => 'tarjeta_credito',
+            'lineas_registros_cheques' => 'cheque_tercero'
+        ];
+
+        foreach ($campos as $campo => $tipo_registro) {
+            if ($this->contieneLineasRegistrables($request->input($campo))) {
+                TesoMedioRecaudo::get_id_por_tipo_registro($tipo_registro);
+            }
+        }
+    }
+
+    protected function contieneLineasRegistrables($json_lineas)
+    {
+        $lineas = json_decode((string)$json_lineas);
+        if (!is_array($lineas)) {
+            return false;
+        }
+
+        // Los formularios agregan al final una fila auxiliar de totales.
+        array_pop($lineas);
+
+        return count($lineas) > 0;
     }
 
     /**
@@ -278,8 +323,12 @@ class RecaudoCxcController extends Controller
             - teso_movimientos y su contabilidad. Además se actualiza el estado a Anulado en vtas_doc_registros y vtas_doc_encabezados
     */
     public function anular_recaudo_cxc($id)
-    {        
-        $recaudo = TesoDocEncabezado::find( $id );
+    {
+        return DB::transaction(function () use ($id) {
+        $recaudo = TesoDocEncabezado::where('id', $id)
+                            ->where('core_empresa_id', Auth::user()->empresa_id)
+                            ->lockForUpdate()
+                            ->firstOrFail();
 
         $array_wheres = [
                             'core_empresa_id' => $recaudo->core_empresa_id, 
@@ -288,14 +337,14 @@ class RecaudoCxcController extends Controller
                             'consecutivo' => $recaudo->consecutivo
                         ];
 
+        // Serializa la anulación con cualquier cruce que intente consumir
+        // simultáneamente el saldo a favor de este recaudo.
+        CxcMovimiento::where($array_wheres)->lockForUpdate()->get();
+
         // >>> Validaciones inciales
 
         // Está en un documento cruce de cartera?
-        $cantidad = CxcAbono::where($array_wheres)
-                            ->where('doc_cruce_transacc_id','<>',0)
-                            ->count();
-
-        if($cantidad != 0)
+        if (CxcAbono::estaEnCruceActivo($recaudo))
         {
             return redirect( 'tesoreria/recaudos_cxc/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Recaudo NO puede ser anulado. Está en documento cruce de cartera.');
         }
@@ -305,43 +354,21 @@ class RecaudoCxcController extends Controller
 
         foreach ( $documentos_abonados as $linea )
         {
-            $documento_cxc_pendiente = CxcMovimiento::where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
+            $documento_cxc_pendiente = CxcMovimiento::where('core_empresa_id', $linea->core_empresa_id)
+                                                        ->where('core_tercero_id', $linea->core_tercero_id)
+                                                        ->where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
                                                         ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
                                                         ->where('consecutivo',$linea->doc_cxc_consecutivo)
-                                                        ->get()
+                                                        ->lockForUpdate()
                                                         ->first();
             
             if($documento_cxc_pendiente == null)
             {
-                continue;
-            }
-            
-            if ( $documento_cxc_pendiente->estado == 'Pagado' )
-            {
-                // Se halla el total de todos los abonos que halla tenido el documento de cxc abonado (incluido el abono realizado por este recaudo)
-                $valor_abonos_aplicados = CxcAbono::where('doc_cxc_transacc_id',$linea->doc_cxc_transacc_id)
-                                                ->where('doc_cxc_tipo_doc_id',$linea->doc_cxc_tipo_doc_id)
-                                                ->where('doc_cxc_consecutivo',$linea->doc_cxc_consecutivo)
-                                                ->where('referencia_tercero_id',$linea->referencia_tercero_id)
-                                                ->sum('abono');
-
-
-                $nuevo_saldo_pendiente = $documento_cxc_pendiente->valor_documento - $valor_abonos_aplicados + $linea->abono;
-                
-                $nuevo_valor_pagado = $valor_abonos_aplicados - $linea->abono; // el valor_abonos_aplicados es como mínimo el valor de $linea->abono
-
-            }else{
-
-                $nuevo_saldo_pendiente = $documento_cxc_pendiente->saldo_pendiente + $linea->abono;
-
-                $nuevo_valor_pagado = $documento_cxc_pendiente->valor_pagado - $linea->abono;
+                throw new \RuntimeException('No se encontró el movimiento de cartera abonado por el recaudo. El recaudo no fue anulado.');
             }
 
-            // Actualizar registro del documento pendiente
-            $documento_cxc_pendiente->valor_pagado = $nuevo_valor_pagado;
-            $documento_cxc_pendiente->saldo_pendiente = $nuevo_saldo_pendiente;
-            $documento_cxc_pendiente->estado = 'Pendiente';
-            $documento_cxc_pendiente->save();
+            // Se aplica exactamente la operación inversa del abono original.
+            $documento_cxc_pendiente->actualizar_saldos($linea->abono * -1);
 
             // Se elimina el abono
             $linea->delete();
@@ -378,7 +405,7 @@ class RecaudoCxcController extends Controller
         $this->restablecer_cheque( $recaudo );
 
         return redirect( 'tesoreria/recaudos_cxc/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Recaudo de CxC ANULADO correctamente.');
-        
+        });
     }
 
     public function restablecer_retenciones( $recaudo )

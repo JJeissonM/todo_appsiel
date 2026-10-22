@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Hotel;
 
 use App\Hotel\HotelRoom;
+use App\Hotel\HotelOrderHeader;
+use App\Hotel\HotelReservation;
+use App\CxC\CxcMovimiento;
 use App\Hotel\HotelGuest;
 use App\Hotel\HotelOrderLine;
 use App\Hotel\HotelStay;
@@ -48,6 +51,108 @@ class HotelReportController extends Controller
         $this->cacheReport($request, $html);
 
         return $html;
+    }
+
+    public function receivableStays(Request $request)
+    {
+        $request->merge(array('fecha_desde' => $request->input('hotel_receivable_stays_desde', $request->fecha_desde),
+            'fecha_hasta' => $request->input('hotel_receivable_stays_hasta', $request->fecha_hasta)));
+        $error = $this->optionalReportDatesError($request);
+        if ($error !== '') {
+            return $error;
+        }
+
+        $query = HotelOrderHeader::where('empresa_id', Auth::user()->empresa_id)
+            ->where('status', HotelOrderHeader::STATUS_ABIERTO)
+            ->with('stay.room', 'cliente.tercero', 'lines')
+            ->orderBy('order_date')->orderBy('id');
+        if ($request->fecha_desde != '') {
+            $query->where('order_date', '>=', $request->fecha_desde . ' 00:00:00');
+        }
+        if ($request->fecha_hasta != '') {
+            $query->where('order_date', '<=', $request->fecha_hasta . ' 23:59:59');
+        }
+
+        $customers = array();
+        foreach ($query->get() as $order) {
+            $tercero = $order->cliente ? $order->cliente->tercero : null;
+            $key = $tercero ? (string)$tercero->id : 'cliente_' . $order->cliente_id;
+            if (!isset($customers[$key])) {
+                $customers[$key] = array('tercero_id' => $tercero ? $tercero->id : null,
+                    'name' => $tercero ? $tercero->descripcion : 'Cliente #' . $order->cliente_id,
+                    'orders' => array(), 'advances' => array(), 'total' => 0, 'advance_total' => 0);
+            }
+            $total = (float)$order->lines->sum('line_total');
+            $customers[$key]['orders'][] = array('order' => $order, 'total' => $total);
+            $customers[$key]['total'] += $total;
+        }
+
+        $terceroIds = array();
+        foreach ($customers as $customer) {
+            if ($customer['tercero_id']) {
+                $terceroIds[] = $customer['tercero_id'];
+            }
+        }
+        if (count($terceroIds) > 0) {
+            $advances = CxcMovimiento::where('core_empresa_id', Auth::user()->empresa_id)
+                ->whereIn('core_tercero_id', $terceroIds)
+                ->where('estado', 'Pendiente')->where('saldo_pendiente', '<', -0.1)
+                ->where('fecha', '<=', date('Y-m-d'))
+                ->with('tipo_documento_app')->orderBy('fecha')->orderBy('id')->get();
+            foreach ($advances as $advance) {
+                $key = (string)$advance->core_tercero_id;
+                $customers[$key]['advances'][] = $advance;
+                $customers[$key]['advance_total'] += abs((float)$advance->saldo_pendiente);
+            }
+        }
+        $totals = array('orders' => 0, 'advances' => 0, 'balance' => 0);
+        foreach ($customers as &$customer) {
+            $customer['balance'] = max(0, $customer['total'] - $customer['advance_total']);
+            $totals['orders'] += $customer['total'];
+            $totals['advances'] += $customer['advance_total'];
+            $totals['balance'] += $customer['balance'];
+        }
+        unset($customer);
+        $html = view('hotel.reports.receivable_stays', compact('customers', 'totals'))->render();
+        $this->cacheReport($request, $html);
+        return $html;
+    }
+
+    public function reservations(Request $request)
+    {
+        $request->merge(array('fecha_desde' => $request->input('hotel_reservations_desde', $request->fecha_desde),
+            'fecha_hasta' => $request->input('hotel_reservations_hasta', $request->fecha_hasta)));
+        $error = $this->optionalReportDatesError($request);
+        if ($error !== '') {
+            return $error;
+        }
+        $query = HotelReservation::where('empresa_id', Auth::user()->empresa_id)
+            ->where('status', HotelReservation::STATUS_ACTIVA)
+            ->with('room', 'cliente.tercero')->orderBy('reserved_from')->orderBy('id');
+        // Mostrar reservas que se solapan con el período, incluso si iniciaron antes.
+        if ($request->fecha_desde != '') {
+            $query->where('reserved_until', '>', $request->fecha_desde . ' 00:00:00');
+        }
+        if ($request->fecha_hasta != '') {
+            $query->where('reserved_from', '<', date('Y-m-d', strtotime($request->fecha_hasta . ' +1 day')) . ' 00:00:00');
+        }
+        $reservations = $query->get();
+        $html = view('hotel.reports.reservations', compact('reservations'))->render();
+        $this->cacheReport($request, $html);
+        return $html;
+    }
+
+    private function optionalReportDatesError(Request $request)
+    {
+        foreach (array('fecha_desde', 'fecha_hasta') as $field) {
+            if ($request->input($field) != '' && !$this->isValidReportDate($request->input($field))) {
+                return '<div class="alert alert-danger">Debe ingresar fechas válidas.</div>';
+            }
+        }
+        if ($request->fecha_desde != '' && $request->fecha_hasta != '' && $request->fecha_desde > $request->fecha_hasta) {
+            return '<div class="alert alert-danger">La fecha desde no puede ser posterior a la fecha hasta.</div>';
+        }
+        return '';
     }
 
     public function salesByRoom(Request $request)

@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Traits\HasTurnoOperativo;
 use App\Core\Services\TurnoAssignmentResolver;
 use App\Core\Services\TurnoManager;
+use App\Core\TurnoOperativo;
 
 class TesoMovimiento extends Model
 {
@@ -363,6 +364,14 @@ class TesoMovimiento extends Model
 
     public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null, $creado_por = null, $pdv_id = 0, $fecha_hora_apertura = null, $fecha_hora_cierre = null, $turno_operativo_id = null)
     {
+        // Los arqueos tradicionales históricos pueden guardar 0 cuando no
+        // existe turno. Solo un identificador positivo representa un turno
+        // real; consultar turno_operativo_id = 0 excluiría movimientos cuyo
+        // valor correcto en la tabla es NULL.
+        $turno_operativo_id = (int)$turno_operativo_id > 0
+            ? (int)$turno_operativo_id
+            : null;
+
         if (!is_null($turno_operativo_id)) {
             $fecha_hora_apertura = null;
             $fecha_hora_cierre = null;
@@ -760,6 +769,53 @@ class TesoMovimiento extends Model
         self::aplicarFiltroAntesDeFechaHora($query, $fecha, $hora_apertura);
 
         return (float)$query->sum('teso_movimientos.valor_movimiento');
+    }
+
+    /**
+     * Recalcula el saldo de apertura conservado en un turno e incorpora los
+     * movimientos registrados después de su apertura que fueron asociados a
+     * turnos anteriores. La FK del turno prevalece sobre fecha y created_at:
+     * así una corrección posterior actualiza el siguiente arqueo sin entrar
+     * también como movimiento del turno que se está arqueando.
+     */
+    public static function calcularSaldoInicialArqueoPorTurno($empresa_id, $teso_caja_id, TurnoOperativo $turno)
+    {
+        $empresa_id = (int)$empresa_id;
+        $teso_caja_id = (int)$teso_caja_id;
+        $saldo_inicial = (int)$turno->teso_caja_id === $teso_caja_id
+            ? (float)$turno->saldo_inicial
+            : self::calcularSaldoInicialArqueo(
+                $empresa_id,
+                $teso_caja_id,
+                $turno->fecha_operativa,
+                is_null($turno->abierto_en) ? null : $turno->abierto_en->format('Y-m-d H:i:s')
+            );
+
+        if (is_null($turno->abierto_en)) {
+            return $saldo_inicial;
+        }
+
+        $apertura = $turno->abierto_en->format('Y-m-d H:i:s');
+        $ajustes_posteriores = TesoMovimiento::join(
+                'core_turnos_operativos AS turno_movimiento',
+                'turno_movimiento.id',
+                '=',
+                'teso_movimientos.turno_operativo_id'
+            )
+            ->where('teso_movimientos.core_empresa_id', $empresa_id)
+            ->where('teso_movimientos.teso_caja_id', $teso_caja_id)
+            ->where('turno_movimiento.core_empresa_id', $empresa_id)
+            ->where('teso_movimientos.created_at', '>', $apertura)
+            ->where(function ($query) use ($turno, $apertura) {
+                $query->where('turno_movimiento.abierto_en', '<', $apertura)
+                    ->orWhere(function ($query) use ($turno, $apertura) {
+                        $query->where('turno_movimiento.abierto_en', $apertura)
+                            ->where('turno_movimiento.id', '<', (int)$turno->id);
+                    });
+            })
+            ->sum('teso_movimientos.valor_movimiento');
+
+        return $saldo_inicial + (float)$ajustes_posteriores;
     }
 
     public function almacenar_registro_pago_contado( $datos, $registros_medio_pago, $movimiento, $valor_movimiento )

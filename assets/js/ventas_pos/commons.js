@@ -499,6 +499,21 @@ function pos_validar_y_recalcular_lineas_registros()
   return resultado.ok;
 }
 
+// El formulario puede incluir vendedor_id tanto en campos dinámicos como ocultos.
+// Enviar una sola asignación, correspondiente al vendedor visible seleccionado.
+function pos_serializar_formulario_factura()
+{
+  var vendedor = $('.componente_vendedores .vendedor_activo').first().attr('data-vendedor_id');
+  if (!vendedor) {
+    vendedor = $('#vendedor_id').val();
+  }
+  var campos = $('#form_create').serializeArray().filter(function (campo) {
+    return campo.name !== 'vendedor_id';
+  });
+  campos.push({name: 'vendedor_id', value: vendedor || ''});
+  return $.param(campos);
+}
+
 function pos_preparar_payload_guardado(opciones)
 {
   opciones = opciones || {};
@@ -543,7 +558,7 @@ function pos_preparar_payload_guardado(opciones)
   }
 
   // Nota: No se puede enviar controles disabled
-  var data = $("#form_create").serialize();
+  var data = pos_serializar_formulario_factura();
   if (flags.manejar_propinas) {
     data += "&valor_propina=" + $("#valor_propina").val();
   }
@@ -1105,7 +1120,18 @@ function llenar_resumen_impuestos() {
  * 
  * @returns 
  */
+function formatear_caja_banco_impresion(caja, banco) {
+  if (!banco) {
+    return caja;
+  }
+  var partes = banco.split("-");
+  var nombre_banco = partes.shift().trim();
+  var cuenta = partes.join("-").trim();
+  return cuenta ? nombre_banco + " (" + cuenta + ")" : nombre_banco;
+}
+
 function llenar_resumen_medios_recaudo() {
+  var total_pagos_impresion = 0;
   if ($("#forma_pago").val() == "credito") {
     $("#div_resumen_medios_pago").hide();
     return 0;
@@ -1128,6 +1154,8 @@ function llenar_resumen_medios_recaudo() {
     var lbl_valor_medio_pago =
       $("#total_efectivo_recibido").val() - $("#valor_total_cambio").val();
 
+    total_pagos_impresion = Math.abs(parseFloat(lbl_valor_medio_pago)) || 0;
+
     $("#tabla_resumen_medios_pago")
       .find("tbody:last")
       .append(
@@ -1142,11 +1170,11 @@ function llenar_resumen_medios_recaudo() {
     $("#ingreso_registros_medios_recaudo > tbody > tr").each(function () {
       var array_celdas = $(this).find("td");
       var lbl_medio_pago = array_celdas.eq(0).find("span").eq(1).text();
-      var lbl_caja_banco =
-        array_celdas.eq(2).find("span").eq(1).text() +
-        " - " +
-        array_celdas.eq(3).find("span").eq(1).text();
+      var lbl_caja = array_celdas.eq(2).find("span").eq(1).text().trim();
+      var lbl_banco = array_celdas.eq(3).find("span").eq(1).text().trim();
+      var lbl_caja_banco = formatear_caja_banco_impresion(lbl_caja, lbl_banco);
       var lbl_valor_medio_pago = array_celdas.eq(4).text().substring(1);
+      total_pagos_impresion += Math.abs(parseFloat(lbl_valor_medio_pago)) || 0;
       
       $("#tabla_resumen_medios_pago")
         .find("tbody:last")
@@ -1161,6 +1189,9 @@ function llenar_resumen_medios_recaudo() {
         );
     });
   }
+  $("#total_resumen_medios_pago").text(
+    "$" + new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 }).format(total_pagos_impresion)
+  );
 }
 
 /**
@@ -1184,7 +1215,7 @@ function resetear_ventana() {
   $("#valor_ajuste_al_peso").val(0);
 
   $("#lbl_valor_total_bolsas").text("$ ");
-  $("#valor_valor_total_bolsas").val(0);
+  $("#valor_total_bolsas").val(0);
 
   $("#msj_ventana_impresion_abierta").hide();
 
@@ -1459,6 +1490,7 @@ function reset_estado_boton_guardar_factura()
  */
 function activar_boton_guardar_factura()
 {
+  $("#btn_efectivo_exacto").toggle($("#forma_pago").val() === "contado");
   disable_boton_guardar_factura();
   $("#div_efectivo_recibido").show();
   $("#div_total_cambio").show();
@@ -1527,6 +1559,26 @@ function agregar_nueva_linea()
  * 
  * @param {*} vlr_efectivo_recibido 
  */
+function pos_asignar_total_a_efectivo()
+{
+  var $efectivo = $("#efectivo_recibido");
+  if (locked || $efectivo.prop("disabled") || $efectivo.prop("readonly")) {
+    return;
+  }
+
+  // El total visible incluye el redondeo y los recargos, en formato colombiano.
+  var texto = $("#total_factura").text().replace(/[$\s]/g, "").replace(/\./g, "").replace(",", ".");
+  var total = Number(texto);
+  if (!isFinite(total) || total <= 0) {
+    return;
+  }
+
+  $efectivo.val(total);
+  // Primero recalcular como al escribir; luego ejecutar el Enter existente.
+  $efectivo.trigger($.Event("keyup", { which: 48, keyCode: 48 }));
+  $efectivo.trigger($.Event("keyup", { which: 13, keyCode: 13 }));
+}
+
 function set_datos_efectivo_recibido( vlr_efectivo_recibido )
 {
   $("#total_efectivo_recibido").val( vlr_efectivo_recibido );
@@ -1561,6 +1613,8 @@ $(document).ready(function () {
   $('#total_valor_total').actualizar_medio_recaudo();
 
   $(document).prop('title', $('#vendedor_id').attr('data-vendedor_descripcion').toUpperCase() );
+
+  $("#btn_efectivo_exacto").toggle($("#forma_pago").val() === "contado");
 
   $("#forma_pago").on("change", function () {
       activar_boton_guardar_factura();
@@ -1705,6 +1759,11 @@ $(document).ready(function () {
   /**
    * EFECTIVO RECIBIDO
    */
+  $("#btn_efectivo_exacto").on("click", function (event) {
+    event.preventDefault();
+    pos_asignar_total_a_efectivo();
+  });
+
   $("#efectivo_recibido").on("keyup", function (event) {
     $("#popup_alerta").hide();
     var codigo_tecla_presionada = event.which || event.keyCode;

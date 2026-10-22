@@ -78,8 +78,9 @@ class ReteicaService
             return 0;
         }
         $retencion = $this->validar_seleccion($documento->reteica_retencion_id, $documento->core_tipo_transaccion_id);
-        // Base neta sin IVA, obtenida de las líneas persistidas; nunca del importe del navegador.
-        $base = (float)$documento->lineas_registros()->where('estado', 'Activo')->sum('base_impuesto');
+        // Conservar la base editada; en modo automático usar el subtotal sin IVA.
+        $base = $documento->reteica_base_manual ? $documento->reteica_base
+            : (float)$documento->lineas_registros()->where('estado', 'Activo')->sum('base_impuesto');
         $documento->reteica_base = round($base, 2);
         $documento->reteica_tasa = (float)$retencion->tasa_retencion;
         $documento->reteica_valor = $this->calcular($base, $retencion->tasa_retencion);

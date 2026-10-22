@@ -17,7 +17,19 @@
         <input type="hidden" name="motivo_tesoreria_propinas" id="motivo_tesoreria_propinas" value="{{ (int)config('ventas_pos.motivo_tesoreria_propinas') }}">
 
         @if( (int)config('ventas_pos.motivo_tesoreria_propinas') != 0)
-            <input type="hidden" name="motivo_tesoreria_propinas_label" id="motivo_tesoreria_propinas_label" value="{{ App\Tesoreria\TesoMotivo::find( (int)config('ventas_pos.motivo_tesoreria_propinas') )->descripcion }}">
+        
+
+            <?php
+                $motivo_propina = App\Tesoreria\TesoMotivo::find( (int)config('ventas_pos.motivo_tesoreria_propinas') );
+
+                if( $motivo_propina == null)
+                {
+                    dd("El motivo de tesorería para la propina no existe. Por favor verifique la configuración de la aplicación.");
+                }
+
+                $label_motivo_propina = ($motivo_propina !== null) ? $motivo_propina->descripcion : '';
+            ?>
+            <input type="hidden" name="motivo_tesoreria_propinas_label" id="motivo_tesoreria_propinas_label" value="{{ $label_motivo_propina }}">
         @else
             <input type="hidden" name="motivo_tesoreria_propinas_label" id="motivo_tesoreria_propinas_label" value="">
         @endif        

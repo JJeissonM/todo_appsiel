@@ -1,9 +1,9 @@
-F2: Buscar Ítems
+F2: Busqueda de Ítems
 <div class="col-md-12 well">
     <div class="container-fluid">
 
         <div class="col-md-6">
-            {{ Form::bsText( 'textinput_filter_item', null, 'Ítem', ['id'=>'textinput_filter_item', 'class'=>'form-control'] ) }}
+            {{ Form::bsText( 'textinput_filter_item', null, 'Buscar Ítem', ['id'=>'textinput_filter_item', 'class'=>'form-control'] ) }}
         </div>
         <div class="col-md-6">
             {{ Form::bsText( 'quantity', null, 'Cantidad', ['id'=>'quantity', 'class'=>'form-control'] ) }}

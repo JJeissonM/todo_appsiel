@@ -33,6 +33,9 @@ class RegistroDeTransferenciaConsignacion extends TesoDocEncabezado
 
         $teso_medio_recaudo_id = TesoMedioRecaudo::get_id_por_tipo_registro('transferencia_consignacion');
 
+        $valor_linea = 0;
+        $valor_debito = 0;
+        $valor_credito = 0;
         for ($i=0; $i < $cantidad; $i++) 
         {
             $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_transferencia_consignacion );
@@ -58,20 +61,22 @@ class RegistroDeTransferenciaConsignacion extends TesoDocEncabezado
 
             $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_transferencia_consignacion;
 
+            $detalle_operacion = (isset($lineas_registros[$i]->detalle_operacion)) ? $lineas_registros[$i]->detalle_operacion : '';
+
             $datos = [
                         'teso_encabezado_id' => $doc_encabezado->id,
                         'teso_motivo_id' => (int)$lineas_registros[$i]->teso_motivo_id_transferencia_consignacion,
                         'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
                         'teso_caja_id' => 0,
                         'teso_cuenta_bancaria_id' => (int)$lineas_registros[$i]->banco_id_transferencia_consignacion,
-                        'detalle_operacion' => $tipo_operacion . '. Comprobante número ' . $lineas_registros[$i]->numero_comprobante_transferencia_consignacion,
+                        'detalle_operacion' => $detalle_operacion,
                         'valor' => abs( $valor_linea )
                     ] + $doc_encabezado->toArray();
             
             TesoDocRegistro::create( $datos );
 
             $datos['valor_movimiento'] = $valor_linea;
-            $datos['descripcion'] = $tipo_operacion;
+            $datos['descripcion'] = $detalle_operacion;
             $datos['documento_soporte'] = 'Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_transferencia_consignacion;
             $datos['pdv_id'] = $pdv_id;
             TesoMovimiento::create( $datos );

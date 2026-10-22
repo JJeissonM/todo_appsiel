@@ -330,7 +330,7 @@ $(document).ready(function () {
             }
             data = payload_guardado.data;
         } else {
-            data = $("#form_create").serialize();
+            data = pos_serializar_formulario_factura();
         }
         
         locked = true;

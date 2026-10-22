@@ -66,8 +66,14 @@
 
 		$(document).ready(function(){
 
+			var generandoNotaCierre = false;
+
 			$("#btn_generar").on('click',function(event){
 		    	event.preventDefault();
+
+				if (generandoNotaCierre) {
+					return false;
+				}
 
 		    	if ( !validar_requeridos() )
 		    	{
@@ -104,25 +110,41 @@
 		    });
 
 
-			$(document).on('click',"#btn_promover",function(event){
-		    	event.preventDefault();
+			$(document).on('submit', '#form_create', function(event){
+				if (generandoNotaCierre || !validar_requeridos()) {
+					event.preventDefault();
+					return false;
+				}
 
-		    	if ( !validar_requeridos() )
-		    	{
-		    		return false;
-		    	}
+				if (!confirm('¿Está seguro de generar la Nota Contable para dejar en cero todas las cuentas de resultado del periodo contable ' + $('#periodo_ejercicio_id option:selected').text() + '?')) {
+					event.preventDefault();
+					return false;
+				}
 
-		    	$('#periodo_ejercicio_id2').val( $('#periodo_ejercicio_id').val() );
+				$('#periodo_ejercicio_id2').val($('#periodo_ejercicio_id').val());
+				generandoNotaCierre = true;
+				var boton = $('#btn_promover');
+				boton.data('contenido-original', boton.html());
+				boton.prop('disabled', true)
+					.attr('aria-busy', 'true')
+					.html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Generando nota de cierre…');
+				$('#periodo_ejercicio_id').prop('disabled', true);
+				$('#btn_generar').addClass('disabled').attr('aria-disabled', 'true');
+			});
 
-		    	if ( !confirm('¿Está seguro de generar la Nota Contable para dejar en cero todas las cuentas de resultado del periodo contable ' + $('#periodo_ejercicio_id option:selected').text() + '?') )
-		    	{
-			 		$("#div_spin").hide();
-			 		$("#div_cargando").hide();
-		    		return false;
-		    	}
+			// Restaurar los controles al volver con el botón Atrás del navegador.
+			$(window).on('pageshow', function(){
+				if (!generandoNotaCierre) {
+					return;
+				}
 
-		 		$('#form_create').submit();
-		    });
+				generandoNotaCierre = false;
+				var boton = $('#btn_promover');
+				boton.prop('disabled', false).removeAttr('aria-busy')
+					.html(boton.data('contenido-original'));
+				$('#periodo_ejercicio_id').prop('disabled', false);
+				$('#btn_generar').removeClass('disabled').removeAttr('aria-disabled');
+			});
 
 		});
 	</script>

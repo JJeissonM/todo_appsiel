@@ -1,0 +1,70 @@
+// NODE_PATH=/path/to/node_modules node appsiel/tests/js/compras_cantidad_test.js
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const {JSDOM} = require('jsdom');
+const root = path.resolve(__dirname, '../../..');
+const inputs = ['inv_producto_id','cantidad','existencia_actual','precio_unitario','tasa_impuesto','tasa_descuento','valor_unitario_descuento','valor_total_descuento','precio_total'];
+const dom = new JSDOM(`<table id="ingreso_registros" data-ocultar-cantidad="1"><tbody></tbody><tfoot><tr id="linea_ingreso_default"><td><select id="inv_motivo_id"><option value="1-entrada">Compra</option></select>${inputs.map(id=>`<input type="text" id="${id}">`).join('')}</td></tr></tfoot></table><input id="url_id_transaccion" value="25"><input id="base_retencion" type="number"><small id="valor_retencion_preview"></small><input id="maneja_retenciones_compras" value="1"><select id="contab_retencion_id"><option value="0">Sin retención</option><option value="1" data-tasa="2.5">2.5%</option><option value="2" data-tasa="5">5%</option></select><input id="saldo_original"><input id="inv_bodega_id" value="1">`, {runScripts:'outside-only'});
+const w = dom.window;
+const $ = w.$ = w.jQuery = require('jquery')(w);
+$.fn.tooltip = ()=>{};
+w.Swal = {fire:()=>{throw Error('Validación inesperada');}};
+w.validar_input_numerico = input => $.isNumeric(input.val());
+w.eval(fs.readFileSync(path.join(root,'assets/js/compras/functions_create.js'),'utf8'));
+const view = fs.readFileSync(path.join(root,'appsiel/resources/views/compras/create.blade.php'),'utf8');
+const start = view.indexOf("$('#cantidad').keyup(function(event){");
+const end = view.indexOf('\n\t\t\t});', start) + '\n\t\t\t});'.length;
+w.eval(view.slice(start,end));
+$.get = () => ({done: callback => callback({existencia_actual:10, precio_compra:119, tasa_impuesto:19, base_impuesto:100, tipo:'producto'})});
+let seleccionado;
+$('input').on('select', function () { seleccionado = this.id; });
+for (const id of [101,102]) {
+    w.seleccionar_producto($(`<a data-producto_id="${id}">Producto ${id}</a>`));
+    w.consultar_existencia(1,id);
+    assert.equal(w.cantidad,1);
+    assert.equal($('#cantidad').val(),'1');
+    assert.equal(seleccionado,'precio_unitario');
+    assert.equal(w.precio_total,119);
+    assert.equal($('#base_retencion').val(),'100.00');
+    w.numero_linea = id;
+    const row = $('<tr>').html(w.generar_string_celdas($('#linea_ingreso_default')));
+    assert.equal(row.find('.inv_producto_id').text(),String(id));
+    assert.equal(row.find('.cantidad').text(),'1');
+    assert.equal(Number(row.find('.base_impuesto').text()),100);
+    assert.equal(Number(row.find('.precio_total').text()),119);
+    $('#ingreso_registros tbody').append(row);
+}
+assert.equal($('#ingreso_registros tbody tr').length,2);
+$('#ingreso_registros').attr('data-ocultar-cantidad','0');
+w.reset_linea_ingreso_default();
+w.consultar_existencia(1,103);
+assert.equal(seleccionado,'cantidad');
+$('#cantidad').val(3).trigger('keyup');
+assert.equal(w.cantidad,3);
+assert.equal(w.precio_total,357);
+// Una base editada no debe cambiar al recalcular impuestos o elegir otra tarifa.
+$('#base_retencion').val('50').trigger('input');
+$('#contab_retencion_id').val('1').trigger('change');
+w.precio_unitario = 238;
+w.calcular_impuestos();
+assert.equal($('#base_retencion').val(),'50');
+assert.match($('#valor_retencion_preview').text(), /1.25/);
+$('#contab_retencion_id').val('2').trigger('change');
+let row = $('<tr>').html(w.generar_string_celdas($('#linea_ingreso_default')));
+assert.equal(row.find('.base_retencion').text(),'50.00');
+assert.equal(row.find('.valor_retencion').text(),'2.50');
+assert.equal(row.find('.tasa_retencion').text(),'5');
+let alerts = 0;
+w.Swal.fire = () => alerts++;
+for (const invalid of ['', '-1', '1.234', '10000000000000']) {
+    $('#base_retencion').val(invalid);
+    assert.equal(w.validar_base_retencion(),false);
+}
+assert.equal(alerts,4);
+$('#base_retencion').val('0').trigger('input');
+assert.equal(w.validar_base_retencion(),true);
+w.reset_linea_ingreso_default();
+assert.equal($('#base_retencion').data('manual'),false);
+console.log('OK: ingreso de productos, cantidad, base automática/editable, tarifas y validaciones.');
+w.close();

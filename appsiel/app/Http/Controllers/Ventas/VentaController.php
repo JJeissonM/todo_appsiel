@@ -910,8 +910,10 @@ class VentaController extends TransaccionController
     {
         $doc_header_serv = new DocumentHeaderService();
         $result = $doc_header_serv->cancel_document_by_id( $request->factura_id, $request->anular_remision );
+        $factura = VtasDocEncabezado::find($request->factura_id);
+        $ruta = !is_null($factura) && (int)$factura->core_tipo_transaccion_id === 52 ? 'fe_factura/' : 'ventas/';
         
-        return redirect( 'ventas/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with($result->status,$result->message);
+        return redirect( $ruta.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with($result->status,$result->message);
     }    
 
     // Para los terceros que ya están creados

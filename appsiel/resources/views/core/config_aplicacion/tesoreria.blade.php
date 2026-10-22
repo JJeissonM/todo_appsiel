@@ -93,6 +93,22 @@
 					<div class="col-md-6">&nbsp;</div>
 				</div>
 
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$generar_detalle_pago_cxp_desde_documentos = 0;
+								if (isset($parametros['generar_detalle_pago_cxp_desde_documentos'])) {
+									$generar_detalle_pago_cxp_desde_documentos = $parametros['generar_detalle_pago_cxp_desde_documentos'];
+								}
+							?>
+							{{ Form::bsSelect('generar_detalle_pago_cxp_desde_documentos', $generar_detalle_pago_cxp_desde_documentos, 'Generar detalle del pago CxP desde los documentos', ['0' => 'No', '1' => 'Sí'], ['class'=>'form-control']) }}
+							<small class="help-block">Cuando el detalle del encabezado esté vacío, concatena los detalles de los documentos de cartera pagados.</small>
+						</div>
+					</div>
+					<div class="col-md-6">&nbsp;</div>
+				</div>
+
 				<h4> Parámetros para arqueos de caja </h4>
 				<hr>
 
@@ -112,7 +128,17 @@
 					</div>
 
 					<div class="col-md-6">
-						&nbsp;
+						<div class="row" style="padding:5px;">
+							<?php
+								$excluir_movimientos_bancarios_otros_usuarios = 0;
+								if ( isset($parametros['excluir_movimientos_bancarios_otros_usuarios']) )
+								{
+									$excluir_movimientos_bancarios_otros_usuarios = $parametros['excluir_movimientos_bancarios_otros_usuarios'];
+								}
+							?>
+							{{ Form::bsSelect('excluir_movimientos_bancarios_otros_usuarios', $excluir_movimientos_bancarios_otros_usuarios, 'Excluir movimientos bancarios de otros usuarios', ['0' => 'No, incluir todos (actual)', '1' => 'Sí, incluir solo los del cajero'], ['class'=>'form-control']) }}
+							<small class="help-block">Al seleccionar Sí, el arqueo solo incluye en cuentas bancarias los movimientos creados por el cajero que abrió el turno del punto de venta.</small>
+						</div>
 					</div>
 				</div>
 				

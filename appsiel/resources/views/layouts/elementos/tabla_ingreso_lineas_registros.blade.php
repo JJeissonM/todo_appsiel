@@ -1,3 +1,12 @@
+@if (!empty($datos['ocultar_cantidad_lineas']))
+    <style>
+        @foreach ($datos['columnas'] as $indice => $columna)
+            @if (in_array($columna['etiqueta'], ['Cantidad', 'Stock']))
+                #ingreso_registros tr > :nth-child({{ $indice + 1 }}) { display: none !important; }
+            @endif
+        @endforeach
+    </style>
+@endif
 <div id="div_ingreso_registros">
 	<br/>
     @if( $datos['titulo'] != '' )
@@ -5,7 +14,7 @@
         <hr>
     @endif
     <div class="table-responsive" id="table_content">
-        <table class="table table-striped" id="ingreso_registros" data-ocultar-columna-motivo="{{ !empty($datos['ocultar_columna_motivo']) ? 1 : 0 }}">
+        <table class="table table-striped" id="ingreso_registros" data-ocultar-cantidad="{{ !empty($datos['ocultar_cantidad_lineas']) ? 1 : 0 }}" data-ocultar-columna-motivo="{{ !empty($datos['ocultar_columna_motivo']) ? 1 : 0 }}">
             <thead>
                 <tr>
                 	<?php 

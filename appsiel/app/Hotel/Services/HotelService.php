@@ -24,7 +24,6 @@ use App\VentasPos\DocRegistro;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\Pdv;
 use App\VentasPos\Services\AccumulationService;
-use App\VentasPos\Services\CxCService;
 use App\VentasPos\Services\TreasuryService;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMotivo;
@@ -94,7 +93,10 @@ class HotelService
                 throw new \Exception('El huesped principal no existe.');
             }
 
-            $reservation = $service->reservationForCheckIn($room, $cliente->id, isset($data['check_in_at']) && $data['check_in_at'] != '' ? substr($data['check_in_at'], 0, 10) : date('Y-m-d'));
+            $checkInMoment = isset($data['check_in_at']) && $data['check_in_at'] != ''
+                ? HotelStay::normalizeDateTimeValue($data['check_in_at'])
+                : date('Y-m-d H:i:s');
+            $reservation = $service->reservationForCheckIn($room, $cliente->id, $checkInMoment);
             if (is_null($room) || !$service->roomIsAvailableForCheckIn($room, $reservation)) {
                 throw new \Exception('La habitacion no esta disponible para check-in.');
             }
@@ -268,24 +270,21 @@ class HotelService
             ->where('status', HotelOrderHeader::STATUS_ABIERTO)
             ->count();
 
-        // La validación debe usar el mismo conjunto de facturas que se muestra en
-        // la estadía: huésped principal y acompañantes. Consultar solo al titular
-        // permitía cerrar la estadía dejando cartera pendiente de un acompañante.
-        $pendingCreditRows = (new HotelReceivableService())->pendingInvoices($stay);
-        $pendingCreditInvoices = $pendingCreditRows->count();
-        $pendingCreditBalance = (float)$pendingCreditRows->sum('saldo_pendiente');
-        $formattedPendingCreditBalance = '$ ' . number_format($pendingCreditBalance, 2, ',', '.');
+        $pendingRows = (new HotelReceivableService())->pendingCheckOutInvoices($stay);
+        $pendingInvoices = $pendingRows->count();
+        $pendingBalance = (float)$pendingRows->sum('saldo_pendiente');
+        $formattedPendingBalance = '$ ' . number_format($pendingBalance, 2, ',', '.');
 
-        if ($openOrders > 0 && $pendingCreditInvoices > 0) {
-            return 'No se puede registrar check-out porque la estadia tiene pedidos hoteleros pendientes por facturar y facturas credito pendientes por cobrar por ' . $formattedPendingCreditBalance . '.';
+        if ($openOrders > 0 && $pendingInvoices > 0) {
+            return 'No se puede registrar check-out porque la estadia tiene pedidos hoteleros pendientes por facturar y saldos pendientes por cobrar distintos de facturas a credito por ' . $formattedPendingBalance . '.';
         }
 
         if ($openOrders > 0) {
             return 'No se puede registrar check-out porque la estadia tiene pedidos hoteleros abiertos pendientes por facturar.';
         }
 
-        if ($pendingCreditInvoices > 0) {
-            return 'No se puede registrar check-out porque los huespedes de la estadia tienen facturas credito pendientes por cobrar por ' . $formattedPendingCreditBalance . '. Registre el pago antes de realizar el check-out.';
+        if ($pendingInvoices > 0) {
+            return 'No se puede registrar check-out porque los huespedes de la estadia tienen saldos pendientes por cobrar distintos de facturas a credito por ' . $formattedPendingBalance . '. Registre el pago antes de realizar el check-out.';
         }
 
         return '';
@@ -637,8 +636,7 @@ class HotelService
 
             $tipoTransaccionId = (int)config('ventas.factura_ventas_tipo_transaccion_id', 23);
             $tipoDocAppId = (int)config('ventas.factura_ventas_tipo_doc_app_id', 18);
-            $consecutivo = TipoDocApp::get_consecutivo_actual($order->empresa_id, $tipoDocAppId) + 1;
-            TipoDocApp::aumentar_consecutivo($order->empresa_id, $tipoDocAppId);
+            $consecutivo = TipoDocApp::reservar_consecutivo($order->empresa_id, $tipoDocAppId);
 
             $turno = $service->turnoForHotelOperation($order->empresa_id, $order->pdv_id);
             $turnoId = is_null($turno) ? null : $turno->id;
@@ -690,6 +688,17 @@ class HotelService
             if (is_null($cliente) || count($order->lines) == 0) {
                 throw new \Exception('El pedido no tiene cliente valido o lineas para facturar.');
             }
+            $hasAnticipos = $service->hasAdvancePayments($objectAnticipos);
+            $guest = null;
+            if ($hasAnticipos) {
+                $guest = Cliente::find($order->cliente_id);
+                if (is_null($guest)) {
+                    throw new \Exception('El huésped del pedido no tiene un cliente valido para aplicar anticipos.');
+                }
+                $objectAnticipos = $service->normalizeAdvancePayments($objectAnticipos);
+                (new HotelAdvancePaymentService())->validate($objectAnticipos, $order->empresa_id,
+                    $guest->core_tercero_id, $cliente->core_tercero_id, $order->lines->sum('line_total'));
+            }
             $service->validateStockForOpenOrder($order);
 
             $pdv = $service->pdvForHotelOrderInvoice($order);
@@ -714,16 +723,16 @@ class HotelService
                 throw new \Exception('No existe un vendedor valido para generar y contabilizar la factura POS.');
             }
 
-            $consecutivo = TipoDocApp::get_consecutivo_actual($order->empresa_id, $tipoDocAppId) + 1;
-            TipoDocApp::aumentar_consecutivo($order->empresa_id, $tipoDocAppId);
             $totalOrder = $order->lines->sum('line_total');
-            $hasAnticipos = $service->hasAdvancePayments($objectAnticipos);
             $formaPago = $service->normalizePaymentType($formaPago);
             if ($hasAnticipos) {
-                $objectAnticipos = $service->normalizeAdvancePayments($objectAnticipos);
                 $formaPago = 'credito';
             }
             $lineasRegistrosMediosRecaudos = $service->normalizePaymentLines($lineasRegistrosMediosRecaudos, $totalOrder, $formaPago, $pdv, $hasAnticipos);
+            if ($hasAnticipos) {
+                $service->validateAdvancePaymentLines($objectAnticipos, $lineasRegistrosMediosRecaudos);
+            }
+            $consecutivo = TipoDocApp::reservar_consecutivo($order->empresa_id, $tipoDocAppId);
 
             $turno = $service->turnoForHotelOperation($order->empresa_id, $pdv->id);
 
@@ -735,7 +744,7 @@ class HotelService
                 'consecutivo' => $consecutivo,
                 'fecha' => date('Y-m-d'),
                 'core_tercero_id' => $cliente->core_tercero_id,
-                'cliente_id' => $cliente->id,
+                'cliente_id' => $order->cliente_id,
                 'vendedor_id' => $vendedorId,
                 'pdv_id' => $pdv->id,
                 'turno_operativo_id' => is_null($turno) ? null : $turno->id,
@@ -763,7 +772,7 @@ class HotelService
             $accumulationService->accumulate_one_invoice($doc->id);
 
             if ($hasAnticipos) {
-                (new CxCService())->crear_cruce_con_anticipos($doc, $objectAnticipos);
+                (new HotelAdvancePaymentService())->applyDirect($doc, $objectAnticipos, $guest->core_tercero_id, $order->document_number);
                 (new TreasuryService())->crear_abonos_documento($doc, $lineasRegistrosMediosRecaudos);
             }
 
@@ -777,10 +786,14 @@ class HotelService
         });
 
         if ($convertToElectronic) {
-            $doc->hotel_factura_electronica_url = $service->convertPosInvoiceToElectronic($doc);
-            $salesDoc = $service->electronicSalesInvoiceForPos($doc);
-            if (!is_null($salesDoc)) {
-                HotelOrderHeader::where('id', $order->id)->update(array('sales_doc_id' => $salesDoc->id));
+            try {
+                $doc->hotel_factura_electronica_url = $service->convertPosInvoiceToElectronic($doc);
+            } finally {
+                // La conversion puede crear la factura aunque el envio falle.
+                $salesDoc = $service->electronicSalesInvoiceForPos($doc);
+                if (!is_null($salesDoc)) {
+                    HotelOrderHeader::where('id', $order->id)->update(array('sales_doc_id' => $salesDoc->id));
+                }
             }
         }
 
@@ -832,13 +845,20 @@ class HotelService
 
     private function convertPosInvoiceToElectronic(FacturaPos $doc)
     {
-        $url = (new FacturaElectronicaController())->convertir_en_factura_electronica($doc->id);
+        $response = (new FacturaElectronicaController())->convertir_en_factura_electronica($doc->id);
 
-        if (trim((string)$url) == '' || strpos((string)$url, '/vtas_imprimir/') === false) {
-            throw new \Exception('La factura POS fue generada, pero no fue posible convertirla a factura electronica. Revise la configuracion de facturacion electronica y el documento POS ' . $doc->get_label_documento() . '.');
+        return $this->electronicConversionUrl($response, $doc);
+    }
+
+    protected function electronicConversionUrl($response, FacturaPos $doc)
+    {
+        $data = $response->getData(true);
+        if ($response->getStatusCode() !== 200 || !isset($data['status']) || $data['status'] !== 'success' || empty($data['url_print'])) {
+            $message = isset($data['message']) ? $data['message'] : 'No fue posible convertir o enviar la factura electronica.';
+            throw new \Exception('Factura POS ' . $doc->get_label_documento() . ': ' . $message);
         }
 
-        return $url;
+        return $data['url_print'];
     }
 
     private function electronicSalesInvoiceForPos(FacturaPos $doc)
@@ -848,9 +868,14 @@ class HotelService
             return null;
         }
 
+        $transactionTypeId = (int)config('facturacion_electronica.transaction_type_id_default');
+        if ((int)$doc->core_tipo_transaccion_id !== $transactionTypeId) {
+            return null;
+        }
+
         if (Schema::hasColumn('vtas_doc_encabezados', 'ventas_doc_relacionado_id')) {
             $salesDoc = VtasDocEncabezado::where('core_empresa_id', $doc->core_empresa_id)
-                ->where('core_tipo_transaccion_id', 52)
+                ->where('core_tipo_transaccion_id', $transactionTypeId)
                 ->where('ventas_doc_relacionado_id', $doc->id)
                 ->orderBy('id', 'DESC')
                 ->first();
@@ -1107,7 +1132,7 @@ class HotelService
         return HotelStay::where('empresa_id', $empresaId)->where('room_id', $roomId)->where('status', HotelStay::STATUS_ACTIVA)->count() > 0;
     }
 
-    private function reservationForCheckIn($room, $clienteId, $date)
+    private function reservationForCheckIn($room, $clienteId, $checkInMoment)
     {
         if (is_null($room)) {
             return null;
@@ -1117,8 +1142,8 @@ class HotelService
             ->where('room_id', $room->id)
             ->where('cliente_id', $clienteId)
             ->whereNotIn('status', array(HotelReservation::STATUS_ANULADA, HotelReservation::STATUS_CUMPLIDA))
-            ->where('reserved_from', '<=', $date)
-            ->where('reserved_until', '>=', $date)
+            ->where('reserved_from', '<=', $checkInMoment)
+            ->where('reserved_until', '>', $checkInMoment)
             ->lockForUpdate()
             ->first();
     }
@@ -1301,5 +1326,23 @@ class HotelService
         }
 
         return implode(',', $parts);
+    }
+
+    protected function validateAdvancePaymentLines($objectAnticipos, $paymentLines)
+    {
+        $advanceTotal = 0;
+        foreach (json_decode('[' . $objectAnticipos . ']', true) as $advance) {
+            $advanceTotal += abs((float)$advance['valor_aplicar']);
+        }
+        $paymentAdvanceTotal = 0;
+        foreach (json_decode($paymentLines, true) as $line) {
+            $parts = explode('-', $line['teso_medio_recaudo_id']);
+            if ((int)$parts[0] === 0) {
+                $paymentAdvanceTotal += $this->parsePaymentValue($line['valor']);
+            }
+        }
+        if (abs($advanceTotal - $paymentAdvanceTotal) > 0.01) {
+            throw new \Exception('El valor del medio de pago Anticipo no coincide con los anticipos seleccionados.');
+        }
     }
 }

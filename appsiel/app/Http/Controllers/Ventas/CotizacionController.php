@@ -330,11 +330,7 @@ class CotizacionController extends TransaccionController
             Al duplicar el documento no se realiza contabilización, por tanto se puede duplicar aunque tenga movimientos de cxc o cxp. Pero los registros de con estos movimientos, se llamaran como registros de causacion en el formulario de editar.
         */
 
-        // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
-        $consecutivo = TipoDocApp::get_consecutivo_actual($doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id) + 1;
-
-        // Se incementa el consecutivo para ese tipo de documento y la empresa
-        TipoDocApp::aumentar_consecutivo($doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id);
+        $consecutivo = TipoDocApp::reservar_consecutivo($doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id);
 
         $nuevo_doc_encabezado = $doc_encabezado->replicate();
         $nuevo_doc_encabezado->consecutivo = $consecutivo;

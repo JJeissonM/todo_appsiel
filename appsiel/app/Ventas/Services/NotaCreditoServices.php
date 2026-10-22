@@ -142,6 +142,21 @@ class NotaCreditoServices
         }
     }
 
+    protected function pdv_factura_relacionada($factura, $movimiento)
+    {
+        if ($movimiento && (int)$movimiento->pdv_id > 0) {
+            return (int)$movimiento->pdv_id;
+        }
+        if ((int)$factura->pdv_id > 0) { return (int)$factura->pdv_id; }
+        // En electrónica el ID pertenece a ventas; buscar el POS por identidad
+        // contable evita colisiones entre IDs de tablas y empresas.
+        $pdv = \App\VentasPos\FacturaPos::where('core_empresa_id', $factura->core_empresa_id)
+            ->where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
+            ->where('consecutivo', $factura->consecutivo)->value('pdv_id');
+        return (int)$pdv > 0 ? (int)$pdv : null;
+    }
+
     public function actualizar_movimiento_tesoreria( $total_nota, $factura, $nota, $accion )
     {
         /*
@@ -159,11 +174,14 @@ class NotaCreditoServices
 
         if ( $accion == 'crear')
         {
-            $movimiento_teso = TesoMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+            $movimiento_teso = TesoMovimiento::where('core_empresa_id', $factura->core_empresa_id)
+                                ->where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
                                 ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
                                 ->where('consecutivo', $factura->consecutivo)
                                 ->get()
                                 ->first();
+
+            $datos['pdv_id'] = $this->pdv_factura_relacionada($factura, $movimiento_teso);
 
             if ($movimiento_teso == null) {
                 $registros_medio_pago['teso_caja_id'] = 1;

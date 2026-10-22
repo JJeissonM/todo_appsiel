@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<phpunit bootstrap="integration/isolated_flow_bootstrap.php">
+    <testsuites>
+        <testsuite name="Flujos">
+            <file>VentasPos/ElectronicInvoiceAtomicStoreTest.php</file>
+            <file>VentasPos/PaymentReconciliationServiceTest.php</file>
+            <file>VentasPos/PosInvoiceChargesServiceTest.php</file>
+            <file>VentasPos/PosInvoiceRoundingTest.php</file>
+            <file>VentasPos/PosTransactionDateServiceTest.php</file>
+            <file>VentasPos/RecipeIngredientKitchenWarehouseTest.php</file>
+            <file>NominaElectronica/DocumentoSoporteServiceTest.php</file>
+            <file>Nomina/FondoSolidaridadPensionalTest.php</file>
+            <file>Nomina/NomDocRegistroCuotaCrudTest.php</file>
+            <file>Nomina/ParametrizacionPrestacionesSocialesTest.php</file>
+            <file>Contabilidad/ProcesosControllerTest.php</file>
+            <file>HotelCheckOutCreditTest.php</file>
+            <file>Core/DocumentSequenceModuleTransactionTest.php</file>
+            <file>Core/DocumentSequenceServiceTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>

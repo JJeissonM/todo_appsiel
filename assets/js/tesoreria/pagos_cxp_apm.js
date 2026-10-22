@@ -46,7 +46,16 @@
         }
 
         if ($ && typeof $.getJSON === 'function') {
-            return $.getJSON(url);
+            // jQuery 2 no encadena promesas nativas devueltas por sus callbacks.
+            return new Promise((resolve, reject) => {
+                $.getJSON(url).done(resolve).fail((xhr) => {
+                    reject({
+                        ErrorMessage: xhr && xhr.responseJSON && xhr.responseJSON.message
+                            ? xhr.responseJSON.message
+                            : 'No fue posible preparar el payload APM.'
+                    });
+                });
+            });
         }
 
         return fetch(url, {

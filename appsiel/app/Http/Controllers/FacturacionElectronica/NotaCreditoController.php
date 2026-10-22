@@ -40,6 +40,8 @@ use App\Ventas\Services\AccountingServices;
 use App\Ventas\Services\NotaCreditoServices;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\FacturacionElectronica\Services\CreditNoteLineService;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 
@@ -199,18 +201,13 @@ class NotaCreditoController extends TransaccionController
     {
     	// WARNING: si la factura tiene varias entradas, no se puede hacer la nota
 
+        try {
+        list($encabezado_nota_credito, $factura) = DB::transaction(function () use ($request) {
+        VtasDocEncabezado::where('id', $request->ventas_doc_relacionado_id)->lockForUpdate()->firstOrFail();
     	$datos = $request->all();
     	$factura = VtasDocEncabezado::get_registro_impresion( $request->ventas_doc_relacionado_id ); 
-
-    	// Paso 1
         $datos['remision_doc_encabezado_id'] = 0;
-        if (!in_array($factura->remision_doc_encabezado_id, [null, 0, '']))
-        {
-            $devolucion = new DevolucionVentas;
-            $documento_devolucion = $devolucion->crear_nueva( $datos, $factura->remision_doc_encabezado_id );
-            $datos['remision_doc_encabezado_id'] = $documento_devolucion->id;
-            $request['remision_doc_encabezado_id'] = $documento_devolucion->id;
-        }
+        $request['remision_doc_encabezado_id'] = 0;
 
     	// Paso 2
     	$datos['creado_por'] = Auth::user()->email;
@@ -220,11 +217,36 @@ class NotaCreditoController extends TransaccionController
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
         $encabezado_nota_credito = $encabezado_documento->crear_nuevo( $datos );
 
-        // Paso 3 ( este falta refactorizar: separar la creación de lineas de registros de la contabilización y de otras transacciones )
-        NotaCreditoController::crear_registros_nota_credito( $request, $encabezado_nota_credito, $factura );
+        // Los derivados siguen la operación de la nota, no el turno de la venta.
+        $registrar_derivados = function () use ($request, $datos, $encabezado_nota_credito, $factura) {
+            $datos['turno_operativo_id'] = $encabezado_nota_credito->turno_operativo_id;
+            $request->merge(array('turno_operativo_id' => $encabezado_nota_credito->turno_operativo_id));
+            if (!in_array($factura->remision_doc_encabezado_id, array(null, 0, ''))) {
+                $documento_devolucion = (new DevolucionVentas())->crear_nueva($datos, $factura->remision_doc_encabezado_id);
+                if ((int)$documento_devolucion->turno_operativo_id !== (int)$encabezado_nota_credito->turno_operativo_id) {
+                    throw new \App\Core\Exceptions\TurnoIntegrityException('Seleccione un turno operativo para la nota crédito. La devolución y la nota deben registrarse en el mismo turno.');
+                }
+                $encabezado_nota_credito->remision_doc_encabezado_id = $documento_devolucion->id;
+                $encabezado_nota_credito->save();
+                $request['remision_doc_encabezado_id'] = $documento_devolucion->id;
+            }
+            NotaCreditoController::crear_registros_nota_credito($request, $encabezado_nota_credito, $factura);
+        };
+        if (!empty($encabezado_nota_credito->turno_operativo_id)) {
+            $turno_nota = \App\Core\TurnoOperativo::findOrFail($encabezado_nota_credito->turno_operativo_id);
+            app(\App\Core\Services\TurnoContext::class)->runFromOrigin(
+                $turno_nota, get_class($encabezado_nota_credito), $encabezado_nota_credito->id, $registrar_derivados
+            );
+        } else {
+            $registrar_derivados();
+        }
 
-        // Paso 4 (Se está haciendo en el Paso 3)
-        //$this->contabilizar( $encabezado_documento );
+        return [$encabezado_nota_credito, $factura];
+        });
+
+        } catch (\InvalidArgumentException $error) {
+            return redirect()->back()->withInput()->with('mensaje_error', $error->getMessage());
+        }
 
         // Paso 5: Enviar nota electrónica
         $mensaje = $this->enviar_nota_credito_electronica( $encabezado_nota_credito->id, $factura );
@@ -401,55 +423,33 @@ class NotaCreditoController extends TransaccionController
         $lineas_registros = $factura->lineas_registros;
         foreach ($lineas_registros as $linea_factura)
         {
-            $cantidad = $linea_factura->cantidad * -1; // Se vuelve la cantidad negativa, porque es una disminución de las ventas
+            $pendiente = abs((float)$linea_factura->cantidad) - (float)$linea_factura->cantidad_devuelta;
+            if ($pendiente <= 0.000001) { continue; }
+            $linea_datos = (new CreditNoteLineService())->calculate($linea_factura, $pendiente) + [
+                'inv_bodega_id' => $linea_factura->inv_bodega_id,
+                'inv_motivo_id' => $linea_factura->inv_motivo_id,
+                'inv_producto_id' => $linea_factura->inv_producto_id,
+                'creado_por' => Auth::user()->email, 'estado' => 'Activo'
+            ];
+            $precio_total_con_descuento = $linea_datos['precio_total'];
 
-            $precio_unitario = $linea_factura->precio_unitario;
-
-            $precio_unitario_con_descuento = $linea_factura->precio_unitario * ( 1 - $linea_factura->tasa_descuento / 100 );
-
-            $base_impuesto = $linea_factura->base_impuesto;
-
-            $precio_total_con_descuento = $precio_unitario_con_descuento * $cantidad;
-
-            $valor_total_descuento = ( $precio_unitario - $precio_unitario_con_descuento ) * $linea_factura->cantidad;
-
-            $linea_datos = [ 'inv_bodega_id' => $linea_factura->inv_bodega_id ] +
-                            [ 'inv_motivo_id' => $linea_factura->inv_motivo_id ] +
-                            [ 'inv_producto_id' => $linea_factura->inv_producto_id ] +
-                            [ 'precio_unitario' => $precio_unitario ] +
-                            [ 'cantidad' => $cantidad ] +
-                            [ 'precio_total' => $precio_total_con_descuento ] +
-                            [ 'base_impuesto' =>  $base_impuesto ] +
-                            [ 'tasa_impuesto' => $linea_factura->tasa_impuesto ] +
-                            [ 'valor_impuesto' => ( $precio_unitario_con_descuento - $base_impuesto ) ] +
-                            [ 'base_impuesto_total' => ( $base_impuesto * $linea_factura->cantidad ) ] +
-                            [ 'tasa_descuento' => $linea_factura->tasa_descuento ] +
-                            [ 'valor_total_descuento' => $valor_total_descuento ] +
-                            [ 'creado_por' => Auth::user()->email ] +
-                            [ 'estado' => 'Activo' ];
-
-            VtasDocRegistro::create( 
-                                    $datos + 
-                                    [ 'vtas_doc_encabezado_id' => $nota_credito->id ] +
-                                    $linea_datos
-                                );
+            VtasDocRegistro::create(array_merge($datos, $linea_datos, ['vtas_doc_encabezado_id' => $nota_credito->id]));
 
             $datos['consecutivo'] = $nota_credito->consecutivo;
-            VtasMovimiento::create( 
-                                    $datos +
-                                    $linea_datos
-                                );
+            VtasMovimiento::create(array_merge($datos, $linea_datos));
 
             // Contabilizar
             $detalle_operacion = $datos['descripcion'];
 
             // Reversar ingresos e impuestos
-            $nota_credito_service->contabilizar_movimiento_debito( $datos + $linea_datos, $detalle_operacion );
+            $datos_contables = array_merge($datos, $linea_datos);
+            $datos_contables['valor_impuesto'] = round(abs($linea_datos['precio_total']) - $linea_datos['base_impuesto_total'], 2);
+            $nota_credito_service->contabilizar_movimiento_debito($datos_contables, $detalle_operacion);
 
             $total_documento += $precio_total_con_descuento;
 
             // Actualizar campo de cantidad_devuelta en cada línea de registro de la factura de ventas
-            $nueva_cantidad_devuelta = $linea_factura->cantidad_devuelta + abs($linea_factura->cantidad);
+            $nueva_cantidad_devuelta = $linea_factura->cantidad_devuelta + $pendiente;
             $linea_factura->cantidad_devuelta = $nueva_cantidad_devuelta;
             $linea_factura->save();
 
@@ -459,6 +459,7 @@ class NotaCreditoController extends TransaccionController
         $total_documento += $ajustes_nota['valor_ajuste_al_peso'] + $ajustes_nota['valor_total_bolsas'];
         self::contabilizar_ajustes_factura_devuelta($datos, $ajustes_nota);
 
+        $total_documento = round($total_documento, 2);
         $nota_credito->valor_total = $total_documento;
         $nota_credito->save();
         
@@ -480,6 +481,9 @@ class NotaCreditoController extends TransaccionController
     {
         $nota_credito_service = new NotaCreditoServices();
 
+        $lineService = new \App\FacturacionElectronica\Services\CreditNoteLineService();
+        $selection = !empty($datos['doc_registros_ids']) ? $lineService->requestedLines($factura->id, $datos) : null;
+        $usedInvoiceLines = array();
         $total_documento = 0;
         // Por cada remisión pendiente
         $cantidad_registros = count( $lineas_registros );
@@ -497,53 +501,35 @@ class NotaCreditoController extends TransaccionController
                 $cantidad = $un_registro->cantidad * -1; // Fue una entrada de inventarios, se vuelve la cantidad negativa, porque es una diminución de las ventas
 
                 // Los precios se deben traer de la linea de la factura
+                if (!is_null($selection)) {
+                    $linea_factura = $lineService->matchRequestedLine($selection, $usedInvoiceLines, $un_registro->inv_producto_id, $cantidad);
+                } else {
                 $linea_factura = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $factura->id)
                                                 ->where( 'inv_producto_id', $un_registro->inv_producto_id )
                                                 ->get()
                                                 ->first();
+                }
 
-                $precio_unitario = $linea_factura->precio_unitario;
+                $linea_datos = (new CreditNoteLineService())->calculate($linea_factura, abs($cantidad)) + [
+                    'inv_bodega_id' => $un_registro->inv_bodega_id,
+                    'inv_motivo_id' => $un_registro->inv_motivo_id,
+                    'inv_producto_id' => $un_registro->inv_producto_id,
+                    'creado_por' => Auth::user()->email, 'estado' => 'Activo'
+                ];
+                $precio_total_con_descuento = $linea_datos['precio_total'];
 
-                $precio_unitario_con_descuento = $linea_factura->precio_unitario * ( 1 - $linea_factura->tasa_descuento / 100 );
-
-                $base_impuesto = $linea_factura->base_impuesto;
-
-                $precio_total_con_descuento = $precio_unitario_con_descuento * $cantidad;
-
-                $valor_total_descuento = ( $precio_unitario - $precio_unitario_con_descuento ) * $un_registro->cantidad;
-
-                $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
-                                [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
-                                [ 'inv_producto_id' => $un_registro->inv_producto_id ] +
-                                [ 'precio_unitario' => $precio_unitario ] +
-                                [ 'cantidad' => $cantidad ] +
-                                [ 'precio_total' => $precio_total_con_descuento ] +
-                                [ 'base_impuesto' =>  $base_impuesto ] +
-                                [ 'tasa_impuesto' => $linea_factura->tasa_impuesto ] +
-                                [ 'valor_impuesto' => ( $precio_unitario_con_descuento - $base_impuesto ) ] +
-                                [ 'base_impuesto_total' => ( $base_impuesto * $un_registro->cantidad ) ] +
-                                [ 'tasa_descuento' => $linea_factura->tasa_descuento ] +
-                                [ 'valor_total_descuento' => $valor_total_descuento ] +
-                                [ 'creado_por' => Auth::user()->email ] +
-                                [ 'estado' => 'Activo' ];
-
-                VtasDocRegistro::create( 
-                                        $datos + 
-                                        [ 'vtas_doc_encabezado_id' => $nota_credito->id ] +
-                                        $linea_datos
-                                    );
+                VtasDocRegistro::create(array_merge($datos, $linea_datos, ['vtas_doc_encabezado_id' => $nota_credito->id]));
 
                 $datos['consecutivo'] = $nota_credito->consecutivo;
-                VtasMovimiento::create( 
-                                        $datos +
-                                        $linea_datos
-                                    );
+                VtasMovimiento::create(array_merge($datos, $linea_datos));
 
                 // Contabilizar
                 $detalle_operacion = $datos['descripcion'];
 
                 // Reversar ingresos e impuestos                
-                $nota_credito_service->contabilizar_movimiento_debito( $datos + $linea_datos, $detalle_operacion );
+                $datos_contables = array_merge($datos, $linea_datos);
+                $datos_contables['valor_impuesto'] = round(abs($linea_datos['precio_total']) - $linea_datos['base_impuesto_total'], 2);
+                $nota_credito_service->contabilizar_movimiento_debito($datos_contables, $detalle_operacion);
 
                 $total_documento += $precio_total_con_descuento;
 
@@ -572,6 +558,7 @@ class NotaCreditoController extends TransaccionController
         $total_documento += $ajustes_nota['valor_ajuste_al_peso'] + $ajustes_nota['valor_total_bolsas'];
         self::contabilizar_ajustes_factura_devuelta($datos, $ajustes_nota);
 
+        $total_documento = round($total_documento, 2);
         $nota_credito->valor_total = $total_documento;
         $nota_credito->remision_doc_encabezado_id = $remision_doc_encabezado_id;
         $nota_credito->save();

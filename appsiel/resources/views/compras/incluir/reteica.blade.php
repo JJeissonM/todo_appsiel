@@ -13,7 +13,10 @@
             </select>
             <label class="sr-only" for="reteica_preview">Valor ReteICA</label>
             <input id="reteica_preview" class="form-control" readonly value="0.00" aria-label="Valor calculado ReteICA">
-            <small>Base sin IVA: <span id="reteica_base_preview">$ 0</span></small>
+            <label for="reteica_base">Base de retención</label>
+            <input type="number" id="reteica_base" name="reteica_base" form="form_create" class="form-control" min="0" max="9999999999999.99" step="0.01" value="0.00">
+            <input type="hidden" id="reteica_base_manual" name="reteica_base_manual" form="form_create" value="0">
+            <small>Se calcula sin IVA. Puede modificarla manualmente.</small>
         </div>
         <span id="reteica_importe"></span>
     </td>

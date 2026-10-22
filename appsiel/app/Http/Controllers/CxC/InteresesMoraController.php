@@ -237,11 +237,7 @@ use App\CxC\CxcEstadoCartera;
                        
             // 1ro. Crear encabezado documento
             //$modelo = Modelo::find();
-            // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
-            $consecutivo = TipoDocApp::get_consecutivo_actual($request->core_empresa_id,$request->core_tipo_doc_app_id) + 1;
-
-            // Se incementa el consecutivo para ese tipo de documento y la empresa
-            TipoDocApp::aumentar_consecutivo($request->core_empresa_id,$request->core_tipo_doc_app_id);
+            $consecutivo = TipoDocApp::reservar_consecutivo($request->core_empresa_id,$request->core_tipo_doc_app_id);
 
             // Datos para el encabezado
             $fecha_vencimiento = '2100-01-01'; // Para que nunca se venza y no se vaya a incurrir en Anatocismo

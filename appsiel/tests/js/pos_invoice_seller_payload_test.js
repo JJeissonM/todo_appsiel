@@ -1,0 +1,14 @@
+const fs = require('fs'), vm = require('vm'), assert = require('assert');
+const source = fs.readFileSync('assets/js/ventas_pos/commons.js', 'utf8');
+const start = source.indexOf('function pos_serializar_formulario_factura()');
+const end = source.indexOf('function pos_preparar_payload_guardado(', start);
+let selected = '27';
+const fields = [{name:'cliente_id',value:'8'}, {name:'vendedor_id',value:'1'}, {name:'vendedor_id',value:'2'}];
+const $ = selector => ({first() {return this;}, attr() {return selected;}, val() {return '19';}, serializeArray() {return fields;}});
+$.param = values => values.map(v => v.name + '=' + v.value).join('&');
+const context = {$}; vm.createContext(context); vm.runInContext(source.slice(start,end), context);
+assert.strictEqual(context.pos_serializar_formulario_factura(), 'cliente_id=8&vendedor_id=27');
+selected = undefined;
+assert.strictEqual(context.pos_serializar_formulario_factura(), 'cliente_id=8&vendedor_id=19');
+assert.strictEqual(fields.length, 3);
+console.log('OK: vendedor seleccionado único y respaldo sin botonera.');

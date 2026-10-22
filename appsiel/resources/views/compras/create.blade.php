@@ -71,12 +71,14 @@
 				?>
 
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
+                @if (in_array((int)Input::get('id_transaccion'), [25, 48]))
                 <div class="row" id="campo_cuenta_por_pagar_directa" style="display:none; margin:5px">
                     <div class="col-md-6">
                         {{ Form::bsSelect('cta_x_pagar_id', old('cta_x_pagar_id'), 'Cuenta por pagar directa', \App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
                         <small>Opcional. Si está vacía, se utiliza la cuenta por pagar del proveedor.</small>
                     </div>
                 </div>
+                @endif
 
 
 			<!-- Campos adicionales para el proceso de compras -->

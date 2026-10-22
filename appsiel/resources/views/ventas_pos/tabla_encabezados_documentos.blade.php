@@ -38,9 +38,9 @@
                 $valor_factura = $fila->valor_total + $valor_propina + $valor_datafono + $fila->valor_ajuste_al_peso + $fila->valor_total_bolsas;
 
                 $tercero_cliente = null;
-                if ( !is_null($fila->cliente) && !is_null($fila->cliente->tercero) )
+                if ( !is_null($fila->cliente_facturacion) && !is_null($fila->cliente_facturacion->tercero) )
                 {
-                    $tercero_cliente = $fila->cliente->tercero;
+                    $tercero_cliente = $fila->cliente_facturacion->tercero;
                 }
 
                 if ( is_null($tercero_cliente) && !is_null($fila->tercero) )

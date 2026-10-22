@@ -141,6 +141,9 @@ class CompraConfirmationService
                 'costo_total' => $costo_total,
                 'tasa_descuento' => (float)$linea->tasa_descuento,
                 'valor_total_descuento' => (float)$linea->valor_total_descuento,
+                'base_retencion' => $linea->base_retencion,
+                'tasa_retencion' => $linea->tasa_retencion,
+                'valor_retencion' => $linea->valor_retencion,
                 'contab_retencion_id' => (int)$linea->contab_retencion_id
             ];
         })->values()->toArray();

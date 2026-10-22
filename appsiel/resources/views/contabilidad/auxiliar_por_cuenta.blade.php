@@ -5,6 +5,7 @@
 ?>
 
 @section('content')
+    <p><a class="btn btn-default" href="{{ url('contab_auxiliar_terceros') }}">Auxiliar por terceros: mensual y anual</a></p>
 	{{ Form::bsMigaPan($miga_pan) }}
 
 	<div class="row">
@@ -80,10 +81,17 @@
 								<p class="help-block">Sí: ordena, agrupa y subtotaliza por cada cuenta.</p>
 							</div>
 						</div>
+                        <div class="col-xs-6 col-sm-4 col-md-3">
+                            <div class="form-group">
+                                {{ Form::label('totalizar_por_documento','Totalizar por documento') }}
+                                {{ Form::select('totalizar_por_documento',['0'=>'No','1'=>'Sí'],0,['class'=>'form-control','id'=>'totalizar_por_documento']) }}
+                                <p class="help-block">Suma los movimientos del mismo documento, tercero y cuenta.</p>
+                            </div>
+                        </div>
 						<div class="col-xs-6 col-sm-4 col-md-3">
 							<div class="form-group">
 								<label>&nbsp;</label>
-								<a href="#" class="btn btn-primary btn-block" id="btn_generar"><i class="fa fa-play"></i> Generar</a>
+								<button type="submit" class="btn btn-primary btn-block" id="btn_generar"><i class="fa fa-play"></i> Generar</button>
 							</div>
 						</div>
 					</div>
@@ -105,7 +113,11 @@
 			{{ Form::bsBtnExcel('auxiliar_por_cuenta') }}
 			{{ Form::bsBtnPdf('auxiliar_por_cuenta') }}
 
-			<div id="resultado_consulta">
+			<div id="auxiliar_cargando" class="text-center" role="status" aria-live="polite" style="display:none;padding:20px;">
+                <i class="fa fa-spinner fa-spin fa-2x" aria-hidden="true"></i>
+                <p>Generando auxiliar por cuenta…</p>
+            </div>
+            <div id="resultado_consulta" aria-busy="false">
 
 			</div>	
 		</div>
@@ -149,15 +161,21 @@
 				}
 			});
 
-			// Click para generar la consulta
-			$('#btn_generar').click(function(event){
+			var generando = false;
+			var texto_generar = $('#btn_generar').html();
+			$('#form_consulta').on('submit', function(event){
+                event.preventDefault();
+                if (generando) { return; }
 				if(!valida_campos()){
 					alert('Debe diligenciar las fechas.');
 					return false;
 				}
 
-				$('#resultado_consulta').html('');
-				$('#div_cargando').show();
+                generando = true;
+                $('#btn_generar').prop('disabled', true).html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Generando…');
+                $('#btn_excel, #btn_pdf').hide();
+                $('#resultado_consulta').html('').attr('aria-busy', 'true');
+                $('#auxiliar_cargando').show();
 
 				// Preparar datos de los controles para enviar formulario
 				var form_consulta = $('#form_consulta');
@@ -165,7 +183,6 @@
 				var datos = form_consulta.serialize();
 				// Enviar formulario de ingreso de productos vía POST
 				$.post(url,datos,function(respuesta){
-					$('#div_cargando').hide();
 					$('#resultado_consulta').html(respuesta);
 					$('#btn_excel').show(500);
 					$('#btn_pdf').show(500);
@@ -181,8 +198,15 @@
 					}
 					
 					
-					$('#btn_pdf').attr('href', new_url);
-				});
+                    $('#btn_pdf').attr('href', new_url);
+                }).fail(function () {
+                    $('#resultado_consulta').html('<div class="alert alert-danger" role="alert">No fue posible generar el auxiliar. Intente nuevamente.</div>');
+                }).always(function () {
+                    generando = false;
+                    $('#auxiliar_cargando').hide();
+                    $('#resultado_consulta').attr('aria-busy', 'false');
+                    $('#btn_generar').prop('disabled', false).html(texto_generar);
+                });
 			});
 
 			function valida_campos(){

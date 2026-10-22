@@ -173,7 +173,7 @@ class AccumulationService
 
             $cliente = $invoice->pdv->cliente;
         }else{
-            $cliente = $invoice->cliente;
+            $cliente = $invoice->cliente_facturacion;
         }
 
         // Crear remisión si no existe

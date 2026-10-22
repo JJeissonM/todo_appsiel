@@ -32,6 +32,7 @@ use App\CxP\CxpAbono;
 use App\Contabilidad\Impuesto;
 use App\Inventarios\Services\InvDocumentsLinesService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 
@@ -152,26 +153,35 @@ class NotaCreditoValorController extends TransaccionController
      */
     public function store(Request $request)
     {
-        $factura = ComprasDocEncabezado::get_registro_impresion( $request->compras_doc_relacionado_id ); 
-        
-        $request['creado_por'] = Auth::user()->email;
+        $nota_credito = DB::transaction(function () use ($request) {
+            $factura = ComprasDocEncabezado::where('core_empresa_id', Auth::user()->empresa_id)
+                ->where('estado', 'Activo')->lockForUpdate()->findOrFail($request->compras_doc_relacionado_id);
 
-        if ($request->forma_pago == null) {
-            $request['forma_pago'] = $factura->condicion_pago;
-        }
+            // La cuenta de la nota procede de la factura, nunca del formulario.
+            $request->merge(['cta_x_pagar_id' => $factura->forma_pago == 'credito' && (int)$factura->cta_x_pagar_id > 0
+                ? (int)$factura->cta_x_pagar_id : null]);
 
-        // Crear encabezado del documento de Compras (Nota Crédito por Valor)
-        $request['compras_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura
-        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+            $request['creado_por'] = Auth::user()->email;
 
-        $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
+            if ($request->forma_pago == null) {
+                $request['forma_pago'] = $factura->forma_pago;
+            }
 
-        // Crear líneas de registros del documento
-        $this->crear_registros_nota_credito( $request, $nota_credito, $factura );
+            // Crear encabezado del documento de Compras (Nota Crédito por Valor)
+            $request['compras_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura
+            $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+
+            $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
+
+            // Crear líneas de registros del documento
+            $this->crear_registros_nota_credito( $request, $nota_credito, $factura );
+
+            return $nota_credito;
+        });
 
         return redirect('compras_notas_credito_valor/'.$nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
     }
-    
+
     /*
         Crea los registros, el movimiento y la contabilización de un documento. 
         Todas estas operaciones se crean juntas porque se almacenena en cada iteración de las lineas de registros

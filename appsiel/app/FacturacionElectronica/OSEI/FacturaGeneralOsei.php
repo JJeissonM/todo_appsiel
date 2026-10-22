@@ -190,7 +190,7 @@ class FacturaGeneralOsei
 
     protected function isValidEmail($email)
     {
-        $email = trim((string)$email);
+        $email = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($email);
 
         return $email != '' && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
@@ -202,9 +202,9 @@ class FacturaGeneralOsei
 
         if (is_array($decodedBody)) {
             if (!empty($decodedBody['message'])) {
-                $errorMessage = $decodedBody['message'];
+                $errorMessage = is_array($decodedBody['message']) ? json_encode($decodedBody['message'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $decodedBody['message'];
             } elseif (!empty($decodedBody['error'])) {
-                $errorMessage = $decodedBody['error'];
+                $errorMessage = is_array($decodedBody['error']) ? json_encode($decodedBody['error'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $decodedBody['error'];
             } elseif (!empty($decodedBody['errors'])) {
                 $errorMessage = is_array($decodedBody['errors']) ? json_encode($decodedBody['errors'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $decodedBody['errors'];
             } else {
@@ -214,7 +214,12 @@ class FacturaGeneralOsei
             $errorMessage = trim($responseBody);
         }
 
-        return $errorMessage;
+        // El aviso se renderiza como HTML: nunca insertar paginas de error del proveedor.
+        if (preg_match('/<\s*(?:!doctype|html|head|body|iframe|script|style|div|pre|h[1-6])\b/i', $errorMessage)) {
+            return 'El servidor OSEI no pudo procesar la solicitud. Intente nuevamente. Si el error persiste, contacte al soporte.';
+        }
+
+        return htmlspecialchars($errorMessage, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     /**
@@ -472,7 +477,7 @@ class FacturaGeneralOsei
         $send_dian = 'true';
         $send_email = config('facturacion_electronica.enviar_email_clientes');
 
-        $email_cliente = trim((string)$this->doc_encabezado->cliente->tercero->email);
+        $email_cliente = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($this->doc_encabezado->cliente_facturacion->tercero->email);
         $email_copia = trim((string)config('facturacion_electronica.email_copia_factura'));
         $lista_emails = $email_cliente;
         if ($email_copia != '') {
@@ -484,7 +489,11 @@ class FacturaGeneralOsei
             $lista_emails = $email_copia;
         }
 
-        return '{ "actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": ' . $this->jsonString($lista_emails) . '},"invoice": {' . $this->get_encabezado_factura($auth_token) . ',"items": ' . $this->get_lineas_registros() . ',"charges": []},"aditional_info": ' . $this->get_aditional_info() . '}';
+        $global = (new \App\FacturacionElectronica\Services\PosInvoiceChargesService())
+            ->getOseiGlobalAllowanceCharge($this->doc_encabezado);
+        $global_json = $global === null ? '' : ',"global_allowance_charge": ' . json_encode($global, JSON_UNESCAPED_UNICODE);
+
+        return '{ "actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": ' . $this->jsonString($lista_emails) . '},"invoice": {' . $this->get_encabezado_factura($auth_token) . ',"items": ' . $this->get_lineas_registros() . $global_json . '},"aditional_info": ' . $this->get_aditional_info() . '}';
     }
 
     public function preparar_cadena_json_nota_credito($auth_token, $factura_doc_encabezado)
@@ -492,7 +501,7 @@ class FacturaGeneralOsei
         $send_dian = 'true';
         $send_email = config('facturacion_electronica.enviar_email_clientes');
 
-        $email_cliente = trim((string)$this->doc_encabezado->cliente->tercero->email);
+        $email_cliente = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($this->doc_encabezado->cliente_facturacion->tercero->email);
         $email_copia = trim((string)config('facturacion_electronica.email_copia_factura'));
         $lista_emails = $email_cliente;
         if ($email_copia != '') {
@@ -780,6 +789,6 @@ class FacturaGeneralOsei
 
         $party_identification_type = $cliente->tercero->id_tipo_documento_id;
 
-        return '{"email": ' . $this->jsonString(trim((string)$cliente->tercero->email)) . ',"phone": ' . $this->jsonString($cliente->tercero->telefono1) . ',"type": ' . $this->jsonString($party_type) . ',"legal_name": ' . $this->jsonString($legal_name) . ',"trade_name":' . $this->jsonString($trade_name) . ',"identification_number": ' . $this->jsonString($cliente->tercero->numero_identificacion) . ',"identification_type": ' . $this->jsonString($party_identification_type) . ',"verification_digit": ' . $this->jsonString($verification_digit) . ',"tax_level_code": ' . $this->jsonString($tax_level_code) . ',"tax_scheme_id": ' . $this->jsonString($tax_scheme_id) . ',"department": ' . $this->jsonString($department_id) . ',"city": ' . $this->jsonString($city_id) . ',"address_line": ' . $this->jsonString($address_line) . '}';
+        return '{"email": ' . $this->jsonString(\App\FacturacionElectronica\Services\EmailNormalizer::normalize($cliente->tercero->email)) . ',"phone": ' . $this->jsonString($cliente->tercero->telefono1) . ',"type": ' . $this->jsonString($party_type) . ',"legal_name": ' . $this->jsonString($legal_name) . ',"trade_name":' . $this->jsonString($trade_name) . ',"identification_number": ' . $this->jsonString($cliente->tercero->numero_identificacion) . ',"identification_type": ' . $this->jsonString($party_identification_type) . ',"verification_digit": ' . $this->jsonString($verification_digit) . ',"tax_level_code": ' . $this->jsonString($tax_level_code) . ',"tax_scheme_id": ' . $this->jsonString($tax_scheme_id) . ',"department": ' . $this->jsonString($department_id) . ',"city": ' . $this->jsonString($city_id) . ',"address_line": ' . $this->jsonString($address_line) . '}';
     }
 }

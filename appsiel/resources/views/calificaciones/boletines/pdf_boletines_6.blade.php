@@ -48,7 +48,11 @@
 		}
 
 		li{
-			list-style-image: url({{ url('/') . '/nube/check-mark-icon-small.png' }});
+			@if (is_file(base_path('../nube/check-mark-icon-small.png')))
+                list-style-image: url("data:image/png;base64,{{ base64_encode(file_get_contents(base_path('../nube/check-mark-icon-small.png'))) }}");
+            @else
+                list-style-type: disc;
+            @endif
 		}
 
 		table.banner{

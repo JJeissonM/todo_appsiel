@@ -57,7 +57,8 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+                            {{ Form::bsSelect('ocultar_cantidad_lineas', isset($parametros['ocultar_cantidad_lineas']) ? $parametros['ocultar_cantidad_lineas'] : 0, 'Ocultar cantidad y existencia en líneas de compras', ['No', 'Sí'], ['class'=>'form-control']) }}
+                            <small>Al ingresar productos, cada línea tendrá cantidad 1.</small>
 						</div>
 					</div>
 

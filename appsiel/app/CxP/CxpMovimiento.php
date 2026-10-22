@@ -91,6 +91,8 @@ class CxpMovimiento extends Model
   public function actualizar_saldos($abono)
   {
 
+    $this->validar_saldo_disponible_para_abono($abono);
+
     // Se diminuye el saldo_pendiente en el documento pendiente, si saldo_pendiente == 0 se elimina el registro
     $nuevo_saldo = $this->saldo_pendiente - $abono; //valor_documento
 
@@ -107,6 +109,24 @@ class CxpMovimiento extends Model
     }
 
     $this->save();
+  }
+
+  public function validar_saldo_disponible_para_abono($abono)
+  {
+    $nuevo_valor_pagado = (float)$this->valor_pagado + (float)$abono;
+    $valor_documento = (float)$this->valor_documento;
+    $tolerancia = 0.01;
+
+    if (abs($nuevo_valor_pagado) - abs($valor_documento) <= $tolerancia) {
+      return;
+    }
+
+    throw new \InvalidArgumentException(
+      'El valor pagado de CxP no puede superar el valor del documento. Documento: '
+      . $this->core_tipo_transaccion_id . '-' . $this->core_tipo_doc_app_id . '-' . $this->consecutivo
+      . '. Valor documento: ' . number_format($valor_documento, 2, ',', '.')
+      . '. Valor pagado intentado: ' . number_format($nuevo_valor_pagado, 2, ',', '.') . '.'
+    );
   }
 
   public static function consultar_registros($nro_registros)
@@ -190,6 +210,8 @@ class CxpMovimiento extends Model
 
   public static function actualizar_valores_doc_cxp($doc_encabezado, $abono)
   {
+    $doc_encabezado->validar_saldo_disponible_para_abono($abono);
+
     //   -3.000  =          -12.000                 -     -9.000
     $nuevo_saldo = $doc_encabezado->saldo_pendiente - $abono; //valor_documento
 

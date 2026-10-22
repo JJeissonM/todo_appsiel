@@ -23,15 +23,9 @@ class InvMovimientoReporteHoraFiltroTest extends TestCase
 
         $sql = strtolower($query->toSql());
 
-        $this->assertContains('`inv_movimientos`.`created_at` between ? and ?', $sql);
-        $this->assertContains('timestamp(inv_movimientos.fecha, coalesce(inv_movimientos.hora_inicio, inv_movimientos.hora_finalizacion)) >= ?', $sql);
-        $this->assertContains('timestamp(inv_movimientos.fecha, coalesce(inv_movimientos.hora_finalizacion, inv_movimientos.hora_inicio)) <= ?', $sql);
-        $this->assertSame([
-            '2026-08-12 09:00:00',
-            '2026-08-12 12:00:00',
-            '2026-08-12 09:00:00',
-            '2026-08-12 12:00:00'
-        ], $query->getBindings());
+        $this->assertContains(strtolower(InvMovimiento::fechaHoraReporteMovimientosSql(true)) . ' >= ?', $sql);
+        $this->assertContains(strtolower(InvMovimiento::fechaHoraReporteMovimientosSql(false)) . ' <= ?', $sql);
+        $this->assertSame(['2026-08-12 09:00:00', '2026-08-12 12:00:00'], $query->getBindings());
     }
 
     public function test_saldo_inicial_con_hora_incluye_lo_anterior_al_inicio_del_rango()
@@ -41,12 +35,8 @@ class InvMovimientoReporteHoraFiltroTest extends TestCase
 
         $sql = strtolower($query->toSql());
 
-        $this->assertContains('`inv_movimientos`.`created_at` < ?', $sql);
-        $this->assertContains('timestamp(inv_movimientos.fecha, coalesce(inv_movimientos.hora_finalizacion, inv_movimientos.hora_inicio)) < ?', $sql);
-        $this->assertSame([
-            '2026-08-12 09:00:00',
-            '2026-08-12 09:00:00'
-        ], $query->getBindings());
+        $this->assertContains(strtolower(InvMovimiento::fechaHoraReporteMovimientosSql(false)) . ' < ?', $sql);
+        $this->assertSame(['2026-08-12 09:00:00'], $query->getBindings());
     }
 
     public function test_saldo_inicial_sin_hora_conserva_el_corte_por_fecha()
@@ -101,7 +91,7 @@ class InvMovimientoReporteHoraFiltroTest extends TestCase
 
         $sql = strtolower($query->toSql());
 
-        $this->assertContains('`inv_movimientos`.`created_at` between ? and ?', $sql);
+        $this->assertContains(strtolower(InvMovimiento::fechaHoraEfectivaInventarioSql()) . ' between ? and ?', $sql);
         $this->assertContains('or `inv_movimientos`.`inv_doc_encabezado_id` in (?, ?)', $sql);
         $this->assertSame([
             '2026-08-12',
@@ -127,7 +117,7 @@ class InvMovimientoReporteHoraFiltroTest extends TestCase
 
         $sql = strtolower($query->toSql());
 
-        $this->assertContains('`inv_movimientos`.`created_at` <= ?', $sql);
+        $this->assertContains(strtolower(InvMovimiento::fechaHoraEfectivaInventarioSql()) . ' <= ?', $sql);
         $this->assertContains('or `inv_movimientos`.`inv_doc_encabezado_id` in (?)', $sql);
         $this->assertSame([
             '2026-08-12',
@@ -138,23 +128,28 @@ class InvMovimientoReporteHoraFiltroTest extends TestCase
         ], $query->getBindings());
     }
 
-    public function test_kardex_ordena_movimientos_con_turno_por_su_cierre_y_los_normales_por_created_at()
+    public function test_kardex_ordena_por_la_misma_fecha_hora_que_utiliza_para_filtrar()
     {
         $query = InvMovimiento::whereRaw('1 = 1');
         $query->ordenCronologicoKardex();
 
         $sql = strtolower($query->toSql());
 
-        $this->assertContains(
-            'order by case when inv_movimientos.turno_operativo_id is not null '
-            . 'then coalesce(kardex_turno_operativo.cerrado_en, inv_movimientos.created_at) '
-            . 'else coalesce((select turno_origen.cerrado_en',
-            $sql
-        );
+        $this->assertContains('order by ' . strtolower(InvMovimiento::fechaHoraReporteMovimientosSql(false)) . ' asc', $sql);
         $this->assertContains('inventario_fisico_origen.core_tipo_transaccion_id = 27', $sql);
         $this->assertContains('order by relacion_origen.id desc limit 1', $sql);
         $this->assertNotContains('left join `inv_documentos_relacionados`', $sql);
         $this->assertContains('`inv_movimientos`.`created_at` asc', $sql);
         $this->assertContains('`inv_movimientos`.`id` asc', $sql);
     }
+    public function test_horas_en_cero_usan_creacion_del_documento_y_no_medianoche()
+    {
+        $controller = new \App\Http\Controllers\Inventarios\ReporteController();
+        $formatter = new ReflectionMethod($controller, 'formatearRangoHorasMovimiento');
+        $formatter->setAccessible(true);
+        $expected = \App\Support\ReportTimeFormatter::time('2026-10-08 18:35:06');
+        $this->assertSame($expected, $formatter->invoke($controller, '00:00:00', '00:00:00', '2026-10-08 18:35:06'));
+        $this->assertSame($expected, $formatter->invoke($controller, null, null, '2026-10-08 18:35:06'));
+    }
+
 }

@@ -107,13 +107,16 @@ class ApmPrintQueueService
             $this->validateRetryableFailedJob($job);
         }
 
-        if (!$forceCopy && (int) $job->apm_print_status_id === (int) $this->getStatusId('pending')) {
+        // Reenviar un trabajo activo reutiliza su registro y su numero de copia.
+        $activeStatuses = [(int) $this->getStatusId('pending'), (int) $this->getStatusId('failed')];
+        if (!$forceCopy && in_array((int) $job->apm_print_status_id, $activeStatuses, true)) {
             $storedPayload = json_decode($job->payload_json, true);
             $payload = is_array($storedPayload) ? $storedPayload : [];
             $payload = $this->fillMissingDocumentDataFromPreviousJob($payload, $this->findJobWithDocumentData($this->getDocumentJobs($job)));
             $payload = $this->applyCopyLabel($payload, $job->copy_label);
             $payload = $this->normalizePayloadTextFields($payload);
             $payload = $this->applyCurrentDeviceConfig($payload);
+            $job->apm_print_status_id = $this->getStatusId('pending');
             $job->payload_json = json_encode($payload);
             $job->save();
 

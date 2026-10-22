@@ -579,7 +579,7 @@ class InvoicingService
         $datos = $invoice->toArray();
         unset($datos['id']);
         
-        $cliente = $invoice->cliente;
+        $cliente = $invoice->cliente_facturacion;
 
         $datos['zona_id'] = $cliente->zona_id;
         $datos['clase_cliente_id'] = $cliente->clase_cliente_id;

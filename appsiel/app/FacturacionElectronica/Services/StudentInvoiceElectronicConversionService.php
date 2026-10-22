@@ -2,7 +2,6 @@
 
 namespace App\FacturacionElectronica\Services;
 
-use App\Core\ConsecutivoDocumento;
 use App\Core\TipoDocApp;
 use App\FacturacionElectronica\ConversionTrace;
 use App\Sistema\TipoTransaccion;
@@ -85,22 +84,7 @@ class StudentInvoiceElectronicConversionService
                 return $this->resultado('omitido', $documento->id, $this->label($origen), '', 'La factura no tiene relacion con cartera de estudiante.');
             }
 
-            $consecutivo = ConsecutivoDocumento::where('core_empresa_id', $documento->core_empresa_id)
-                ->where('core_documento_app_id', $feDocumentTypeId)
-                ->lockForUpdate()
-                ->first();
-
-            if (is_null($consecutivo)) {
-                $consecutivo = new ConsecutivoDocumento();
-                $consecutivo->core_empresa_id = $documento->core_empresa_id;
-                $consecutivo->core_documento_app_id = $feDocumentTypeId;
-                $consecutivo->consecutivo_actual = 0;
-                $consecutivo->save();
-            }
-
-            $nuevoConsecutivo = (int)$consecutivo->consecutivo_actual + 1;
-            $consecutivo->consecutivo_actual = $nuevoConsecutivo;
-            $consecutivo->save();
+            $nuevoConsecutivo = TipoDocApp::reservar_consecutivo($documento->core_empresa_id, $feDocumentTypeId);
 
             $destino = [
                 'core_empresa_id' => $documento->core_empresa_id,

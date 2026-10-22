@@ -208,6 +208,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
     </div>
 @endif
 @include('compras.incluir.documento_vista')
+@include('compras.incluir.retenciones_aplicadas')
 @endsection
 
 @section('registros_otros_documentos')

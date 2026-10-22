@@ -226,19 +226,6 @@ class ModeloController extends Controller
         // Se crea un nuevo registro para el ID del modelo enviado en el request 
         $registro = $this->crear_nuevo_registro($request);
 
-        // Si se está almacenando una transacción que maneja consecutivo
-        if (isset($request->consecutivo) and isset($request->core_tipo_doc_app_id))
-        {
-            // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
-            $consecutivo = TipoDocApp::get_consecutivo_actual($request->core_empresa_id, $request->core_tipo_doc_app_id) + 1;
-
-            // Se incementa el consecutivo para ese tipo de documento y la empresa
-            TipoDocApp::aumentar_consecutivo($request->core_empresa_id, $request->core_tipo_doc_app_id);
-
-            $registro->consecutivo = $consecutivo;
-            $registro->save();
-        }
-
         // $this->modelo se actualiza en el método de arriba crear_nuevo_registro()
         $this->almacenar_imagenes($request, $this->modelo->ruta_storage_imagen, $registro);
 
@@ -315,7 +302,14 @@ class ModeloController extends Controller
         }
 
         // Crear el nuevo registro
-        return app($this->modelo->name_space)->create($request->all());
+        if (!isset($request->consecutivo) || !isset($request->core_tipo_doc_app_id)) {
+            return app($this->modelo->name_space)->create($request->all());
+        }
+        return \App\Core\Services\DocumentSequenceTransaction::run(function () use ($request) {
+            $datos = $request->all();
+            $datos['consecutivo'] = TipoDocApp::reservar_consecutivo($request->core_empresa_id, $request->core_tipo_doc_app_id);
+            return app($this->modelo->name_space)->create($datos);
+        });
     }
 
 

@@ -2,9 +2,11 @@
 
 namespace App\VentasPos\Services;
 
+use App\Core\TurnoOperativo;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoEntidadFinanciera;
 use App\Tesoreria\TesoMovimiento;
+use App\User;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\Movimiento;
 use App\VentasPos\Pdv;
@@ -505,6 +507,11 @@ class ReportsServices
         }
 
         $turno_operativo_id = (int)$turno_operativo_id;
+        $filtrar_por_cajero = (int)config('tesoreria.excluir_movimientos_bancarios_otros_usuarios', 0) === 1;
+        $email_cajero = $filtrar_por_cajero
+            ? $this->get_email_cajero_arqueo($creado_por, $turno_operativo_id, $empresa_id)
+            : null;
+
         if ($turno_operativo_id > 0) {
             // En modo turnos la relación explícita es la autoridad. No se debe
             // inferir el PDV porque recaudos generales y CxC pueden guardar
@@ -518,6 +525,10 @@ class ReportsServices
 
             if ($empresa_id > 0) {
                 $movimientos_turno->where('core_empresa_id', $empresa_id);
+            }
+
+            if ($filtrar_por_cajero) {
+                $this->aplicar_filtro_estricto_por_cajero($movimientos_turno, $email_cajero);
             }
 
             return $movimientos_turno->orderBy('valor_movimiento', 'DESC')
@@ -534,8 +545,12 @@ class ReportsServices
             return collect([]);
         }
 
-        $emails_filtro_creado_por = [];
-        if ( !is_null($creado_por) ) {
+        $emails_filtro_creado_por = array();
+        if ($filtrar_por_cajero) {
+            $emails_filtro_creado_por = array(
+                empty($email_cajero) ? '__cajero_del_pdv_no_identificado__' : $email_cajero
+            );
+        } elseif ( !is_null($creado_por) ) {
             $emails_filtro_creado_por = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
         }
 
@@ -595,5 +610,49 @@ class ReportsServices
                     ->unique('id')
                     ->sortByDesc('valor_movimiento')
                     ->groupBy('teso_cuenta_bancaria_id');
+    }
+
+    /**
+     * El cajero del turno es el usuario que realizó la apertura. Para arqueos
+     * históricos sin esa relación se conserva como respaldo el creador del
+     * arqueo recibido por la vista.
+     */
+    protected function get_email_cajero_arqueo($creado_por, $turno_operativo_id, $empresa_id)
+    {
+        if ((int)$turno_operativo_id > 0) {
+            $turno = TurnoOperativo::where('id', (int)$turno_operativo_id);
+            if ((int)$empresa_id > 0) {
+                $turno->where('core_empresa_id', (int)$empresa_id);
+            }
+
+            $cajero_id = (int)$turno->value('abierto_por');
+            if ($cajero_id > 0) {
+                $usuario = User::where('id', $cajero_id);
+                if ((int)$empresa_id > 0) {
+                    $usuario->where('empresa_id', (int)$empresa_id);
+                }
+
+                $email = trim((string)$usuario->value('email'));
+                if ($email !== '') {
+                    return $email;
+                }
+            }
+        }
+
+        return trim((string)$creado_por);
+    }
+
+    /**
+     * Un filtro configurado para excluir otros usuarios debe ser estricto. No
+     * se usan los roles privilegiados de FiltraRegistrosPorUsuario porque eso
+     * volvería a incluir precisamente los movimientos administrativos.
+     */
+    protected function aplicar_filtro_estricto_por_cajero($query, $email_cajero)
+    {
+        if (trim((string)$email_cajero) === '') {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('creado_por', trim((string)$email_cajero));
     }
 }

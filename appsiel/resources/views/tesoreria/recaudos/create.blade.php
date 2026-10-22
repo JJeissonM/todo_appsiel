@@ -10,6 +10,10 @@
 
 @include('layouts.mensajes')
 
+<div id="div_error_guardado_ajax" class="alert alert-danger" role="alert" style="display: none;">
+	<span id="mensaje_error_guardado_ajax" style="white-space: pre-line;"></span>
+</div>
+
 <div class="container-fluid">
 	<div class="marco_formulario">
 		<h4>Nuevo registro</h4>
@@ -303,6 +307,15 @@
 			// Para guardar anticipos o otros recaudos
 			$('#btn_guardar').click(function(event){
 				event.preventDefault();
+				$('#form_create').trigger('submit');
+			});
+
+			$('#form_create').on('submit', function(event){
+				event.preventDefault();
+				var formulario = $(this);
+				if (formulario.data('guardando')) {
+					return;
+				}
 
 				if ( $('#total_valor_total').text() == '$0.00' )
 				{ 
@@ -314,8 +327,10 @@
 				
 				if ( validar_tercero_real() && validar_punto_venta_requerido() && validar_requeridos() )
 				{
-					// Desactivar el click del botón
-					$( this ).off( event );
+					var botonGuardar = $('#btn_guardar');
+					formulario.data('guardando', true);
+					botonGuardar.prop('disabled', true);
+					$('#div_error_guardado_ajax').hide();
 
 					habilitar_campos_form_create();
 
@@ -325,7 +340,34 @@
 					// Se asigna el objeto JSON a un campo oculto del formulario
 			 		$('#lineas_registros_medios_recaudo').val( JSON.stringify(table) );
 
-					$('#form_create').submit();
+					$.ajax({
+						url: formulario.attr('action'),
+						type: 'POST',
+						data: formulario.serialize(),
+						dataType: 'json'
+					}).done(function(respuesta) {
+						if (respuesta.redirect) {
+							window.location.href = respuesta.redirect;
+						}
+					}).fail(function(xhr) {
+						var respuesta = xhr.responseJSON || {};
+						var mensajes = [];
+						// Laravel puede devolver los errores directamente por campo o dentro de errors.
+						$.each(respuesta.errors || respuesta, function(campo, errores) {
+							if ($.isArray(errores)) {
+								mensajes = mensajes.concat(errores);
+							}
+						});
+						var mensaje = mensajes.length ? mensajes.join('\n') :
+							(respuesta.message || 'No fue posible registrar el recaudo. Intente nuevamente.');
+						$('#mensaje_error_guardado_ajax').text(mensaje);
+						$('#div_error_guardado_ajax').show();
+						$('html, body').animate({ scrollTop: $('#div_error_guardado_ajax').offset().top - 20 }, 300);
+						deshabilitar_campos_form_create();
+					}).always(function() {
+						formulario.data('guardando', false);
+						botonGuardar.prop('disabled', false);
+					});
 				}
 				
 			});
