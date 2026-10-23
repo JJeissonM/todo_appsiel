@@ -8,6 +8,10 @@ class AddSyncFieldsToComprasPivotItemsXml extends Migration
 {
     public function up()
     {
+        if (!Schema::hasTable('compras_pivot_items_xml')) {
+            return;
+        }
+
         $referenciaExiste = Schema::hasColumn('compras_pivot_items_xml', 'referencia');
 
         Schema::table('compras_pivot_items_xml', function (Blueprint $table) use ($referenciaExiste) {
@@ -26,6 +30,10 @@ class AddSyncFieldsToComprasPivotItemsXml extends Migration
 
     public function down()
     {
+        if (!Schema::hasTable('compras_pivot_items_xml')) {
+            return;
+        }
+
         Schema::table('compras_pivot_items_xml', function (Blueprint $table) {
             $table->dropForeign(['compras_sync_log_id']);
             $table->dropColumn('compras_sync_log_id');

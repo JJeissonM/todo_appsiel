@@ -8,6 +8,10 @@ class AddBotFieldsToComprasDocEncabezados extends Migration
 {
     public function up()
     {
+        if (!Schema::hasTable('compras_doc_encabezados')) {
+            return;
+        }
+
         Schema::table('compras_doc_encabezados', function (Blueprint $table) {
             $table->string('cufe', 100)->nullable()->after('doc_proveedor_consecutivo');
             $table->boolean('sincronizado_bot')->default(false)->after('cufe');
@@ -16,6 +20,10 @@ class AddBotFieldsToComprasDocEncabezados extends Migration
  
     public function down()
     {
+        if (!Schema::hasTable('compras_doc_encabezados')) {
+            return;
+        }
+
         Schema::table('compras_doc_encabezados', function (Blueprint $table) {
             $table->dropColumn(['cufe', 'sincronizado_bot']);
         });
