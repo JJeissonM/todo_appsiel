@@ -204,7 +204,7 @@
 
                     create_btns_for_print_barcodes();
                 }).fail(function (xhr) {
-                    if ($('#form_consulta').attr('data-url_form_action') !== 'pos_movimientos_ventas') { return; }
+                    if (['pos_movimientos_ventas', 'gestion_documental/paz_y_salvo'].indexOf($('#form_consulta').attr('data-url_form_action')) === -1) { return; }
                     $('#div_cargando, #div_spin').hide();
                     var mensaje = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'No fue posible generar el resumen. Revise los filtros e intente nuevamente.';
                     $('#resultado_consulta').empty().append($('<div class="alert alert-danger" role="alert">').text(mensaje));

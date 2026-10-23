@@ -170,6 +170,7 @@ Route::group(['prefix' => 'messages'], function () {
 });
 
 // MODULO GESTION DOCUMENTAL
+Route::post('gestion_documental/paz_y_salvo', 'GestionDocumentalController@paz_y_salvo')->middleware('auth');
 Route::get('gestion_documental/imprimir_formato', 'GestionDocumentalController@imprimir_formato');
 Route::get('gestion_documental/cargar_controles/{formato_id}', 'GestionDocumentalController@cargar_controles');
 Route::post('gestion_documental/generar_formato', 'GestionDocumentalController@generar_formato');

@@ -21,7 +21,13 @@
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
 				
-				<h4> Parámetros generales </h4>
+				<h4>Paz y Salvo</h4>
+                <div class="form-group">
+                    <label for="paz_y_salvo_texto_cumplimiento">Texto de cumplimiento (después de la identificación del estudiante)</label>
+                    <textarea class="form-control" id="paz_y_salvo_texto_cumplimiento" name="paz_y_salvo_texto_cumplimiento" rows="4" required>{{ isset($parametros['paz_y_salvo_texto_cumplimiento']) ? $parametros['paz_y_salvo_texto_cumplimiento'] : 'ha cumplido a cabalidad con todas las obligaciones académicas, administrativas y financieras con la institución hasta la fecha.' }}</textarea>
+                </div>
+                <hr>
+                <h4> Parámetros generales </h4>
 				<hr>
 				<div class="row">
 

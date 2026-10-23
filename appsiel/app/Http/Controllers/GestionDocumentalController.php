@@ -274,6 +274,42 @@ class GestionDocumentalController extends ModeloController
     /**
      * 
      */
+    public function paz_y_salvo(Request $request)
+    {
+        $this->validate($request, [
+            'periodo_lectivo_id' => 'required|integer|exists:sga_periodos_lectivos,id',
+            'curso_id' => 'required|integer|exists:sga_cursos,id',
+            'estudiante_id' => 'required|integer|exists:sga_estudiantes,id',
+            'firma_autorizada_1' => 'required|integer|exists:core_firmas_autorizadas,id',
+            'fecha_expedicion' => 'required|date_format:Y-m-d',
+            'reporte_instancia' => 'required|json',
+        ]);
+
+        $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->firstOrFail();
+        Estudiante::where('id', $request->estudiante_id)->where('id_colegio', $colegio->id)->firstOrFail();
+        $matricula = Matricula::get_matricula_periodo_lectivo_un_estudiante($request->estudiante_id, $request->periodo_lectivo_id);
+        if (!$matricula || (int)$matricula->curso_id !== (int)$request->curso_id) {
+            abort(422, 'El estudiante no tiene matrícula en el año lectivo y curso seleccionados.');
+        }
+        $firma = FirmaAutorizada::where('id', $request->firma_autorizada_1)
+            ->where('core_empresa_id', Auth::user()->empresa_id)->firstOrFail();
+        $firmante = FirmaAutorizada::get_datos($firma->id);
+        $estudiante = Estudiante::get_datos_basicos($request->estudiante_id);
+        $tipo_documento = DB::table('core_tipos_docs_id')->where('id', $estudiante->id_tipo_documento_id)->value('descripcion');
+        $fecha = explode('-', $request->fecha_expedicion);
+        $array_fecha = [(int)$fecha[2], mb_strtolower(ConfiguracionController::nombre_mes($fecha[1]), 'UTF-8'), $fecha[0]];
+        $texto_cumplimiento = config('gestion_documental.paz_y_salvo_texto_cumplimiento',
+            'ha cumplido a cabalidad con todas las obligaciones académicas, administrativas y financieras con la institución hasta la fecha.');
+        $vista = View::make('gestion_documental.pdf.paz_y_salvo', compact(
+            'colegio', 'estudiante', 'tipo_documento', 'array_fecha', 'firma', 'firmante', 'texto_cumplimiento'
+        ))->render();
+        $instancia = json_decode($request->reporte_instancia);
+        $reporte = \App\Sistema\Reporte::where('id', isset($instancia->id) ? $instancia->id : 0)
+            ->where('url_form_action', 'gestion_documental/paz_y_salvo')->firstOrFail();
+        Cache::forever('pdf_reporte_'.$reporte->id, $vista);
+        return $vista;
+    }
+
     public function constancia_estudios( Request $request )
     {
         $estudiante = Estudiante::get_datos_basicos( (int)$request->estudiante_id );
