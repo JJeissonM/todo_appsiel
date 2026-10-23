@@ -94,7 +94,7 @@ class RegisterGestionDocumentalPazYSalvoReport extends Migration
             array('Año lectivo', 'select', 'periodo_lectivo_id', 'model_App\\Matriculas\\PeriodoLectivoAux', 'null', 1),
             array('Curso', 'select', 'curso_id', '{"":""}', 'null', 1),
             array('Estudiante', 'select', 'estudiante_id', '{"":""}', 'null', 1),
-            array('Fecha de expedición', 'fecha', 'fecha_expedicion', '', 'null', 1),
+            array('Fecha de expedición', 'date', 'fecha_expedicion', '', 'null', 1),
             array('Firma autorizada', 'select', 'firma_autorizada_1', 'model_App\\Core\\FirmaAutorizada', 'null', 1),
         );
 

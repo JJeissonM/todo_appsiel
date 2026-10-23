@@ -2,6 +2,28 @@
 
 class PazYSalvoTest extends TestCase
 {
+    public function test_migracion_repara_fecha_y_permite_abrir_la_pantalla_del_reporte()
+    {
+        $report = App\Sistema\Reporte::where('url_form_action', 'gestion_documental/paz_y_salvo')->first();
+        if (!$report) {
+            $this->markTestSkipped('Requiere el reporte Paz y Salvo instalado.');
+        }
+        DB::beginTransaction();
+        try {
+            DB::table('sys_campos')->where('definicion', 'gestion_documental/paz_y_salvo')
+                ->where('name', 'fecha_expedicion')->update(['tipo' => 'fecha']);
+            require_once database_path('migrations/2026_10_23_000002_fix_paz_y_salvo_date_filter.php');
+            (new FixPazYSalvoDateFilter)->up();
+            $this->actingAs(App\User::findOrFail(1));
+            $this->get('/vista_reporte?id='.$report->core_app_id.'&reporte_id='.$report->id);
+            $this->assertResponseOk();
+            $this->see('name="fecha_expedicion"');
+            $this->see('type="date"');
+        } finally {
+            DB::rollBack();
+        }
+    }
+
     private function renderReport()
     {
         return view('gestion_documental.pdf.paz_y_salvo', [
