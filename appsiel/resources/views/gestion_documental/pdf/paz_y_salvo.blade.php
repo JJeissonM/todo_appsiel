@@ -3,11 +3,12 @@
     .paz-salvo { font-family: "Times New Roman", serif; font-size: 12pt; line-height: 1.4; color: #000; }
     .paz-salvo-banner { text-align: center; height: 135px; }
     .paz-salvo-banner img { max-width: 100%; max-height: 130px; }
-    .paz-salvo-encabezado { width: 100%; table-layout: fixed; border: none; border-collapse: collapse; }
-    .paz-salvo-encabezado td { border: none; vertical-align: middle; }
-    .paz-salvo-escudo { width: 120px; text-align: left; }
-    .paz-salvo-banner .paz-salvo-escudo img { width: 100px; height: auto; max-width: none; max-height: none; }
-    .paz-salvo-institucion { text-align: center; }
+    .paz-salvo-encabezado { position: relative; width: 100%; min-height: 120px; }
+    .paz-salvo-escudo { position: absolute; top: 5px; left: 0; width: 110px; }
+    .paz-salvo-banner .paz-salvo-escudo img { width: 110px; height: auto; max-width: none; max-height: none; }
+    .paz-salvo-institucion { text-align: center; line-height: 1.2; }
+    .paz-salvo-con-escudo .paz-salvo-institucion { margin-left: 130px; }
+    .paz-salvo-resolucion { font-size: 11pt; margin-top: 5px; }
     .paz-salvo h2 { text-align: center; font-size: 15pt; margin: 40px 0 45px; }
     .paz-salvo p { text-align: justify; margin: 0 0 35px; }
     .paz-salvo-firma { margin-top: 105px; }
@@ -32,20 +33,18 @@
         @if(config('matriculas.banner_reportes') == 'imagen')
             <img src="{{ config('matriculas.url_imagen_banner') }}" alt="Encabezado institucional">
         @else
-            <table class="paz-salvo-encabezado">
-                <tr>
-                    @if(!empty($colegio->imagen))
-                        <td class="paz-salvo-escudo">
-                            <img src="{{ asset(config('configuracion.url_instancia_cliente')).'/storage/app/escudos/'.$colegio->imagen }}" width="100" alt="Escudo del colegio">
-                        </td>
-                    @endif
-                    <td class="paz-salvo-institucion">
-                        <strong style="font-size: 20pt;">{{ $colegio->descripcion }}</strong><br>
-                        {!! $colegio->resolucion !!}<br>
-                        {{ $colegio->ciudad }}
-                    </td>
-                </tr>
-            </table>
+            <div class="paz-salvo-encabezado{{ !empty($colegio->imagen) ? ' paz-salvo-con-escudo' : '' }}">
+                @if(!empty($colegio->imagen))
+                    <div class="paz-salvo-escudo">
+                        <img src="{{ asset(config('configuracion.url_instancia_cliente')).'/storage/app/escudos/'.$colegio->imagen }}" width="110" alt="Escudo del colegio">
+                    </div>
+                @endif
+                <div class="paz-salvo-institucion">
+                    <strong style="font-size: 20pt;">{{ $colegio->descripcion }}</strong>
+                    <div class="paz-salvo-resolucion">{!! $colegio->resolucion !!}</div>
+                    <div>{{ $colegio->ciudad }}</div>
+                </div>
+            </div>
         @endif
     </div>
     <h2>PAZ Y SALVO.</h2>
