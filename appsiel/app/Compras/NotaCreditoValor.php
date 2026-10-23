@@ -24,8 +24,9 @@ class NotaCreditoValor extends ComprasDocEncabezado
                 NULLIF(TRIM(core_terceros.otros_nombres), ''), NULLIF(TRIM(core_terceros.apellido1), ''),
                 NULLIF(TRIM(core_terceros.apellido2), ''))), ''),
             NULLIF(TRIM(core_terceros.descripcion), ''), '')";
-        $factura = "CONCAT(COALESCE(compras_doc_encabezados.doc_proveedor_prefijo, ''), ' - ',
-            COALESCE(compras_doc_encabezados.doc_proveedor_consecutivo, ''))";
+        $factura = "CASE WHEN factura_relacionada.id IS NOT NULL
+            THEN CONCAT(COALESCE(tipo_doc_factura.prefijo, ''), ' ', factura_relacionada.consecutivo)
+            ELSE 'Sin factura relacionada' END";
         // Las notas históricas pueden tener solo el importe de la última línea en el encabezado.
         $total = "COALESCE((SELECT SUM(lineas_nota.precio_total) FROM compras_doc_registros AS lineas_nota
             WHERE lineas_nota.compras_doc_encabezado_id = compras_doc_encabezados.id), compras_doc_encabezados.valor_total)";
@@ -47,6 +48,11 @@ class NotaCreditoValor extends ComprasDocEncabezado
 
         $query = static::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'compras_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'compras_doc_encabezados.core_tercero_id')
+            ->leftJoin('compras_doc_encabezados AS factura_relacionada', function ($join) {
+                $join->on('factura_relacionada.id', '=', 'compras_doc_encabezados.compras_doc_relacionado_id')
+                    ->on('factura_relacionada.core_empresa_id', '=', 'compras_doc_encabezados.core_empresa_id');
+            })
+            ->leftJoin('core_tipos_docs_apps AS tipo_doc_factura', 'tipo_doc_factura.id', '=', 'factura_relacionada.core_tipo_doc_app_id')
             ->where('compras_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->where('compras_doc_encabezados.core_tipo_transaccion_id', 61)
             ->select($seleccion);

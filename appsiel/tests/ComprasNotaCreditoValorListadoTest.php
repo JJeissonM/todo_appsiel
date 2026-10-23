@@ -23,6 +23,7 @@ class ComprasNotaCreditoValorListadoTest extends TestCase
             $t->increments('id');
             foreach (['core_empresa_id','core_tipo_transaccion_id','core_tipo_doc_app_id','core_tercero_id','consecutivo'] as $col) $t->integer($col);
             foreach (['fecha','doc_proveedor_prefijo','doc_proveedor_consecutivo','descripcion','estado'] as $col) $t->string($col)->default('');
+            $t->integer('compras_doc_relacionado_id')->default(0);
             $t->double('valor_total')->default(-7); $t->timestamps();
         });
         Schema::create('core_tipos_docs_apps', function ($t) { $t->increments('id'); $t->string('prefijo'); });
@@ -81,4 +82,21 @@ class ComprasNotaCreditoValorListadoTest extends TestCase
             }
         }
     }
+    public function test_muestra_y_busca_factura_relacionada_y_no_cruza_empresas()
+    {
+        DB::table('core_tipos_docs_apps')->insert(['id'=>17,'prefijo'=>'CC']);
+        DB::table('compras_doc_encabezados')->insert(['id'=>10,'core_empresa_id'=>1,'core_tipo_transaccion_id'=>25,'core_tipo_doc_app_id'=>17,'core_tercero_id'=>1,'consecutivo'=>4323]);
+        DB::table('compras_doc_encabezados')->where('id',1)->update(['compras_doc_relacionado_id'=>10]);
+        $items = NotaCreditoValor::consultar_registros(20,'CC 4323')->items();
+        $this->assertCount(1,$items);
+        $this->assertEquals('CC 4323',$items[0]->campo4);
+        $this->assertEquals(1,$items[0]->campo8);
+        $export = DB::select(NotaCreditoValor::sqlString('CC 4323'));
+        $this->assertEquals('CC 4323',$export[0]->FACTURA);
+        DB::table('compras_doc_encabezados')->where('id',10)->update(['core_empresa_id'=>2]);
+        $this->assertEquals(0,NotaCreditoValor::consultar_registros(20,'CC 4323')->total());
+        $items = NotaCreditoValor::consultar_registros(20,'NCVC 213')->items();
+        $this->assertEquals('Sin factura relacionada',$items[0]->campo4);
+    }
+
 }
