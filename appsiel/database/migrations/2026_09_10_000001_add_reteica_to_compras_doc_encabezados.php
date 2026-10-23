@@ -8,6 +8,10 @@ class AddReteicaToComprasDocEncabezados extends Migration
 {
     public function up()
     {
+        if (!Schema::hasTable('compras_doc_encabezados')) {
+            return;
+        }
+
         Schema::table('compras_doc_encabezados', function (Blueprint $table) {
             $table->unsignedInteger('reteica_retencion_id')->default(0);
             $table->decimal('reteica_base', 15, 2)->default(0);
@@ -18,6 +22,10 @@ class AddReteicaToComprasDocEncabezados extends Migration
 
     public function down()
     {
+        if (!Schema::hasTable('compras_doc_encabezados')) {
+            return;
+        }
+
         Schema::table('compras_doc_encabezados', function (Blueprint $table) {
             $table->dropColumn(['reteica_retencion_id', 'reteica_base', 'reteica_tasa', 'reteica_valor']);
         });

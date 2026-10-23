@@ -7,6 +7,10 @@ class AddReteicaBaseManualToCompras extends Migration
 {
     public function up()
     {
+        if (!Schema::hasTable('compras_doc_encabezados')) {
+            return;
+        }
+
         Schema::table('compras_doc_encabezados', function (Blueprint $table) {
             $table->boolean('reteica_base_manual')->default(false);
         });
@@ -14,6 +18,10 @@ class AddReteicaBaseManualToCompras extends Migration
 
     public function down()
     {
+        if (!Schema::hasTable('compras_doc_encabezados')) {
+            return;
+        }
+
         Schema::table('compras_doc_encabezados', function (Blueprint $table) {
             $table->dropColumn('reteica_base_manual');
         });

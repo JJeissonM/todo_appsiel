@@ -8,6 +8,10 @@ class AddBaseRetencionToComprasDocRegistros extends Migration
 {
     public function up()
     {
+        if (!Schema::hasTable('compras_doc_registros')) {
+            return;
+        }
+
         Schema::table('compras_doc_registros', function (Blueprint $table) {
             // NULL identifica documentos anteriores a la base editable.
             $table->decimal('base_retencion', 15, 2)->nullable();
@@ -16,6 +20,10 @@ class AddBaseRetencionToComprasDocRegistros extends Migration
 
     public function down()
     {
+        if (!Schema::hasTable('compras_doc_registros')) {
+            return;
+        }
+
         Schema::table('compras_doc_registros', function (Blueprint $table) {
             $table->dropColumn('base_retencion');
         });

@@ -8,6 +8,10 @@ class AddCtaXPagarIdToComprasDocEncabezados extends Migration
 {
     public function up()
     {
+        if (!Schema::hasTable('compras_doc_encabezados')) {
+            return;
+        }
+
         Schema::table('compras_doc_encabezados', function (Blueprint $table) {
             $table->unsignedInteger('cta_x_pagar_id')->nullable();
             $table->foreign('cta_x_pagar_id', 'compras_cuenta_directa_fk')->references('id')->on('contab_cuentas');
@@ -16,6 +20,10 @@ class AddCtaXPagarIdToComprasDocEncabezados extends Migration
 
     public function down()
     {
+        if (!Schema::hasTable('compras_doc_encabezados')) {
+            return;
+        }
+
         Schema::table('compras_doc_encabezados', function (Blueprint $table) {
             $table->dropForeign('compras_cuenta_directa_fk');
             $table->dropColumn('cta_x_pagar_id');

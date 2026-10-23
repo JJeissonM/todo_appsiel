@@ -12,6 +12,10 @@ class RefactorPivotItemsXmlRemoveUmLocalAddTipoFactor extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('compras_pivot_items_xml')) {
+            return;
+        }
+
         Schema::table('compras_pivot_items_xml', function (Blueprint $table) {
             if (Schema::hasColumn('compras_pivot_items_xml', 'unidad_medida_local')) {
                 $table->dropColumn('unidad_medida_local');
@@ -30,6 +34,10 @@ class RefactorPivotItemsXmlRemoveUmLocalAddTipoFactor extends Migration
      */
     public function down()
     {
+        if (!Schema::hasTable('compras_pivot_items_xml')) {
+            return;
+        }
+
         Schema::table('compras_pivot_items_xml', function (Blueprint $table) {
             if (Schema::hasColumn('compras_pivot_items_xml', 'tipo_factor')) {
                 $table->dropColumn('tipo_factor');
