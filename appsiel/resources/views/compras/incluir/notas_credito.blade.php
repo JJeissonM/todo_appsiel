@@ -16,6 +16,7 @@
                             
                             $transaccion = App\Sistema\TipoTransaccion::find( $doc_encabezado->core_tipo_transaccion_id );
                             $el_documento = app( $transaccion->modelo_encabezados_documentos )->where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                                                ->where('core_empresa_id',$doc_encabezado->core_empresa_id)
                                                 ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
                                                 ->where('consecutivo',$doc_encabezado->consecutivo)
                                                 ->get()

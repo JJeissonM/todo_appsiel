@@ -131,4 +131,31 @@ class ComprasNotaCreditoValorAnulacionTest extends TestCase
         $controller->anular(2);
         $this->assertEquals(1000000,DB::table('cxp_movimientos')->value('saldo_pendiente'),'',0.00001);
     }
+    public function test_factura_muestra_suma_completa_y_excluye_notas_anuladas()
+    {
+        DB::connection()->getPdo()->sqliteCreateFunction('CONCAT', function () {
+            return implode('', func_get_args());
+        });
+        Schema::table('compras_doc_encabezados', function ($t) {
+            foreach (['fecha_vencimiento','fecha_recepcion','descripcion','doc_proveedor_prefijo','doc_proveedor_consecutivo'] as $col) $t->string($col)->default('');
+            $t->integer('cotizacion_id')->default(0);
+        });
+        Schema::create('core_tipos_docs_apps', function ($t) {
+            $t->increments('id'); $t->string('descripcion'); $t->string('prefijo');
+        });
+        Schema::create('core_terceros', function ($t) {
+            $t->increments('id');
+            foreach (['descripcion','numero_identificacion','direccion1','telefono1'] as $col) $t->string($col);
+        });
+        $notas = App\Compras\NotaCredito::get_notas_aplicadas_factura(1);
+        $this->assertCount(1, $notas);
+        $this->assertEquals(-510273, $notas[0]->valor_total, '', 0.00001);
+        $this->assertEquals(-495.30643171178, DB::table('compras_doc_encabezados')->where('id',2)->value('valor_total'), '', 0.00001);
+        // Sin líneas, conserva el importe histórico como respaldo.
+        DB::table('compras_doc_registros')->delete();
+        $this->assertEquals(-495.30643171178, App\Compras\NotaCredito::get_notas_aplicadas_factura(1)[0]->valor_total, '', 0.00001);
+        DB::table('compras_doc_encabezados')->where('id',2)->update(['estado'=>'Anulado']);
+        $this->assertCount(0, App\Compras\NotaCredito::get_notas_aplicadas_factura(1));
+    }
+
 }

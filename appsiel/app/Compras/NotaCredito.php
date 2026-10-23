@@ -103,6 +103,7 @@ class NotaCredito extends ComprasDocEncabezado
     {
 
         return NotaCredito::where('compras_doc_encabezados.compras_doc_relacionado_id',$doc_encabezado_factura_id)
+                    ->where('compras_doc_encabezados.estado', 'Activo')
                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'compras_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'compras_doc_encabezados.core_tercero_id')
                     ->select(
@@ -124,7 +125,13 @@ class NotaCredito extends ComprasDocEncabezado
                                 'compras_doc_encabezados.creado_por',
                                 'compras_doc_encabezados.modificado_por',
                                 'compras_doc_encabezados.created_at',
-                                'compras_doc_encabezados.valor_total',
+                                // Notas históricas por valor podían guardar solo la última línea.
+                                DB::raw("CASE WHEN compras_doc_encabezados.core_tipo_transaccion_id = 61
+                                    THEN COALESCE((SELECT SUM(lineas_nota.precio_total)
+                                        FROM compras_doc_registros AS lineas_nota
+                                        WHERE lineas_nota.compras_doc_encabezado_id = compras_doc_encabezados.id
+                                          AND lineas_nota.estado = 'Activo'), compras_doc_encabezados.valor_total)
+                                    ELSE compras_doc_encabezados.valor_total END AS valor_total"),
                                 'compras_doc_encabezados.doc_proveedor_prefijo',
                                 'compras_doc_encabezados.doc_proveedor_consecutivo',
                                 'compras_doc_encabezados.forma_pago AS condicion_pago',
