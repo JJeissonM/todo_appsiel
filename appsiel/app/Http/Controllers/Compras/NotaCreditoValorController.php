@@ -255,7 +255,7 @@ class NotaCreditoValorController extends TransaccionController
 
         } // Fin por cada registro de la factura
 
-        $nota_credito->valor_total = $precio_total;
+        $nota_credito->valor_total = $total_documento;
         $nota_credito->save();
         
         // Un solo registro Debito
@@ -307,49 +307,48 @@ class NotaCreditoValorController extends TransaccionController
     {
         $this->set_variables_globales();
 
-        $nota = ComprasDocEncabezado::find( $id );
+        DB::transaction(function () use ($id) {
+            $nota = ComprasDocEncabezado::where('core_empresa_id', Auth::user()->empresa_id)
+                ->where('core_tipo_transaccion_id', 61)->lockForUpdate()->findOrFail($id);
 
-        $array_wheres = ['core_empresa_id'=>$nota->core_empresa_id, 
-            'core_tipo_transaccion_id' => $nota->core_tipo_transaccion_id,
-            'core_tipo_doc_app_id' => $nota->core_tipo_doc_app_id,
-            'consecutivo' => $nota->consecutivo];
+            // Una segunda solicitud no debe restaurar otra vez saldos o costos.
+            if ($nota->estado == 'Anulado') {
+                return;
+            }
 
-        // 1ro. Actualizar campo de cantidad_devuelta en cada línea de registro de la factura de compras
-        $factura = ComprasDocEncabezado::find( $nota->compras_doc_relacionado_id );
-        $registros_factura = ComprasDocRegistro::where('compras_doc_encabezado_id', $factura->id)->get();
-        foreach ($registros_factura as $linea)
-        {
-            $cantidad_nota = ComprasDocRegistro::where('compras_doc_encabezado_id',$nota->id)
-                                                ->where('inv_producto_id',$linea->inv_producto_id)
-                                                ->value('cantidad');
+            $factura = ComprasDocEncabezado::where('core_empresa_id', $nota->core_empresa_id)
+                ->lockForUpdate()->findOrFail($nota->compras_doc_relacionado_id);
+            $array_wheres = [
+                'core_empresa_id' => $nota->core_empresa_id,
+                'core_tipo_transaccion_id' => $nota->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => $nota->core_tipo_doc_app_id,
+                'consecutivo' => $nota->consecutivo,
+            ];
 
-            $nueva_cantidad_devuelta = $linea->cantidad_devuelta + $cantidad_nota;
-            $linea->update( [ 'cantidad_devuelta' => $nueva_cantidad_devuelta ] );
-        }
+            // Recuperar también notas antiguas cuyo encabezado guardó solo la última línea.
+            $total_nota = ComprasDocRegistro::where('compras_doc_encabezado_id', $nota->id)
+                ->sum('precio_total');
 
-        // 3ro. Borrar registros contables del documento
-        ContabMovimiento::where($array_wheres)->delete();
+            ContabMovimiento::where($array_wheres)->delete();
+            if ($nota->forma_pago == 'contado') {
+                NotaCreditoController::actualizar_movimiento_tesoreria($total_nota, $factura, $nota, 'anular');
+            } else {
+                NotaCreditoController::actualizar_registro_pago(-$total_nota, $factura, $nota, 'anular');
+            }
 
-        // 4to. Se actualiza el registro de la factura a la que afecto la nota en el movimimeto de cuentas por pagar o Tesoreria
-        if ( $nota->forma_pago == 'contado') {
-            NotaCreditoController::actualizar_movimiento_tesoreria( $nota->valor_total, $factura, $nota, 'anular' ); 
-        }else{
-            // Se envía el valor en positivo para que sume al saldo pendiente y reste al valor abonado
-            NotaCreditoController::actualizar_registro_pago( $nota->valor_total * -1, $factura, $nota, 'anular' );
-        }
+            ComprasMovimiento::where($array_wheres)->delete();
+            $this->recostear_registros_entrada_almacen($factura, $total_nota, 'anular');
 
-        // 5to. Se elimina el movimiento de compras
-        ComprasMovimiento::where($array_wheres)->delete();
-
-        $modificado_por = Auth::user()->email;
-
-        // 6to. Se marcan como anulados los registros del documento
-        ComprasDocRegistro::where( 'compras_doc_encabezado_id', $nota->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
-
-        // 6to. Se marca como anulado el documento
-        $nota->update( [ 'estado' => 'Anulado', 'compras_doc_relacionado_id' => '0', 'entrada_almacen_id' => '0', 'modificado_por' => $modificado_por] );
-
-        $this->recostear_registros_entrada_almacen($factura, $nota->valor_total, 'anular');
+            $modificado_por = Auth::user()->email;
+            ComprasDocRegistro::where('compras_doc_encabezado_id', $nota->id)
+                ->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
+            // Una nota por valor no devuelve cantidades; conservar su factura de origen.
+            $nota->update([
+                'estado' => 'Anulado',
+                'valor_total' => $total_nota,
+                'modificado_por' => $modificado_por,
+            ]);
+        });
 
         return redirect( 'compras/'.$id.'?id='.$this->app->id.'&id_modelo='.$this->modelo->id.'&id_transaccion='.$this->transaccion->id.'&vista=compras.notas_credito.por_valor.show')->with('flash_message','Nota anulada correctamente.');
     }

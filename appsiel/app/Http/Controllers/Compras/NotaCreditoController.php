@@ -547,7 +547,8 @@ class NotaCreditoController extends TransaccionController
         // total_nota es negativo cuando se hace la nota y positivo cuando se anula
 
 
-        $movimiento_cxp = CxpMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+        $movimiento_cxp = CxpMovimiento::where('core_empresa_id', $factura->core_empresa_id)
+                                ->where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
                                 ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
                                 ->where('consecutivo', $factura->consecutivo)
                                 ->get()
@@ -597,7 +598,20 @@ class NotaCreditoController extends TransaccionController
 
     public static function actualizar_movimiento_tesoreria( $total_nota, $factura, $nota, $accion )
     {
-        $movimiento_tesoreria_factura = TesoMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+        if ($accion == 'anular') {
+            // El importe del encabezado histórico puede diferir del movimiento.
+            // La identidad del documento permite eliminar todos sus medios de pago.
+            TesoMovimiento::where([
+                'core_empresa_id' => $nota->core_empresa_id,
+                'core_tipo_transaccion_id' => $nota->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => $nota->core_tipo_doc_app_id,
+                'consecutivo' => $nota->consecutivo,
+            ])->delete();
+            return;
+        }
+
+        $movimiento_tesoreria_factura = TesoMovimiento::where('core_empresa_id', $factura->core_empresa_id)
+                                ->where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
                                 ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
                                 ->where('consecutivo', $factura->consecutivo)
                                 ->get()

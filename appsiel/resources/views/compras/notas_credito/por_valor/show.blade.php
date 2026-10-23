@@ -20,8 +20,20 @@
 @endsection
 
 @section('datos_adicionales_encabezado')
+	<?php
+		$factura_relacionada = App\Compras\ComprasDocEncabezado::with(['tipo_transaccion', 'tipo_documento_app'])
+			->where('core_empresa_id', $doc_encabezado->core_empresa_id)
+			->find($doc_encabezado->compras_doc_relacionado_id);
+	?>
 	<br/>
-	<b>Devolución: </b> {!! $docs_relacionados[0] !!}
+	<b>Factura de compra relacionada: </b>
+	@if($factura_relacionada && $factura_relacionada->tipo_transaccion && $factura_relacionada->tipo_documento_app)
+		<a href="{{ url('compras/'.$factura_relacionada->id.'?id='.$factura_relacionada->tipo_transaccion->core_app_id.'&id_modelo='.$factura_relacionada->tipo_transaccion->core_modelo_id.'&id_transaccion='.$factura_relacionada->core_tipo_transaccion_id) }}">
+			{{ $factura_relacionada->tipo_documento_app->prefijo }} {{ $factura_relacionada->consecutivo }}
+		</a>
+	@else
+		Sin factura relacionada
+	@endif
 @endsection
 
 @section('filas_adicionales_encabezado')
