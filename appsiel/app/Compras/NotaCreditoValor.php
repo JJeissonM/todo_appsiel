@@ -13,79 +13,69 @@ class NotaCreditoValor extends ComprasDocEncabezado
 
     public static function consultar_registros($nro_registros, $search)
     {
-        $core_tipo_transaccion_id = 61; // Nota crédito por valor
+        return static::consulta_listado($search)->paginate($nro_registros);
+    }
 
-        if ( $search == '' )
-        {
-            return NotaCreditoValor::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'compras_doc_encabezados.core_tipo_doc_app_id')
-                            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'compras_doc_encabezados.core_tercero_id')
-                            ->where('compras_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-                            ->where('compras_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
-                            ->select(
-                                'compras_doc_encabezados.fecha AS campo1',
-                                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo) AS campo2'),
-                                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                                DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," - ",compras_doc_encabezados.doc_proveedor_consecutivo) AS campo4'),
-                                'compras_doc_encabezados.descripcion AS campo5',
-                                'compras_doc_encabezados.valor_total AS campo6',
-                                'compras_doc_encabezados.estado AS campo7',
-                                'compras_doc_encabezados.id AS campo8'
-                            )
-                            ->orderBy('compras_doc_encabezados.created_at', 'DESC')
-                            ->paginate($nro_registros);
+    protected static function consulta_listado($search, $exportar = false)
+    {
+        $documento = "CONCAT(COALESCE(core_tipos_docs_apps.prefijo, ''), ' ', compras_doc_encabezados.consecutivo)";
+        $proveedor = "COALESCE(NULLIF(TRIM(core_terceros.razon_social), ''),
+            NULLIF(TRIM(CONCAT_WS(' ', NULLIF(TRIM(core_terceros.nombre1), ''),
+                NULLIF(TRIM(core_terceros.otros_nombres), ''), NULLIF(TRIM(core_terceros.apellido1), ''),
+                NULLIF(TRIM(core_terceros.apellido2), ''))), ''),
+            NULLIF(TRIM(core_terceros.descripcion), ''), '')";
+        $factura = "CONCAT(COALESCE(compras_doc_encabezados.doc_proveedor_prefijo, ''), ' - ',
+            COALESCE(compras_doc_encabezados.doc_proveedor_consecutivo, ''))";
+        // Las notas históricas pueden tener solo el importe de la última línea en el encabezado.
+        $total = "COALESCE((SELECT SUM(lineas_nota.precio_total) FROM compras_doc_registros AS lineas_nota
+            WHERE lineas_nota.compras_doc_encabezado_id = compras_doc_encabezados.id), compras_doc_encabezados.valor_total)";
+
+        $campos = [
+            'compras_doc_encabezados.fecha', $documento, $proveedor, $factura,
+            'compras_doc_encabezados.descripcion', $total, 'compras_doc_encabezados.estado',
+        ];
+        $alias = $exportar
+            ? ['FECHA', 'DOCUMENTO_COMPRA', 'PROVEEDOR', 'FACTURA', 'DETALLE', 'VALOR_TOTAL', 'ESTADO']
+            : ['campo1', 'campo2', 'campo3', 'campo4', 'campo5', 'campo6', 'campo7'];
+        $seleccion = [];
+        foreach ($campos as $i => $campo) {
+            $seleccion[] = DB::raw($campo . ' AS ' . $alias[$i]);
+        }
+        if (!$exportar) {
+            $seleccion[] = 'compras_doc_encabezados.id AS campo8';
         }
 
-        return NotaCreditoValor::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'compras_doc_encabezados.core_tipo_doc_app_id')
+        $query = static::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'compras_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'compras_doc_encabezados.core_tercero_id')
             ->where('compras_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-            ->where('compras_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
-            ->select(
-                'compras_doc_encabezados.fecha AS campo1',
-                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo) AS campo2'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," - ",compras_doc_encabezados.doc_proveedor_consecutivo) AS campo4'),
-                'compras_doc_encabezados.descripcion AS campo5',
-                'compras_doc_encabezados.valor_total AS campo6',
-                'compras_doc_encabezados.estado AS campo7',
-                'compras_doc_encabezados.id AS campo8'
-            )
-            ->orWhere("compras_doc_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," - ",compras_doc_encabezados.doc_proveedor_consecutivo)'), "LIKE", "%$search%")
-            ->orWhere("compras_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("compras_doc_encabezados.valor_total", "LIKE", "%$search%")
-            ->orWhere("compras_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('compras_doc_encabezados.created_at', 'DESC')
-            ->paginate($nro_registros);
+            ->where('compras_doc_encabezados.core_tipo_transaccion_id', 61)
+            ->select($seleccion);
+
+        $search = trim((string)$search);
+        if ($search !== '') {
+            $query->where(function ($filtro) use ($campos, $search) {
+                foreach ($campos as $campo) {
+                    $filtro->orWhere(DB::raw($campo), 'LIKE', '%' . $search . '%');
+                }
+                $filtro->orWhere('core_terceros.numero_identificacion', 'LIKE', '%' . $search . '%')
+                    ->orWhere('core_terceros.descripcion', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        return $query->orderBy('compras_doc_encabezados.created_at', 'DESC')
+            ->orderBy('compras_doc_encabezados.id', 'DESC');
     }
 
     public static function sqlString($search)
     {
-        $core_tipo_transaccion_id = 61; // Nota crédito por valor
-        $string = NotaCreditoValor::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'compras_doc_encabezados.core_tipo_doc_app_id')
-            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'compras_doc_encabezados.core_tercero_id')
-            ->where('compras_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-            ->where('compras_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
-            ->select(
-                'compras_doc_encabezados.fecha AS FECHA',
-                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo) AS DOCUMENTO_COMPRA'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS PROVEEDOR'),
-                DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," - ",compras_doc_encabezados.doc_proveedor_consecutivo) AS FACTURA'),
-                'compras_doc_encabezados.descripcion AS DETALLE',
-                'compras_doc_encabezados.valor_total AS VALOR_TOTAL',
-                'compras_doc_encabezados.estado AS ESTADO'
-            )
-            ->orWhere("compras_doc_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," - ",compras_doc_encabezados.doc_proveedor_consecutivo)'), "LIKE", "%$search%")
-            ->orWhere("compras_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("compras_doc_encabezados.valor_total", "LIKE", "%$search%")
-            ->orWhere("compras_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('compras_doc_encabezados.created_at', 'DESC')
-            ->toSql();
-        return str_replace('?', '"%' . $search . '%"', $string);
+        $query = static::consulta_listado($search, true);
+        $bindings = $query->getBindings();
+        $pdo = $query->getConnection()->getPdo();
+        $i = 0;
+        // Exportar los mismos filtros, incluyendo empresa y transacción, con sus valores reales.
+        return preg_replace_callback('/\?/', function () use ($bindings, $pdo, &$i) {
+            return $pdo->quote((string)$bindings[$i++]);
+        }, $query->toSql());
     }
 
     //Titulo para la exportación en PDF y EXCEL
