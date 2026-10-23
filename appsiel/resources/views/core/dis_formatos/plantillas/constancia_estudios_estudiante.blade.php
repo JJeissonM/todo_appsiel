@@ -91,7 +91,7 @@
 			<div align="center" style="font-size: 1.1em;">
 				<b>{!! $colegio->descripcion !!}</b><br/>
 				{!! $colegio->resolucion !!}. <br>
-				{!! $colegio->ciudad !!}<br/><hr>
+				{!! $colegio->ciudad !!}<br/>
 			</div>
 		@endif
 
