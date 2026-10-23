@@ -3,10 +3,10 @@
     .paz-salvo { font-family: "Times New Roman", serif; font-size: 12pt; line-height: 1.4; color: #000; }
     .paz-salvo-banner { text-align: center; height: 135px; }
     .paz-salvo-banner img { max-width: 100%; max-height: 130px; }
-    .paz-salvo-encabezado { width: 100%; border: none; border-collapse: collapse; }
+    .paz-salvo-encabezado { width: 100%; table-layout: fixed; border: none; border-collapse: collapse; }
     .paz-salvo-encabezado td { border: none; vertical-align: middle; }
-    .paz-salvo-escudo { width: 20%; text-align: left; }
-    .paz-salvo-escudo img { width: 100px; height: auto; max-height: 120px; }
+    .paz-salvo-escudo { width: 120px; text-align: left; }
+    .paz-salvo-banner .paz-salvo-escudo img { width: 100px; height: auto; max-width: none; max-height: none; }
     .paz-salvo-institucion { text-align: center; }
     .paz-salvo h2 { text-align: center; font-size: 15pt; margin: 40px 0 45px; }
     .paz-salvo p { text-align: justify; margin: 0 0 35px; }
@@ -36,7 +36,7 @@
                 <tr>
                     @if(!empty($colegio->imagen))
                         <td class="paz-salvo-escudo">
-                            <img src="{{ asset(config('configuracion.url_instancia_cliente')).'/storage/app/escudos/'.$colegio->imagen }}" alt="Escudo del colegio">
+                            <img src="{{ asset(config('configuracion.url_instancia_cliente')).'/storage/app/escudos/'.$colegio->imagen }}" width="100" alt="Escudo del colegio">
                         </td>
                     @endif
                     <td class="paz-salvo-institucion">
