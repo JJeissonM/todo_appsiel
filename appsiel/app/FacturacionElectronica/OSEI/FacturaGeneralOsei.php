@@ -222,6 +222,43 @@ class FacturaGeneralOsei
         return htmlspecialchars($errorMessage, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
+    /**
+     * OSEI marca con error_type "resolution" los errores de la resolución de
+     * facturación (prefijo no asociado al software en la DIAN, número que la DIAN
+     * no reconoce...). Se muestran junto con la resolución que tiene Appsiel para
+     * que el cliente las compare. Devuelve null si el error es de otro tipo.
+     */
+    protected function resolutionErrorMessage($responseBody)
+    {
+        $body = json_decode($responseBody, true);
+
+        if (!is_array($body) || ($body['error_type'] ?? '') !== 'resolution') {
+            return null;
+        }
+
+        $contenido = '<b>La factura no se envió: hay un problema con la resolución de facturación.</b><br>'
+            . htmlspecialchars((string)($body['message'] ?? ''), ENT_QUOTES, 'UTF-8');
+
+        $resolucion = $this->doc_encabezado->resolucion_facturacion();
+        if ($resolucion != null) {
+            $contenido .= '<br>Resolución configurada en Appsiel: N° ' . htmlspecialchars((string)$resolucion->numero_resolucion, ENT_QUOTES, 'UTF-8')
+                . ', prefijo ' . htmlspecialchars((string)$resolucion->prefijo, ENT_QUOTES, 'UTF-8')
+                . ', vigente del ' . $this->normalizeDateToDmy($resolucion->fecha_expedicion, '-')
+                . ' al ' . $this->normalizeDateToDmy($resolucion->fecha_expiracion, '-')
+                . ', consecutivos ' . (int)$resolucion->numero_fact_inicial . ' a ' . (int)$resolucion->numero_fact_final . '.';
+
+            if (!empty($resolucion->fecha_expiracion) && $resolucion->fecha_expiracion < $this->doc_encabezado->fecha) {
+                $contenido .= ' Esta resolución ya venció; si la DIAN le otorgó una nueva, regístrela en Appsiel antes de volver a enviar la factura.';
+            }
+        }
+
+        if (!empty($body['dian']['description'])) {
+            $contenido .= '<br><small>Respuesta de la DIAN: ' . htmlspecialchars((string)$body['dian']['description'], ENT_QUOTES, 'UTF-8') . '</small>';
+        }
+
+        return $contenido;
+    }
+
     public function procesar_envio_factura($factura_doc_encabezado)
     {
         $auth_token = config('facturacion_electronica.tokenEmpresa');
@@ -331,6 +368,14 @@ class FacturaGeneralOsei
             $statusCode = $e->getResponse() ? $e->getResponse()->getStatusCode() : null;
             $responseBody = $e->getResponse() ? (string) $e->getResponse()->getBody() : 'No response body';
             Log::warning('Error 4xx de OSEI al enviar documento. HTTP ' . $statusCode . '. Respuesta: ' . $responseBody);
+
+            $resolutionError = $this->resolutionErrorMessage($responseBody);
+            if ($resolutionError !== null) {
+                return (object)[
+                    'tipo' => 'mensaje_error',
+                    'contenido' => $resolutionError
+                ];
+            }
 
             $errorMessage = $this->decodeErrorResponseBody($responseBody);
 
