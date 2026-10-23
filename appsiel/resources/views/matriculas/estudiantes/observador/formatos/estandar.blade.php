@@ -1,3 +1,6 @@
+@if($vista == 'print')
+    @include('matriculas.estudiantes.observador.formatos.estandar_estilos_pdf')
+@else
 <style>
 
 	img {
@@ -113,31 +116,37 @@ div.recuadro{
     page-break-after: always;
 }
 </style>
+@endif
 
-<div class="container" style="width: 100%; border: 1px solid #333333;" id="container_formato">
+<div class="container{{ $vista == 'print' ? ' observador-estandar-pdf' : '' }}" style="width: 100%;{{ $vista != 'print' ? ' border: 1px solid #333333;' : '' }}" id="container_formato">
 	
     @if($vista != 'show')
-		<table class="banner" width="100%" >
-			<tr>
-				<td width="250px">
-					<img src="{{ asset(config('configuracion.url_instancia_cliente').'/storage/app/escudos/'.$colegio->imagen.'?'.rand(1,1000)) }}" width="160px" height="160px" />
-				</td>
+        <div class="banner">
+                @if(!empty($escudo_pdf) || ($vista != 'print' && !empty($colegio->imagen)))
+                    <div class="escudo-institucional">
+                        <img src="{{ !empty($escudo_pdf) ? $escudo_pdf : asset(config('configuracion.url_instancia_cliente').'/storage/app/escudos/'.$colegio->imagen) }}" style="width: 75px; height: auto;" />
+                    </div>
+                @endif
+                <div class="identidad-institucional{{ (!empty($escudo_pdf) || ($vista != 'print' && !empty($colegio->imagen))) ? ' identidad-con-escudo' : '' }}">
+                    <div class="nombre-institucion">{{ $colegio->descripcion }}</div>
+                    <div class="lema-institucion">{{ $colegio->slogan }}</div>
+                    <div class="detalle-institucion">Resolución No. {!! $colegio->resolucion !!}</div>
+                    <div class="detalle-institucion">{{ $colegio->direccion }} · Teléfonos: {{ $colegio->telefonos }}</div>
+                </div>
+        </div>
+    @endif
 
-				<td align="center">
-					<b>{{ $colegio->descripcion }}</b><br/>
-					<b>{{ $colegio->slogan }}</b><br/>
-					Resolución No. {{ $colegio->resolucion }}<br/>
-					{{ $colegio->direccion }}<br/>
-					Teléfonos: {{ $colegio->telefonos }}<br/>
-				</td>
-			</tr>
-		</table>
-	@endif
-	
-	<h4 align="center">OBSERVADOR DEL ALUMNO</h4>
-    <h5 align="center" style="margin-top:-15px;">{{$anio_lectivo_label}}</h5>
-    
-	@include('matriculas.estudiantes.observador.datos_basicos_estudiante')
+    <div class="titulo-observador">
+        <h4 align="center">OBSERVADOR DEL ALUMNO</h4>
+        <div align="center" class="anio-lectivo">{{ $anio_lectivo_label }}</div>
+    </div>
+
+    @if($vista == 'print')
+        @include('matriculas.estudiantes.observador.formatos.estandar_datos_estudiante')
+    @else
+        @include('matriculas.estudiantes.observador.datos_basicos_estudiante')
+    @endif
+
 	@include('matriculas.estudiantes.observador.datos_adicionales_estudiante')
 	@include('matriculas.estudiantes.observador.datos_basicos_padres')
 
@@ -151,11 +160,12 @@ div.recuadro{
 
 	<div class="page-break"></div>
 
-	@include('matriculas.estudiantes.observador.valorar_aspectos_show')
+    <div class="valoracion-observador">
+        @include('matriculas.estudiantes.observador.valorar_aspectos_show')
+    </div>
 	
 	<div class="page-break"></div>
 	
-	<br><br>
 	@include('matriculas.estudiantes.observador.novedades_y_anotaciones')
 
 	@if( (int)config('matriculas.manejar_control_disciplinario') )

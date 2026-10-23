@@ -4,17 +4,16 @@ namespace App\Matriculas\Services;
 
 use App\Calificaciones\Periodo;
 use App\Core\Colegio;
-use App\Core\Tercero;
+
 use App\Matriculas\Estudiante;
 use App\Matriculas\Matricula;
-use App\Matriculas\Responsableestudiante;
+
 use App\Matriculas\TiposAspecto;
-use App\Ventas\Cliente;
-use App\Ventas\VtasMovimiento;
+
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Schema;
+
 use Illuminate\Support\Facades\View;
 
 class ObservadorEstudianteService
@@ -71,8 +70,31 @@ class ObservadorEstudianteService
         $tipos_aspectos = TiposAspecto::all();
 
         $matricula_a_mostrar = $this->get_matricula_a_mostrar((int)Input::get('matricula_id'), $estudiante);
+
+        $escudo_pdf = null;
+        $foto_estudiante_pdf = null;
+        if ($vista == 'print' && (int)config('matriculas.formato_impresion_observador') === 1) {
+            $escudo_pdf = $this->imagen_local_pdf('escudos', $colegio->imagen);
+            $foto_estudiante_pdf = $this->imagen_local_pdf('fotos_terceros', $estudiante->imagen);
+        }
         
-        return View::make( $vista_formato, compact( 'colegio', 'estudiante', 'vista','tam_hoja', 'curso_label', 'anio_lectivo_label', 'tipos_aspectos', 'anio_matricula', 'periodos', 'matricula_a_mostrar' ) )->render();
+        return View::make( $vista_formato, compact( 'colegio', 'estudiante', 'vista','tam_hoja', 'curso_label', 'anio_lectivo_label', 'tipos_aspectos', 'anio_matricula', 'periodos', 'matricula_a_mostrar', 'escudo_pdf', 'foto_estudiante_pdf' ) )->render();
+    }
+
+    protected function imagen_local_pdf($carpeta, $nombre)
+    {
+        if (empty($nombre)) {
+            return null;
+        }
+        $ruta = storage_path('app/'.$carpeta.'/'.basename($nombre));
+        if (!is_file($ruta) || !is_readable($ruta)) {
+            return null;
+        }
+        $imagen = @getimagesize($ruta);
+        if (!$imagen || !in_array($imagen['mime'], ['image/png', 'image/jpeg', 'image/gif', 'image/webp'])) {
+            return null;
+        }
+        return 'data:'.$imagen['mime'].';base64,'.base64_encode(file_get_contents($ruta));
     }
     
     public function get_anio_matricula($matricula_id, $estudiante)
