@@ -8,6 +8,10 @@ class AddHoursToInvMovimientos extends Migration
 {
     public function up()
     {
+        if (!Schema::hasTable('inv_movimientos')) {
+            return;
+        }
+
         $hasHoraInicio = Schema::hasColumn('inv_movimientos', 'hora_inicio');
         $hasHoraFinalizacion = Schema::hasColumn('inv_movimientos', 'hora_finalizacion');
 
@@ -25,6 +29,10 @@ class AddHoursToInvMovimientos extends Migration
 
     public function down()
     {
+        if (!Schema::hasTable('inv_movimientos')) {
+            return;
+        }
+
         $hasHoraInicio = Schema::hasColumn('inv_movimientos', 'hora_inicio');
         $hasHoraFinalizacion = Schema::hasColumn('inv_movimientos', 'hora_finalizacion');
 

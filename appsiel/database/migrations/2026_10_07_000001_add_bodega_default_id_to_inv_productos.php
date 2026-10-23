@@ -9,6 +9,10 @@ class AddBodegaDefaultIdToInvProductos extends Migration
 {
     public function up()
     {
+        if (!Schema::hasTable('inv_productos')) {
+            return;
+        }
+
         if (!Schema::hasColumn('inv_productos', 'bodega_default_id')) {
             Schema::table('inv_productos', function (Blueprint $table) {
                 $table->unsignedInteger('bodega_default_id')->nullable();
@@ -39,6 +43,10 @@ class AddBodegaDefaultIdToInvProductos extends Migration
 
     public function down()
     {
+        if (!Schema::hasTable('inv_productos')) {
+            return;
+        }
+
         if ($this->hasCrudTables()) {
             $modelId = $this->productModelId();
             foreach ($this->fieldIds($modelId) as $fieldId) {
