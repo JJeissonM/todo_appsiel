@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'PaginaWeb\FrontEndController@inicio');
 
+// Publicar los archivos de Nube cuando public_path no es el DocumentRoot.
+Route::get('nube/{path}', 'web\NubeController@archivo')->where('path', '.*');
+
 Route::get('pagina_no_encontrada/{url}', 'PaginaWeb\FrontEndController@pagina_no_encontrada');
 
 Route::get('dashboard', 'HomeController@index');

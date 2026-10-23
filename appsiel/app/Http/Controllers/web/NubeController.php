@@ -14,6 +14,27 @@ class NubeController extends Controller
 {
     protected $rutas = null;
 
+    public function archivo($path)
+    {
+        try {
+            $file = $this->getFullCloudPath($path, true);
+        } catch (\InvalidArgumentException $e) {
+            abort(404);
+        }
+
+        if (!is_file($file) || !is_readable($file) || substr(basename($file), 0, 1) === '.') {
+            abort(404);
+        }
+
+        $response = new \Symfony\Component\HttpFoundation\BinaryFileResponse($file);
+        $mime = (new \finfo(FILEINFO_MIME_TYPE))->file($file);
+        $inline = in_array($mime, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf']);
+        $response->headers->set('Content-Type', $mime ?: 'application/octet-stream');
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
+        $response->setContentDisposition($inline ? 'inline' : 'attachment');
+        return $response;
+    }
+
     protected function getMigaPan($id)
     {
         $aplicacion = Aplicacion::where('id',Input::get('id'))->first();

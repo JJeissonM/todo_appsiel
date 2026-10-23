@@ -67,7 +67,7 @@ class Handler extends ExceptionHandler
                 {
                 // not found
                 case 404:
-                return redirect()->guest( 'pagina_no_encontrada'.$request->getpathInfo() );
+                return $this->renderHttpException($e);
                 break;
 
                 // internal error
