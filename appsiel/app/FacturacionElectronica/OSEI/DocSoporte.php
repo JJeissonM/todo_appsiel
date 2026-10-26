@@ -57,21 +57,16 @@ class DocSoporte
       if (!is_array($json_doc_electronico_enviado)) {
          $json_doc_electronico_enviado = json_decode($json_doc_electronico_enviado, true);
 
-         if (preg_match('/[^a-zA-Z0-9\s.]/', isset($json_doc_electronico_enviado['support_doc']['supplier']['legal_name']))) {
+         if (json_last_error() !== JSON_ERROR_NONE) {
             return (object)[
                'tipo' => 'mensaje_error',
-               'contenido' => "Error de cliente: El nombre de la empresa no puede contener caracteres no alfanuméricos"
+               'contenido' => "Error interno: JSON inválido. Mensaje: " . json_last_error_msg()
             ];
          }
       }
 
-      // verificar que el json este bien formado
-      if (json_last_error() !== JSON_ERROR_NONE) {
-         return (object)[
-            'tipo' => 'mensaje_error',
-            'contenido' => "Error interno: JSON inválido. Mensaje: " . json_last_error_msg()
-         ];
-      }
+      $json_doc_electronico_enviado = PayloadNormalizer::normalize($json_doc_electronico_enviado);
+
       try {
          $client = new \GuzzleHttp\Client(['base_uri' => $this->url_emision]);
 

@@ -92,12 +92,7 @@ class FacturaGeneralOsei
     {
         $value = $this->sanitizeJsonText($value);
 
-        // Normaliza caracteres invisibles o variantes tipograficas comunes
-        $value = preg_replace('/[\p{Cf}\x{00AD}]+/u', '', $value) ?? $value;
-        $value = str_replace(["\xC2\xA0", "–", "—", "−"], [' ', '-', '-', '-'], $value);
-        $value = preg_replace('/\s+/u', ' ', $value) ?? $value;
-
-        return trim($value);
+        return PayloadNormalizer::text($value);
     }
 
     protected function hasInvalidLegalNameCharacters($value)
@@ -296,39 +291,15 @@ class FacturaGeneralOsei
         if (!is_array($json_doc_electronico_enviado)) {
             $json_doc_electronico_enviado = json_decode($json_doc_electronico_enviado, true);
 
-            $invoiceLegalName = isset($json_doc_electronico_enviado['invoice']['customer']['legal_name']) ? $this->sanitizeLegalName($json_doc_electronico_enviado['invoice']['customer']['legal_name']) : '';
-            $creditNoteLegalName = isset($json_doc_electronico_enviado['credit_note']['customer']['legal_name']) ? $this->sanitizeLegalName($json_doc_electronico_enviado['credit_note']['customer']['legal_name']) : '';
-
-            if (isset($json_doc_electronico_enviado['invoice']['customer']['legal_name'])) {
-                $json_doc_electronico_enviado['invoice']['customer']['legal_name'] = $invoiceLegalName;
-            }
-
-            if (isset($json_doc_electronico_enviado['credit_note']['customer']['legal_name'])) {
-                $json_doc_electronico_enviado['credit_note']['customer']['legal_name'] = $creditNoteLegalName;
-            }
-
-            if ($this->hasInvalidLegalNameCharacters($invoiceLegalName) || $this->hasInvalidLegalNameCharacters($creditNoteLegalName)) {
-                Log::warning('Caracteres invalidos detectados en legal_name antes de enviar a OSEI.', [
-                    'invoice_legal_name' => $invoiceLegalName,
-                    'invoice_invalid_chars' => $this->getInvalidLegalNameCharacters($invoiceLegalName),
-                    'credit_note_legal_name' => $creditNoteLegalName,
-                    'credit_note_invalid_chars' => $this->getInvalidLegalNameCharacters($creditNoteLegalName),
-                    'documento_id' => $this->doc_encabezado->id ?? null
-                ]);
-
+            if (json_last_error() !== JSON_ERROR_NONE) {
                 return (object)[
                     'tipo' => 'mensaje_error',
-                    'contenido' => 'Error de cliente: El nombre de la empresa no puede contener caracteres no alfanumericos'
+                    'contenido' => 'El JSON esta mal formado: ' . json_last_error_msg()
                 ];
             }
         }
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return (object)[
-                'tipo' => 'mensaje_error',
-                'contenido' => 'El JSON esta mal formado: ' . json_last_error_msg()
-            ];
-        }
+        $json_doc_electronico_enviado = PayloadNormalizer::normalize($json_doc_electronico_enviado);
 
         try {
             $client = new \GuzzleHttp\Client(['base_uri' => $this->url_emision]);
@@ -493,7 +464,15 @@ class FacturaGeneralOsei
             ->getOseiGlobalAllowanceCharge($this->doc_encabezado);
         $global_json = $global === null ? '' : ',"global_allowance_charge": ' . json_encode($global, JSON_UNESCAPED_UNICODE);
 
-        return '{ "actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": ' . $this->jsonString($lista_emails) . '},"invoice": {' . $this->get_encabezado_factura($auth_token) . ',"items": ' . $this->get_lineas_registros() . $global_json . '},"aditional_info": ' . $this->get_aditional_info() . '}';
+        $json = '{ "actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": ' . $this->jsonString($lista_emails) . '},"invoice": {' . $this->get_encabezado_factura($auth_token) . ',"items": ' . $this->get_lineas_registros() . $global_json . '},"aditional_info": ' . $this->get_aditional_info() . '}';
+        // El POS comparte este generador: normalizar tambien antes del envio.
+        $payload = json_decode($json, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            // Conservar el error para la validacion del emisor.
+            return $json;
+        }
+
+        return json_encode(PayloadNormalizer::normalize($payload), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     public function preparar_cadena_json_nota_credito($auth_token, $factura_doc_encabezado)
