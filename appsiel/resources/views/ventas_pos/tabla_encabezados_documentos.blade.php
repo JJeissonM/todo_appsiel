@@ -1,7 +1,20 @@
+<style>
+    #myModal2 .modal-dialog {
+        width: 96vw;
+        max-width: none;
+        margin: 20px auto;
+    }
+
+    .pos-invoice-query-table td:nth-child(2),
+    .pos-invoice-query-table td:nth-child(3),
+    .pos-invoice-query-table td:nth-child(7) {
+        white-space: nowrap;
+    }
+</style>
 <h3> Documentos de ventas | {{ $pdv->descripcion }}</h3>
 <hr>
 <div class="table-responsive">
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered pos-invoice-query-table">
         {{ Form::bsTableHeader( [ 'Acción', 'Fecha', 'Documento', 'Cliente', 'Cond. pago', 'Detalle', 'Valor total', 'Medio recaudo', 'Estado'] ) }}
         <tbody>
 
@@ -100,6 +113,9 @@
                     </td>
                     <td class="table-text">
                         {{ $fila->fecha }}
+                        @if(!empty($fila->created_at))
+                            <span style="white-space: nowrap;">{{ date('h:i a', strtotime($fila->created_at)) }}</span>
+                        @endif
                     </td>
                     <td class="table-text">
                         {{ $fila->get_label_documento() }}
