@@ -37,7 +37,9 @@ class ContabilizacionProvisionNomina
 	public function set_movimiento_contabilizar()
 	{
 
-		$registros_consolidados = ConsolidadoPrestacionesSociales::where( 'fecha_fin_mes', $this->fecha_final_promedios )->get();
+		$registros_consolidados = ConsolidadoPrestacionesSociales::where( 'fecha_fin_mes', $this->fecha_final_promedios )
+												->where( 'estado', 'Activo' )
+												->get();
 
 		$this->valor_debito_total = 0;
 		$this->valor_credito_total = 0;
