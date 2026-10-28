@@ -36,10 +36,55 @@ class ConsolidadoPrestacionesController extends TransaccionController
         $fecha_final_promedios = $request->fecha_final_promedios;
         $fecha_inicial_promedios = explode( '-', $fecha_final_promedios );
 
-        $empleados_con_movimiento = NomDocRegistro::whereBetween( 'fecha',[ $fecha_inicial_promedios[0].'-'.$fecha_inicial_promedios[1].'-01', $fecha_final_promedios ] )->distinct('nom_contrato_id')->get()->unique('nom_contrato_id')->values()->all();
+        $empleados_con_movimiento = NomDocRegistro::with(['contrato.tercero', 'tercero'])
+            ->where('core_empresa_id', $usuario->empresa_id)
+            ->whereBetween('fecha', [
+                $fecha_inicial_promedios[0] . '-' . $fecha_inicial_promedios[1] . '-01',
+                $fecha_final_promedios
+            ])
+            ->select('nom_contrato_id', 'core_tercero_id', 'core_empresa_id')
+            ->distinct()
+            ->get()
+            ->unique('nom_contrato_id')
+            ->values()
+            ->all();
 
         $array_prestaciones_liquidadas = (object)[];
         $lista_consolidados = [];
+
+        foreach ($empleados_con_movimiento as $registro_empleado) {
+            if (!is_null($registro_empleado->contrato)) {
+                continue;
+            }
+
+            $tercero = $registro_empleado->tercero;
+            $lista_consolidados[] = (object)[
+                'tercero' => (object)[
+                    'descripcion' => is_null($tercero)
+                        ? 'Tercero #' . $registro_empleado->core_tercero_id
+                        : $tercero->descripcion,
+                    'numero_identificacion' => is_null($tercero)
+                        ? $registro_empleado->core_tercero_id
+                        : $tercero->numero_identificacion
+                ],
+                'tipo_prestacion' => 'contrato',
+                'fecha_fin_mes' => $fecha_final_promedios,
+                'valor_acumulado_mes_anterior' => 0,
+                'valor_pagado_mes' => 0,
+                'valor_consolidado_mes' => 0,
+                'dias_consolidado_mes' => 0,
+                'valor_acumulado' => 0,
+                'dias_acumulados' => 0,
+                'observacion' => 'Contrato #' . $registro_empleado->nom_contrato_id . ' inexistente.',
+                'dias_totales_laborados' => 0,
+                'estado' => 'Error. El contrato #' . $registro_empleado->nom_contrato_id . ' no existe. Corrija la integridad de los datos antes de consolidar.'
+            ];
+        }
+
+        if (!empty($lista_consolidados)) {
+            return View::make('nomina.reportes.tabla_consolidados_prestaciones_sociales', compact('lista_consolidados'))->render();
+        }
+
         foreach ($empleados_con_movimiento as $registro_empleado)
         {
             $fecha_final_promedios = $request->fecha_final_promedios;
