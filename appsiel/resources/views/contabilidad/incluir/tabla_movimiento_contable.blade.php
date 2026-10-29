@@ -88,7 +88,11 @@
                     <td class="text-center"> {{ $cuenta_descripcion }}</td>
                     <td class="text-center"> {{ $tercero_numero_identificacion }}</td>
                     <td class="text-center"> {{ $tercero_descripcion }}</td>
-                    <td> {{ $linea->tipo_documento_app->prefijo }} {{ $linea->consecutivo }}</td>
+                    <td>
+                        <a href="{{ url('enlace_show_documento/3/'.$linea->core_tipo_transaccion_id.'/'.$linea->core_tipo_doc_app_id.'/'.$linea->consecutivo) }}" target="_blank" rel="noopener noreferrer">
+                            {{ $linea->tipo_documento_app->prefijo }} {{ $linea->consecutivo }}
+                        </a>
+                    </td>
                     <td> {{ $linea->detalle_operacion }}</td>
                     <td class="text-center"> {{ number_format( $linea->valor_debito , 0, ',', '.') }} </td>
                     <td class="text-center"> {{ number_format( $linea->valor_credito , 0, ',', '.') }} </td>
