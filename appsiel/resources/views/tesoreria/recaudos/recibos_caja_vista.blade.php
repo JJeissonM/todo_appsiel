@@ -127,15 +127,7 @@
     <tr>
         <td colspan="2">
             <div style="font-size: 11px; text-align: center;">
-                * Valledupar: Calle 5C No. 38 - 61. Franciso el Hombre. Teléfono 5741396 - Cel. 3223039437
-                <br>
-                * Bucaramanga: Calle 41 No. 32 - 59, local 203 edificio profesional El prado. Cel. 3168757905
-                <br>
-                * Aguachica: Calle 3 No. 14 - 57. Tel. 5661208
-                <br>
-                Correo: <a href="mailto:servicioalcliente@transporcol.com">servicioalcliente@transporcol.com</a>
-                &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; 
-                Web: <a href="www.transporcol.com">www.transporcol.com</a>
+                @include('tesoreria.pagos.comprobantes_pie_de_pagina')
             </div>
         </td>
     </tr>
