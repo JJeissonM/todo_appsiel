@@ -147,6 +147,17 @@ class ContabilidadController extends TransaccionController
 
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, $registro,'edit');
 
+        // La fecha contable debe poder ajustarse al editar, incluso en las copias.
+        foreach ($lista_campos as &$campo) {
+            if ($campo['name'] == 'fecha') {
+                $campo['editable'] = 1;
+                $campo['tipo'] = 'fecha';
+                unset($campo['atributos']['disabled'], $campo['atributos']['readonly']);
+                $campo['atributos']['required'] = 'required';
+            }
+        }
+        unset($campo);
+
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
 
@@ -382,7 +393,8 @@ class ContabilidadController extends TransaccionController
 
     public function duplicar_documento( $doc_encabezado_id )
     {
-        $doc_encabezado = ContabDocEncabezado::find( $doc_encabezado_id );
+        $doc_encabezado = ContabDocEncabezado::where('core_empresa_id', Auth::user()->empresa_id)
+            ->findOrFail( $doc_encabezado_id );
 
         $registros_doc_encabezado = ContabDocRegistro::where( 'contab_doc_encabezado_id', $doc_encabezado->id )->get();
 
@@ -390,19 +402,26 @@ class ContabilidadController extends TransaccionController
             Al duplicar el documento no se realiza contabilización, por tanto se puede duplicar aunque tenga movimientos de cxc o cxp. Pero los registros de con estos movimientos, se llamaran como registros de causacion en el formulario de editar.
         */
 
-        $consecutivo = TipoDocApp::reservar_consecutivo( $doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id);
+        $nuevo_doc_encabezado = DB::transaction(function () use ($doc_encabezado, $registros_doc_encabezado) {
+            $consecutivo = TipoDocApp::reservar_consecutivo( $doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id);
 
-        $nuevo_doc_encabezado = $doc_encabezado->replicate();
-        $nuevo_doc_encabezado->consecutivo = $consecutivo;
-        $nuevo_doc_encabezado->save();
+            $nuevo_doc_encabezado = $doc_encabezado->replicate();
+            $nuevo_doc_encabezado->consecutivo = $consecutivo;
+            $nuevo_doc_encabezado->estado = 'Activo';
+            $nuevo_doc_encabezado->creado_por = Auth::user()->email;
+            $nuevo_doc_encabezado->modificado_por = Auth::user()->email;
+            $nuevo_doc_encabezado->save();
 
-        foreach ($registros_doc_encabezado as $linea )
-        {
-            $nueva_linea = $linea->toArray();
-            $nueva_linea['contab_doc_encabezado_id'] = $nuevo_doc_encabezado->id;
+            foreach ($registros_doc_encabezado as $linea )
+            {
+                $nueva_linea = $linea->replicate();
+                $nueva_linea->contab_doc_encabezado_id = $nuevo_doc_encabezado->id;
+                $nueva_linea->estado = 'Activo';
+                $nueva_linea->save();
+            }
 
-            $nueva_linea_registro = ContabDocRegistro::create( $nueva_linea );
-        }
+            return $nuevo_doc_encabezado;
+        });
 
         $this->duplicado = true;
 
