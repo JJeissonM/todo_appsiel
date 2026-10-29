@@ -64,6 +64,15 @@ class ModeloController extends Controller
     */
     public function index()
     {
+        if (is_null($this->aplicacion)) {
+            return redirect('/')->with('mensaje_error', 'La aplicación solicitada no está disponible.');
+        }
+
+        if (is_null($this->modelo)) {
+            return redirect($this->aplicacion->app . '?id=' . $this->aplicacion->id)
+                ->with('mensaje_error', 'El catálogo (Modelo) solicitado no está configurado. Comuníquese con el administrador del sistema.');
+        }
+
         $this->authorizeModelCrud('index');
         $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, 'Listado');
 
