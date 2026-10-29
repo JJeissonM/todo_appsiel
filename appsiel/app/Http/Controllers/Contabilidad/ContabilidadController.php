@@ -7,7 +7,6 @@ use App\Http\Controllers\Core\TransaccionController;
 use Illuminate\Http\Request;
 
 use App\Sistema\Modelo;
-use App\Core\TipoDocApp;
 use App\Core\Tercero;
 use App\Core\Empresa;
 
@@ -33,16 +32,67 @@ class ContabilidadController extends TransaccionController
     protected $datos = [];
     protected $grupos_cuentas = [];
 
-    protected $duplicado = false;
-
     /* El método index() está en TransaccionController */
 
     public function create()
     {
         $this->set_variables_globales();
 
-        return $this->crear( $this->app, $this->modelo, $this->transaccion, 'contabilidad.create' );
+        $documento_origen = null;
+        if (Input::get('duplicar_de')) {
+            $documento_origen = ContabDocEncabezado::where('core_empresa_id', Auth::user()->empresa_id)
+                ->where('core_tipo_transaccion_id', $this->transaccion->id)
+                ->findOrFail(Input::get('duplicar_de'));
+        }
+
+        $vista = $this->crear($this->app, $this->modelo, $this->transaccion, 'contabilidad.create');
+        if (is_null($documento_origen)) {
+            return $vista;
+        }
+
+        $form_create = $vista->getData()['form_create'];
+        $campos_precargados = [
+            'core_tipo_doc_app_id', 'fecha', 'core_tercero_id', 'documento_soporte',
+            'descripcion', 'valor_total', 'codigo_referencia_tercero'
+        ];
+        foreach ($form_create['campos'] as &$campo) {
+            if (in_array($campo['name'], $campos_precargados)) {
+                $campo['value'] = $documento_origen->{$campo['name']};
+                if ($campo['name'] == 'core_tercero_id' && $campo['tipo'] == 'input_lista_sugerencias') {
+                    $tercero = $documento_origen->tercero;
+                    $campo['value'] = [
+                        $tercero ? $tercero->descripcion . ' (' . $tercero->numero_identificacion . ')' : '',
+                        $documento_origen->core_tercero_id
+                    ];
+                }
+            }
+            if ($campo['name'] == 'fecha') {
+                $campo['tipo'] = 'fecha';
+                unset($campo['atributos']['disabled'], $campo['atributos']['readonly']);
+                $campo['atributos']['required'] = 'required';
+            }
+        }
+        unset($campo);
+
+        $doc_registros = $this->modificar_lineas_doc_registros(
+            ContabDocRegistro::get_registros_impresion($documento_origen->id), 'create'
+        );
+        $tercero_encabezado_numero_identificacion = $documento_origen->tercero
+            ? $documento_origen->tercero->numero_identificacion : '';
+        $lineas_documento = View::make('contabilidad.incluir.lineas_documento', [
+            'doc_registros' => $doc_registros,
+            'tercero_encabezado_numero_identificacion' => $tercero_encabezado_numero_identificacion,
+            'precargar_creacion' => true
+        ])->render();
+
+        return $vista->with([
+            'form_create' => $form_create,
+            'lineas_documento' => $lineas_documento,
+            'linea_num' => count($doc_registros),
+            'documento_origen' => $documento_origen
+        ]);
     }
+
 
     public function store( Request $request )
     {
@@ -191,20 +241,7 @@ class ContabilidadController extends TransaccionController
 
         $archivo_js = app($this->modelo->name_space)->archivo_js;
 
-        $mensaje_duplicado = '';
-        if ( $this->duplicado )
-        {
-            $mensaje_duplicado = '<div class="alert alert-success">
-                                      <strong> ¡Documento duplicado correctamente! </strong>
-                                    </div>
-
-                                    <div class="alert alert-warning">
-                                      <strong> ¡Nota! </strong> Debe guardar el documento para afectar el movimiento contable.
-                                    </div>';
-            $this->duplicado = false;
-        }
-
-        return view( 'contabilidad.edit', compact( 'form_create', 'miga_pan', 'registro', 'archivo_js', 'lineas_documento', 'linea_num', 'mensaje_duplicado') );
+        return view( 'contabilidad.edit', compact( 'form_create', 'miga_pan', 'registro', 'archivo_js', 'lineas_documento', 'linea_num') );
     }
 
 
@@ -396,36 +433,12 @@ class ContabilidadController extends TransaccionController
         $doc_encabezado = ContabDocEncabezado::where('core_empresa_id', Auth::user()->empresa_id)
             ->findOrFail( $doc_encabezado_id );
 
-        $registros_doc_encabezado = ContabDocRegistro::where( 'contab_doc_encabezado_id', $doc_encabezado->id )->get();
-
-        /*
-            Al duplicar el documento no se realiza contabilización, por tanto se puede duplicar aunque tenga movimientos de cxc o cxp. Pero los registros de con estos movimientos, se llamaran como registros de causacion en el formulario de editar.
-        */
-
-        $nuevo_doc_encabezado = DB::transaction(function () use ($doc_encabezado, $registros_doc_encabezado) {
-            $consecutivo = TipoDocApp::reservar_consecutivo( $doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id);
-
-            $nuevo_doc_encabezado = $doc_encabezado->replicate();
-            $nuevo_doc_encabezado->consecutivo = $consecutivo;
-            $nuevo_doc_encabezado->estado = 'Activo';
-            $nuevo_doc_encabezado->creado_por = Auth::user()->email;
-            $nuevo_doc_encabezado->modificado_por = Auth::user()->email;
-            $nuevo_doc_encabezado->save();
-
-            foreach ($registros_doc_encabezado as $linea )
-            {
-                $nueva_linea = $linea->replicate();
-                $nueva_linea->contab_doc_encabezado_id = $nuevo_doc_encabezado->id;
-                $nueva_linea->estado = 'Activo';
-                $nueva_linea->save();
-            }
-
-            return $nuevo_doc_encabezado;
-        });
-
-        $this->duplicado = true;
-
-        return $this->edit( $nuevo_doc_encabezado->id );
+        return redirect('contabilidad/create?' . http_build_query([
+            'id' => Input::get('id'),
+            'id_modelo' => Input::get('id_modelo'),
+            'id_transaccion' => $doc_encabezado->core_tipo_transaccion_id,
+            'duplicar_de' => $doc_encabezado->id
+        ]));
     }
 
 

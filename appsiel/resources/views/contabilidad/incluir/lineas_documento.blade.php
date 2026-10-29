@@ -5,9 +5,9 @@
 
     <tr id="fila_{{$i}}" >
         
-        <td style="display: none;"> <input type="hidden" name="fecha_vencimiento" id="fecha_vencimiento" value="{{$linea->fecha_vencimiento}}"> </td>
+        <td style="display: none;">@if(!empty($precargar_creacion)){{ $linea->fecha_vencimiento }}@else <input type="hidden" name="fecha_vencimiento" id="fecha_vencimiento" value="{{$linea->fecha_vencimiento}}"> @endif</td>
 
-        <td style="display: none;"> <input type="hidden" name="documento_soporte_tercero" id="documento_soporte_tercero" value="{{$linea->documento_soporte_tercero}}"> </td>
+        <td style="display: none;">@if(!empty($precargar_creacion)){{ $linea->documento_soporte_tercero }}@else <input type="hidden" name="documento_soporte_tercero" id="documento_soporte_tercero" value="{{$linea->documento_soporte_tercero}}"> @endif</td>
         
         <td> {{$linea->tipo_transaccion_linea}} </td>
         

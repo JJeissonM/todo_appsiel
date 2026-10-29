@@ -10,6 +10,13 @@
 
 	@include('layouts.mensajes')
 
+	@if(isset($documento_origen))
+		<div class="alert alert-info">
+			Datos precargados del documento {{ $documento_origen->consecutivo }}.
+			Puedes cambiar la fecha y los registros. El nuevo documento se creará al guardar.
+		</div>
+	@endif
+
 	<div class="container-fluid">
 		<div class="marco_formulario">
 		    <h4>Nuevo registro</h4>
@@ -17,7 +24,7 @@
 			{{ Form::open( [ 'url' => $form_create['url'], 'id' => 'form_create' ] ) }}
 				<?php
 				  if (count($form_create['campos'])>0) {
-				  	$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
+				$url = htmlspecialchars(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : url('web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo')));
 				  	echo '<div class="row" style="margin: 5px;">'.Form::bsButtonsForm2($url).'</div>';
 				  }else{
 				  	echo "<p>El modelo no tiene campos asociados.</p>";
@@ -38,7 +45,7 @@
 			{{ Form::close() }}
 
 			<br/>
-			@include('contabilidad.incluir.tabla_ingreso_registros', ['lineas_documento'=>''])
+			@include('contabilidad.incluir.tabla_ingreso_registros', ['lineas_documento' => isset($lineas_documento) ? $lineas_documento : ''])
 
 		</div>
 	</div>
@@ -52,7 +59,7 @@
 
 	<script type="text/javascript">
 
-		var LineaNum = 0;
+		var LineaNum = {{ isset($linea_num) ? $linea_num : 0 }};
 
 		var cantidad_keyup = 0;
 
@@ -63,13 +70,14 @@
 
 		$(document).ready(function(){
 
-			$('#fecha').val( get_fecha_hoy() );
+			if (!$('#fecha').val()) {
+				$('#fecha').val( get_fecha_hoy() );
+			}
 			$('#fecha').focus();
 
 			var sumas_iguales = 0;
 			var debito, credito;
-
-			var direccion = location.href;
+			calcular_totales();
 
 			$(document).on('keyup', '.text_input_sugerencias', function(){
 
@@ -129,13 +137,7 @@
 		    	
 		    	$('#div_cargando').fadeIn();
 				
-				var url = '../contab_get_fila/' + 0;
-
-				// Si se está en la url de editar 
-				if( direccion.search("edit") >= 0 ) 
-				{
-					var url = '../../contab_get_fila/' + 0;
-				}
+				var url = "{{ url('contab_get_fila/0') }}";
 
 				$.get( url, function( datos ) {
 			        $('#div_cargando').hide();
