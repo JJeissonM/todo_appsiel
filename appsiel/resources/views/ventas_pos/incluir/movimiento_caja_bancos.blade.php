@@ -28,7 +28,7 @@
                 <td> &nbsp; </td>
                 <td> &nbsp; </td>
                 <td> &nbsp; </td>
-                <td> {{ '$'.number_format($saldo_inicial, 0, ',','.') }}</td>
+                <td style="text-align: right;"> {{ '$'.number_format($saldo_inicial, 0, ',','.') }}</td>
             </tr>
             <?php
             
@@ -80,27 +80,27 @@
                     </td>
                     <td> {{ $fila['motivo'] }} </td>
                     <td> {{ isset($fila['detalle']) ? $fila['detalle'] : '' }} </td>
-                    <td> 
+                    <td style="text-align: right;"> 
                         {{ $entrada }}
                         {!! $msj_warning !!}
                     </td>
-                    <td>
+                    <td style="text-align: right;">
                         {{ $salida}}
                     </td>
-                    <td> ${{ number_format( $saldo, 0, ',','.') }} </td>
+                    <td style="text-align: right;"> ${{ number_format( $saldo, 0, ',','.') }} </td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4"> &nbsp; </td>
-                <td> ${{ number_format( $total_entradas, 0, ',','.') }} </td>
-                <td> ${{ number_format( $total_salidas, 0, ',','.') }} </td>
+                <td colspan="5"> &nbsp; </td>
+                <td style="font-weight: bold; text-align: right;"> ${{ number_format( $total_entradas, 0, ',','.') }} </td>
+                <td style="font-weight: bold; text-align: right;"> ${{ number_format( $total_salidas, 0, ',','.') }} </td>
                 <td></td>
             </tr>
             <tr>
-                <td colspan="5"> Total Diferencia </td>
-                <td> ${{ number_format( $total_entradas - $total_salidas, 0, ',','.') }} </td>
+                <td colspan="5" style="font-weight: bold; text-align: right;"> Diferencia: </td>
+                <td colspan="2" style="font-weight: bold; text-align: center;"> ${{ number_format( $total_entradas - $total_salidas, 0, ',','.') }} </td>
                 <td></td>
             </tr>
         </tfoot>
