@@ -91,6 +91,7 @@ class ElectronicInvoiceSendingService
         $transientPatterns = [
             'error de red',
             'error de servidor',
+            'intermitencia en los servidores de la dian',
             'error inesperado durante el envio',
             'timeout',
             'timed out',

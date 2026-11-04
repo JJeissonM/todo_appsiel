@@ -218,6 +218,29 @@ class FacturaGeneralOsei
     }
 
     /**
+     * HTTP 504: OSEI no obtuvo respuesta de la DIAN a tiempo. Llega como JSON de OSEI
+     * (error_code DIAN_NO_DISPONIBLE) o, si la espera se alargó, como la página 504 de
+     * nginx; en los dos casos el usuario ve que es intermitencia de la DIAN.
+     */
+    protected function dianUnavailableMessage($responseBody)
+    {
+        $body = json_decode($responseBody, true);
+
+        if (is_array($body) && ($body['error_code'] ?? '') === 'DIAN_NO_DISPONIBLE' && !empty($body['message'])) {
+            return htmlspecialchars((string)$body['message'], ENT_QUOTES, 'UTF-8');
+        }
+
+        $documentos = [
+            'factura' => 'la factura',
+            'nota_credito' => 'la nota crédito',
+            'nota_debito' => 'la nota débito',
+        ];
+
+        return 'No podemos generar ' . ($documentos[$this->tipo_transaccion] ?? 'el documento')
+            . ' por intermitencia en los servidores de la DIAN. Intente nuevamente en unos minutos.';
+    }
+
+    /**
      * OSEI marca con error_type "resolution" los errores de la resolución de
      * facturación (prefijo no asociado al software en la DIAN, número que la DIAN
      * no reconoce...). Se muestran junto con la resolución que tiene Appsiel para
@@ -362,6 +385,13 @@ class FacturaGeneralOsei
             $statusCode = $e->getResponse() ? $e->getResponse()->getStatusCode() : null;
             $responseBody = $e->getResponse() ? (string) $e->getResponse()->getBody() : 'No response body';
             Log::error('Error 5xx de OSEI al enviar documento. HTTP ' . $statusCode . '. Respuesta: ' . $responseBody);
+
+            if ($statusCode == 504) {
+                return (object)[
+                    'tipo' => 'mensaje_error',
+                    'contenido' => $this->dianUnavailableMessage($responseBody)
+                ];
+            }
 
             $errorMessage = $this->decodeErrorResponseBody($responseBody);
             if ($errorMessage === '') {
