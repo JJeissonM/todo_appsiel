@@ -31,6 +31,13 @@
             border: 1px solid #ddd;
         }
 
+        /* El aviso de envío a la DIAN es para el usuario en pantalla: no va en el impreso del cliente. */
+        @media print {
+            .aviso-envio-dian {
+                display: none !important;
+            }
+        }
+
         @yield('estilos_adicionales')
     </style>
 </head>
@@ -134,7 +141,7 @@
     ?>
 
     @if ($errores_einvoice != '')
-        <div style="background: #f15f5f;">
+        <div class="aviso-envio-dian" style="background: #f15f5f;">
             <h4>Factura no fue Enviada hacia la DIAN.<smal>Click Aquí para enviarla nuevamente: <a href="{{url('/fe_factura/' . $doc_encabezado->id . '?id=21&id_modelo=244&id_transaccion=52') }}" target="_blank">ENVIAR</a></smal></h4>
             {{ $errores_einvoice }}
         </div>
