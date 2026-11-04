@@ -2,6 +2,7 @@
 
 namespace App\FacturacionElectronica\OSEI;
 
+use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Services\InvoiceTotalsService;
 
 use App\FacturacionElectronica\Services\DocumentHeaderService;
@@ -277,6 +278,33 @@ class FacturaGeneralOsei
         return $contenido;
     }
 
+    /**
+     * OSEI ya había recibido exactamente este JSON y respondió sin el resultado de
+     * la DIAN (sólo "ya fue procesada"). Se muestra el último resultado que Appsiel
+     * guardó del documento para que el usuario vea por qué lo rechazó la DIAN.
+     */
+    protected function idempotentResponseMessage(array $respuesta)
+    {
+        $ultimo = ResultadoEnvioDocumento::where('vtas_doc_encabezado_id', $this->doc_encabezado->id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($ultimo != null && !$ultimo->esValidoDian && trim((string)$ultimo->reglasNotificacionDIAN) != '') {
+            return $this->avisoReenvioSinCambios()
+                . 'Último resultado de la DIAN (' . htmlspecialchars((string)$ultimo->fechaRespuesta, ENT_QUOTES, 'UTF-8') . '):<br>'
+                . nl2br(htmlspecialchars((string)$ultimo->reglasNotificacionDIAN, ENT_QUOTES, 'UTF-8'));
+        }
+
+        return 'OSEI ya había recibido este mismo documento (registro N° ' . (int)($respuesta['existing_id'] ?? 0) . ') y no devolvió el resultado de la DIAN. '
+            . 'Consulte el estado del documento en OSEI o contacte a soporte.';
+    }
+
+    protected function avisoReenvioSinCambios()
+    {
+        return '<b>Este documento ya se había enviado a la DIAN y fue rechazado.</b> '
+            . 'Reenviarlo sin cambios devuelve el mismo rechazo: corrija lo que indica la DIAN y vuelva a enviarlo.<br>';
+    }
+
     public function procesar_envio_factura($factura_doc_encabezado)
     {
         $auth_token = config('facturacion_electronica.tokenEmpresa');
@@ -356,7 +384,20 @@ class FacturaGeneralOsei
                     $json_doc_electronico_enviado,
                     $this->doc_encabezado->id
                 );
+
+                // OSEI devuelve el resultado guardado cuando se reenvía el mismo documento sin cambios.
+                if (!empty($array_respuesta['idempotent']) && $mensaje->tipo == 'mensaje_error') {
+                    $mensaje->contenido = $this->avisoReenvioSinCambios() . $mensaje->contenido;
+                }
+
                 return json_decode(json_encode($mensaje));
+            }
+
+            if (!empty($array_respuesta['idempotent'])) {
+                return (object)[
+                    'tipo' => 'mensaje_error',
+                    'contenido' => $this->idempotentResponseMessage($array_respuesta)
+                ];
             }
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $statusCode = $e->getResponse() ? $e->getResponse()->getStatusCode() : null;
