@@ -13,7 +13,7 @@ class EncabezadosCalificacionService
 
     /**
      * La clave de configuración conserva su nombre por compatibilidad con las
-     * instalaciones existentes, pero los encabezados fijos se aíslan por periodo.
+     * instalaciones existentes. Admite encabezados comunes del año o propios del periodo.
      */
     public function manejarEncabezadosFijosPorPeriodo()
     {
@@ -28,10 +28,29 @@ class EncabezadosCalificacionService
         return $this->manejarEncabezadosFijosPorPeriodo();
     }
 
-    public function usarEncabezadosFijosEnPeriodo($periodoId)
+    public function usarEncabezadosFijosEnPeriodo($periodoId, $anio = null)
     {
-        return $this->manejarEncabezadosFijosPorPeriodo()
-            && $this->periodoTieneEncabezadosFijos($periodoId);
+        return $this->getModoEncabezados($periodoId, $anio) !== 'estandar';
+    }
+
+    /** Los encabezados de un periodo reemplazan por completo a los comunes del año. */
+    public function getModoEncabezados($periodoId, $anio = null)
+    {
+        if (!$this->manejarEncabezadosFijosPorPeriodo()) {
+            return 'estandar';
+        }
+        if ($this->periodoTieneEncabezadosFijos($periodoId)) {
+            return 'periodo';
+        }
+        if ($anio === null) {
+            $periodo = Periodo::find($periodoId);
+            $anio = $periodo ? (int)substr($periodo->fecha_desde, 0, 4) : 0;
+        }
+        if ((int)$anio > 0 && EncabezadoCalificacion::where('anio', (int)$anio)
+            ->whereNull('periodo_id')->whereNull('curso_id')->whereNull('asignatura_id')->exists()) {
+            return 'anio';
+        }
+        return 'estandar';
     }
 
     public function periodoTieneEncabezadosFijos($periodoId)
@@ -66,7 +85,7 @@ class EncabezadosCalificacionService
         $array_pesos = array_fill(0, 16, 0);
         $hay_pesos = false;
         $suma_porcentajes = 0;
-        $usarEncabezadosFijos = $this->usarEncabezadosFijosEnPeriodo($periodoId);
+        $usarEncabezadosFijos = $this->usarEncabezadosFijosEnPeriodo($periodoId, $anio);
 
         for ($k = 1; $k < 16; $k++) {
             $columna = 'C' . $k;
@@ -96,6 +115,7 @@ class EncabezadosCalificacionService
         }
 
         return [
+            'modo_encabezados' => $this->getModoEncabezados($periodoId, $anio),
             'encabezados' => $encabezados,
             'columnas' => $columnas,
             'array_pesos' => $array_pesos,
@@ -124,10 +144,12 @@ class EncabezadosCalificacionService
     {
         $query = EncabezadoCalificacion::query();
 
-        if ($this->usarEncabezadosFijosEnPeriodo($periodoId)) {
-            return $query->where('periodo_id', $periodoId)
-                ->whereNull('curso_id')
-                ->whereNull('asignatura_id');
+        $modo = $this->getModoEncabezados($periodoId, $anio);
+        if ($modo !== 'estandar') {
+            $query->whereNull('curso_id')->whereNull('asignatura_id');
+            return $modo === 'periodo'
+                ? $query->where('periodo_id', $periodoId)
+                : $query->where('anio', (int)$anio)->whereNull('periodo_id');
         }
 
         $query->where('periodo_id', $periodoId)
@@ -142,10 +164,11 @@ class EncabezadosCalificacionService
 
     public function getAtributosDePersistencia($anio, $periodoId, $cursoId, $asignaturaId)
     {
-        if ($this->usarEncabezadosFijosEnPeriodo($periodoId)) {
+        $modo = $this->getModoEncabezados($periodoId, $anio);
+        if ($modo !== 'estandar') {
             return [
                 'anio' => $anio,
-                'periodo_id' => $periodoId,
+                'periodo_id' => $modo === 'periodo' ? $periodoId : null,
                 'curso_id' => null,
                 'asignatura_id' => null
             ];

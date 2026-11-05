@@ -91,6 +91,10 @@ class EncabezadosCalificacionServiceTest extends TestCase
 
     public function test_usa_solo_los_encabezados_fijos_del_periodo_configurado()
     {
+        DB::table('sga_periodos')->insert([
+            ['id' => 10, 'fecha_desde' => '2026-01-15'],
+            ['id' => 20, 'fecha_desde' => '2026-04-15']
+        ]);
         $this->insertarEncabezado('C1', 'Anterior', 2026, null, null, null);
         $this->insertarEncabezado('C1', 'Periodo 10', 2026, 10, null, null);
         $this->insertarEncabezado('C1', 'Normal periodo 20', 2026, 20, 5, 7);
@@ -107,8 +111,9 @@ class EncabezadosCalificacionServiceTest extends TestCase
         $this->assertFalse($resumenPeriodo10['columnas'][2]->configurado);
         $this->assertCount(1, $resumenPeriodo10['grupos_titulo']);
         $this->assertSame(1, $resumenPeriodo10['grupos_titulo'][0]->cantidad);
-        $this->assertFalse($service->usarEncabezadosFijosEnPeriodo(20));
-        $this->assertSame('Normal periodo 20', $periodo20->first()->label);
+        $this->assertTrue($service->usarEncabezadosFijosEnPeriodo(20));
+        $this->assertSame('Anterior', $periodo20->first()->label);
+        $this->assertTrue($service->usarEncabezadosFijosEnPeriodo(20, 2026));
         $this->assertCount(1, $periodo20);
     }
 
@@ -473,6 +478,100 @@ class EncabezadosCalificacionServiceTest extends TestCase
 		$this->assertTrue($controllerExcedido->validator->errors()->has('peso'));
 		$this->assertTrue($controllerNegativo->validator->errors()->has('peso'));
 	}
+
+    public function test_encabezados_anuales_se_comparten_entre_periodos_del_mismo_anio()
+    {
+        DB::table('sga_periodos')->insert([
+            ['id' => 110, 'fecha_desde' => '2026-01-15'],
+            ['id' => 111, 'fecha_desde' => '2026-04-15'],
+            ['id' => 112, 'fecha_desde' => '2027-01-15']
+        ]);
+        $id = $this->insertarEncabezado('C1', 'EVAL 1', 2026, null, null, null, 50);
+        DB::table('sga_calificaciones_encabezados')->where('id', $id)->update(['titulo' => 'CONOCER']);
+        $this->insertarEncabezado('C2', 'EVAL 2', 2026, null, null, null, 50);
+        $this->insertarEncabezado('C1', 'Otro año', 2025, null, null, null, 100);
+        $service = new EncabezadosCalificacionService();
+        foreach ([110, 111] as $periodo) {
+            $resumen = $service->getResumenParaCarga(2026, $periodo, 4, 9);
+            $this->assertTrue($service->usarEncabezadosFijosEnPeriodo($periodo));
+            $this->assertSame('anio', $resumen['modo_encabezados']);
+            $this->assertSame('EVAL 1', $resumen['columnas'][1]->label);
+            $this->assertSame('CONOCER', $resumen['grupos_titulo'][0]->titulo);
+            $this->assertEquals(100, $resumen['suma_porcentajes']);
+        }
+        $this->assertFalse($service->usarEncabezadosFijosEnPeriodo(112));
+        $this->assertCount(0, $service->getEncabezados(2027, 112, 4, 9));
+        $atributos = $service->getAtributosDePersistencia(2026, 110, 4, 9);
+        $this->assertNull($atributos['periodo_id']);
+        $this->assertNull($atributos['curso_id']);
+        $this->assertNull($atributos['asignatura_id']);
+    }
+
+    public function test_periodo_propio_no_mezcla_columnas_anuales_y_otro_periodo_usa_anuales()
+    {
+        $this->insertarEncabezado('C1', 'Anual 1', 2026, null, null, null, 50);
+        $this->insertarEncabezado('C2', 'Anual 2', 2026, null, null, null, 50);
+        $this->insertarEncabezado('C3', 'Propio 1', 2026, 120, null, null, 100);
+        $this->insertarEncabezado('C4', 'Propio 2', 2026, 121, null, null, 100);
+        $service = new EncabezadosCalificacionService();
+        $resumen = $service->getResumenParaCarga(2026, 120, 4, 9);
+        $this->assertSame('periodo', $resumen['modo_encabezados']);
+        $this->assertCount(1, $resumen['encabezados']);
+        $this->assertFalse($resumen['columnas'][1]->configurado);
+        $this->assertTrue($resumen['columnas'][3]->configurado);
+        $this->assertFalse($resumen['columnas'][4]->configurado);
+        $this->assertEquals(100, $resumen['suma_porcentajes']);
+        $this->assertSame('Propio 2', $service->getEncabezados(2026, 121, 4, 9)->first()->label);
+        $this->assertCount(2, $service->getEncabezados(2026, 122, 4, 9));
+        $calculadora = new CalificacionDefinitivaService($service);
+        $this->assertEquals(4, $calculadora->calcular(2026, 120, 4, 9, ['C1' => 5, 'C3' => 4]));
+        $this->assertEquals(3, $calculadora->calcular(2026, 122, 4, 9, ['C1' => 2, 'C2' => 4, 'C3' => 5]));
+    }
+
+    public function test_modo_estandar_ignora_agrupaciones_anuales_y_del_periodo()
+    {
+        $this->insertarEncabezado('C1', 'Anual', 2026, null, null, null, 100);
+        $this->insertarEncabezado('C1', 'Periodo', 2026, 130, null, null, 100);
+        $this->insertarEncabezado('C1', 'Individual', 2026, 130, 4, 9, 100);
+        config(['calificaciones.manejar_encabezados_por_anio_lectivo_en_calificaciones' => 'No']);
+        $service = new EncabezadosCalificacionService();
+        $resumen = $service->getResumenParaCarga(2026, 130, 4, 9);
+        $this->assertSame('estandar', $resumen['modo_encabezados']);
+        $this->assertFalse($resumen['usar_encabezados_fijos']);
+        $this->assertSame('Individual', $resumen['columnas'][1]->label);
+        $this->assertSame(4, $service->getAtributosDePersistencia(2026, 130, 4, 9)['curso_id']);
+    }
+
+    public function test_reportes_usan_columnas_anuales_aunque_la_nota_sea_cero()
+    {
+        DB::table('sga_periodos')->insert(['id' => 140, 'fecha_desde' => '2026-01-15']);
+        $this->insertarEncabezado('C1', 'Anual', 2026, null, null, null, 100);
+        DB::table('sga_calificaciones_auxiliares')->insert(['id_periodo' => 140, 'curso_id' => 4, 'C1' => 0, 'C2' => 5]);
+        $columnas = (new CalificacionesService())->get_object_calificaciones_auxiliares(140, 4);
+        $this->assertCount(1, $columnas);
+        $this->assertSame('Anual', $columnas[0]->label);
+    }
+
+    public function test_actualizar_encabezado_anual_recalcula_solo_periodos_que_lo_utilizan()
+    {
+        $id = $this->insertarEncabezado('C1', 'Anual', 2026, null, null, null, 100);
+        $this->insertarEncabezado('C2', 'Propio', 2026, 151, null, null, 100);
+        foreach ([[150, 2026], [151, 2026], [152, 2027]] as $datos) {
+            $comunes = ['id_colegio' => 1, 'anio' => $datos[1], 'id_periodo' => $datos[0], 'curso_id' => 4,
+                'id_asignatura' => 9, 'id_estudiante' => 7, 'codigo_matricula' => 'M1'];
+            DB::table('sga_calificaciones_auxiliares')->insert(array_merge($comunes, ['C1' => 4, 'C2' => 2]));
+            DB::table('sga_calificaciones')->insert(array_merge($comunes, ['calificacion' => 0]));
+        }
+        $calculadora = new CalificacionDefinitivaService(new EncabezadosCalificacionService());
+        $encabezado = EncabezadoCalificacion::find($id);
+        $calculadora->recalcularPorEncabezado($encabezado);
+        $this->assertEquals(4, DB::table('sga_calificaciones')->where('id_periodo', 150)->value('calificacion'));
+        $this->assertEquals(0, DB::table('sga_calificaciones')->where('id_periodo', 151)->value('calificacion'));
+        $this->assertEquals(0, DB::table('sga_calificaciones')->where('id_periodo', 152)->value('calificacion'));
+        DB::table('sga_calificaciones_encabezados')->where('id', $id)->delete();
+        $calculadora->recalcularPorEncabezado($encabezado);
+        $this->assertEquals(3, DB::table('sga_calificaciones')->where('id_periodo', 150)->value('calificacion'));
+    }
 
     protected function insertarEncabezado($columna, $label, $anio, $periodoId, $cursoId, $asignaturaId, $peso = 0)
     {

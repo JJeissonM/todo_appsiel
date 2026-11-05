@@ -76,15 +76,27 @@ class CalificacionDefinitivaService
         $usarFijos = $this->encabezadosCalificacionService->usarEncabezadosFijosEnPeriodo($periodoId);
 		$encabezadoGlobal = is_null($encabezado->curso_id) && is_null($encabezado->asignatura_id);
 
-        $query = CalificacionAuxiliar::where('id_periodo', $periodoId);
-		if (!$usarFijos && !$encabezadoGlobal) {
-            $query->where('curso_id', $encabezado->curso_id)
-                ->where('id_asignatura', $encabezado->asignatura_id);
+        $encabezadoAnual = $periodoId === 0 && $encabezadoGlobal;
+        if ($encabezadoAnual) {
+            if (!$this->encabezadosCalificacionService->manejarEncabezadosFijosPorPeriodo() || (int)$encabezado->anio <= 0) {
+                return 0;
+            }
+            $query = CalificacionAuxiliar::where('anio', (int)$encabezado->anio);
+        } else {
+            $query = CalificacionAuxiliar::where('id_periodo', $periodoId);
+            if (!$usarFijos && !$encabezadoGlobal) {
+                $query->where('curso_id', $encabezado->curso_id)
+                    ->where('id_asignatura', $encabezado->asignatura_id);
+            }
         }
 
         $actualizadas = 0;
-        $query->chunk(200, function ($auxiliares) use (&$actualizadas) {
+        $query->chunk(200, function ($auxiliares) use (&$actualizadas, $encabezadoAnual) {
             foreach ($auxiliares as $auxiliar) {
+                // Los periodos con configuración propia no dependen del encabezado anual.
+                if ($encabezadoAnual && $this->encabezadosCalificacionService->periodoTieneEncabezadosFijos($auxiliar->id_periodo)) {
+                    continue;
+                }
                 $definitiva = $this->calcular(
                     $auxiliar->anio,
                     $auxiliar->id_periodo,

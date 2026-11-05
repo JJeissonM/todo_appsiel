@@ -105,7 +105,8 @@
 									$manejar_encabezados_por_anio_lectivo_en_calificaciones = $parametros['manejar_encabezados_por_anio_lectivo_en_calificaciones'];
 								}
 							?>
-							{{ Form::bsSelect('manejar_encabezados_por_anio_lectivo_en_calificaciones', $manejar_encabezados_por_anio_lectivo_en_calificaciones, 'Manejar encabezados fijos por periodo en calificaciones', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('manejar_encabezados_por_anio_lectivo_en_calificaciones', $manejar_encabezados_por_anio_lectivo_en_calificaciones, 'Agrupar encabezados de calificaciones (por año o periodo)', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
+                            <p class="help-block">No: encabezados individuales por curso y asignatura. Sí: se usan los encabezados del periodo; si no hay, los del mismo año sin periodo, curso ni asignatura asignados. Los encabezados del periodo reemplazan el conjunto anual completo.</p>
 						</div>
 					</div>
 
