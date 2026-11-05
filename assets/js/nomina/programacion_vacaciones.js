@@ -1,6 +1,7 @@
 $(document).ready(function(){
 	
 	var direccion = location.href;
+	var solicitud_calculo_fecha = null;
 
 	$('#fecha_final_tnl').attr('readonly','readonly');
 	$('#fecha_inicial_tnl').after('<div id="fecha_vacaciones_error" class="text-danger" style="margin-top:5px;"></div>');
@@ -9,9 +10,11 @@ $(document).ready(function(){
 	$('#nom_contrato_id').after( '<div id="contrato_hasta" style="display:none;"> </div>' );
 	$('#nom_contrato_id').after( '<div id="grupo_empleado_id" style="display:none;"> </div>' );
 
-	if( direccion.search("edit") != -1)
+	// El formulario de creación puede abrir con un empleado ya seleccionado
+	// (por restauración del navegador o por el combobox). También en ese caso
+	// se necesitan cargar el grupo y las fechas del contrato.
+	if ( $('#nom_contrato_id').val() != '' )
 	{
-		// Editando
 		get_datos_contrato();
 	}
 
@@ -50,6 +53,10 @@ $(document).ready(function(){
                 $('#fecha_ingreso').text( data.fecha_ingreso );
                 $('#contrato_hasta').text( data.contrato_hasta );
                 $('#grupo_empleado_id').text( data.grupo_empleado_id );
+
+				// Si el usuario alcanzó a ingresar la fecha y los días mientras se
+				// cargaba el contrato, calcular tan pronto estén disponibles sus datos.
+				intentar_calcular_fecha_final();
 			});
 	}
 
@@ -76,12 +83,10 @@ $(document).ready(function(){
 		}
 
 		calcular_fecha_final();
-
-		validar_fecha_otras_novedades();
 		
 	});
 
-	$('#cantidad_dias_tomados').on( 'keyup', function(){
+	$('#cantidad_dias_tomados').on( 'keyup change', function(){
 
 
 		if( $('#fecha_inicial_tnl').val() == '' )
@@ -109,8 +114,6 @@ $(document).ready(function(){
 		}
 
 		calcular_fecha_final();
-
-		validar_fecha_otras_novedades();
 		
 	});
 
@@ -140,12 +143,36 @@ $(document).ready(function(){
 		}
 
 		calcular_fecha_final();
-		validar_fecha_otras_novedades();
 	});
+
+	function intentar_calcular_fecha_final()
+	{
+		if ( !es_fecha_completa_valida($('#fecha_inicial_tnl').val()) )
+		{
+			return false;
+		}
+
+		if ( $.trim($('#grupo_empleado_id').text()) == '' || $('#cantidad_dias_tomados').val() == '' )
+		{
+			return false;
+		}
+
+		if ( !validar_fecha_ingresada($('#fecha_inicial_tnl')) )
+		{
+			return false;
+		}
+
+		return calcular_fecha_final();
+	}
 
 	function calcular_fecha_final()
 	{
 		if ( !es_fecha_completa_valida( $('#fecha_inicial_tnl').val() ) )
+		{
+			return false;
+		}
+
+		if ( $.trim($('#grupo_empleado_id').text()) == '' || $('#cantidad_dias_tomados').val() == '' )
 		{
 			return false;
 		}
@@ -165,14 +192,21 @@ $(document).ready(function(){
 		if( direccion.search("edit") == -1)
 		{
 			// Creando
-			var url = '../get_fecha_final_vacaciones/' + $('#grupo_empleado_id').text() + '/' + $('#fecha_inicial_tnl').val() + '/' + cantidad_dias_tomados + '/' + dias_compensados;
+			var url = '../get_fecha_final_vacaciones/' + $.trim($('#grupo_empleado_id').text()) + '/' + $('#fecha_inicial_tnl').val() + '/' + cantidad_dias_tomados + '/' + dias_compensados;
 		}else{
 			// Editando
-			var url = '../../get_fecha_final_vacaciones/' + $('#grupo_empleado_id').text() + '/' + $('#fecha_inicial_tnl').val() + '/' + cantidad_dias_tomados + '/' + dias_compensados;
+			var url = '../../get_fecha_final_vacaciones/' + $.trim($('#grupo_empleado_id').text()) + '/' + $('#fecha_inicial_tnl').val() + '/' + cantidad_dias_tomados + '/' + dias_compensados;
 		}
 
-		$.get( url )
+		if ( solicitud_calculo_fecha !== null )
+		{
+			solicitud_calculo_fecha.abort();
+		}
+
+		$('#div_cargando').show();
+		solicitud_calculo_fecha = $.get( url )
 			.done(function( data ) {
+				solicitud_calculo_fecha = null;
 	    		$('#div_cargando').hide();
                 $('#fecha_final_tnl').val( data.fecha_fin );
                 $('#dias_no_habiles').val( data.dias_no_habiles );
@@ -184,8 +218,15 @@ $(document).ready(function(){
 					return false;
 				}
                 actualizar_cantidad_dias_horas();
+				validar_fecha_otras_novedades();
 			})
 			.fail(function( xhr ) {
+				if ( xhr.statusText === 'abort' )
+				{
+					return false;
+				}
+
+				solicitud_calculo_fecha = null;
 				$('#div_cargando').hide();
 				$('#fecha_final_tnl').val('');
 				$('#dias_no_habiles').val('');
@@ -214,14 +255,9 @@ $(document).ready(function(){
 			return false;
 		}
 
-		if ( !es_fecha_completa_valida(fecha_ingreso) )
-		{
-			// Los datos del contrato pueden estar cargándose todavía. No se borra
-			// la fecha digitada; el servidor volverá a validarla al guardar.
-			return false;
-		}
-
-		if ( fecha_inicial_tnl < fecha_ingreso )
+		// Si los datos del contrato todavía están cargando, no deben bloquear el
+		// cálculo. Las restricciones se aplican únicamente cuando la fecha existe.
+		if ( es_fecha_completa_valida(fecha_ingreso) && fecha_inicial_tnl < fecha_ingreso )
 		{
 			mostrar_error_fecha('La fecha ingresada (' + fecha + ') no puede ser menor a la fecha inicial del contrato: ' + fecha_ingreso + '.');
 			$('#bs_boton_guardar').hide();
