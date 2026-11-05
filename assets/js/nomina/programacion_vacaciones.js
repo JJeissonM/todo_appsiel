@@ -3,6 +3,7 @@ $(document).ready(function(){
 	var direccion = location.href;
 
 	$('#fecha_final_tnl').attr('readonly','readonly');
+	$('#fecha_inicial_tnl').after('<div id="fecha_vacaciones_error" class="text-danger" style="margin-top:5px;"></div>');
 
 	$('#nom_contrato_id').after( '<div id="fecha_ingreso" style="display:none;"> </div>' );
 	$('#nom_contrato_id').after( '<div id="contrato_hasta" style="display:none;"> </div>' );
@@ -58,6 +59,7 @@ $(document).ready(function(){
 		// año), lo que interrumpía la escritura con alertas prematuras.
 		if ( !es_fecha_completa_valida( $(this).val() ) )
 		{
+			mostrar_error_fecha('');
 			if ( $(this).val() == '' )
 			{
 				$('#fecha_final_tnl').val('');
@@ -202,6 +204,8 @@ $(document).ready(function(){
 	{
 		var fecha = fecha_seleccionada.val();
 		var fecha_inicial_tnl = $('#fecha_inicial_tnl').val();
+		var fecha_ingreso = $('#fecha_ingreso').text();
+		var contrato_hasta = $('#contrato_hasta').text();
 
 		// No mostrar errores mientras se escribe manualmente una fecha. La
 		// validación se realizará cuando el control entregue un valor completo.
@@ -210,28 +214,36 @@ $(document).ready(function(){
 			return false;
 		}
 
-		if ( $('#fecha_ingreso').text() == '' )
+		if ( !es_fecha_completa_valida(fecha_ingreso) )
 		{
 			// Los datos del contrato pueden estar cargándose todavía. No se borra
 			// la fecha digitada; el servidor volverá a validarla al guardar.
 			return false;
 		}
 
-		if ( fecha_inicial_tnl < $('#fecha_ingreso').text()  )
+		if ( fecha_inicial_tnl < fecha_ingreso )
 		{
-			fecha_seleccionada.val('');
-			alert('La fecha ingresada (' + fecha + ') no puede ser MENOR a la fecha inicial del contrato del empleado: ' + $('#fecha_ingreso').text() );
+			mostrar_error_fecha('La fecha ingresada (' + fecha + ') no puede ser menor a la fecha inicial del contrato: ' + fecha_ingreso + '.');
+			$('#bs_boton_guardar').hide();
 			return false;
 		}
 
-		if ( fecha_seleccionada.val() > $('#contrato_hasta').text() )
+		// Los contratos indefinidos pueden no tener fecha final. En ese caso no
+		// existe un límite superior para validar en el navegador.
+		if ( es_fecha_completa_valida(contrato_hasta) && fecha > contrato_hasta )
 		{
-			fecha_seleccionada.val('');
-			alert('La fecha ingresada (' + fecha + ') no puede ser MAYOR a la fecha final del contrato del empleado: ' + $('#contrato_hasta').text() );
+			mostrar_error_fecha('La fecha ingresada (' + fecha + ') no puede ser mayor a la fecha final del contrato: ' + contrato_hasta + '.');
+			$('#bs_boton_guardar').hide();
 			return false;
 		}
 
+		mostrar_error_fecha('');
 		return true;
+	}
+
+	function mostrar_error_fecha( mensaje )
+	{
+		$('#fecha_vacaciones_error').text(mensaje);
 	}
 
 	function es_fecha_completa_valida( fecha )

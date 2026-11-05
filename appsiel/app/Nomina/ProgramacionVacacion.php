@@ -19,7 +19,7 @@ class ProgramacionVacacion extends Model
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
-    public $archivo_js = 'assets/js/nomina/programacion_vacaciones.js';
+    public $archivo_js = 'assets/js/nomina/programacion_vacaciones.js?v=20261105_2';
 
     public function concepto()
     {
