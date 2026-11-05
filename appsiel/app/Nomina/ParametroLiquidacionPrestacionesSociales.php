@@ -48,6 +48,11 @@ class ParametroLiquidacionPrestacionesSociales extends Model
             return 'La base de liquidación configurada no es válida.';
         }
 
+        if ($this->concepto_prestacion === 'vacaciones'
+            && !in_array((string) $this->sabado_es_dia_habil, ['0', '1'], true)) {
+            return 'Debe indicar si el sábado es día hábil para el grupo de empleados.';
+        }
+
         if ((int)$this->nom_concepto_id <= 0 || is_null(NomConcepto::find($this->nom_concepto_id))) {
             return 'La prestación no tiene asociado un concepto de nómina válido.';
         }
@@ -122,28 +127,28 @@ class ParametroLiquidacionPrestacionesSociales extends Model
             'nom_concepto_id.exists' => 'El concepto de nómina seleccionado no existe.'
         ]);
 
-        if (!in_array($request->base_liquidacion, [
+        $base_requiere_agrupacion = in_array($request->base_liquidacion, [
             self::BASE_SUELDO_MAS_PROMEDIO_AGRUPACION,
             self::BASE_PROMEDIO_AGRUPACION
-        ], true)) {
-            return;
-        }
+        ], true);
 
-        $controller->validate($request, [
-            'nom_agrupacion_id' => 'required|not_in:0|exists:nom_agrupaciones_conceptos,id'
-        ], [
-            'nom_agrupacion_id.required' => 'Debe seleccionar una agrupación de conceptos.',
-            'nom_agrupacion_id.not_in' => 'Debe seleccionar una agrupación de conceptos.',
-            'nom_agrupacion_id.exists' => 'La agrupación de conceptos seleccionada no existe.'
-        ]);
-
-        $agrupacion = AgrupacionConcepto::find($request->nom_agrupacion_id);
-        if (!is_null($agrupacion) && !$agrupacion->conceptos()->exists()) {
+        if ($base_requiere_agrupacion) {
             $controller->validate($request, [
-                'nom_agrupacion_id' => 'in:__agrupacion_con_conceptos__'
+                'nom_agrupacion_id' => 'required|not_in:0|exists:nom_agrupaciones_conceptos,id'
             ], [
-                'nom_agrupacion_id.in' => 'La agrupación seleccionada no tiene conceptos asociados.'
+                'nom_agrupacion_id.required' => 'Debe seleccionar una agrupación de conceptos.',
+                'nom_agrupacion_id.not_in' => 'Debe seleccionar una agrupación de conceptos.',
+                'nom_agrupacion_id.exists' => 'La agrupación de conceptos seleccionada no existe.'
             ]);
+
+            $agrupacion = AgrupacionConcepto::find($request->nom_agrupacion_id);
+            if (!is_null($agrupacion) && !$agrupacion->conceptos()->exists()) {
+                $controller->validate($request, [
+                    'nom_agrupacion_id' => 'in:__agrupacion_con_conceptos__'
+                ], [
+                    'nom_agrupacion_id.in' => 'La agrupación seleccionada no tiene conceptos asociados.'
+                ]);
+            }
         }
 
         if ($request->concepto_prestacion !== 'vacaciones') {
@@ -151,8 +156,11 @@ class ParametroLiquidacionPrestacionesSociales extends Model
         }
 
         $controller->validate($request, [
+            'sabado_es_dia_habil' => 'required|in:0,1',
             'nom_agrupacion2_id' => 'required|not_in:0|exists:nom_agrupaciones_conceptos,id'
         ], [
+            'sabado_es_dia_habil.required' => 'Debe indicar si el sábado es día hábil.',
+            'sabado_es_dia_habil.in' => 'La configuración del sábado como día hábil no es válida.',
             'nom_agrupacion2_id.required' => 'Debe seleccionar la agrupación para vacaciones por terminación de contrato.',
             'nom_agrupacion2_id.not_in' => 'Debe seleccionar la agrupación para vacaciones por terminación de contrato.',
             'nom_agrupacion2_id.exists' => 'La agrupación para vacaciones por terminación de contrato no existe.'

@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Nomina;
 
 use Illuminate\Http\Request;
 
-use Carbon\Carbon;
-
 use App\Http\Controllers\Core\TransaccionController;
 
 
@@ -19,10 +17,9 @@ use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
 use App\Nomina\PrestacionesLiquidadas;
-use App\Nomina\DiaFestivo;
-
 use App\Nomina\ModosLiquidacion\LiquidacionPrestacionSocial;
 use App\Nomina\ParametroLiquidacionPrestacionesSociales;
+use App\Nomina\Services\CalculoFechaVacaciones;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -286,83 +283,14 @@ class PrestacionesSocialesController extends TransaccionController
 
     public function get_fecha_final_vacaciones( $grupo_empleado_id, $fecha_inicial, $cantidad_dias_tomados, $dias_compensados )
     {
-        $parametros_prestacion = ParametroLiquidacionPrestacionesSociales::where('concepto_prestacion', 'vacaciones')
-                                                                        ->where('grupo_empleado_id',$grupo_empleado_id)
-                                                                        ->get()->first();
-        
-        $dias_vacaciones = (int)$cantidad_dias_tomados - (int)$dias_compensados;
-        
-        $fecha_ini = Carbon::createFromFormat('Y-m-d', $fecha_inicial);
-        $fecha_aux = Carbon::createFromFormat('Y-m-d', $fecha_inicial);
+        $calculo = (new CalculoFechaVacaciones())->calcular(
+            $grupo_empleado_id,
+            $fecha_inicial,
+            $cantidad_dias_tomados,
+            $dias_compensados
+        );
 
-        $dias_no_habiles = 0;
-        $dias_contados = 0;
-        $vector = [];
-        $fecha_actual = $fecha_aux;
-        while ( $dias_contados < $dias_vacaciones )
-        {
-            $aumentar_dias_contados = true;
-
-            $el_dia = $fecha_actual;
-            $descripcion_el_dia = $el_dia->format('l');
-            $fecha_el_dia = $el_dia->format('Y-m-d');
-
-            if ( $descripcion_el_dia == 'Sunday' )
-            {
-                $dias_no_habiles++;
-                $aumentar_dias_contados = false;
-            }
-
-            if ( $this->es_dia_festivo( $fecha_el_dia ) )
-            {
-                $dias_no_habiles++;
-                $aumentar_dias_contados = false;
-            }
-
-            if ( !$parametros_prestacion->sabado_es_dia_habil )
-            {
-                if ( $descripcion_el_dia == 'Saturday' )
-                {
-                    $dias_no_habiles++;
-                    $aumentar_dias_contados = false;
-                }
-            }
-
-            if ( $aumentar_dias_contados )
-            {
-                $dias_contados++;
-            }
-
-            $fecha_actual = $fecha_aux->addDays( 1 );
-
-            $vector[] = (object)[
-                                    'fecha_aux' => $fecha_aux,
-                                    'aumentar_dias_contados'=>$aumentar_dias_contados,
-                                    'el_dia' => $el_dia,
-                                    'descripcion_el_dia' => $descripcion_el_dia,
-                                    'fecha_el_dia' => $fecha_el_dia,
-                                    'es_dia_festivo' => $this->es_dia_festivo( $fecha_el_dia ),
-                                    'dias_no_habiles' => $dias_no_habiles,
-                                    'sabado_es_dia_habil' => $parametros_prestacion->sabado_es_dia_habil,
-                                    'dias_contados' => $dias_contados
-                                ];
-        }
-
-        $fecha_fin = $fecha_ini->addDays( $dias_vacaciones + $dias_no_habiles - 1 ); // Se resta porque el mismo día se tiene encuenta
-        return response()->json( [ 
-                        'fecha_fin' => $fecha_fin->format('Y-m-d'),
-                        'dias_no_habiles' => $dias_no_habiles
-                        ] );
-    }
-
-    public function es_dia_festivo( $fecha )
-    {        
-        if ( is_null( DiaFestivo::where('fecha',$fecha)->get()->first() ) )
-        {
-            return false;
-        }
-
-        return true;
+        return response()->json($calculo);
     }
 
     public function prestaciones_liquidadas_show( $id )

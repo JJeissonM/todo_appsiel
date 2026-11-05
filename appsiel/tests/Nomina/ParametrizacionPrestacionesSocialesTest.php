@@ -77,7 +77,8 @@ class ParametrizacionPrestacionesSocialesTest extends TestCase
         $parametro = $this->parametro([
             'concepto_prestacion' => 'vacaciones',
             'nom_agrupacion_id' => 1,
-            'nom_agrupacion2_id' => 0
+            'nom_agrupacion2_id' => 0,
+            'sabado_es_dia_habil' => 1
         ]);
 
         $this->assertContains('terminación de contrato', $parametro->validar_configuracion('terminacion_contrato'));
@@ -121,6 +122,19 @@ class ParametrizacionPrestacionesSocialesTest extends TestCase
         PrestacionSocial::get_agrupacion_validada(0);
     }
 
+    /** @test */
+    public function exige_definir_si_el_sabado_es_habil_para_vacaciones()
+    {
+        $parametro = $this->parametro([
+            'concepto_prestacion' => 'vacaciones',
+            'nom_agrupacion_id' => 1,
+            'nom_agrupacion2_id' => 1,
+            'sabado_es_dia_habil' => null
+        ]);
+
+        $this->assertContains('sábado es día hábil', $parametro->validar_configuracion());
+    }
+
     protected function parametro(array $cambios)
     {
         return new ParametroLiquidacionPrestacionesSociales(array_merge([
@@ -160,6 +174,7 @@ class ParametrizacionPrestacionesSocialesTest extends TestCase
             $table->integer('nom_agrupacion2_id')->default(0);
             $table->integer('nom_concepto_id')->default(0);
             $table->string('base_liquidacion');
+            $table->boolean('sabado_es_dia_habil')->nullable();
             $table->timestamps();
         });
     }

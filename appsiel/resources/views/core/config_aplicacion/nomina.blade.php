@@ -38,19 +38,6 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$sabado_es_dia_habil = 1; 
-								if( isset($parametros['sabado_es_dia_habil'] ) )
-								{
-									$sabado_es_dia_habil = $parametros['sabado_es_dia_habil'];
-								}
-							?>
-							{{ Form::bsSelect('sabado_es_dia_habil', $sabado_es_dia_habil, 'El sábado es día hábil', ['No','Si'], ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php
 								$calcular_valor_proyectado_fondo_solidaridad = 1; 
 								if( isset($parametros['calcular_valor_proyectado_fondo_solidaridad'] ) )
 								{
