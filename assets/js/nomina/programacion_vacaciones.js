@@ -52,11 +52,26 @@ $(document).ready(function(){
 			});
 	}
 
-	$('#fecha_inicial_tnl').on( 'change', function(){
-		
-		console.log( $(this).val() );
+	$('#fecha_inicial_tnl').on( 'blur', function(){
+		// Se valida al terminar la edición del campo. Los controles nativos de
+		// fecha pueden disparar "change" al editar cada segmento (día, mes o
+		// año), lo que interrumpía la escritura con alertas prematuras.
+		if ( !es_fecha_completa_valida( $(this).val() ) )
+		{
+			if ( $(this).val() == '' )
+			{
+				$('#fecha_final_tnl').val('');
+				$('#dias_no_habiles').val('');
+				$('#cantidad_dias_tnl').val('');
+				$('#bs_boton_guardar').hide();
+			}
+			return false;
+		}
 
-		validar_fecha_ingresada( $(this) );
+		if ( !validar_fecha_ingresada( $(this) ) )
+		{
+			return false;
+		}
 
 		calcular_fecha_final();
 
@@ -86,7 +101,10 @@ $(document).ready(function(){
 			return false;
 		}
 
-		validar_fecha_ingresada( $('#fecha_inicial_tnl') );
+		if ( !validar_fecha_ingresada( $('#fecha_inicial_tnl') ) )
+		{
+			return false;
+		}
 
 		calcular_fecha_final();
 
@@ -125,6 +143,11 @@ $(document).ready(function(){
 
 	function calcular_fecha_final()
 	{
+		if ( !es_fecha_completa_valida( $('#fecha_inicial_tnl').val() ) )
+		{
+			return false;
+		}
+
 		var dias_compensados = 0;
 		if( $('#dias_compensados').val() != '' )
 		{
@@ -151,7 +174,13 @@ $(document).ready(function(){
 	    		$('#div_cargando').hide();
                 $('#fecha_final_tnl').val( data.fecha_fin );
                 $('#dias_no_habiles').val( data.dias_no_habiles );
-                validar_fecha_ingresada( $('#fecha_final_tnl') );
+				if ( !validar_fecha_ingresada( $('#fecha_final_tnl') ) )
+				{
+					$('#dias_no_habiles').val('');
+					$('#cantidad_dias_tnl').val('');
+					$('#bs_boton_guardar').hide();
+					return false;
+				}
                 actualizar_cantidad_dias_horas();
 			})
 			.fail(function( xhr ) {
@@ -174,10 +203,17 @@ $(document).ready(function(){
 		var fecha = fecha_seleccionada.val();
 		var fecha_inicial_tnl = $('#fecha_inicial_tnl').val();
 
+		// No mostrar errores mientras se escribe manualmente una fecha. La
+		// validación se realizará cuando el control entregue un valor completo.
+		if ( !es_fecha_completa_valida( fecha ) )
+		{
+			return false;
+		}
+
 		if ( $('#fecha_ingreso').text() == '' )
 		{
-			fecha_seleccionada.val('');
-			alert('Debe selecionar a un empleado.');
+			// Los datos del contrato pueden estar cargándose todavía. No se borra
+			// la fecha digitada; el servidor volverá a validarla al guardar.
 			return false;
 		}
 
@@ -194,6 +230,26 @@ $(document).ready(function(){
 			alert('La fecha ingresada (' + fecha + ') no puede ser MAYOR a la fecha final del contrato del empleado: ' + $('#contrato_hasta').text() );
 			return false;
 		}
+
+		return true;
+	}
+
+	function es_fecha_completa_valida( fecha )
+	{
+		if ( typeof fecha !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(fecha) )
+		{
+			return false;
+		}
+
+		var partes = fecha.split('-');
+		var anio = Number(partes[0]);
+		var mes = Number(partes[1]);
+		var dia = Number(partes[2]);
+		var fecha_objeto = new Date(anio, mes - 1, dia);
+
+		return fecha_objeto.getFullYear() === anio &&
+			fecha_objeto.getMonth() === mes - 1 &&
+			fecha_objeto.getDate() === dia;
 	}
 
 	function validar_fecha_otras_novedades()
