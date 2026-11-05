@@ -290,12 +290,7 @@ class NominaController extends TransaccionController
         $encabezado_doc =  NomDocEncabezado::get_un_registro( $encabezado_doc_id );
         $lapso_documento = $encabezado_doc->lapso();
 
-        $empleados = $encabezado_doc->empleados()
-            ->join('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
-            ->with('tercero')
-            ->select('nom_contratos.*')
-            ->orderBy('core_terceros.descripcion', 'ASC')
-            ->get();
+        $empleados = $encabezado_doc->empleados_ordenados_para_presentacion();
 
         $conceptos = $encabezado_doc->conceptos_liquidados();
 
@@ -356,7 +351,7 @@ class NominaController extends TransaccionController
     {
         $this->encabezado_doc =  NomDocEncabezado::get_un_registro($encabezado_doc_id);
 
-        $empleados = $this->encabezado_doc->empleados()->with('tercero')->get();
+        $empleados = $this->encabezado_doc->empleados_ordenados_para_presentacion();
 
         $conceptos = $this->encabezado_doc->conceptos_liquidados();
 

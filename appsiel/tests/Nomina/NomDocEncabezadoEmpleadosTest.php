@@ -106,6 +106,36 @@ class NomDocEncabezadoEmpleadosTest extends TestCase
 
         $this->assertSame('retirar:2296', $controller->guardar_asignacion($request));
     }
+
+    /** @test */
+    public function usa_el_mismo_orden_alfabetico_para_mostrar_e_imprimir_la_nomina()
+    {
+        DB::table('nom_doc_encabezados')->insert([
+            'id' => 1,
+            'fecha' => '2026-10-31',
+            'core_empresa_id' => 1,
+            'tiempo_a_liquidar' => 105
+        ]);
+        DB::table('core_terceros')->insert([
+            ['id' => 1, 'core_empresa_id' => 1, 'descripcion' => 'ZULMA PEREZ'],
+            ['id' => 2, 'core_empresa_id' => 1, 'descripcion' => 'ANA LOPEZ'],
+            ['id' => 3, 'core_empresa_id' => 1, 'descripcion' => 'ANA LOPEZ']
+        ]);
+        DB::table('nom_contratos')->insert([
+            ['id' => 30, 'core_tercero_id' => 1, 'fecha_ingreso' => '2026-01-01', 'contrato_hasta' => null, 'estado' => 'Activo'],
+            ['id' => 20, 'core_tercero_id' => 2, 'fecha_ingreso' => '2026-01-01', 'contrato_hasta' => null, 'estado' => 'Activo'],
+            ['id' => 10, 'core_tercero_id' => 3, 'fecha_ingreso' => '2026-01-01', 'contrato_hasta' => null, 'estado' => 'Activo']
+        ]);
+        DB::table('nom_empleados_del_documento')->insert([
+            ['orden' => 1, 'nom_doc_encabezado_id' => 1, 'nom_contrato_id' => 30],
+            ['orden' => 2, 'nom_doc_encabezado_id' => 1, 'nom_contrato_id' => 20],
+            ['orden' => 3, 'nom_doc_encabezado_id' => 1, 'nom_contrato_id' => 10]
+        ]);
+
+        $empleados = NomDocEncabezado::find(1)->empleados_ordenados_para_presentacion();
+
+        $this->assertEquals([10, 20, 30], array_values($empleados->lists('id')->toArray()));
+    }
 }
 
 class NominaControllerEmpleadosTestDouble extends NominaController

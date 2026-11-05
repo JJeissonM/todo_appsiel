@@ -60,6 +60,21 @@ class NomDocEncabezado extends Model
     }
 
     /**
+     * Empleados en el orden utilizado para presentar el documento de nómina.
+     * Centralizar este criterio evita diferencias entre la vista y el PDF.
+     */
+    public function empleados_ordenados_para_presentacion()
+    {
+        return $this->empleados()
+            ->join('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
+            ->with('tercero')
+            ->select('nom_contratos.*')
+            ->orderBy('core_terceros.descripcion', 'ASC')
+            ->orderBy('nom_contratos.id', 'ASC')
+            ->get();
+    }
+
+    /**
      * Contratos asignados al documento que cumplen los filtros usados en el
      * ingreso manual de registros de nómina.
      */
