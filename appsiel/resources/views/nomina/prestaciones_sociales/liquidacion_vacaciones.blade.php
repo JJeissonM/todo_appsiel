@@ -83,14 +83,14 @@
 						<td>&nbsp;</td>
 					</tr>
 					<tr>
-						<td><strong>Días hábiles: </strong> {{ number_format( $tabla_resumen['dias_habiles'],0,',','.' ) }} </td>
+						<td><strong>Días disfrutados: </strong> {{ number_format( $tabla_resumen['dias_disfrutados'],0,',','.' ) }} </td>
+						<td><strong>Días compensados: </strong> {{ number_format( $tabla_resumen['dias_compensados'],0,',','.' ) }} </td>
 						<td><strong>Días No hábiles: </strong> {{ number_format( $tabla_resumen['dias_no_habiles'],0,',','.' ) }} </td>
-						<td>&nbsp;</td>
 					</tr>
 					<tr>
-						<td><strong>Vlr. días hábiles: </strong> ${{ number_format( $tabla_resumen['vlr_dias_habiles'],'0',',','.' ) }} </td>
-						<td><strong>Vlr. días No hábiles: </strong>{{ number_format( $tabla_resumen['vlr_dias_no_habiles'],'0',',','.' ) }}</td>
-						<td>&nbsp;</td>
+						<td><strong>Vlr. días disfrutados: </strong> ${{ number_format( $tabla_resumen['vlr_dias_disfrutados'],'0',',','.' ) }} </td>
+						<td><strong>Vlr. días compensados: </strong> ${{ number_format( $tabla_resumen['vlr_dias_compensados'],'0',',','.' ) }} </td>
+						<td><strong>Vlr. días No hábiles: </strong> ${{ number_format( $tabla_resumen['vlr_dias_no_habiles'],'0',',','.' ) }}</td>
 					</tr>
 				@endif
 				<tr>

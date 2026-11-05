@@ -127,12 +127,18 @@ class Vacaciones implements Estrategia
         $this->tabla_resumen['fecha_inicial_disfrute'] = $programacion_vacaciones->fecha_inicial_tnl;
         $this->tabla_resumen['fecha_final_disfrute'] = $programacion_vacaciones->fecha_final_tnl;
 
-        $this->tabla_resumen['dias_habiles'] = $libro_vacaciones->dias_pagados;
-        $this->tabla_resumen['dias_no_habiles'] = $libro_vacaciones->dias_no_habiles;
-        $this->tabla_resumen['vlr_dias_habiles'] = $valor_base_diaria * $libro_vacaciones->dias_pagados;
-        $this->tabla_resumen['vlr_dias_no_habiles'] = $valor_base_diaria * $libro_vacaciones->dias_no_habiles;
-
-        $this->tabla_resumen['valor_total_vacaciones'] = $this->tabla_resumen['vlr_dias_habiles'] + $this->tabla_resumen['vlr_dias_no_habiles'];
+        $valor_base_diaria_compensacion = $this->get_valor_base_diaria_compensacion(
+            $liquidacion['empleado'],
+            $liquidacion['documento_nomina']->fecha
+        );
+        $this->tabla_resumen = array_merge(
+            $this->tabla_resumen,
+            $this->calcular_valores_vacaciones_programadas(
+                $libro_vacaciones,
+                $valor_base_diaria,
+                $valor_base_diaria_compensacion
+            )
+        );
 
         $this->set_periodo_causacion_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'] );
         $this->actualizar_causacion_segun_programacion( $libro_vacaciones, $parametros_prestacion );
@@ -283,6 +289,51 @@ class Vacaciones implements Estrategia
         }
 
         return $valor_base_diaria;
+    }
+
+    /**
+     * El artículo 189 del C.S.T. ordena usar el último salario devengado para
+     * la compensación en dinero. El sueldo vigente del contrato representa
+     * esa base y se lleva a valor diario sobre 30 días de nómina.
+     */
+    public function get_valor_base_diaria_compensacion($empleado, $fecha = null)
+    {
+        $salario = (float)$empleado->sueldo;
+        if (!empty($fecha) && method_exists($empleado, 'salario_para_fecha')) {
+            $salario = $empleado->salario_para_fecha($fecha);
+        }
+
+        return $salario / 30;
+    }
+
+    public function calcular_valores_vacaciones_programadas($libro_vacaciones, $valor_base_diaria, $valor_base_diaria_compensacion)
+    {
+        $dias_disfrutados = (float)$libro_vacaciones->dias_disfrutados;
+        $dias_compensados = (float)$libro_vacaciones->dias_compensados;
+        if (($dias_disfrutados + $dias_compensados) <= 0 && (float)$libro_vacaciones->dias_pagados > 0)
+        {
+            $dias_disfrutados = (float)$libro_vacaciones->dias_pagados;
+        }
+
+        $dias_no_habiles = (float)$libro_vacaciones->dias_no_habiles;
+        $valor_dias_disfrutados = $valor_base_diaria * $dias_disfrutados;
+        $valor_dias_compensados = $valor_base_diaria_compensacion * $dias_compensados;
+        $valor_dias_no_habiles = $valor_base_diaria * $dias_no_habiles;
+
+        return [
+            'dias_habiles' => $dias_disfrutados,
+            'dias_disfrutados' => $dias_disfrutados,
+            'dias_compensados' => $dias_compensados,
+            'dias_no_habiles' => $dias_no_habiles,
+            'valor_base_diaria_compensacion' => $valor_base_diaria_compensacion,
+            'vlr_dias_disfrutados' => $valor_dias_disfrutados,
+            'vlr_dias_compensados' => $valor_dias_compensados,
+            'vlr_dias_habiles' => $valor_dias_disfrutados + $valor_dias_compensados,
+            'vlr_dias_no_habiles' => $valor_dias_no_habiles,
+            'valor_total_vacaciones' => $valor_dias_disfrutados
+                                        + $valor_dias_compensados
+                                        + $valor_dias_no_habiles,
+        ];
     }
 
 

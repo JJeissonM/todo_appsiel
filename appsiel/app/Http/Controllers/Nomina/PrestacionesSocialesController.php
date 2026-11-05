@@ -283,12 +283,18 @@ class PrestacionesSocialesController extends TransaccionController
 
     public function get_fecha_final_vacaciones( $grupo_empleado_id, $fecha_inicial, $cantidad_dias_tomados, $dias_compensados )
     {
-        $calculo = (new CalculoFechaVacaciones())->calcular(
-            $grupo_empleado_id,
-            $fecha_inicial,
-            $cantidad_dias_tomados,
-            $dias_compensados
-        );
+        try {
+            $calculo = (new CalculoFechaVacaciones())->calcular(
+                $grupo_empleado_id,
+                $fecha_inicial,
+                $cantidad_dias_tomados,
+                $dias_compensados
+            );
+        } catch (\InvalidArgumentException $e) {
+            return response()->json([
+                'mensaje_error' => $e->getMessage(),
+            ], 422);
+        }
 
         return response()->json($calculo);
     }

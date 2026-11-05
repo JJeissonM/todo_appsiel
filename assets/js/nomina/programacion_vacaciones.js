@@ -94,6 +94,35 @@ $(document).ready(function(){
 		
 	});
 
+	$('#dias_compensados').on( 'change', function(){
+		if ( $('#fecha_inicial_tnl').val() == '' || $('#cantidad_dias_tomados').val() == '' )
+		{
+			return false;
+		}
+
+		var dias_compensados = $(this).val() == '' ? 0 : Number($(this).val());
+		var dias_tomados = Number($('#cantidad_dias_tomados').val());
+
+		if ( !Number.isInteger(dias_compensados) || dias_compensados < 0 )
+		{
+			alert('Los días compensados deben ser un número entero mayor o igual a cero.');
+			$(this).val(0);
+			calcular_fecha_final();
+			return false;
+		}
+
+		if ( dias_compensados > (dias_tomados / 2) )
+		{
+			alert('Los días compensados no pueden superar la mitad de los días de vacaciones reconocidos.');
+			$(this).val(0);
+			calcular_fecha_final();
+			return false;
+		}
+
+		calcular_fecha_final();
+		validar_fecha_otras_novedades();
+	});
+
 	function calcular_fecha_final()
 	{
 		var dias_compensados = 0;
@@ -124,7 +153,20 @@ $(document).ready(function(){
                 $('#dias_no_habiles').val( data.dias_no_habiles );
                 validar_fecha_ingresada( $('#fecha_final_tnl') );
                 actualizar_cantidad_dias_horas();
-			});		
+			})
+			.fail(function( xhr ) {
+				$('#div_cargando').hide();
+				$('#fecha_final_tnl').val('');
+				$('#dias_no_habiles').val('');
+				$('#cantidad_dias_tnl').val('');
+				$('#bs_boton_guardar').hide();
+				var mensaje = 'No fue posible calcular la programación de vacaciones.';
+				if ( xhr.responseJSON && xhr.responseJSON.mensaje_error )
+				{
+					mensaje = xhr.responseJSON.mensaje_error;
+				}
+				alert(mensaje);
+			});
 	}
 
 	function validar_fecha_ingresada( fecha_seleccionada )

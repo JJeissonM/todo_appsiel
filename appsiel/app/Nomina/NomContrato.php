@@ -163,6 +163,31 @@ class NomContrato extends Model
         return $this->salario_x_hora() * $this->get_horas_dia_laboral_para_salario();
     }
 
+    public function salario_para_fecha($fecha)
+    {
+        $ultimoCambioVigente = CambioSalario::where('nom_contrato_id', $this->id)
+            ->where('fecha_modificacion', '<=', $fecha)
+            ->orderBy('fecha_modificacion', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->first();
+
+        if (!is_null($ultimoCambioVigente) && (float)$ultimoCambioVigente->nuevo_salario > 0) {
+            return (float)$ultimoCambioVigente->nuevo_salario;
+        }
+
+        $primerCambioPosterior = CambioSalario::where('nom_contrato_id', $this->id)
+            ->where('fecha_modificacion', '>', $fecha)
+            ->orderBy('fecha_modificacion', 'ASC')
+            ->orderBy('id', 'ASC')
+            ->first();
+
+        if (!is_null($primerCambioPosterior) && (float)$primerCambioPosterior->salario_anterior > 0) {
+            return (float)$primerCambioPosterior->salario_anterior;
+        }
+
+        return (float)$this->sueldo;
+    }
+
     protected function get_horas_laborales_para_salario()
     {
         $horas_laborales = ParametroLegal::horas_laborales_para_fecha();

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Nomina\ParametroLiquidacionPrestacionesSociales;
 use App\Nomina\LibroVacacion;
+use App\Nomina\Services\CalculoFechaVacaciones;
 use Illuminate\Support\Facades\DB;
 
 class ProgramacionVacacion extends Model
@@ -75,6 +76,119 @@ class ProgramacionVacacion extends Model
         return "LISTADO DE PROGRAMACIÓN DE VACACIONES";
     }
 
+    public function preparar_request_validacion($request, $id = null)
+    {
+        if ($request->dias_compensados === null || $request->dias_compensados === '') {
+            $request->merge(['dias_compensados' => 0]);
+        }
+
+        $contratoId = $request->nom_contrato_id;
+        if (empty($contratoId) && !is_null($id)) {
+            $programacion = self::find($id);
+            $contratoId = is_null($programacion) ? null : $programacion->nom_contrato_id;
+        }
+
+        try {
+            $request->merge($this->calcularDatosProgramacion($request->all(), $contratoId));
+        } catch (\InvalidArgumentException $e) {
+            // La validación del formulario mostrará el mensaje específico.
+        }
+    }
+
+    public function validar_datos_creacion($request, $controller)
+    {
+        $this->validarDatosFormulario($request, $controller);
+    }
+
+    public function validar_datos_actualizacion($request, $controller, $id)
+    {
+        $this->validarDatosFormulario($request, $controller, $id);
+    }
+
+    protected function validarDatosFormulario($request, $controller, $id = null)
+    {
+        $controller->validate($request, [
+            'nom_contrato_id' => 'required|integer|exists:nom_contratos,id',
+            'fecha_inicial_tnl' => 'required|date_format:Y-m-d',
+            'cantidad_dias_tomados' => 'required|integer|min:1',
+            'dias_compensados' => 'required|integer|min:0',
+        ], [
+            'cantidad_dias_tomados.integer' => 'Los días tomados deben ser un número entero.',
+            'cantidad_dias_tomados.min' => 'Debe reconocer al menos un día de vacaciones.',
+            'dias_compensados.integer' => 'Los días compensados deben ser un número entero.',
+            'dias_compensados.min' => 'Los días compensados no pueden ser negativos.',
+        ]);
+
+        try {
+            $calculo = $this->calcularDatosProgramacion($request->all(), $request->nom_contrato_id);
+        } catch (\InvalidArgumentException $e) {
+            $request->merge(['validacion_programacion_vacaciones' => 'invalida']);
+            $controller->validate($request, [
+                'validacion_programacion_vacaciones' => 'in:valida',
+            ], [
+                'validacion_programacion_vacaciones.in' => $e->getMessage(),
+            ]);
+            return;
+        }
+
+        $contrato = NomContrato::find($request->nom_contrato_id);
+        if ($request->fecha_inicial_tnl < $contrato->fecha_ingreso) {
+            $this->generarErrorValidacion(
+                $request,
+                $controller,
+                'La fecha inicial de vacaciones no puede ser anterior al inicio del contrato.'
+            );
+        }
+
+        if (!empty($contrato->contrato_hasta)
+            && $contrato->contrato_hasta !== '0000-00-00'
+            && $calculo['fecha_final_tnl'] > $contrato->contrato_hasta) {
+            $this->generarErrorValidacion(
+                $request,
+                $controller,
+                'La fecha final de vacaciones no puede superar la fecha final del contrato.'
+            );
+        }
+
+        $request->merge($calculo);
+    }
+
+    protected function generarErrorValidacion($request, $controller, $mensaje)
+    {
+        $request->merge(['validacion_programacion_vacaciones' => 'invalida']);
+        $controller->validate($request, [
+            'validacion_programacion_vacaciones' => 'in:valida',
+        ], [
+            'validacion_programacion_vacaciones.in' => $mensaje,
+        ]);
+    }
+
+    protected function calcularDatosProgramacion(array $datos, $contratoId)
+    {
+        $contrato = NomContrato::find($contratoId);
+        if (is_null($contrato)) {
+            throw new \InvalidArgumentException('El contrato seleccionado no existe.');
+        }
+
+        $calculo = (new CalculoFechaVacaciones())->calcular(
+            $contrato->grupo_empleado_id,
+            isset($datos['fecha_inicial_tnl']) ? $datos['fecha_inicial_tnl'] : '',
+            isset($datos['cantidad_dias_tomados']) ? $datos['cantidad_dias_tomados'] : null,
+            isset($datos['dias_compensados']) && $datos['dias_compensados'] !== '' ? $datos['dias_compensados'] : 0
+        );
+
+        return [
+            'fecha_final_tnl' => $calculo['fecha_fin'],
+            'dias_no_habiles' => $calculo['dias_no_habiles'],
+            'dias_disfrutados' => $calculo['dias_disfrutados'],
+            'cantidad_dias_tnl' => $calculo['cantidad_dias_tnl'],
+            'cantidad_horas_tnl' => NovedadTnl::calcular_horas_tnl(
+                $calculo['cantidad_dias_tnl'],
+                $calculo['fecha_fin']
+            ),
+        ];
+    }
+
     public static function opciones_campo_select()
     {
         $opciones = ProgramacionVacacion::where('nom_novedades_tnl.estado', 'Activo')
@@ -91,8 +205,7 @@ class ProgramacionVacacion extends Model
 
     public function store_adicional($datos, $registro)
     {
-
-        $dias_disfrutados = (int)$datos['cantidad_dias_tomados'] - (int)$datos['dias_compensados'];
+        $datos = array_merge($datos, $this->calcularDatosProgramacion($datos, $registro->nom_contrato_id));
         LibroVacacion::create(
                                 ['nom_contrato_id' => $registro->nom_contrato_id] +
                                     ['novedad_tnl_id' => $registro->id] +
@@ -101,7 +214,7 @@ class ProgramacionVacacion extends Model
                                     ['dias_pagados' => $datos['cantidad_dias_tomados']] +
                                     ['dias_compensados' => $datos['dias_compensados']] +
                                     ['dias_no_habiles' => $datos['dias_no_habiles']] +
-                                    ['dias_disfrutados' => $dias_disfrutados]
+                                    ['dias_disfrutados' => $datos['dias_disfrutados']]
                             );
 
         $empleado = NomContrato::find($registro->nom_contrato_id);
@@ -112,6 +225,9 @@ class ProgramacionVacacion extends Model
         $concepto = NomConcepto::find($parametros_prestacion->nom_concepto_id);
 
         $registro->tipo_novedad_tnl = 'vacaciones';
+        $registro->fecha_final_tnl = $datos['fecha_final_tnl'];
+        $registro->cantidad_dias_tnl = $datos['cantidad_dias_tnl'];
+        $registro->cantidad_horas_tnl = $datos['cantidad_horas_tnl'];
         $registro->cantidad_dias_pendientes_amortizar = $datos['cantidad_dias_tnl'];
         $registro->nom_concepto_id = $concepto->id;
         $registro->estado = 'Activo';
@@ -146,14 +262,25 @@ class ProgramacionVacacion extends Model
 
     public function update_adicional($datos, $id)
     {
-        $dias_disfrutados = (int)$datos['cantidad_dias_tomados'] - (int)$datos['dias_compensados'];
+        $programacion = self::findOrFail($id);
+        $datos = array_merge($datos, $this->calcularDatosProgramacion($datos, $programacion->nom_contrato_id));
+
+        $programacion->fecha_final_tnl = $datos['fecha_final_tnl'];
+        $programacion->cantidad_dias_tnl = $datos['cantidad_dias_tnl'];
+        $programacion->cantidad_horas_tnl = $datos['cantidad_horas_tnl'];
+        $programacion->cantidad_dias_pendientes_amortizar = max(
+            0,
+            $datos['cantidad_dias_tnl'] - $programacion->cantidad_dias_amortizados
+        );
+        $programacion->save();
+
         $libro_vacaciones = LibroVacacion::where('novedad_tnl_id', $id)->get()->first();
         $libro_vacaciones->periodo_disfrute_vacacion_desde = $datos['fecha_inicial_tnl'];
         $libro_vacaciones->periodo_disfrute_vacacion_hasta = $datos['fecha_final_tnl'];
         $libro_vacaciones->dias_pagados = $datos['cantidad_dias_tomados'];
         $libro_vacaciones->dias_compensados = $datos['dias_compensados'];
         $libro_vacaciones->dias_no_habiles = $datos['dias_no_habiles'];
-        $libro_vacaciones->dias_disfrutados = $dias_disfrutados;
+        $libro_vacaciones->dias_disfrutados = $datos['dias_disfrutados'];
         $libro_vacaciones->save();
     }
 
