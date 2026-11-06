@@ -172,6 +172,7 @@
     <script src="{{ asset( 'assets/js/sistema/form_builder.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/precios.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/clientes.js?v=' . $asset_v )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas/consulta_adquiriente.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/commons.js?v=' . $asset_v . '-pos-efectivo-exacto-4' )}}"></script>
 

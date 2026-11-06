@@ -24,6 +24,13 @@ use Illuminate\Support\Facades\Input;
 
 class ClienteController extends ModeloController
 {
+    /**
+     * El archivo_js del modelo también se carga al editar; la consulta a la DIAN es solo al crear.
+     */
+    public function create()
+    {
+        return parent::create()->with('archivo_js_create', 'assets/js/ventas/consulta_adquiriente.js');
+    }
 
     /**
      * Store a newly created resource in storage.
