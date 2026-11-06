@@ -26,7 +26,10 @@
 					</span>
 				</p>
 		</p>
-		<table class="table table-striped" id="tabla_registros">
+        @if(!empty($editar_actividades_agrupadas))
+            <p class="text-info">Solo cuentan las columnas con alguna nota en este periodo, curso y asignatura. El porcentaje de cada grupo se reparte proporcionalmente al porcentaje de sus columnas calificadas; los grupos sin notas se excluyen y los restantes se normalizan al 100%.</p>
+        @endif
+		<table class="table table-striped" id="tabla_registros" data-columnas-no-visibles="{{ json_encode(isset($columnas_no_visibles) ? $columnas_no_visibles : []) }}" data-excluir-columnas-vacias="{{ !empty($editar_actividades_agrupadas) ? 1 : 0 }}">
 			<thead>
 				@if($usar_encabezados_fijos)
 					<tr>
@@ -59,7 +62,7 @@
 						?>
 						@if(!$usar_encabezados_fijos || $encabezado_columna->configurado)
 							<th class="celda_C{{$k}}">
-								<button class="btn btn-default btn-xs encabezado_calificacion" value="C{{$k}}" data-peso="{{$array_pesos[$k]}}" title="Peso= {{$array_pesos[$k]}}%" id="btn_C{{$k}}" style="background-color: {{$color_btn}}; @if($usar_encabezados_fijos) cursor: default; @endif" @if($usar_encabezados_fijos) disabled="disabled" @endif>{{ $encabezado_columna->label }}</button>
+								<button class="btn btn-default btn-xs encabezado_calificacion" value="C{{$k}}" data-peso="{{$array_pesos[$k]}}" data-grupo="{{ $encabezado_columna->agrupacion_id }}" data-peso-grupo="{{ $encabezado_columna->peso_grupo }}" title="Peso= {{$array_pesos[$k]}}%" id="btn_C{{$k}}" style="background-color: {{$color_btn}}; @if($usar_encabezados_fijos && empty($editar_actividades_agrupadas)) cursor: default; @endif" @if($usar_encabezados_fijos && empty($editar_actividades_agrupadas)) disabled="disabled" @endif>{{ $encabezado_columna->label }}</button>
 							</th>
 						@endif
 					@endfor

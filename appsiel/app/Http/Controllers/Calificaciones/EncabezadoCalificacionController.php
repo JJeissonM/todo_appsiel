@@ -18,7 +18,7 @@ class EncabezadoCalificacionController extends Controller
 
     public function __construct()
     {
-        //$this->middleware('auth');
+        $this->middleware('auth');
         $this->encabezadosCalificacionService = app(EncabezadosCalificacionService::class);
     }
 
@@ -45,6 +45,9 @@ class EncabezadoCalificacionController extends Controller
         $cursoId = (int)Input::get('curso_id');
         $asignaturaId = (int)Input::get('asignatura_id');
 
+        if (app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo()) {
+            app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->validarContexto($cursoId, $asignaturaId);
+        }
         $encabezado = $this->encabezadosCalificacionService->getEncabezado(
             $anio,
             $periodoId,
@@ -82,7 +85,17 @@ class EncabezadoCalificacionController extends Controller
             $mensaje_descripcion = '<span style="color:#ff4d4d; font-size: 0.9em;">Para eliminar el encabezado, deje vacía la descripción de la actividad y presione guardar.</span><br>';
         }
 
-        return View::make('calificaciones.encabezados_estandar.formulario', compact( 'fecha', 'descripcion', 'opcion', 'id_encabezado_calificacion', 'creado_por', 'modificado_por', 'peso', 'label', 'titulo', 'mensaje_descripcion', 'usar_encabezados_fijos' ))->render();
+        $actividad_agrupada = app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo();
+        if ($actividad_agrupada) {
+            $columnas = app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->columnas($anio, $periodoId);
+            if (!isset($columnas[Input::get('columna_calificacion')])) abort(422, 'Columna sin agrupación.');
+            $columna = $columnas[Input::get('columna_calificacion')];
+            $peso = $columna->peso; $titulo = $columna->titulo; $label = $columna->label;
+            $usar_encabezados_fijos = false;
+            if (!$fecha) $fecha = date('Y-m-d');
+        }
+
+        return View::make('calificaciones.encabezados_estandar.formulario', compact( 'fecha', 'descripcion', 'opcion', 'id_encabezado_calificacion', 'creado_por', 'modificado_por', 'peso', 'label', 'titulo', 'mensaje_descripcion', 'usar_encabezados_fijos', 'actividad_agrupada' ))->render();
     }
 
     /**
@@ -90,6 +103,7 @@ class EncabezadoCalificacionController extends Controller
      */
     public function store(Request $request)
     {
+        if (app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo()) return $this->guardarActividadAgrupada($request);
         $this->normalizarYValidarFecha($request);
 		$this->validate(
 			$request,
@@ -198,6 +212,41 @@ class EncabezadoCalificacionController extends Controller
         }
 
         return $cerrar_modal;
+    }
+
+    protected function guardarActividadAgrupada(Request $request)
+    {
+        $this->validate($request, [
+            'anio' => 'required|integer', 'periodo_id' => 'required|integer|exists:sga_periodos,id',
+            'curso_id' => 'required|integer|min:1', 'asignatura_id' => 'required|integer|min:1',
+            'columna_calificacion' => ['required', 'regex:/^C([1-9]|1[0-5])$/'],
+            'fecha' => 'required|date_format:Y-m-d', 'descripcion' => 'string',
+            'id_encabezado_calificacion' => 'required|integer|min:0'
+        ]);
+        return \DB::transaction(function () use ($request) {
+            \App\Calificaciones\AgrupacionCalificacion::where('empresa_id', Auth::user()->empresa_id)->lockForUpdate()->get();
+            $scope = $this->encabezadosCalificacionService->getAtributosDePersistencia(
+                (int)$request->anio, (int)$request->periodo_id, (int)$request->curso_id, (int)$request->asignatura_id);
+            $query = EncabezadoCalificacion::where($scope)->where('columna_calificacion', $request->columna_calificacion);
+            $id = (int)$request->id_encabezado_calificacion;
+            $registro = $id ? (clone $query)->where('id', $id)->lockForUpdate()->firstOrFail() : null;
+            if (!$id && $query->exists()) return 'duplicado';
+            $descripcion = trim((string)$request->descripcion);
+            if ($descripcion === '') {
+                if (!$registro) abort(422, 'Debe ingresar la descripción de la actividad.');
+                $registro->delete();
+                return 'ELIMINADO';
+            }
+            $nuevo = !$registro;
+            $registro = $registro ?: new EncabezadoCalificacion;
+            $registro->fill(array_merge($scope, ['columna_calificacion' => $request->columna_calificacion,
+                'fecha' => $request->fecha, 'descripcion' => $descripcion]));
+            if ($nuevo) $registro->creado_por = Auth::user()->email;
+            $registro->modificado_por = Auth::user()->email;
+            // El evento saving valida el conjunto y toma label, título y peso de la columna asociada.
+            $registro->save();
+            return $nuevo ? 'CREADO' : 'MODIFICADO';
+        });
     }
 
     protected function normalizarYValidarFecha(Request $request)

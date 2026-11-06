@@ -36,6 +36,7 @@ class EncabezadosCalificacionService
     /** Los encabezados de un periodo reemplazan por completo a los comunes del año. */
     public function getModoEncabezados($periodoId, $anio = null)
     {
+        if (app(AgrupacionesColumnasService::class)->activo()) return 'agrupaciones';
         if (!$this->manejarEncabezadosFijosPorPeriodo()) {
             return 'estandar';
         }
@@ -97,7 +98,9 @@ class EncabezadosCalificacionService
                 'peso' => $encabezado ? (float)$encabezado->peso : 0,
                 'label' => $encabezado && !empty($encabezado->label) ? $encabezado->label : $columna,
                 'titulo' => $encabezado ? $encabezado->titulo : '',
-                'configurado' => $encabezado !== null
+                'configurado' => $encabezado !== null,
+                'agrupacion_id' => $encabezado ? $encabezado->agrupacion_id : null,
+                'peso_grupo' => $encabezado ? (float)$encabezado->peso_grupo : 0
             ];
 
             $array_pesos[$k] = $columnas[$k]->peso;
@@ -120,7 +123,7 @@ class EncabezadosCalificacionService
             'columnas' => $columnas,
             'array_pesos' => $array_pesos,
             'hay_pesos' => $hay_pesos,
-            'suma_porcentajes' => $suma_porcentajes,
+            'suma_porcentajes' => round($suma_porcentajes, 8),
             'grupos_titulo' => $this->agruparTitulos($columnasParaTitulos),
             'usar_encabezados_fijos' => $usarEncabezadosFijos
         ];
@@ -128,9 +131,22 @@ class EncabezadosCalificacionService
 
     public function getEncabezados($anio, $periodoId, $cursoId, $asignaturaId = null)
     {
-        return $this->getQuery($anio, $periodoId, $cursoId, $asignaturaId)
-            ->orderBy('columna_calificacion')
-            ->get();
+        $actividades = $this->getQuery($anio, $periodoId, $cursoId, $asignaturaId)->orderBy('columna_calificacion')->get();
+        if ($this->getModoEncabezados($periodoId, $anio) !== 'agrupaciones') return $actividades;
+        $resultado = new \Illuminate\Database\Eloquent\Collection;
+        foreach (app(AgrupacionesColumnasService::class)->columnas($anio, $periodoId) as $nombre => $columna) {
+            $actividad = $actividades->where('columna_calificacion', $nombre)->first();
+            $encabezado = $actividad ? clone $actividad : new EncabezadoCalificacion;
+            $encabezado->columna_calificacion = $nombre;
+            $encabezado->titulo = $columna->titulo;
+            $encabezado->label = $columna->label;
+            $encabezado->peso = $columna->peso;
+            $encabezado->agrupacion_columna_id = $columna->id;
+            $encabezado->agrupacion_id = $columna->agrupacion_id;
+            $encabezado->peso_grupo = (float)$columna->agrupacion->peso;
+            $resultado->push($encabezado);
+        }
+        return $resultado;
     }
 
     public function getEncabezado($anio, $periodoId, $cursoId, $asignaturaId, $columnaCalificacion)
@@ -145,7 +161,7 @@ class EncabezadosCalificacionService
         $query = EncabezadoCalificacion::query();
 
         $modo = $this->getModoEncabezados($periodoId, $anio);
-        if ($modo !== 'estandar') {
+        if ($modo !== 'estandar' && $modo !== 'agrupaciones') {
             $query->whereNull('curso_id')->whereNull('asignatura_id');
             return $modo === 'periodo'
                 ? $query->where('periodo_id', $periodoId)
@@ -165,7 +181,7 @@ class EncabezadosCalificacionService
     public function getAtributosDePersistencia($anio, $periodoId, $cursoId, $asignaturaId)
     {
         $modo = $this->getModoEncabezados($periodoId, $anio);
-        if ($modo !== 'estandar') {
+        if ($modo !== 'estandar' && $modo !== 'agrupaciones') {
             return [
                 'anio' => $anio,
                 'periodo_id' => $modo === 'periodo' ? $periodoId : null,

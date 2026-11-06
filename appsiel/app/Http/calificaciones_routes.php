@@ -157,3 +157,6 @@ Route::get('calcular_promedio_notas_periodo_final_curso/{periodo_lectivo_id}/{cu
 
 Route::get('sga_consultar_areas_asignaturas_pesos/{periodo_lectivo_id}/{grado_id}', 'Calificaciones\ProcesoController@consultar_areas_asignaturas_pesos');
 Route::post('sga_almacenar_pesos_asignaturas_areas', 'Calificaciones\ProcesoController@almacenar_pesos_asignaturas_areas');
+
+Route::post('calificaciones/agrupaciones-columnas/{id}/columnas', 'Calificaciones\\AgrupacionesColumnasController@guardar');
+Route::delete('calificaciones/agrupaciones-columnas/{id}/columnas/{columna}', 'Calificaciones\\AgrupacionesColumnasController@eliminar');

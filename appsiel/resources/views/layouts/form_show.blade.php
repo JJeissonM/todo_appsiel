@@ -40,6 +40,9 @@
 			<?php
 				switch ( $opciones[''] ) 
 				{
+                    case 'ColumnasCalificacion':
+                        // La tabla de columnas incluye su propio formulario validado.
+                        break;
 					case 'PQR':
 			?>
 						@include('propiedad_horizontal.pqr_form_show')

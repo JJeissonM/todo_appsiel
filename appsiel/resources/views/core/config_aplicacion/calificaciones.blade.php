@@ -107,6 +107,10 @@
 							?>
 							{{ Form::bsSelect('manejar_encabezados_por_anio_lectivo_en_calificaciones', $manejar_encabezados_por_anio_lectivo_en_calificaciones, 'Agrupar encabezados de calificaciones (por año o periodo)', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
                             <p class="help-block">No: encabezados individuales por curso y asignatura. Sí: se usan los encabezados del periodo; si no hay, los del mismo año sin periodo, curso ni asignatura asignados. Los encabezados del periodo reemplazan el conjunto anual completo.</p>
+                            <hr>
+                            {{ Form::bsSelect('usar_agrupaciones_columnas_calificaciones', isset($parametros['usar_agrupaciones_columnas_calificaciones']) ? $parametros['usar_agrupaciones_columnas_calificaciones'] : 'No', 'Usar agrupaciones de columnas con actividades independientes', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
+                            <p class="help-block">Este modo tiene prioridad sobre los encabezados fijos. Configure las agrupaciones en Catálogos: título y porcentaje por agrupación (total 100%), repartido por igual entre sus columnas; label por columna. La modal de cada columna permite registrar únicamente fecha y descripción por periodo, curso y asignatura.</p>
+
 						</div>
 					</div>
 

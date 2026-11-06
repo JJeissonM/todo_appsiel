@@ -384,6 +384,13 @@ class CalificacionController extends Controller
             (int)$request->id_asignatura
         );
 
+        $columnas_no_visibles = [];
+        if ($resumen_encabezados['modo_encabezados'] === 'agrupaciones') {
+            $columnas_no_visibles = app(\App\Calificaciones\Services\ColumnasCalificadasService::class)->activasFueraDeEstudiantes(
+                $anio, $request->id_periodo, $request->curso_id, $request->id_asignatura,
+                array_column($vec_estudiantes, 'id_estudiante'), $this->colegio->id);
+        }
+
         return view('calificaciones.calificar2', [
             'vec_estudiantes' => $vec_estudiantes,
             'cantidad_estudiantes' => count($estudiantes),
@@ -400,6 +407,8 @@ class CalificacionController extends Controller
             'suma_porcentajes' => $resumen_encabezados['suma_porcentajes'],
             'grupos_titulo_encabezados' => $resumen_encabezados['grupos_titulo'],
             'usar_encabezados_fijos' => $resumen_encabezados['usar_encabezados_fijos'],
+            'columnas_no_visibles' => $columnas_no_visibles,
+            'editar_actividades_agrupadas' => $resumen_encabezados['modo_encabezados'] === 'agrupaciones',
             'creado_por' => $creado_por,
             'modificado_por' => $modificado_por,
             'id_colegio' => $this->colegio->id,
@@ -440,7 +449,7 @@ class CalificacionController extends Controller
         }
 
         $calculadora = app(CalificacionDefinitivaService::class);
-        $linea_datos['calificacion'] = $calculadora->calcular(
+        $linea_datos['calificacion'] = app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo() ? 0 : $calculadora->calcular(
             $identificador['anio'],
             $identificador['id_periodo'],
             $identificador['curso_id'],
@@ -453,18 +462,24 @@ class CalificacionController extends Controller
             && trim($linea_datos['logros']) === '';
         $fila_id = $json_fila['fila_id'] ?? null;
 
-        return DB::transaction(function () use ($id_calificacion, $linea_datos, $json_fila, $identificador, $request_time, $should_delete, $fila_id) {
+        return DB::transaction(function () use ($id_calificacion, $linea_datos, $json_fila, $identificador, $request_time, $should_delete, $fila_id, $calculadora) {
+            if (app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo()) {
+                // Una nota puede activar una columna para toda la clase: serializar los guardados del curso.
+                Curso::where('id', $identificador['curso_id'])->lockForUpdate()->firstOrFail();
+                $linea_datos['calificacion'] = $calculadora->calcular($identificador['anio'], $identificador['id_periodo'],
+                    $identificador['curso_id'], $identificador['id_asignatura'], $linea_datos);
+            }
             $calificacion = Calificacion::find($id_calificacion);
 
             if ($calificacion !== null) {
                 if ($this->shouldSkipRequest($calificacion, $request_time)) {
                     $aux_id = $this->findCalificacionAuxId($json_fila, $identificador);
-                    return $this->responseLinea($fila_id, $calificacion->id, $calificacion->calificacion, $aux_id);
+                    return $this->responseLinea($fila_id, $calificacion->id, $calificacion->calificacion, $aux_id, $identificador);
                 }
 
                 if ($should_delete) {
                     $this->removeCalificacionLinea($calificacion, $json_fila, $identificador);
-                    return $this->responseLinea($fila_id, 'no', 0, 'no');
+                    return $this->responseLinea($fila_id, 'no', 0, 'no', $identificador);
                 }
 
                 $calificacion->fill($linea_datos);
@@ -472,17 +487,17 @@ class CalificacionController extends Controller
 
                 $calificacion_aux = CalificacionAuxiliar::updateOrCreate($identificador, $linea_datos);
 
-                return $this->responseLinea($fila_id, $calificacion->id, $calificacion->calificacion, $calificacion_aux->id);
+                return $this->responseLinea($fila_id, $calificacion->id, $calificacion->calificacion, $calificacion_aux->id, $identificador);
             }
 
             if ($should_delete) {
-                return $this->responseLinea($fila_id, 'no', 0, 'no');
+                return $this->responseLinea($fila_id, 'no', 0, 'no', $identificador);
             }
 
             $calificacion_creada = Calificacion::create($linea_datos);
             $calificacion_aux = CalificacionAuxiliar::updateOrCreate($identificador, $linea_datos);
 
-            return $this->responseLinea($fila_id, $calificacion_creada->id, $calificacion_creada->calificacion, $calificacion_aux->id);
+            return $this->responseLinea($fila_id, $calificacion_creada->id, $calificacion_creada->calificacion, $calificacion_aux->id, $identificador);
         });
     }
 
@@ -548,9 +563,9 @@ class CalificacionController extends Controller
         }
     }
 
-    protected function responseLinea($fila_id, $id_calificacion, $calificacion_texto, $id_calificacion_aux)
+    protected function responseLinea($fila_id, $id_calificacion, $calificacion_texto, $id_calificacion_aux, $identificador = null)
     {
-        return [
+        $respuesta = [
             (object)[
                 'numero_fila' => $fila_id,
                 'id_calificacion' => $id_calificacion,
@@ -558,6 +573,12 @@ class CalificacionController extends Controller
                 'id_calificacion_aux' => $id_calificacion_aux
             ]
         ];
+        if ($identificador && app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo()) {
+            $scope = array_intersect_key($identificador, array_flip(['id_colegio','anio','id_periodo','curso_id','id_asignatura']));
+            $respuesta[0]->definitivas_alcance = Calificacion::where($scope)->get(['id_estudiante', 'calificacion'])->toArray();
+            if (is_numeric($id_calificacion)) $respuesta[0]->calificacion_texto = Calificacion::where('id', $id_calificacion)->value('calificacion');
+        }
+        return $respuesta;
     }
 
     /**

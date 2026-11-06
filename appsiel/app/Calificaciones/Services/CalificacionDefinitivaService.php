@@ -24,6 +24,12 @@ class CalificacionDefinitivaService
             (int)$asignaturaId
         );
 
+        if ($resumen['modo_encabezados'] === 'agrupaciones') {
+            $servicio = app(ColumnasCalificadasService::class);
+            $activas = $servicio->activas($anio, $periodoId, $cursoId, $asignaturaId, $calificacionesAuxiliares);
+            return $this->ponderarActivas($calificacionesAuxiliares, $servicio->pesos($resumen, $activas));
+        }
+
         $columnas = [];
         for ($indice = 1; $indice < 16; $indice++) {
             if (!$resumen['usar_encabezados_fijos'] || $resumen['columnas'][$indice]->configurado) {
@@ -76,6 +82,7 @@ class CalificacionDefinitivaService
         $usarFijos = $this->encabezadosCalificacionService->usarEncabezadosFijosEnPeriodo($periodoId);
 		$encabezadoGlobal = is_null($encabezado->curso_id) && is_null($encabezado->asignatura_id);
 
+        if ($encabezadoGlobal && app(AgrupacionesColumnasService::class)->activo()) return 0;
         $encabezadoAnual = $periodoId === 0 && $encabezadoGlobal;
         if ($encabezadoAnual) {
             if (!$this->encabezadosCalificacionService->manejarEncabezadosFijosPorPeriodo() || (int)$encabezado->anio <= 0) {
@@ -84,7 +91,7 @@ class CalificacionDefinitivaService
             $query = CalificacionAuxiliar::where('anio', (int)$encabezado->anio);
         } else {
             $query = CalificacionAuxiliar::where('id_periodo', $periodoId);
-            if (!$usarFijos && !$encabezadoGlobal) {
+            if ((!$usarFijos || app(AgrupacionesColumnasService::class)->activo()) && !$encabezadoGlobal) {
                 $query->where('curso_id', $encabezado->curso_id)
                     ->where('id_asignatura', $encabezado->asignatura_id);
             }
@@ -123,6 +130,31 @@ class CalificacionDefinitivaService
         });
 
         return $actualizadas;
+    }
+
+    protected function ponderarActivas($datos, array $pesos)
+    {
+        $total = 0;
+        foreach ($pesos as $i => $peso) $total += $this->valor($datos, 'C'.$i) * $peso;
+        return round($total, 2);
+    }
+
+    public function recalcularAlcancePorAuxiliar($auxiliar)
+    {
+        if (!app(AgrupacionesColumnasService::class)->activo()) return;
+        $servicio = app(ColumnasCalificadasService::class);
+        $colegio = $auxiliar->id_colegio;
+        $filas = $servicio->consulta($auxiliar->anio, $auxiliar->id_periodo, $auxiliar->curso_id, $auxiliar->id_asignatura, $colegio)->get();
+        $resumen = $this->encabezadosCalificacionService->getResumenParaCarga($auxiliar->anio, $auxiliar->id_periodo, $auxiliar->curso_id, $auxiliar->id_asignatura);
+        $activas = $servicio->activas($auxiliar->anio, $auxiliar->id_periodo, $auxiliar->curso_id, $auxiliar->id_asignatura, ['id_colegio'=>$colegio]);
+        $pesos = $servicio->pesos($resumen, $activas);
+        foreach ($filas as $fila) {
+            $q = Calificacion::where('anio', $fila->anio)->where('id_periodo', $fila->id_periodo)
+                ->where('curso_id', $fila->curso_id)->where('id_asignatura', $fila->id_asignatura)
+                ->where('id_estudiante', $fila->id_estudiante)->where('codigo_matricula', $fila->codigo_matricula);
+            if ($colegio !== null) $q->where('id_colegio', $colegio);
+            $q->update(['calificacion'=>$this->ponderarActivas($fila, $pesos)]);
+        }
     }
 
     protected function valor($datos, $columna)

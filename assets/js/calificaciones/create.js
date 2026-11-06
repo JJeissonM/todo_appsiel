@@ -87,9 +87,22 @@ $(document).ready(function(){
             if (typeof window.desactivarCargaContinuar === 'function') {
                 window.desactivarCargaContinuar();
             }
-        }).fail(function(){
+        }).fail(function(xhr){
             $('#div_cargando').hide();
             $('#div_spin').hide();
+
+            var mensaje = 'No se pudieron cargar las calificaciones. Intente nuevamente.';
+            if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) {
+                mensaje = xhr.responseJSON.message;
+            } else if (xhr.status === 401 || xhr.status === 419) {
+                mensaje = 'La sesión ha vencido. Recargue la página e ingrese nuevamente.';
+            } else if (xhr.status === 0) {
+                mensaje = 'No se pudo conectar con el servidor. Revise su conexión e intente nuevamente.';
+            }
+            var aviso = $('<div>').addClass('alert alert-danger')
+                .attr('role', 'alert').attr('tabindex', '-1').text(mensaje);
+            $('#div_form_ingreso').empty().append(aviso);
+            aviso.focus();
 
             if (typeof window.desactivarCargaContinuar === 'function') {
                 window.desactivarCargaContinuar();

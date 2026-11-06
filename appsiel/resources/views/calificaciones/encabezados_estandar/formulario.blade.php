@@ -13,7 +13,7 @@
             <textarea name="descripcion" class="form-control" id="descripcion" rows="2" required="required"> {{ $descripcion }} </textarea>
         </div>
 
-        @if( $usar_encabezados_fijos )
+        @if( $usar_encabezados_fijos && empty($actividad_agrupada) )
             <div class="form-group">
                 <label for="titulo">Título agrupador</label>
                 <input name="titulo" type="text" class="form-control" id="titulo" value="{{ $titulo }}">
@@ -25,12 +25,18 @@
             </div>
         @endif
         
+        @if(!empty($actividad_agrupada))
+            <p><strong>{{ $titulo }} · {{ $label }}</strong><br>Porcentaje calculado: {{ rtrim(rtrim(number_format($peso, 6, '.', ''), '0'), '.') }}% (porcentaje del grupo dividido entre sus columnas). Se administra en Agrupaciones de columnas.</p>
+            <input type="hidden" id="peso" name="peso" value="{{ $peso }}">
+            <input type="hidden" id="actividad_agrupada" name="actividad_agrupada" value="1">
+        @else
         <div class="form-group">
             <label for="fecha">Peso actividad (%)</label>
             <input name="peso" type="text" class="form-control" id="peso" value="{{ $peso }}">
             <p><b>Nota:</b> Éste campo es opcional. Si asigna un Peso, tenga en cuenta que todas las calificaciones deberán tener Peso y que todos los pesos deben sumar 100%; sino, habrá inconsitencias en el cálculo de la definitiva.</p>
         </div>
         
+        @endif
         <input type="hidden" name="opcion" value="{{ $opcion }}" id="opcion">
         
         <input type="hidden" name="id_encabezado_calificacion" value="{{ $id_encabezado_calificacion }}" id="id_encabezado_calificacion">

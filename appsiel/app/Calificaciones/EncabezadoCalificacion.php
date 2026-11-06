@@ -20,7 +20,14 @@ class EncabezadoCalificacion extends Model
 	{
 		parent::boot();
 
+        static::saving(function ($encabezado) {
+            app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->aplicarActividad($encabezado);
+        });
 		static::saved(function ($encabezado) {
+            if ($encabezado->agrupacion_columna_id) {
+                $columna = ColumnaAgrupacionCalificacion::find($encabezado->agrupacion_columna_id);
+                if ($columna) \DB::table('sga_agrupaciones_calificacion')->where('id', $columna->agrupacion_id)->update(['bloqueado' => true]);
+            }
 			app(CalificacionDefinitivaService::class)->recalcularPorEncabezado($encabezado);
 		});
 
@@ -32,19 +39,33 @@ class EncabezadoCalificacion extends Model
 	public function validar_datos_creacion($request, $controller)
 	{
 		$this->normalizarFechaRequest($request);
+        $this->aplicarAgrupacionRequest($request);
 		$this->validarUnicidadPorAlcance($request, $controller);
 	}
 
 	public function preparar_request_validacion($request, $id = null)
 	{
 		$this->normalizarFechaRequest($request, $id);
+        $this->aplicarAgrupacionRequest($request, $id);
 	}
 
 	public function validar_datos_actualizacion($request, $controller, $id)
 	{
 		$this->normalizarFechaRequest($request, $id);
+        $this->aplicarAgrupacionRequest($request, $id);
 		$this->validarUnicidadPorAlcance($request, $controller, $id);
 	}
+
+    protected function aplicarAgrupacionRequest($request, $id = null)
+    {
+        $servicio = app(\App\Calificaciones\Services\AgrupacionesColumnasService::class);
+        if (!$servicio->activo()) return;
+        $this->normalizarAlcanceRequest($request, $id);
+        $actividad = $id ? self::findOrFail($id) : new self;
+        $actividad->fill($request->all());
+        $servicio->aplicarActividad($actividad);
+        $request->merge(['peso' => $actividad->peso, 'label' => $actividad->label, 'titulo' => $actividad->titulo]);
+    }
 
 	public function get_campos_adicionales_create($listaCampos)
 	{
@@ -82,7 +103,8 @@ class EncabezadoCalificacion extends Model
 		$reglaFecha = $this->esEncabezadoSoloPorPeriodo($request, $id)
 			? 'date_format:Y-m-d'
 			: 'required|date_format:Y-m-d';
-		$pesoMaximo = max(0, 100 - $this->getSumaPesosDelAlcance($request, $id));
+		$pesoMaximo = app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo()
+            ? 100 : max(0, 100 - $this->getSumaPesosDelAlcance($request, $id));
 
 		$controller->validate(
 			$request,

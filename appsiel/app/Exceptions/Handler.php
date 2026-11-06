@@ -51,6 +51,17 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
+        if ($e instanceof HttpException && $e->getStatusCode() === 422) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['message' => $e->getMessage()], 422);
+            }
+            if (in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE'])) {
+                return redirect()->back()
+                    ->withInput($request->except(['_token', 'password', 'password_confirmation']))
+                    ->with('mensaje_error', $e->getMessage());
+            }
+        }
+
         if ($e instanceof TurnoIntegrityException || $e instanceof TurnoRequiredException || $e instanceof TurnoStateException) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(array(

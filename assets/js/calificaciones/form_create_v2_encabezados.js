@@ -86,7 +86,7 @@ function mostrarAdvertenciasPesos() {
 function actualizarIndicadoresPesos() {
     if (verificar_hay_pesos()) {
         $("#nota_hay_pesos").show();
-        $("#lbl_suma_pesos").html(get_pesos_totales() + "%");
+        $("#lbl_suma_pesos").html(Number(get_pesos_totales().toFixed(6)) + "%");
     } else {
         $("#nota_hay_pesos").hide();
         $("#lbl_suma_pesos").html("");
@@ -107,14 +107,39 @@ function calcular_definitivas_promedio_poderado() {
     });
 }
 
+function pesos_columnas_con_notas() {
+    var activas = {}, sumas = {}, pesosColumnas = {}, porcentajes = {};
+    var noVisibles = JSON.parse($("#tabla_registros").attr("data-columnas-no-visibles") || "[]");
+    $("#tabla_registros .encabezado_calificacion").each(function () {
+        var boton = $(this), columna = boton.val(), tieneNota = noVisibles.indexOf(parseInt(columna.substring(1), 10)) !== -1;
+        $("#tabla_registros input[name='" + columna + "[]']").each(function () {
+            var nota = parseFloat(this.value);
+            if (isFinite(nota) && nota !== 0) { tieneNota = true; return false; }
+        });
+        if (!tieneNota) { return; }
+        var grupo = boton.attr("data-grupo");
+        activas[columna] = grupo;
+        pesosColumnas[columna] = parseFloat(boton.attr("data-peso")) || 0;
+        sumas[grupo] = (sumas[grupo] || 0) + pesosColumnas[columna];
+        porcentajes[grupo] = parseFloat(boton.attr("data-peso-grupo")) || 0;
+    });
+    var total = 0, pesos = {};
+    $.each(porcentajes, function (grupo, porcentaje) { total += porcentaje; });
+    $.each(activas, function (columna, grupo) {
+        pesos[columna] = total && sumas[grupo] ? porcentajes[grupo] * pesosColumnas[columna] / sumas[grupo] / total : 0;
+    });
+    return pesos;
+}
+
 function calcular_definitiva_una_fila_promedio_poderado(numero_fila) {
     // Por cada caja de texto de la fila
     var total_def = 0;
+    var excluirVacias = $("#tabla_registros").attr("data-excluir-columnas-vacias") === "1";
+    var pesosActivos = excluirVacias ? pesos_columnas_con_notas() : {};
     $(".valores_" + numero_fila).each(function () {
-
-        var peso_columna = get_valor_peso_columna($(this));
-
-        total_def += this.value * (peso_columna / 100);
+        var columna = ($(this).attr("id") || "").split("_")[0];
+        var peso_columna = excluirVacias ? (pesosActivos[columna] || 0) : get_valor_peso_columna($(this)) / 100;
+        total_def += (parseFloat(this.value) || 0) * peso_columna;
     });
 
     return total_def;
@@ -261,6 +286,10 @@ $(document).ready(function () {
             $("#div_spin").hide();
             $("#contenido_modal").html(respuesta);
             $("#descripcion").focus();
+        }).fail(function () {
+            $("#div_spin").hide();
+            $(".btn_save_modal").hide();
+            $("#contenido_modal").empty().append($("<div class='alert alert-danger'>").text("No fue posible cargar la actividad. Revise la configuración de columnas y vuelva a intentarlo."));
         });
     });
 
@@ -333,7 +362,7 @@ $(document).ready(function () {
                             $(".btn_close_modal").removeAttr("disabled");
                             guardando_encabezados = false;
                         } else {
-                            if ($("#descripcion").val() == "") {
+                            if ($("#descripcion").val() == "" && $("#actividad_agrupada").val() !== "1") {
                                 cambiar_datos_boton(0);
                             } else {
                                 cambiar_datos_boton($("#peso").val());
@@ -351,6 +380,19 @@ $(document).ready(function () {
                         }
                     })
                     .fail(function (xhr, status, error) {
+                        $("#div_spin").hide();
+                        if (xhr.status != 401) {
+                            var detalles = xhr.responseJSON || {};
+                            var mensajes = [];
+                            $.each(detalles.errors || detalles, function (campo, errores) {
+                                if ($.isArray(errores)) { mensajes = mensajes.concat(errores); }
+                            });
+                            Swal.fire({
+                                icon: "error",
+                                title: "No fue posible guardar la actividad",
+                                text: detalles.message || mensajes.join(" ") || "Revise la fecha, la descripción y la configuración de las columnas.",
+                            });
+                        }
                         if (xhr.status == 401) {
                             Swal.fire({
                                 icon: "error",
@@ -378,4 +420,5 @@ $(document).ready(function () {
     });
 
     actualizarIndicadoresPesos();
+    if ($("#tabla_registros").attr("data-excluir-columnas-vacias") === "1") recalcular_definitivas();
 });

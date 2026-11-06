@@ -16,6 +16,7 @@ class EncabezadosCalificacionServiceTest extends TestCase
         parent::setUp();
 
         config([
+            'calificaciones.usar_agrupaciones_columnas_calificaciones' => 'No',
             'database.default' => 'sqlite',
             'database.connections.sqlite' => [
                 'driver' => 'sqlite',

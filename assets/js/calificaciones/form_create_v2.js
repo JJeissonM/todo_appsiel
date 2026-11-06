@@ -189,6 +189,10 @@ $(document).ready(function () {
     }
 
     function recalcularFilaDesdeInput($input) {
+        if ($("#tabla_registros").attr("data-excluir-columnas-vacias") === "1") {
+            recalcular_definitivas();
+            return;
+        }
         var numero_fila = obtenerNumeroFilaDesdeInput($input);
         if (numero_fila === null) {
             return;
@@ -663,6 +667,16 @@ $(document).ready(function () {
                 );
             }
 
+            if (response[0].definitivas_alcance) {
+                $.each(response[0].definitivas_alcance, function (i, nota) {
+                    $("#tabla_registros .fila_calificaciones_estudiante").each(function () {
+                        if (String($(this).attr("data-id_estudiante")) !== String(nota.id_estudiante)) return;
+                        var numero = this.id.split("_")[1];
+                        $(this).attr("data-calificacion", nota.calificacion);
+                        $("#calificacion_texto" + numero).val(parseFloat(nota.calificacion || 0).toFixed(2));
+                    });
+                });
+            }
             quitarFilaModificada(matricula_id);
             restantes--;
             actualizarContador(restantes);
