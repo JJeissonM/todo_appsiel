@@ -56,6 +56,9 @@
 	@if( isset($archivo_js) )
 		<script src="{{ asset( $archivo_js ) }}"></script>
 	@endif
+	@if( isset($archivo_js_create) )
+		<script src="{{ asset( $archivo_js_create ) }}"></script>
+	@endif
 
 	@if(filter_var(env('HOTEL_MODULE_ENABLED', env('HOTEL_MODULE_SEEDERS_ENABLED', false)), FILTER_VALIDATE_BOOLEAN))
 		@include('hotel.partials.cliente_autocomplete_scripts', compact('form_create'))
