@@ -240,6 +240,22 @@ class AgrupacionesColumnasServiceTest extends EncabezadosCalificacionServiceTest
         $this->assertEquals(3.3,$calc->calcular(2026,201,4,9,['C1'=>4,'C3'=>2,'C4'=>4]));
         $this->assertEquals(0,$calc->calcular(2026,201,4,9,['C1'=>0,'C2'=>0,'C3'=>0,'C4'=>0]));
     }
+    public function test_columnas_se_ordenan_por_agrupacion_y_numero_sin_cambiar_sus_identificadores()
+    {
+        $this->activar(); $a=$this->grupo('Actividades'); $b=$this->grupo('Evaluaciones');
+        foreach (['C10','C1','C3'] as $columna) $this->columna($a,$columna,40);
+        $this->columna($b,'C2',60);
+        $resumen=(new EncabezadosCalificacionService)->getResumenParaCarga(2026,201,4,9);
+        $visibles=array_filter($resumen['columnas'],function($c){return $c->configurado;});
+        $this->assertSame([1,3,10,2],array_keys($visibles));
+        $this->assertCount(2,$resumen['grupos_titulo']);
+        $this->assertSame(3,$resumen['grupos_titulo'][0]->cantidad);
+        $this->assertSame(1,$resumen['grupos_titulo'][0]->inicio);
+        $this->assertSame('C2',$resumen['columnas'][2]->columna_calificacion);
+        $this->assertEquals(60,$resumen['array_pesos'][2]);
+        $this->assertEquals(3.2,(new CalificacionDefinitivaService)->calcular(2026,201,4,9,['C1'=>5,'C2'=>2]));
+    }
+
     public function test_porcentajes_individuales_se_redistribuyen_proporcionalmente_solo_entre_columnas_con_notas()
     {
         $this->activar(); $a=$this->grupo('A'); $b=$this->grupo('B');

@@ -110,6 +110,15 @@ class EncabezadosCalificacionService
             }
         }
 
+        if ($this->getModoEncabezados($periodoId, $anio) === 'agrupaciones') {
+            // Conservar las claves Cn: solo cambia la presentación, nunca la identidad de la nota.
+            uasort($columnas, function ($a, $b) {
+                $grupoA = $a->configurado ? (int)$a->agrupacion_id : PHP_INT_MAX;
+                $grupoB = $b->configurado ? (int)$b->agrupacion_id : PHP_INT_MAX;
+                if ($grupoA !== $grupoB) return $grupoA < $grupoB ? -1 : 1;
+                return (int)substr($a->columna_calificacion, 1) - (int)substr($b->columna_calificacion, 1);
+            });
+        }
         $columnasParaTitulos = $columnas;
         if ($usarEncabezadosFijos) {
             $columnasParaTitulos = array_filter($columnas, function ($columna) {
@@ -218,7 +227,8 @@ class EncabezadosCalificacionService
         foreach ($columnas as $indice => $columna) {
             $titulo = trim((string)$columna->titulo);
 
-            if ($grupoActual !== null && $grupoActual['titulo'] === $titulo) {
+            $agrupacionId = isset($columna->agrupacion_id) ? $columna->agrupacion_id : null;
+            if ($grupoActual !== null && $grupoActual['titulo'] === $titulo && $grupoActual['agrupacion_id'] === $agrupacionId) {
                 $grupoActual['cantidad']++;
                 continue;
             }
@@ -229,6 +239,7 @@ class EncabezadosCalificacionService
 
             $grupoActual = [
                 'titulo' => $titulo,
+                'agrupacion_id' => $agrupacionId,
                 'cantidad' => 1,
                 'inicio' => $indice
             ];

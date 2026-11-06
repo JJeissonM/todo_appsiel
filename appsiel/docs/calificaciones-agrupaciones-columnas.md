@@ -22,7 +22,7 @@ La nueva opción está desactivada por defecto. Al desactivarla se conservan los
 
 ## Operación y validaciones
 
-- En la tabla se muestran las columnas configuradas y las agrupaciones de títulos consecutivos, conservando el orden numérico C1…C15.
+- En la tabla se muestran las columnas configuradas y las agrupaciones en orden de creación (ID), cada una en un bloque, y dentro de cada grupo sus columnas en orden numérico C1…C15. Se conservan los identificadores de las columnas y las notas asociadas.
 - Los botones siguen abriendo la modal. Esta solicita fecha y descripción, y muestra el porcentaje como información. El servidor ignora pesos, títulos y labels enviados desde el navegador.
 - Una columna solo puede pertenecer a una agrupación del mismo año/periodo y empresa; los porcentajes de grupo son positivos y el conjunto debe sumar exactamente 100%. Un conjunto incompleto bloquea la carga y el cálculo con un mensaje, sin usar silenciosamente otro modo.
 - Eliminar una actividad no elimina su columna ni cambia el porcentaje.

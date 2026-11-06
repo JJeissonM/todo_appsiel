@@ -53,7 +53,7 @@
 				@endif
 				<tr>
 					<th>Estudiantes</th>
-					@for($k=1; $k < $cantidad_calificaciones; $k++)
+					@foreach($encabezados_columnas as $k => $encabezado_columna)
 						<?php
 							$encabezado_columna = $encabezados_columnas[$k];
 							if( $array_pesos[$k] == 0 )
@@ -68,7 +68,7 @@
 								<button class="btn btn-default btn-xs encabezado_calificacion" value="C{{$k}}" data-peso="{{$array_pesos[$k]}}" data-grupo="{{ $encabezado_columna->agrupacion_id }}" data-peso-grupo="{{ $encabezado_columna->peso_grupo }}" title="Peso= {{$array_pesos[$k]}}%" id="btn_C{{$k}}" style="background-color: {{$color_btn}}; @if($usar_encabezados_fijos && empty($editar_actividades_agrupadas)) cursor: default; @endif" @if($usar_encabezados_fijos && empty($editar_actividades_agrupadas)) disabled="disabled" @endif>{{ $encabezado_columna->label }}</button>
 							</th>
 						@endif
-					@endfor
+					@endforeach
 					<th>
 						Def.
 					</th>
@@ -91,19 +91,19 @@
 						<td width="250px" style="font-size:12px">
 							<b> {{$linea}} {{ $vec_estudiantes[$k]['nombre'] }}</b>
 							@if($usar_encabezados_fijos)
-								@for ($c=1; $c < $cantidad_calificaciones; $c++)
+								@foreach ($encabezados_columnas as $c => $columna_visible)
 									@if(!$encabezados_columnas[$c]->configurado)
 										<input type="hidden" id="C{{$c.'_'.$linea}}" class="campo_calificacion_auxiliar" value="{{$vec_estudiantes[$k]['C'.$c]}}">
 									@endif
-								@endfor
+								@endforeach
 							@endif
 						</td>				
 						
-						@for ($c=1; $c < $cantidad_calificaciones; $c++)
+						@foreach ($encabezados_columnas as $c => $columna_visible)
 							@if(!$usar_encabezados_fijos || $encabezados_columnas[$c]->configurado)
 								<td class="celda_C{{$c}}"><input type="text" name="C{{$c}}[]" id="C{{$c.'_'.$linea}}" style="width: 32px;" class="valores_{{$linea}} campo_calificacion_auxiliar" value="{{$vec_estudiantes[$k]['C'.$c]}}" autocomplete="off"></td>
 							@endif
-						@endfor
+						@endforeach
 
 						<td>
 							<input type="text" name="calificacion_texto[]" id="{{ "calificacion_texto".$linea }}" style="width: 32px;"  value="{{ $vec_estudiantes[$k]['calificacion'] }}" disabled="disabled">
