@@ -39,6 +39,9 @@
 								@if($grupo_titulo->titulo != '')
 									<div style="border: 2px solid #222; padding: 4px 2px; color: #d9534f; font-weight: bold;">
 										{{ $grupo_titulo->titulo }}
+                                        @if(!empty($editar_actividades_agrupadas))
+                                            ({{ rtrim(rtrim(number_format($encabezados_columnas[$grupo_titulo->inicio]->peso_grupo, 2, '.', ''), '0'), '.') }}%)
+                                        @endif
 									</div>
 								@else
 									&nbsp;
