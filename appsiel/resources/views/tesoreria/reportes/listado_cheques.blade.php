@@ -39,7 +39,7 @@
     .teso-listado-cheques .report-table th {
         border-bottom: 1px solid #333;
         border-top: 1px solid #333;
-        font-size: 8px;
+        font-size: 11px;
         padding: 4px 2px;
         text-align: left;
         text-transform: uppercase;
@@ -47,7 +47,7 @@
 
     .teso-listado-cheques .report-table td {
         border-bottom: 1px solid #bbb;
-        font-size: 8px;
+        font-size: 11px;
         padding: 4px 2px;
         vertical-align: top;
         word-wrap: break-word;
