@@ -21,6 +21,7 @@ use App\Tesoreria\TesoRecaudosLibreta;
 use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoCaja;
+use App\Tesoreria\ControlCheque;
 use App\Tesoreria\TesoEntidadFinanciera;
 use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMedioRecaudo;
@@ -39,6 +40,98 @@ use Khill\Lavacharts\Laravel\LavachartsFacade;
 
 class ReporteController extends TesoreriaController
 {
+
+    /**
+     * Listado de cheques emitidos/recibidos durante un periodo.
+     *
+     * teso_control_cheques no tiene core_empresa_id. El tercero es, por tanto,
+     * el límite de empresa que impide exponer cheques de otra compañía.
+     */
+    public function teso_listado_cheques(Request $request)
+    {
+        $fecha_desde = trim((string)$request->teso_cheques_fecha_desde);
+        $fecha_hasta = trim((string)$request->teso_cheques_fecha_hasta);
+        $tercero_id = (int)$request->teso_cheques_tercero_id;
+
+        if (!$this->fechaReporteValida($fecha_desde) || !$this->fechaReporteValida($fecha_hasta)) {
+            return '<div class="alert alert-danger">Debe ingresar un rango de fechas válido.</div>';
+        }
+
+        if ($fecha_desde > $fecha_hasta) {
+            return '<div class="alert alert-danger">La Fecha desde no puede ser posterior a la Fecha hasta.</div>';
+        }
+
+        $tercero = null;
+        if ($tercero_id > 0) {
+            $tercero = Tercero::where('id', $tercero_id)
+                ->where('core_empresa_id', (int)Auth::user()->empresa_id)
+                ->first();
+
+            if (is_null($tercero)) {
+                return '<div class="alert alert-danger">El tercero seleccionado no pertenece a la empresa actual.</div>';
+            }
+        }
+
+        $query = ControlCheque::query()
+            ->join('core_terceros', 'core_terceros.id', '=', 'teso_control_cheques.tercero_id')
+            ->leftJoin('teso_entidades_financieras', 'teso_entidades_financieras.id', '=', 'teso_control_cheques.entidad_financiera_id')
+            ->leftJoin('core_tipos_docs_apps AS tipo_doc_origen', 'tipo_doc_origen.id', '=', 'teso_control_cheques.core_tipo_doc_app_id_origen')
+            ->leftJoin('core_tipos_docs_apps AS tipo_doc_consumo', 'tipo_doc_consumo.id', '=', 'teso_control_cheques.core_tipo_doc_app_id_consumo')
+            ->where('core_terceros.core_empresa_id', (int)Auth::user()->empresa_id)
+            ->where('teso_control_cheques.fecha_emision', '>=', $fecha_desde)
+            ->where('teso_control_cheques.fecha_emision', '<=', $fecha_hasta);
+
+        if ($tercero_id > 0) {
+            $query->where('teso_control_cheques.tercero_id', $tercero_id);
+        }
+
+        $cheques = $query->select(
+                'teso_control_cheques.id',
+                'teso_control_cheques.fuente',
+                'teso_control_cheques.fecha_emision',
+                'teso_control_cheques.fecha_cobro',
+                'teso_control_cheques.numero_cheque',
+                'teso_control_cheques.referencia_cheque',
+                'teso_control_cheques.valor',
+                'teso_control_cheques.detalle',
+                'teso_control_cheques.estado',
+                'core_terceros.descripcion AS tercero',
+                'core_terceros.numero_identificacion AS tercero_identificacion',
+                'teso_entidades_financieras.descripcion AS entidad_financiera',
+                DB::raw('CONCAT(COALESCE(tipo_doc_origen.prefijo, ""), IF(tipo_doc_origen.prefijo IS NULL OR tipo_doc_origen.prefijo = "", "", " "), teso_control_cheques.consecutivo) AS documento_origen'),
+                DB::raw('IF(teso_control_cheques.consecutivo_doc_consumo > 0, CONCAT(COALESCE(tipo_doc_consumo.prefijo, ""), IF(tipo_doc_consumo.prefijo IS NULL OR tipo_doc_consumo.prefijo = "", "", " "), teso_control_cheques.consecutivo_doc_consumo), "") AS documento_consumo')
+            )
+            ->orderBy('teso_control_cheques.fecha_emision')
+            ->orderBy('teso_control_cheques.numero_cheque')
+            ->orderBy('teso_control_cheques.id')
+            ->get();
+
+        $empresa = Auth::user()->empresa;
+        $total = $cheques->sum('valor');
+
+        $vista = View::make('tesoreria.reportes.listado_cheques', compact(
+            'fecha_desde',
+            'fecha_hasta',
+            'tercero',
+            'empresa',
+            'cheques',
+            'total'
+        ))->render();
+
+        $reporte = json_decode($request->reporte_instancia);
+        if (is_object($reporte) && isset($reporte->id)) {
+            Cache::forever('pdf_reporte_' . $reporte->id, $vista);
+        }
+
+        return $vista;
+    }
+
+    protected function fechaReporteValida($fecha)
+    {
+        $fecha_objeto = \DateTime::createFromFormat('Y-m-d', $fecha);
+
+        return $fecha_objeto !== false && $fecha_objeto->format('Y-m-d') === $fecha;
+    }
 
     public static function grafica_movimientos_diarios($fecha_desde, $fecha_hasta)
     {

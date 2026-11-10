@@ -61,6 +61,11 @@
 				$tam_hoja_default = 'letter';
 				$orientacion_default = 'Landscape';
 			}
+			elseif ( $reporte->url_form_action == 'teso_listado_cheques' )
+			{
+				$tam_hoja_default = 'letter';
+				$orientacion_default = 'Landscape';
+			}
 		?>
 		@if( !in_array(Input::get('reporte_id'), $reports_list) )
 			{{ Form::label( 'tam_hoja', 'Tamaño hoja' ) }}

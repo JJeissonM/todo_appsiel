@@ -139,6 +139,7 @@ Route::post('tesoreria/ajax_flujo_de_efectivo','Tesoreria\ReporteController@ajax
 
 Route::post('teso_movimiento_caja_bancos','Tesoreria\ReporteController@teso_movimiento_caja_bancos');
 Route::post('teso_resumen_movimiento_caja_bancos','Tesoreria\ReporteController@teso_resumen_movimiento_caja_bancos');
+Route::post('teso_listado_cheques','Tesoreria\ReporteController@teso_listado_cheques');
 
 Route::get('tesoreria/reporte_cartera_por_curso','Tesoreria\ReporteController@reporte_cartera_por_curso');
 Route::post('tesoreria/ajax_reporte_cartera_por_curso','Tesoreria\ReporteController@ajax_reporte_cartera_por_curso');
