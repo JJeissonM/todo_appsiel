@@ -31,6 +31,8 @@ class ListadoChequesReportTest extends TestCase
         $this->crearCheque($terceroEmpresa->id, '2099-11-05', 'CHEQUE-INCLUIDO', 125000);
         $this->crearCheque($terceroEmpresa->id, '2099-10-31', 'CHEQUE-FUERA-FECHA', 50000);
         $this->crearCheque($terceroOtraEmpresaId, '2099-11-05', 'CHEQUE-OTRA-EMPRESA', 75000);
+        $this->crearCheque($terceroEmpresa->id, '2099-11-05', '20', 20000);
+        $this->crearCheque($terceroEmpresa->id, '2099-11-05', '3', 3000);
 
         $request = new Request(array(
             'teso_cheques_fecha_desde' => '2099-11-01',
@@ -52,6 +54,7 @@ class ListadoChequesReportTest extends TestCase
         $this->assertNotContains('>Banco</th>', $html);
         $this->assertNotContains('>Doc. consumo</th>', $html);
         $this->assertContains('enlace_show_documento/', $html);
+        $this->assertLessThan(strpos($html, '<td>20</td>'), strpos($html, '<td>3</td>'));
 
         $requestSinTercero = new Request(array(
             'teso_cheques_fecha_desde' => '2099-11-01',

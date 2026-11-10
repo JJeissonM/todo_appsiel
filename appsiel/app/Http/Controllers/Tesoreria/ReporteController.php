@@ -98,8 +98,9 @@ class ReporteController extends TesoreriaController
                 'transaccion_origen.core_app_id AS origen_app_id',
                 DB::raw('CONCAT(COALESCE(tipo_doc_origen.prefijo, ""), IF(tipo_doc_origen.prefijo IS NULL OR tipo_doc_origen.prefijo = "", "", " "), teso_control_cheques.consecutivo) AS documento_origen')
             )
-            ->orderBy('teso_control_cheques.fecha_emision')
+            ->orderByRaw('CAST(teso_control_cheques.numero_cheque AS UNSIGNED) ASC')
             ->orderBy('teso_control_cheques.numero_cheque')
+            ->orderBy('teso_control_cheques.fecha_emision')
             ->orderBy('teso_control_cheques.id')
             ->get();
 
