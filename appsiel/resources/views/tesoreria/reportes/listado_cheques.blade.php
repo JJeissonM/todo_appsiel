@@ -28,6 +28,7 @@
         border: 1px solid #777;
         margin-bottom: 10px;
         padding: 6px 8px;
+        font-size: 11px;
     }
 
     .teso-listado-cheques .report-table {
