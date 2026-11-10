@@ -41,7 +41,7 @@ class NotaDebito extends VtasDocEncabezado
             ->orWhere("vtas_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.valor_total", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
             ->paginate($nro_registros);
     }
 
@@ -66,7 +66,7 @@ class NotaDebito extends VtasDocEncabezado
             ->orWhere("vtas_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.valor_total", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }

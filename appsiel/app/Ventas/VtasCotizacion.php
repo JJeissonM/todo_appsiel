@@ -66,8 +66,7 @@ class VtasCotizacion extends Model
 
         $query = self::aplicarFiltroCreadoPor($query, 'vtas_doc_encabezados.creado_por');
 
-        $collection = $query->orderBy('vtas_doc_encabezados.fecha', 'DESC')
-                                    ->orderBy('vtas_doc_encabezados.consecutivo', 'DESC')
+        $collection = $query->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
                                     ->get();
 
         //hacemos el filtro de $search si $search tiene contenido
@@ -154,7 +153,7 @@ class VtasCotizacion extends Model
                 ->orWhere("vtas_doc_encabezados.valor_total", "LIKE", "%$search%");
         });
 
-        $string = $query->orderBy('vtas_doc_encabezados.created_at', 'DESC')->toSql();
+        $string = $query->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 

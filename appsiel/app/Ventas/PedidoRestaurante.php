@@ -69,7 +69,7 @@ class PedidoRestaurante extends VtasDocEncabezado
                     'vtas_doc_encabezados.estado AS campo6',
                     'vtas_doc_encabezados.id AS campo7'
                 )
-                ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+                ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
                 ->get();
 
         //hacemos el filtro de $search si $search tiene contenido
@@ -158,7 +158,7 @@ class PedidoRestaurante extends VtasDocEncabezado
             ->orWhere("vtas_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("vendedores.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }

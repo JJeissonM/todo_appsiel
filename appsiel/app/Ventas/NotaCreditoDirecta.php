@@ -41,7 +41,7 @@ class NotaCreditoDirecta extends Model
                                     'vtas_doc_encabezados.estado AS campo6',
                                     'vtas_doc_encabezados.id AS campo7'
                                 )
-                                ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+                                ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
                                 ->paginate($nro_registros);
         }
 
@@ -64,7 +64,7 @@ class NotaCreditoDirecta extends Model
             ->orWhere("vtas_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.valor_total", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
             ->paginate($nro_registros);
     }
     public static function sqlString($search)
@@ -88,7 +88,7 @@ class NotaCreditoDirecta extends Model
             ->orWhere("vtas_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.valor_total", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }

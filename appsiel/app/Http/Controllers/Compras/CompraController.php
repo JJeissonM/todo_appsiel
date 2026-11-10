@@ -1218,10 +1218,20 @@ class CompraController extends TransaccionController
             }
 
             // 6to. Se marcan como anulados los registros del documento
-            ComprasDocRegistro::where('compras_doc_encabezado_id', $factura->id)->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
+            ComprasDocRegistro::where('compras_doc_encabezado_id', $factura->id)
+                            ->update([
+                                'estado' => 'Anulado', 
+                                'modificado_por' => $modificado_por
+                            ]);
 
             // 7mo. Se marca como anulado el documento
-            $factura->update(['estado' => 'Anulado', 'entrada_almacen_id' => '', 'modificado_por' => $modificado_por]);
+            $factura->update([
+                'estado' => 'Anulado',
+                'doc_proveedor_prefijo' => '',
+                'doc_proveedor_consecutivo' => '',
+                'entrada_almacen_id' => '',
+                'modificado_por' => $modificado_por
+            ]);
 
             return redirect('compras/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Factura de compra ANULADA correctamente.');
         });

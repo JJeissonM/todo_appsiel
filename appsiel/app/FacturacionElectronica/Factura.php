@@ -54,7 +54,7 @@ class Factura extends VtasDocEncabezado
                 'vtas_doc_encabezados.estado AS campo7',
                 'vtas_doc_encabezados.id AS campo8'
             )
-            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
             ->get();
 
         //hacemos el filtro de $search si $search tiene contenido
@@ -139,7 +139,7 @@ class Factura extends VtasDocEncabezado
                 'vtas_doc_encabezados.forma_pago AS FORMA_PAGO',
                 'vtas_doc_encabezados.estado AS ESTADO'
             )
-            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
             ->toSql();
             
         $string = str_replace('`vtas_doc_encabezados`.`core_empresa_id` = ?', '`vtas_doc_encabezados`.`core_empresa_id` = ' . Auth::user()->empresa_id, $string);

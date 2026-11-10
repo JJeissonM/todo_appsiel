@@ -36,8 +36,7 @@ class NotaCredito extends VtasDocEncabezado
                 'vtas_doc_encabezados.estado AS campo7',
                 'vtas_doc_encabezados.id AS campo8'
             )
-            ->orderBy('vtas_doc_encabezados.fecha', 'DESC')
-            ->orderBy('vtas_doc_encabezados.created_at')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
             ->get();
 
         //hacemos el filtro de $search si $search tiene contenido
@@ -131,7 +130,7 @@ class NotaCredito extends VtasDocEncabezado
             ->orWhere("vtas_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.valor_total", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }

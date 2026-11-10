@@ -256,6 +256,13 @@ class ConfiguracionController extends ModeloController
     public function guardar_config(Request $request)
     {
         $app = Aplicacion::find( $request->url_id );
+        if ($app->app == 'configuracion') {
+            $this->validate($request, [
+                'orden_transacciones_index' => 'sometimes|in:consecutivo,fecha',
+            ], [
+                'orden_transacciones_index.in' => 'Seleccione un orden válido para los registros de transacciones.',
+            ]);
+        }
         if ($app->app == 'compras') {
             $this->validate($request, [
                 'ea_tipo_doc_app_id' => 'required|integer|min:1|exists:core_tipos_docs_apps,id,estado,Activo',

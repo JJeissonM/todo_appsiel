@@ -454,7 +454,7 @@ class VtasDocEncabezado extends Model
 
         $query = self::aplicarFiltroCreadoPor($query, 'vtas_doc_encabezados.creado_por');
 
-        $string = $query->orderBy('vtas_doc_encabezados.fecha', 'DESC')->toSql();
+        $string = $query->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))->toSql();
             
         $string = str_replace('`vtas_doc_encabezados`.`core_empresa_id` = ?', '`vtas_doc_encabezados`.`core_empresa_id` = ' . Auth::user()->empresa_id, $string);
         
@@ -490,8 +490,7 @@ class VtasDocEncabezado extends Model
 
         $query = self::aplicarFiltroCreadoPor($query, 'vtas_doc_encabezados.creado_por');
 
-        $collection = $query->orderBy('vtas_doc_encabezados.fecha', 'DESC')
-            ->orderBy('vtas_doc_encabezados.consecutivo', 'DESC')
+        $collection = $query->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_doc_encabezados'))
             ->get();
 
         //hacemos el filtro de $search si $search tiene contenido

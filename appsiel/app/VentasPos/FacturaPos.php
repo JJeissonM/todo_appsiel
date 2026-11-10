@@ -298,7 +298,7 @@ class FacturaPos extends Model
         });
 
         return $query
-            ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_pos_doc_encabezados'))
             ->paginate($nro_registros);
     }
 
@@ -331,7 +331,7 @@ class FacturaPos extends Model
         $query->having('nueva_cadena', 'LIKE', $texto_busqueda);
 
         return self::reemplazarBindingsSql($query
-            ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_pos_doc_encabezados'))
             ->toSql(), $query->getBindings());
     }
 
@@ -376,7 +376,7 @@ class FacturaPos extends Model
         });
 
         return $query
-            ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_pos_doc_encabezados'))
             ->paginate($nro_registros);
     }
 
