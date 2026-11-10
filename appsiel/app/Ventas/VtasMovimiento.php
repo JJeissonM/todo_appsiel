@@ -362,7 +362,7 @@ class VtasMovimiento extends Model
         return $movimiento->groupBy( $agrupar_por );
     }
 
-    public static function get_movimiento_ventas_filtrado( $fecha_desde, $fecha_hasta, $agrupar_por, $array_wheres )
+    public static function get_movimiento_ventas_filtrado( $fecha_desde, $fecha_hasta, $agrupar_por, $array_wheres, $pdv_id = null )
     {
         switch ( $agrupar_por )
         {
@@ -395,12 +395,12 @@ class VtasMovimiento extends Model
                 break;
         }
 
-        $movimiento = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
+        $query = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
                             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_movimientos.clase_cliente_id')
                             ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_movimientos.core_tipo_transaccion_id')
                             ->where($array_wheres)
-                            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->whereBetween('vtas_movimientos.fecha', [$fecha_desde, $fecha_hasta])
                             ->select(
                                         'vtas_movimientos.inv_producto_id',
                                         DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto'),
@@ -418,8 +418,12 @@ class VtasMovimiento extends Model
                                         'vtas_movimientos.remision_doc_encabezado_id',
                                         'vtas_movimientos.base_impuesto_total',// AS base_imp_tot
                                         'vtas_movimientos.tasa_descuento',
-                                        'vtas_movimientos.valor_total_descuento')
-                            ->get();
+                                        'vtas_movimientos.valor_total_descuento');
+
+        if ($pdv_id !== null && $pdv_id !== '' && (string)$pdv_id !== '0') {
+            \App\Ventas\Services\ProfitabilityReportService::filterByPdv($query, $pdv_id);
+        }
+        $movimiento = $query->get();
 
         foreach ($movimiento as $fila)
         {

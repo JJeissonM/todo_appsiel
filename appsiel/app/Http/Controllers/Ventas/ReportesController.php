@@ -214,6 +214,7 @@ class ReportesController extends Controller
         $fecha_hasta  = $request->fecha_hasta;
 
         $agrupar_por = $request->agrupar_por;
+        $ordenar_por = $request->input('ordenar_por', 'mayor_vendido');
         
         $costo_desde = $request->costo_desde;
 
@@ -231,7 +232,7 @@ class ReportesController extends Controller
             $array_wheres = array_merge($array_wheres,[['vtas_movimientos.vendedor_id','=', $request->vendedor_id]]);
         }
 
-        $movimiento = VtasMovimiento::get_movimiento_ventas_filtrado($fecha_desde, $fecha_hasta, $agrupar_por, $array_wheres);
+        $movimiento = VtasMovimiento::get_movimiento_ventas_filtrado($fecha_desde, $fecha_hasta, $agrupar_por, $array_wheres, $request->input('pdv_id'));
         
         $movimiento_inventarios = InvMovimiento::get_movimiento_transacciones_ventas( $fecha_desde, $fecha_hasta );
 
@@ -249,9 +250,9 @@ class ReportesController extends Controller
         }
         
         if ($costo_desde == 'ultimo_precio_compras') {
-            $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado_v2', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje', 'iva_incluido', 'items_con_descuento', 'aplicar_descuentos_pronto_pago') )->render();
+            $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado_v2', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje', 'iva_incluido', 'items_con_descuento', 'aplicar_descuentos_pronto_pago', 'ordenar_por') )->render();
         }else{
-            $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje', 'iva_incluido', 'items_con_descuento', 'aplicar_descuentos_pronto_pago') )->render();
+            $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje', 'iva_incluido', 'items_con_descuento', 'aplicar_descuentos_pronto_pago', 'ordenar_por') )->render();
         }
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
