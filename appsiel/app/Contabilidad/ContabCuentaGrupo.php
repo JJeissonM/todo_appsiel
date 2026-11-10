@@ -140,6 +140,21 @@ class ContabCuentaGrupo extends Model
         return $vec;
     }
 
+    public static function opciones_balance_comprobacion()
+    {
+        $opciones = ['todos' => 'Todos los grupos'];
+        $grupos = static::where('core_empresa_id', Auth::user()->empresa_id)
+            ->whereIn('id', function ($query) {
+                $query->select('contab_cuenta_grupo_id')->from('contab_cuentas')
+                    ->where('core_empresa_id', Auth::user()->empresa_id);
+            })->orderBy('codigo')->orderBy('id')->get();
+        foreach ($grupos as $grupo) {
+            $opciones[$grupo->id] = trim($grupo->codigo . ' ' . $grupo->descripcion);
+        }
+
+        return $opciones;
+    }
+
     public static function get_registros_select_hijo($id_select_padre)
     {
         $registros = DB::table('contab_cuenta_grupos')

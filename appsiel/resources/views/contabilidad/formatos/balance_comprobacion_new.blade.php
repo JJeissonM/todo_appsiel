@@ -34,7 +34,14 @@
             </tr>
         </thead>
         <tbody>
-        	@foreach($movimientos_cuentas as $movimiento_cuenta)
+            @foreach($grupos_movimientos as $movimientos_grupo)
+                @if($agrupar_por_grupo)
+                    <?php $grupo = $movimientos_grupo->first()->grupo; ?>
+                    <tr class="encabezado-grupo" style="background-color:#e8eaf6;font-weight:bold;">
+                        <td colspan="6">Grupo: {{ $grupo->codigo }} {{ $grupo->descripcion }}</td>
+                    </tr>
+                @endif
+                @foreach($movimientos_grupo as $movimiento_cuenta)
                         
                 <tr class="fila-{{$j}}" >
                     <td>
@@ -70,20 +77,30 @@
                     $total_saldo_final += $movimiento_cuenta->saldo_final;
                 ?>
             @endforeach
-            <tr class="fila-{{$j}}">
+                @if($agrupar_por_grupo)
+                    <tr class="subtotal-grupo" style="background-color:#f5f5f5;font-weight:bold;">
+                        <td colspan="2">Subtotal {{ $grupo->codigo }} {{ $grupo->descripcion }}</td>
+                        <td class="text-right">{{ number_format($movimientos_grupo->sum('saldo_inicial'), 0, ',', '.') }}</td>
+                        <td class="text-right">{{ number_format($movimientos_grupo->sum('debitos'), 0, ',', '.') }}</td>
+                        <td class="text-right">{{ number_format($movimientos_grupo->sum('creditos'), 0, ',', '.') }}</td>
+                        <td class="text-right">{{ number_format($movimientos_grupo->sum('saldo_final'), 0, ',', '.') }}</td>
+                    </tr>
+                @endif
+            @endforeach
+            <tr class="fila-{{$j}} total-general">
                 <td colspan="2">
-                   &nbsp;
+                   TOTAL GENERAL
                 </td>
-                <td>
+                <td class="text-right">
                    {{ number_format($total_saldo_inicial, 0, ',', '.')}}
                 </td>
-                <td>
+                <td class="text-right">
                    {{ number_format($total_debitos, 0, ',', '.')}}
                 </td>
-                <td>
+                <td class="text-right">
                    {{ number_format($total_creditos, 0, ',', '.')}}
                 </td>
-                <td>
+                <td class="text-right">
                    {{ number_format($total_saldo_final, 0, ',', '.')}}
                 </td>
             </tr>

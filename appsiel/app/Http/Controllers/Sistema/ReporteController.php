@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use App\Sistema\Reporte;
 use App\Sistema\Aplicacion;
+use App\Contabilidad\ContabCuentaGrupo;
 use App\Sistema\Services\ModeloService;
 use App\VentasPos\Services\ReportsServices;
 use App\Http\Controllers\Hotel\HotelReportController;
@@ -41,12 +42,39 @@ class ReporteController extends Controller
         // Ajustar los valores según la acción
         $lista_campos = $modelo_service->ajustar_valores_lista_campos_segun_accion( $lista_campos, $registro, '', $accion );
 
+        // Este formulario también se usa desde el catálogo dinámico de reportes.
+        if (trim($reporte->url_form_action, '/') === 'contab_ajax_balance_comprobacion') {
+            $lista_campos = $this->configurar_campos_balance_comprobacion($lista_campos);
+        }
+
         $miga_pan = [
         				[ 'url' => $app->app.'?id='.Input::get('id')  ,'etiqueta' => $app->descripcion ],
         				[ 'url' => 'NO'  ,'etiqueta' => $reporte->descripcion ]
         			];
 
         return view( 'core.reportes.vista_reportes', compact( 'reporte','lista_campos','miga_pan') );
+    }
+
+    protected function configurar_campos_balance_comprobacion($lista_campos)
+    {
+        // Se reemplazan posibles definiciones antiguas para evitar controles duplicados.
+        $lista_campos = array_values(array_filter($lista_campos, function ($campo) {
+            return !in_array($campo['name'], [
+                'contab_cuenta_grupo_id', 'contab_grupo_cuenta_id', 'agrupar_por_grupo'
+            ]);
+        }));
+        foreach ([
+            ['contab_cuenta_grupo_id', 'Grupo de cuentas', ContabCuentaGrupo::opciones_balance_comprobacion()],
+            ['agrupar_por_grupo', 'Agrupar por grupo con subtotales', [0 => 'No', 1 => 'Sí']]
+        ] as $definicion) {
+            $lista_campos[] = [
+                'name' => $definicion[0], 'descripcion' => $definicion[1], 'tipo' => 'select',
+                'opciones' => $definicion[2], 'value' => null, 'requerido' => 0,
+                'atributos' => ['class' => 'form-control', 'id' => $definicion[0]]
+            ];
+        }
+
+        return $lista_campos;
     }
 
     protected function mostrar_todos_los_documentos_nomina_en_reportes( $lista_campos )
