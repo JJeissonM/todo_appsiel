@@ -87,48 +87,35 @@
     <table class="report-table" id="teso_listado_cheques">
         <thead>
             <tr>
-                <th style="width: 7%;">Emisión</th>
-                <th style="width: 7%;">Cobro</th>
-                <th style="width: 8%;">Fuente</th>
-                <th style="width: 15%;">Tercero</th>
-                <th style="width: 8%;">Número</th>
-                <th style="width: 8%;">Referencia</th>
-                <th style="width: 10%;">Banco</th>
-                <th style="width: 8%;">Doc. origen</th>
-                <th style="width: 8%;">Doc. consumo</th>
-                <th style="width: 8%;">Estado</th>
-                <th style="width: 10%;" class="text-right">Valor</th>
+                <th style="width: 10%;">Emisión</th>
+                <th style="width: 15%;">Identificación</th>
+                <th style="width: 25%;">Tercero</th>
+                <th style="width: 12%;">Número</th>
+                <th style="width: 15%;">Doc. origen</th>
+                <th style="width: 10%;">Estado</th>
+                <th style="width: 13%;" class="text-right">Valor</th>
             </tr>
         </thead>
         <tbody>
             @forelse($cheques as $cheque)
                 <tr>
                     <td>{{ $cheque->fecha_emision }}</td>
-                    <td>{{ $cheque->fecha_cobro }}</td>
-                    <td>{{ $cheque->fuente == 'propio' ? 'Propio' : 'De tercero' }}</td>
-                    <td>
-                        {{ $cheque->tercero }}
-                        @if($cheque->tercero_identificacion != '')
-                            <br>{{ $cheque->tercero_identificacion }}
-                        @endif
-                    </td>
+                    <td>{{ $cheque->tercero_identificacion }}</td>
+                    <td>{{ $cheque->tercero }}</td>
                     <td>{{ $cheque->numero_cheque }}</td>
-                    <td>{{ $cheque->referencia_cheque }}</td>
-                    <td>{{ $cheque->entidad_financiera }}</td>
-                    <td>{{ $cheque->documento_origen }}</td>
-                    <td>{{ $cheque->documento_consumo }}</td>
+                    <td>{!! enlace_show_documento($cheque->origen_app_id, $cheque->core_tipo_transaccion_id_origen, $cheque->core_tipo_doc_app_id_origen, $cheque->consecutivo, $cheque->documento_origen) !!}</td>
                     <td>{{ $cheque->estado }}</td>
                     <td class="text-right tableexport-number">{{ number_format($cheque->valor, 2, ',', '.') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="11" class="empty-row">No se encontraron cheques para los filtros seleccionados.</td>
+                    <td colspan="7" class="empty-row">No se encontraron cheques para los filtros seleccionados.</td>
                 </tr>
             @endforelse
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="10" class="text-right">TOTAL</td>
+                <td colspan="6" class="text-right">TOTAL</td>
                 <td class="text-right tableexport-number">{{ number_format($total, 2, ',', '.') }}</td>
             </tr>
         </tfoot>

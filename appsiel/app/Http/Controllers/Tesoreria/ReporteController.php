@@ -74,9 +74,8 @@ class ReporteController extends TesoreriaController
 
         $query = ControlCheque::query()
             ->join('core_terceros', 'core_terceros.id', '=', 'teso_control_cheques.tercero_id')
-            ->leftJoin('teso_entidades_financieras', 'teso_entidades_financieras.id', '=', 'teso_control_cheques.entidad_financiera_id')
             ->leftJoin('core_tipos_docs_apps AS tipo_doc_origen', 'tipo_doc_origen.id', '=', 'teso_control_cheques.core_tipo_doc_app_id_origen')
-            ->leftJoin('core_tipos_docs_apps AS tipo_doc_consumo', 'tipo_doc_consumo.id', '=', 'teso_control_cheques.core_tipo_doc_app_id_consumo')
+            ->leftJoin('sys_tipos_transacciones AS transaccion_origen', 'transaccion_origen.id', '=', 'teso_control_cheques.core_tipo_transaccion_id_origen')
             ->where('core_terceros.core_empresa_id', (int)Auth::user()->empresa_id)
             ->where('teso_control_cheques.fecha_emision', '>=', $fecha_desde)
             ->where('teso_control_cheques.fecha_emision', '<=', $fecha_hasta);
@@ -87,19 +86,17 @@ class ReporteController extends TesoreriaController
 
         $cheques = $query->select(
                 'teso_control_cheques.id',
-                'teso_control_cheques.fuente',
                 'teso_control_cheques.fecha_emision',
-                'teso_control_cheques.fecha_cobro',
                 'teso_control_cheques.numero_cheque',
-                'teso_control_cheques.referencia_cheque',
                 'teso_control_cheques.valor',
-                'teso_control_cheques.detalle',
                 'teso_control_cheques.estado',
+                'teso_control_cheques.core_tipo_transaccion_id_origen',
+                'teso_control_cheques.core_tipo_doc_app_id_origen',
+                'teso_control_cheques.consecutivo',
                 'core_terceros.descripcion AS tercero',
                 'core_terceros.numero_identificacion AS tercero_identificacion',
-                'teso_entidades_financieras.descripcion AS entidad_financiera',
-                DB::raw('CONCAT(COALESCE(tipo_doc_origen.prefijo, ""), IF(tipo_doc_origen.prefijo IS NULL OR tipo_doc_origen.prefijo = "", "", " "), teso_control_cheques.consecutivo) AS documento_origen'),
-                DB::raw('IF(teso_control_cheques.consecutivo_doc_consumo > 0, CONCAT(COALESCE(tipo_doc_consumo.prefijo, ""), IF(tipo_doc_consumo.prefijo IS NULL OR tipo_doc_consumo.prefijo = "", "", " "), teso_control_cheques.consecutivo_doc_consumo), "") AS documento_consumo')
+                'transaccion_origen.core_app_id AS origen_app_id',
+                DB::raw('CONCAT(COALESCE(tipo_doc_origen.prefijo, ""), IF(tipo_doc_origen.prefijo IS NULL OR tipo_doc_origen.prefijo = "", "", " "), teso_control_cheques.consecutivo) AS documento_origen')
             )
             ->orderBy('teso_control_cheques.fecha_emision')
             ->orderBy('teso_control_cheques.numero_cheque')
