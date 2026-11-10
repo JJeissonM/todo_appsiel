@@ -162,17 +162,18 @@ class FacturaGeneral
 
       $flexible = 'true';
 
-      $notes = '-';
-      if ($this->doc_encabezado->descripcion != null || $this->doc_encabezado->descripcion != '') {
-	      $notes = trim(str_replace( array( "\r", "\r\n", "\n" ), '', $this->doc_encabezado->descripcion));
+      $notes = \App\FacturacionElectronica\Services\DocumentNotesText::normalize($this->doc_encabezado->descripcion);
+      if ($notes === '') {
+         $notes = '-';
       }
-      
+      $notes_json = json_encode([$notes], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
       $fecha_vencimiento = $this->doc_encabezado->fecha_vencimiento;
       if (explode('-', $fecha_vencimiento)[0] == '0000') {         
          $fecha_vencimiento = $this->doc_encabezado->fecha;
       }
 
-      return '"env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y') . '","payment_date": "' . date_format( date_create( $fecha_vencimiento ),'d/m/Y') . '","invoice_type_code": "' . $this->invoice_type_code . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '},"notes":["' . $notes . '"], "customer": ' . $this->get_datos_cliente();
+      return '"env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y') . '","payment_date": "' . date_format( date_create( $fecha_vencimiento ),'d/m/Y') . '","invoice_type_code": "' . $this->invoice_type_code . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '},"notes":' . $notes_json . ', "customer": ' . $this->get_datos_cliente();
    }
 
    public function get_encabezado_nota_credito( $factura_doc_encabezado )

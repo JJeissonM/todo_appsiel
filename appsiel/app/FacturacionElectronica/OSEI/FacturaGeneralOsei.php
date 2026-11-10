@@ -671,7 +671,7 @@ class FacturaGeneralOsei
         $notes = '-';
         $notes2 = '-';
         if (!empty($this->doc_encabezado->descripcion)) {
-            $notes = $this->sanitizeJsonText($this->doc_encabezado->descripcion);
+            $notes = $this->sanitizeJsonText(\App\FacturacionElectronica\Services\DocumentNotesText::normalize($this->doc_encabezado->descripcion));
 
             $arr_notes = explode(' ', $notes);
             $el_primero = true;
@@ -721,7 +721,7 @@ class FacturaGeneralOsei
         $notes = '-';
         $notes2 = '-';
         if (!empty($this->doc_encabezado->descripcion)) {
-            $notes = $this->sanitizeJsonText($this->doc_encabezado->descripcion);
+            $notes = $this->sanitizeJsonText(\App\FacturacionElectronica\Services\DocumentNotesText::normalize($this->doc_encabezado->descripcion));
 
             $arr_notes = explode(' ', $notes);
             $el_primero = true;
