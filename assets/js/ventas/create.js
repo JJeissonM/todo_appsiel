@@ -1302,6 +1302,7 @@ $(document).ready(function(){
         $('#lista_precios_id').val( item_sugerencia.attr('data-lista_precios_id') );
         $('#email_lbl').val( item_sugerencia.attr('data-email') );
         $('#email').val( item_sugerencia.attr('data-email') );
+        $('#email').data('email-cliente', item_sugerencia.attr('data-email') || '');
         $('#lista_descuentos_id').val( item_sugerencia.attr('data-lista_descuentos_id') );
 
         // Asignar resto de campos

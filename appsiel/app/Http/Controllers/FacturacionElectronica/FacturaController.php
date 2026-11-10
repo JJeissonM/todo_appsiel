@@ -163,6 +163,15 @@ class FacturaController extends TransaccionController
 
     public function store( Request $request )
     {
+        if ((int)$request->contacto_cliente_id > 0) {
+            $this->validate($request, [
+                'cliente_id' => 'required|integer',
+                'contacto_cliente_id' => 'integer|exists:vtas_contactos_clientes,id,cliente_id,' . (int)$request->cliente_id,
+            ], [
+                'contacto_cliente_id.exists' => 'El contacto seleccionado no pertenece al cliente de la factura.',
+            ]);
+        }
+
         if ( (int)$request->inv_bodega_id == 0 ) {
             $request['inv_bodega_id'] = (int)config('ventas.inv_bodega_id');
         }

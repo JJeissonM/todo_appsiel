@@ -309,7 +309,9 @@ class ClienteController extends ModeloController
         $opciones = '<option value="">Seleccionar...</option>';
         foreach ($contactos as $contacto)
         {
-            $opciones .= '<option value="' . $contacto->id . '">' . $contacto->tercero->descripcion . '</option>';
+            $opciones .= '<option value="' . (int)$contacto->id . '" data-email="' .
+                htmlspecialchars((string)$contacto->tercero->email, ENT_QUOTES, 'UTF-8') . '">' .
+                htmlspecialchars((string)$contacto->tercero->descripcion, ENT_QUOTES, 'UTF-8') . '</option>';
         }
 
         return $opciones;

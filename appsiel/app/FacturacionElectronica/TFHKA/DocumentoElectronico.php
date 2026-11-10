@@ -80,13 +80,13 @@ class DocumentoElectronico
 		return $direccion;
 	}
 
-	public function preparar_destinatarios( $tercero )
+	public function preparar_destinatarios( $tercero, $email = null )
 	{
 		$destinatario = new Destinatario();
 		$destinatario->canalDeEntrega = "0";
 	
 		$correodestinatario = new strings();
-		$correodestinatario->string = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($tercero->email);
+		$correodestinatario->string = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($email === null ? $tercero->email : $email);
 	
 		$destinatario->email = $correodestinatario;
 		$destinatario->nitProveedorReceptor = $tercero->numero_identificacion;
@@ -130,11 +130,11 @@ class DocumentoElectronico
 		return $obligacionesCliente;
 	}
 
-	public function preparar_objeto_cliente( $datos_cliente )
+	public function preparar_objeto_cliente( $datos_cliente, $email = null )
 	{
 		$cliente = new Cliente();
 
-		$cliente->destinatario[0] = $this->preparar_destinatarios( $datos_cliente->tercero );
+		$cliente->destinatario[0] = $this->preparar_destinatarios( $datos_cliente->tercero, $email );
 
 		$cliente->detallesTributarios[0] = $this->preparar_tributos();
 
@@ -146,7 +146,7 @@ class DocumentoElectronico
 		
 	    $cliente->responsabilidadesRut[0] = $this->preparar_responsabilidades_rut( $datos_cliente->tercero );
 		
-	    $cliente->email = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($datos_cliente->tercero->email);
+	    $cliente->email = \App\FacturacionElectronica\Services\EmailNormalizer::normalize($email === null ? $datos_cliente->tercero->email : $email);
 	    $cliente->nombreRazonSocial  = $datos_cliente->tercero->descripcion;
 	    $cliente->notificar = "SI";
 	    $cliente->numeroDocumento = $datos_cliente->tercero->numero_identificacion;
@@ -277,7 +277,7 @@ class DocumentoElectronico
 	{
 		$factura = new FacturaGeneral();
 
-	    $factura->cliente = $this->preparar_objeto_cliente( $encabezado_factura->cliente );
+	    $factura->cliente = $this->preparar_objeto_cliente( $encabezado_factura->cliente, \App\FacturacionElectronica\Services\InvoiceRecipientEmail::resolve($encabezado_factura) );
 		
 		$factura->cantidadDecimales = $this->cantidadDecimales;
 
