@@ -1424,9 +1424,18 @@ $(document).ready(function(){
 
 	});
 
+    function sincronizar_detalle_editor() {
+        if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances && CKEDITOR.instances.descripcion) {
+            CKEDITOR.instances.descripcion.updateElement();
+        }
+    }
+
+    $('#form_create').on('submit.sincronizarDetalle', sincronizar_detalle_editor);
+
 	// GUARDAR EL FORMULARIO
 	$('#btn_guardar').click(function(event){
 		event.preventDefault();
+        sincronizar_detalle_editor();
 
 		var object = $('#ingreso_registros').val();
 		
