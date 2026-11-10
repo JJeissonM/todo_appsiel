@@ -44,4 +44,35 @@ class DocumentNotesTextTest extends PHPUnit_Framework_TestCase
             Container::setInstance($previous);
         }
     }
+    public function testDataicoPurchaseOrderIsSentAsAReferencePreservingItsText()
+    {
+        $previous = Container::getInstance() ?: new Container();
+        $container = new Container();
+        $container->instance('config', new Repository());
+        Container::setInstance($container);
+        try {
+            $doc = (object)[
+                'forma_pago' => 'credito', 'descripcion' => '',
+                'fecha_vencimiento' => '2026-12-20', 'fecha' => '2026-11-10', 'consecutivo' => 10016,
+            ];
+            $provider = new NotesDataicoFixture($doc, 'factura');
+            $payload = json_decode('{'.$provider->get_encabezado_factura().'}', true);
+            $this->assertArrayNotHasKey('order_reference', $payload);
+            foreach (['4582554306', '000123', 'OC-"Especial"/2026', '0'] as $reference) {
+                $doc->orden_compras = ' ' . $reference . ' ';
+                $payload = json_decode('{'.$provider->get_encabezado_factura().'}', true);
+                $this->assertSame(JSON_ERROR_NONE, json_last_error());
+                $this->assertSame($reference, $payload['order_reference']);
+            }
+            foreach ([null, '', '   '] as $reference) {
+                $doc->orden_compras = $reference;
+                $payload = json_decode('{'.$provider->get_encabezado_factura().'}', true);
+                $this->assertArrayNotHasKey('order_reference', $payload);
+            }
+            $this->assertTrue((new \App\FacturacionElectronica\Factura())->isFillable('orden_compras'));
+        } finally {
+            Container::setInstance($previous);
+        }
+    }
+
 }

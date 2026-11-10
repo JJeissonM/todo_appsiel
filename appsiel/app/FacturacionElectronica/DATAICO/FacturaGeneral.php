@@ -168,12 +168,21 @@ class FacturaGeneral
       }
       $notes_json = json_encode([$notes], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
+      $order_reference = isset($this->doc_encabezado->orden_compras)
+         ? trim((string)$this->doc_encabezado->orden_compras) : '';
+      $order_reference_json = '';
+      if ($order_reference !== '') {
+         $order_reference_json = ',"order_reference":' .
+            json_encode($order_reference, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+      }
+
+
       $fecha_vencimiento = $this->doc_encabezado->fecha_vencimiento;
       if (explode('-', $fecha_vencimiento)[0] == '0000') {         
          $fecha_vencimiento = $this->doc_encabezado->fecha;
       }
 
-      return '"env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y') . '","payment_date": "' . date_format( date_create( $fecha_vencimiento ),'d/m/Y') . '","invoice_type_code": "' . $this->invoice_type_code . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '},"notes":' . $notes_json . ', "customer": ' . $this->get_datos_cliente();
+      return '"env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y') . '","payment_date": "' . date_format( date_create( $fecha_vencimiento ),'d/m/Y') . '","invoice_type_code": "' . $this->invoice_type_code . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '},"notes":' . $notes_json . $order_reference_json . ', "customer": ' . $this->get_datos_cliente();
    }
 
    public function get_encabezado_nota_credito( $factura_doc_encabezado )
