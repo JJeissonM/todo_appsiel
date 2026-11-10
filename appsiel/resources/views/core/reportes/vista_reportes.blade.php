@@ -35,7 +35,10 @@
 					</div>
 				@endif
 			@endforeach
-            @if($reporte->url_form_action == 'pos_movimientos_ventas')
+            @if($reporte->url_form_action == 'pos_movimientos_ventas'
+                && config('turnos.modules.ventas_pos.integrated', false)
+                && Auth::check()
+                && app(\App\Core\Services\TurnoModeResolver::class)->enabledForModule(Auth::user()->empresa_id, 'ventas_pos'))
                 @include('ventas_pos.reportes.filtro_turno_operativo')
             @endif
 
