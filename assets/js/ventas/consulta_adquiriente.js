@@ -105,18 +105,19 @@
 
     switch (respuesta.status) {
       case "existe":
-        mostrarPanel(campo, "aviso", [linea("Ya existe un tercero con este número: " + respuesta.name + ".")]);
+        mostrarPanel(campo, "aviso", [linea("Existe este número para " + $.trim(respuesta.name))]);
         break;
 
       case "found":
+        // Son datos de facturas anteriores, no del RUT: el usuario los confirma con el cliente.
         var partes = [
-          linea("Registrado ante la DIAN: " + respuesta.name + (respuesta.email ? " · " + respuesta.email : "") + "."),
-          linea("Son datos de facturas anteriores, no del RUT. Confírmelos con el RUT."),
+          linea("Datos DIAN: " + respuesta.name + (respuesta.email ? " · " + respuesta.email : "")),
+          linea("¡Recuerda confirmar con el cliente!"),
         ];
         if (dvNoCoincide(campo, respuesta)) {
           partes.push(lineaDv(respuesta));
         }
-        partes.push(boton("Usar estos datos", function () {
+        partes.push(boton("Usar datos", function () {
           usarDatos(campo, respuesta);
         }));
         mostrarPanel(campo, dvNoCoincide(campo, respuesta) ? "aviso" : "info", partes);
