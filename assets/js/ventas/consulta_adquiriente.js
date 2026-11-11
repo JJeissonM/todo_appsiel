@@ -113,7 +113,8 @@
       case "found":
         // Son datos de facturas anteriores, no del RUT: el usuario los confirma con el cliente.
         var partes = [
-          linea("Datos DIAN: " + respuesta.name + (respuesta.email ? " · " + respuesta.email : "")),
+          linea("Datos DIAN: " + respuesta.name + (respuesta.email ? " · " + respuesta.email : ""))
+            .css({ fontWeight: "bold", fontSize: "15px" }),
           linea("¡Recuerda confirmar con el cliente!"),
         ];
         if (dvNoCoincide(campo, respuesta)) {
