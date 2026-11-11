@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         Commands\CorregirMedioRecaudoMovimientos::class,
         Commands\ConvertirFacturasEstudiantesElectronicas::class,
         Commands\DiagnosticarTurnosPiloto::class,
+        Commands\LiberarNotasCreditoBotComoFactura::class,
     ];
 
     /**
