@@ -91,6 +91,8 @@
     var sugerido = respuesta.suggested_identification;
 
     if ($.inArray("nit_con_dv", respuesta.warnings || []) !== -1 && sugerido) {
+      // OSEI rechaza las facturas a este número: no se deja guardar el cliente así.
+      campo.data("nit_con_dv", sugerido);
       mostrarPanel(campo, "error", [
         linea(
           "Parece el NIT " + sugerido.identification_number + " con el dígito de verificación " +
@@ -156,6 +158,7 @@
     }
 
     campo.data("adquiriente_consultado", clave);
+    campo.removeData("nit_con_dv");
     quitarPanel();
 
     if (!tipo || numero.length < 5 || numero === CONSUMIDOR_FINAL) {
@@ -182,6 +185,31 @@
       },
     });
   }
+
+  /**
+   * Si OSEI dijo que el número es un NIT con el DV pegado, no se deja guardar. Los botones de
+   * guardar del modal del POS (#btn_save_cliente, en el pie del modal) y de Ventas
+   * (#bs_boton_guardar) tienen sus propios manejadores: este va en la fase de captura para
+   * ejecutarse antes que ellos.
+   */
+  document.addEventListener("click", function (evento) {
+    var boton = $(evento.target).closest("#btn_save_cliente, #bs_boton_guardar");
+
+    if (!boton.length) {
+      return;
+    }
+
+    var formulario = boton.is("#btn_save_cliente") ? $("#myModal2").find("form") : $("#form_create");
+    var campo = formulario.find(CAMPOS_NUMERO).first();
+
+    if (!campo.length || !campo.data("nit_con_dv")) {
+      return;
+    }
+
+    evento.preventDefault();
+    evento.stopPropagation();
+    campo.focus();
+  }, true);
 
   $(document).on("blur", CAMPOS_NUMERO, function () {
     consultar($(this));
