@@ -10,28 +10,43 @@
  </p>
     <hr>
 
-@php
-    $cantidad_asignaturas_mostrar = 9;
-    $cantidad_asignaturas = count($asignaturas);
-
-    $mostrar_segunda_parte = true;
-
-    if ( $cantidad_asignaturas_mostrar > $cantidad_asignaturas )
-    {
-        $cantidad_asignaturas_mostrar = $cantidad_asignaturas;
-        $mostrar_segunda_parte = false;
+<style>
+    .promedio-proyectado-tabla th, .promedio-proyectado-tabla td {
+        padding: 2px 1px;
+        word-wrap: break-word;
+        white-space: normal;
     }
+    .promedio-proyectado-tabla thead { display: table-header-group; }
+    .promedio-proyectado-tabla tr { page-break-inside: avoid; }
+</style>
 
-    
-    $np = count($periodos->toArray()); // Cantidad de periodos    
+@php
+    $np = count($periodos->toArray());
+    $asignaturas_por_parte = 6;
+    $partes_asignaturas = array_chunk($asignaturas, $asignaturas_por_parte);
 @endphp
-<table class="table table-bordered table-striped tabla_contenido" style="margin-top: -4px; font-size:11px;">
+
+@foreach($partes_asignaturas as $numero_parte => $asignaturas_parte)
+    @if($numero_parte > 0)
+        <div class="page-break"></div>
+    @endif
+    @php
+        $cantidad_asignaturas_mostrar = count($asignaturas_parte);
+    @endphp
+<table data-excel-export="true" class="table table-bordered table-striped tabla_contenido promedio-proyectado-tabla" style="width:100%; table-layout:fixed; margin-top: -4px; font-size:9px;">
+    <colgroup>
+        <col style="width:4%;">
+        <col style="width:24%;">
+        @for($col=0; $col < $cantidad_asignaturas_mostrar * ($np + 1); $col++)
+            <col style="width:{{ 72 / ($cantidad_asignaturas_mostrar * ($np + 1)) }}%;">
+        @endfor
+    </colgroup>
     <thead>
         <tr>
             <th rowspan="2"> No. </th>
             <th rowspan="2"> Estudiante </th>
             @for($i=0;$i<$cantidad_asignaturas_mostrar;$i++)
-                <th colspan="{{ $np+1 }}" style="text-align: center;"> {{ $asignaturas[$i]['abreviatura'] }} </th>
+                <th colspan="{{ $np+1 }}" style="text-align: center;"> {{ $asignaturas_parte[$i]['abreviatura'] }} </th>
             @endfor
         </tr>
         <tr>
@@ -61,7 +76,7 @@
                     
                         for($j=0; $j < $cantidad_asignaturas_mostrar; $j++)
                         {
-                            $array_periodos = get_array_periodos( $calificaciones, $estudiante->id_estudiante, $asignaturas[$j]['id'], $periodos, $tope_escala_valoracion_minima );
+                            $array_periodos = get_array_periodos( $calificaciones, $estudiante->id_estudiante, $asignaturas_parte[$j]['id'], $periodos, $tope_escala_valoracion_minima );
                     @endphp        
 
 
@@ -104,91 +119,7 @@
 
     </tbody>
 </table>
-
-@if($mostrar_segunda_parte)
-    <div class="page-break"></div>
-
-
-    <table class="table table-bordered table-striped tabla_contenido" style="margin-top: -4px; font-size:11px;">
-        <thead>
-            <tr>
-                <th rowspan="2"> No. </th>
-                <th rowspan="2"> Estudiante </th>
-                @for($j=$cantidad_asignaturas_mostrar;$j<$cantidad_asignaturas;$j++)
-                    <th colspan="{{ count( $periodos->toArray() ) + 1 }}" style="text-align: center;"> {{$asignaturas[$j]['abreviatura']}} </th>
-                @endfor
-            </tr>
-            <tr>
-                @for($j=$cantidad_asignaturas_mostrar;$j<$cantidad_asignaturas;$j++)
-                    @foreach($periodos as $periodo)
-                        <th> P{{$periodo->numero}} </th>
-                    @endforeach
-                    <th style="background: #CACACA;"> Prom </th>
-                @endfor
-            </tr>
-        </thead>
-        <tbody>
-            @php
-                $i = 0;
-            @endphp
-            @foreach($estudiantes as $estudiante)
-                    
-                <tr class="fila-{{$i}}" >
-                    <td>
-                       {{ $i+1 }}
-                    </td>
-                    <td>
-                       {{$estudiante->nombre_completo}}
-                    </td>
-
-                    @php
-                    
-                        for($k=$cantidad_asignaturas_mostrar; $k < $cantidad_asignaturas; $k++)
-                        {
-                            $array_periodos = get_array_periodos( $calificaciones, $estudiante->id_estudiante, $asignaturas[$k]['id'], $periodos, $tope_escala_valoracion_minima );
-                    @endphp        
-
-
-                            <!-- Dibujar la nota de cada periodo -->
-                            @foreach($periodos as $periodo)                    
-                                <td>
-                                    <span style="background: {{$array_periodos['calificacion'][$periodo->id]['background_color']}}; color: {{$array_periodos['calificacion'][$periodo->id]['text_color']}}" >
-                                        {{ $array_periodos['calificacion'][$periodo->id]['text'] }}
-                                        <sup> {{ $array_periodos['calificacion'][$periodo->id]['lbl_nivelacion'] }} </sup>
-                                    </span>               
-                                </td>
-                            @endforeach
-
-
-                            @php
-                                // Calcular y Dibujar nota promedio
-                                // El promedio lo calcula con los periodos que tienen nota.
-                                $prom = 0;
-                                if( $array_periodos['cantidad_periodos_con_calificacion'] != 0)
-                                {
-                                    $prom = $array_periodos['total_nota'] / $array_periodos['cantidad_periodos_con_calificacion'];
-                                }
-                                $color = 'black';
-                                if ( $prom <= $tope_escala_valoracion_minima )
-                                {
-                                    $color = 'red';
-                                }
-                            @endphp
-                                <td style="background: #CACACA;">
-                                    <span style="color: {{ $color }}"> {{ number_format( $prom, (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }} </span>
-                                </td>    
-                            @php
-
-                        } // end for asignaturas
-
-                        @endphp
-                    </tr>
-                @php $i++; @endphp
-            @endforeach
-        </tbody>
-    </table>
-@endif
-
+@endforeach
 
 @php 
     function get_array_periodos( $calificaciones, $estudiante_id, $asignatura_id, $periodos, $tope_escala_valoracion_minima)

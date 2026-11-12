@@ -235,14 +235,22 @@ $(document).ready(function () {
 		event.preventDefault();
 
 		var nombre_listado = $(this).attr('title');
+		var tablasReporte = document.querySelectorAll('#resultado_consulta table[data-excel-export]');
 		var tabla = document.querySelector('#resultado_consulta table.report-table') || document.querySelector('#resultado_consulta table') || document.querySelector('table');
 		if (!tabla) {
 			alert('No hay datos para exportar.');
 			return false;
 		}
 		var tT = new XMLSerializer().serializeToString(tabla); //Serialised table
+		if (tablasReporte.length) {
+			var partes = [];
+			for (var i = 0; i < tablasReporte.length; i++) {
+				partes.push(new XMLSerializer().serializeToString(tablasReporte[i]));
+			}
+			tT = '<html><head><meta charset="UTF-8"></head><body>' + partes.join('<br>') + '</body></html>';
+		}
 		var tF = nombre_listado + '.xls'; //Filename
-		var tB = new Blob([tT]); //Blub
+		var tB = new Blob([tT], {type: 'application/vnd.ms-excel;charset=utf-8'});
 
 		if(window.navigator.msSaveOrOpenBlob){
 			//Store Blob in IE
