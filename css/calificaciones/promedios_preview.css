@@ -1,0 +1,77 @@
+/* Solo previsualización web: estos estilos no forman parte del HTML del PDF. */
+@media screen {
+    #resultado_consulta table.promedio-proyectado-tabla,
+    #resultado_consulta table.promedio-consolidado-tabla {
+        width: max-content !important;
+        min-width: 100%;
+        table-layout: auto !important;
+        font-size: 13px !important;
+        margin-bottom: 24px;
+    }
+
+    #resultado_consulta .promedio-proyectado-tabla col,
+    #resultado_consulta .promedio-consolidado-tabla col {
+        width: auto !important;
+    }
+
+    #resultado_consulta .promedio-proyectado-tabla th,
+    #resultado_consulta .promedio-proyectado-tabla td,
+    #resultado_consulta .promedio-consolidado-tabla th,
+    #resultado_consulta .promedio-consolidado-tabla td {
+        min-width: 64px;
+        padding: 8px 10px;
+        white-space: nowrap;
+        word-wrap: normal;
+        word-break: normal;
+        line-height: 1.4;
+        text-align: center;
+        vertical-align: middle;
+        font-variant-numeric: tabular-nums;
+    }
+
+    #resultado_consulta .promedio-proyectado-tabla thead tr,
+    #resultado_consulta .promedio-consolidado-tabla thead tr {
+        font-size: 13px;
+    }
+
+    #resultado_consulta .promedio-proyectado-tabla thead th,
+    #resultado_consulta .promedio-consolidado-tabla thead th {
+        background: #e8eef4 !important;
+        color: #253447 !important;
+    }
+
+    #resultado_consulta .promedio-proyectado-tabla thead tr:first-child th:nth-child(2),
+    #resultado_consulta .promedio-proyectado-tabla tbody td:nth-child(2),
+    #resultado_consulta .promedio-consolidado-tabla thead tr:first-child th:nth-child(2),
+    #resultado_consulta .promedio-consolidado-tabla tbody td:nth-child(2) {
+        min-width: 260px;
+        max-width: 360px;
+        white-space: normal;
+        text-align: left;
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        background: #fff;
+    }
+
+    #resultado_consulta .promedio-proyectado-tabla tbody tr:nth-child(odd) td:nth-child(2),
+    #resultado_consulta .promedio-consolidado-tabla tbody tr:nth-child(odd) td:nth-child(2) {
+        background: #f8fafc;
+    }
+
+    #resultado_consulta .promedio-proyectado-tabla td span,
+    #resultado_consulta .promedio-consolidado-tabla td span {
+        white-space: nowrap;
+        display: inline-block;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    #resultado_consulta .promedio-proyectado-tabla thead tr:first-child th:nth-child(2),
+    #resultado_consulta .promedio-proyectado-tabla tbody td:nth-child(2),
+    #resultado_consulta .promedio-consolidado-tabla thead tr:first-child th:nth-child(2),
+    #resultado_consulta .promedio-consolidado-tabla tbody td:nth-child(2) {
+        min-width: 180px;
+        max-width: 220px;
+    }
+}

@@ -56,6 +56,10 @@ class PromedioConsolidadoPdfTest extends TestCase
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function test_dompdf_renderiza_cuatro_partes_sin_advertencias_ni_desbordamientos()
     {
         $contenido = $this->contenido(25, 35);
@@ -90,6 +94,8 @@ class PromedioConsolidadoPdfTest extends TestCase
             $texto = preg_replace('/\s+/', ' ', implode(' ', $textos));
             $this->assertContains('ASIGNATURA 25', $texto);
             $this->assertContains('ESTUDIANTE 35', $texto);
+            unset($pdf, $dompdf);
+            gc_collect_cycles();
         }
     }
 }

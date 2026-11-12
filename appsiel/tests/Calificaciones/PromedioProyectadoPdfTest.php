@@ -2,6 +2,10 @@
 
 class PromedioProyectadoPdfTest extends TestCase
 {
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function test_dompdf_renderiza_todas_las_partes_sin_desbordar_la_hoja()
     {
         config(['calificaciones.cantidad_decimales_mostrar_calificaciones' => 2]);
@@ -54,6 +58,8 @@ class PromedioProyectadoPdfTest extends TestCase
             $texto = preg_replace('/\s+/', ' ', implode(' ', $textos));
             $this->assertContains('ASIGNATURA 20', $texto);
             $this->assertContains('ESTUDIANTE 35', $texto);
+            unset($pdf, $dompdf);
+            gc_collect_cycles();
         }
     }
 }

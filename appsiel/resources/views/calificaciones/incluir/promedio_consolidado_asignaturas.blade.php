@@ -19,7 +19,8 @@
 </style>
 
 @php
-    $np = count($periodos->toArray());
+    $cantidad_decimales = (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones');
+    $indice_calificaciones = app(\App\Calificaciones\Services\PromediosAsignaturasService::class)->indexar($calificaciones);
     $partes_asignaturas = array_chunk($asignaturas, 8);
 @endphp
 
@@ -66,78 +67,25 @@
                        {{$estudiante->nombre_completo}}
                     </td>
 
-                    @php 
-                        $n = 0; $cali_final = 0;
-                    
+                    @php
                         for($j=0; $j < $cantidad_asignaturas_mostrar; $j++)
                         {
-                            $cali_periodos_listos = []; // periodos que ya tienen calificación
-                            $periodos_listos=0;
-                            $periodos_faltantes=0;
-
-                            // <!-- Crear array con las notas de cada periodo -->
-                            foreach($periodos as $periodo)
-                            {
-                                    
-                                $cali = $calificaciones->whereLoose('id_estudiante',$estudiante->id_estudiante)->whereLoose('id_periodo',$periodo->id)->whereLoose('id_asignatura', $asignaturas_parte[$j]['id'])->first();
-
-                                if ( !is_null($cali) ) 
-                                {
-                                    $cali_periodos_listos[$periodos_listos]['cali'] = $cali->calificacion;
-                                    $cali_periodos_listos[$periodos_listos]['text'] = number_format($cali->calificacion, (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
-                                    $cali_periodos_listos[$periodos_listos]['text_color'] = 'black';
-
-                                    if ( $cali->calificacion <= $tope_escala_valoracion_minima ) {
-                                        $cali_periodos_listos[$periodos_listos]['text_color'] = 'red';
-                                    }
-                                    $periodos_listos++;
-                                }else{
-                                    $periodos_faltantes++;
-                                }
-                            }
-                            
-                            // Prevenir división sobre cero
-                            $cali_faltante = 0;
-                            if( $periodos_faltantes != 0)
-                            {
-                                $cali_faltante = ( $tope_escala_valoracion_minima * $np - array_sum(array_column($cali_periodos_listos, 'cali')) ) / $periodos_faltantes;
-                            }                        
-                            
-                            $cali_faltante_text =number_format($cali_faltante, (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
-                            $cali_faltante_text_color = 'black';
-                            if ( $cali_faltante <= $tope_escala_valoracion_minima ) {
-                                $cali_faltante_text_color = 'red';
-                            }
-
-                            $npl=0;
-
-
-                        // <!-- Dibujar la nota de cada periodo -->
-
                             $total_nota = 0;
                             $num = 0;
-                        foreach($periodos as $periodo)
-                        {
-                            if ( $npl < $periodos_listos )
+                            foreach($periodos as $periodo)
                             {
-                                $total_nota += (float)$cali_periodos_listos[$npl]['cali'];
-                                $num++;
+                                $cali = isset($indice_calificaciones[(int)$estudiante->id_estudiante][(int)$asignaturas_parte[$j]['id']][(int)$periodo->id])
+                                    ? $indice_calificaciones[(int)$estudiante->id_estudiante][(int)$asignaturas_parte[$j]['id']][(int)$periodo->id] : null;
+                                if ($cali !== null) {
+                                    $total_nota += (float)$cali->calificacion;
+                                    $num++;
+                                }
                             }
-                            $npl++;
-                        } // End foreach periodos
-                        $prom = 0;
-                        if( $num != 0)
-                        {
-                            $prom = $total_nota / $num;
-                        }
-                        $color = 'black';
-                        if ( $prom <= $tope_escala_valoracion_minima )
-                        {
-                            $color = 'red';
-                        }
+                            $prom = $num ? $total_nota / $num : 0;
+                            $color = $prom <= $tope_escala_valoracion_minima ? 'red' : 'black';
                     @endphp
                         <td>
-                            <span style="color: {{ $color }}"> {{ number_format( $prom, (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }} </span>
+                            <span style="color: {{ $color }}"> {{ number_format( $prom, $cantidad_decimales, ',', '.') }} </span>
                         </td>    
                     @php
 

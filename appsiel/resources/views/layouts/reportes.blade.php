@@ -6,6 +6,7 @@
 
 @section('estilos_2')
 	<link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
+    <link rel="stylesheet" href="{{ asset('css/calificaciones/promedios_preview.css?v=1') }}">
 	<style>
 
 		body{

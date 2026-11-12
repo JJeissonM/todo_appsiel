@@ -228,17 +228,8 @@ class ReporteController extends Controller
                                                         ->first()
                                                         ->calificacion_maxima;
 
-        $calificaciones = Calificacion::get_calificaciones_periodo_lectivo( $this->colegio->id, $request->curso_id, $request->periodo_lectivo_id );
-
-        foreach( $calificaciones AS $calificacion )
-        {
-            $calificacion->lbl_nivelacion = '';
-            if ( $calificacion->nota_nivelacion() != null )
-            {
-                $calificacion->calificacion = $calificacion->nota_nivelacion()->calificacion;
-                $calificacion->lbl_nivelacion = 'n';
-            }
-        }
+        $calificaciones = app(\App\Calificaciones\Services\PromediosAsignaturasService::class)
+            ->calificaciones($this->colegio->id, $request->curso_id, $request->periodo_lectivo_id, true);
 
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, null );
         
@@ -275,17 +266,8 @@ class ReporteController extends Controller
                                                         ->orderBy('calificacion_minima','ASC')
                                                         ->first()->calificacion_maxima;
 
-        $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
-
-        foreach( $calificaciones AS $calificacion )
-        {
-            $calificacion->lbl_nivelacion = '';
-            if ( !is_null( $calificacion->nota_nivelacion() ) )
-            {
-                $calificacion->calificacion = $calificacion->nota_nivelacion()->calificacion;
-                $calificacion->lbl_nivelacion = 'n';
-            }
-        }
+        $calificaciones = app(\App\Calificaciones\Services\PromediosAsignaturasService::class)
+            ->calificaciones($this->colegio->id, $request->curso_id, $request->periodo_lectivo_id);
 
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, null );
         
