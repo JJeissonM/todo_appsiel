@@ -32,7 +32,7 @@ class InvDocEncabezado extends Model
 
     //protected $table = 'inv_doc_encabezados'; 
 
-    protected $fillable = ['core_empresa_id','core_tipo_transaccion_id','core_tipo_doc_app_id', 'vtas_doc_encabezado_origen_id', 'turno_operativo_id', 'consecutivo','fecha','core_tercero_id', 'inv_bodega_id', 'bodega_destino_id','documento_soporte','descripcion','estado','creado_por','modificado_por','hora_inicio','hora_finalizacion'];
+    protected $fillable = ['costos_incluyen_iva','core_empresa_id','core_tipo_transaccion_id','core_tipo_doc_app_id', 'vtas_doc_encabezado_origen_id', 'turno_operativo_id', 'consecutivo','fecha','core_tercero_id', 'inv_bodega_id', 'bodega_destino_id','documento_soporte','descripcion','estado','creado_por','modificado_por','hora_inicio','hora_finalizacion'];
 
     protected function turnoModuleName()
     {
@@ -479,6 +479,12 @@ class InvDocEncabezado extends Model
         }
 
 
+        if (!empty($opciones['precios_incluyen_iva']) && Schema::hasColumn('inv_doc_encabezados', 'costos_incluyen_iva')) {
+            $indicadores = InvDocEncabezado::whereIn('id', $documentos->pluck('id')->all())->pluck('costos_incluyen_iva', 'id')->all();
+        } else {
+            $indicadores = [];
+        }
+
         $liquida_impuestos = (int)config('configuracion.liquidacion_impuestos');
         if (isset($opciones['liquida_impuestos'])) {
             $liquida_impuestos = $liquida_impuestos && (int)$opciones['liquida_impuestos'];
@@ -488,6 +494,7 @@ class InvDocEncabezado extends Model
         {
             $registros = InvDocRegistro::where('inv_doc_encabezado_id', $un_documento->id)->get();
             $total_documento_mas_iva = 0;
+            $total_base = 0;
             foreach ($registros as $un_registro)
             {
                 $tasa_impuesto = 0;
@@ -495,12 +502,19 @@ class InvDocEncabezado extends Model
                     $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, $proveedor_id, $cliente_id );
                 }
 
-                $precio_total = $un_registro->costo_total * ( 1 + $tasa_impuesto  / 100 );
-
+                $incluye_iva = !empty($opciones['precios_incluyen_iva'])
+                    && (!isset($indicadores[$un_documento->id]) || (bool)$indicadores[$un_documento->id]);
+                if ($incluye_iva) {
+                    $precio_total = (float)$un_registro->costo_total;
+                    $total_base += $precio_total / (1 + $tasa_impuesto / 100);
+                } else {
+                    $total_base += (float)$un_registro->costo_total;
+                    $precio_total = $un_registro->costo_total * (1 + $tasa_impuesto / 100);
+                }
                 $total_documento_mas_iva += $precio_total;
             }
 
-            $un_documento->total_documento = $registros->sum('costo_total');
+            $un_documento->total_documento = $total_base;
             $un_documento->total_documento_mas_iva = $total_documento_mas_iva;
         }
 

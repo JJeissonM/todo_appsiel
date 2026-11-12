@@ -34,24 +34,35 @@ class FacturaEntradaPendienteController extends CompraController
         } catch (\InvalidArgumentException $e) {
             return $this->respuesta_error_guardado($request, $e->getMessage());
         }
-        $doc_encabezado = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
-            $datos = $request->all();
+        try {
+            $doc_encabezado = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+                $lineas_registros = json_decode($request->lineas_registros);
+                if (!is_array($lineas_registros)) {
+                    throw new \InvalidArgumentException('Seleccione entradas pendientes válidas.');
+                }
+                $proveedor = \App\Compras\Proveedor::findOrFail($request->proveedor_id);
+                $request->merge(['core_empresa_id'=>Auth::user()->empresa_id, 'core_tercero_id'=>$proveedor->core_tercero_id]);
+                $datos = $request->all();
+                (new \App\Compras\Services\EntradasPendientesIvaService())->preparar(
+                    $proveedor, $lineas_registros, Auth::user()->empresa_id
+                );
 
-            $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
-            $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
+                $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+                $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
-            $lineas_registros = json_decode( $request->lineas_registros );
+                $registros_medio_pago = new RegistrosMediosPago;
 
-            $registros_medio_pago = new RegistrosMediosPago;
+                $datos['registros_medio_pago'] = (int)$request->reteica_retencion_id ? [] : $registros_medio_pago->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], null, self::get_total_documento_desde_lineas_registros_desde_entrada( $doc_encabezado, $lineas_registros ), 'compras' );
 
-            $datos['registros_medio_pago'] = (int)$request->reteica_retencion_id ? [] : $registros_medio_pago->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], null, self::get_total_documento_desde_lineas_registros_desde_entrada( $doc_encabezado, $lineas_registros ), 'compras' );
+                CompraController::crear_lineas_registros_compras( $datos, $doc_encabezado, $lineas_registros );
 
-            CompraController::crear_lineas_registros_compras( $datos, $doc_encabezado, $lineas_registros );
-
-            (new \App\Compras\Services\ContabilidadService())->aplicar_retenciones_por_linea_compras($doc_encabezado);
-            (new \App\Compras\Services\ReteicaService())->contabilizar($doc_encabezado);
-            return $doc_encabezado;
-        });
+                (new \App\Compras\Services\ContabilidadService())->aplicar_retenciones_por_linea_compras($doc_encabezado);
+                (new \App\Compras\Services\ReteicaService())->contabilizar($doc_encabezado);
+                return $doc_encabezado;
+            });
+        } catch (\InvalidArgumentException $e) {
+            return $this->respuesta_error_guardado($request, $e->getMessage());
+        }
 
         return $this->respuesta_compra_guardada($request, $doc_encabezado);
     }

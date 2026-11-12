@@ -180,7 +180,8 @@ class AverageCost
     }
 
     public function calculate_average_cost($id_bodega,$id_producto,$valor_default, $fecha_transaccion, $cantidad)
-    {        
+    {
+        $bodega_id = $id_bodega;
         $array_wheres = [
             ['inv_producto_id','=',$id_producto],
             ['fecha', '<=', $fecha_transaccion]

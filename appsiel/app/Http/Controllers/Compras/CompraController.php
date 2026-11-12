@@ -291,6 +291,9 @@ class CompraController extends TransaccionController
         $request['core_tipo_transaccion_id'] = $ea_tipo_transaccion_id;
         $request['core_tipo_doc_app_id'] = $ea_tipo_doc_app_id;
         $request['estado'] = 'Facturada';
+        if (Schema::hasColumn('inv_doc_encabezados', 'costos_incluyen_iva')) {
+            $request['costos_incluyen_iva'] = 0;
+        }
         $entrada_almacen_id = InventarioController::crear_documento($request, $lineas_registros, $ea_modelo_id);
 
         // Se revierten los datos cambiados
@@ -305,12 +308,14 @@ class CompraController extends TransaccionController
     {
         $nuevas_lineas = [];
         foreach ($lineas_registros_originales as $linea_original) {
-
-            $item = InvProducto::find((int)$linea_original->inv_producto_id);
-
-            $linea_original->costo_total = ((float)$linea_original->costo_total) / (1 + $item->impuesto->tasa_impuesto / 100);
-
-            $linea_original->costo_unitario = ((float)$linea_original->costo_unitario) / (1 + $item->impuesto->tasa_impuesto / 100);
+            // Sin IVA del proveedor, el precio neto de la línea es el costo.
+            // No descontar el impuesto del catálogo: el formulario ya aplicó
+            // la tasa efectiva y el precio_total ya incluye el descuento.
+            $cantidad = (float)$linea_original->cantidad;
+            $linea_original->costo_total = isset($linea_original->precio_total)
+                ? (float)$linea_original->precio_total : (float)$linea_original->costo_total;
+            $linea_original->costo_unitario = $cantidad != 0
+                ? $linea_original->costo_total / $cantidad : 0;
 
             $nuevas_lineas[] = $linea_original;
         }
@@ -502,7 +507,7 @@ class CompraController extends TransaccionController
         return true;
     }
 
-    public static function get_datos_factura_desde_registro_entrada($registro_entrada, $proveedor_id)
+    public static function get_datos_factura_desde_registro_entrada($registro_entrada, $proveedor_id, $precio_incluye_iva = false)
     {
         $cantidad = (float)$registro_entrada->cantidad;
         $total_base_impuesto = (float)$registro_entrada->costo_total;
@@ -512,7 +517,12 @@ class CompraController extends TransaccionController
             $tasa_impuesto = Impuesto::get_tasa($registro_entrada->inv_producto_id, $proveedor_id, 0);
         }
 
-        $precio_total = $total_base_impuesto * (1 + $tasa_impuesto / 100);
+        $precio_total = $total_base_impuesto;
+        if ($precio_incluye_iva) {
+            $total_base_impuesto = $precio_total / (1 + $tasa_impuesto / 100);
+        } else {
+            $precio_total = $total_base_impuesto * (1 + $tasa_impuesto / 100);
+        }
         $precio_unitario = 0;
         if ($cantidad != 0) {
             $precio_unitario = $precio_total / $cantidad;
@@ -1277,7 +1287,7 @@ class CompraController extends TransaccionController
             35,
             $proveedor->core_tercero_id,
             'Pendiente',
-            ['liquida_impuestos' => (int)$proveedor->liquida_impuestos]
+            ['liquida_impuestos' => (int)$proveedor->liquida_impuestos, 'precios_incluyen_iva' => true]
         );
 
         if ($entradas->isEmpty()) {
@@ -1357,7 +1367,8 @@ class CompraController extends TransaccionController
         $liquida_impuestos = $proveedor ? (int)$proveedor->liquida_impuestos : 1;
 
         $entradas = InvDocEncabezado::get_documentos_por_transaccion(35, Input::get('core_tercero_id'), 'Pendiente', [
-            'liquida_impuestos' => $liquida_impuestos
+            'liquida_impuestos' => $liquida_impuestos,
+            'precios_incluyen_iva' => true
         ]);
 
         if (empty($entradas->toArray())) {
