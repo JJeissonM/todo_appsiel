@@ -99,15 +99,16 @@ class PagoCxpController extends TransaccionController
         $medios_recaudo = TesoMedioRecaudo::opciones_campo_select();
         $cajas = TesoCaja::opciones_campo_select();
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
+        $cuentas_bancarias_transferencia_consignacion = $this->opciones_cuentas_bancarias_por_tipo_registro(
+            'transferencia_consignacion',
+            $cuentas_bancarias
+        );
+        $cuentas_bancarias_cheque = $cuentas_bancarias;
         if (ChequePaymentService::usaChequera()) {
-            try {
-                $medioCheque = TesoMedioRecaudo::findOrFail(
-                    TesoMedioRecaudo::get_id_por_tipo_registro('cheque_propio')
-                );
-                $cuentas_bancarias = $medioCheque->opciones_cuentas_bancarias_destino();
-            } catch (\Exception $e) {
-                $cuentas_bancarias = ['' => ''];
-            }
+            $cuentas_bancarias_cheque = $this->opciones_cuentas_bancarias_por_tipo_registro(
+                'cheque_propio',
+                ['' => '']
+            );
         }
         $retenciones = Retencion::opciones_campo_select();
         $descuentos_pronto_pago = DescuentoProntoPago::opciones_campo_select();
@@ -124,7 +125,39 @@ class PagoCxpController extends TransaccionController
                 ['url'=>'NO','etiqueta' => 'Crear nuevo' ]
             ];
 
-        return view('tesoreria.pagos_cxp.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'entidades_financieras', 'retenciones', 'tipos_operaciones', 'descuentos_pronto_pago' ) );
+        return view('tesoreria.pagos_cxp.create', compact(
+            'form_create',
+            'id_transaccion',
+            'motivos',
+            'miga_pan',
+            'medios_recaudo',
+            'cajas',
+            'cuentas_bancarias',
+            'cuentas_bancarias_transferencia_consignacion',
+            'cuentas_bancarias_cheque',
+            'terceros',
+            'entidades_financieras',
+            'retenciones',
+            'tipos_operaciones',
+            'descuentos_pronto_pago'
+        ));
+    }
+
+    /**
+     * Obtiene únicamente las cuentas activas, permitidas para el usuario y
+     * asociadas al medio de recaudo correspondiente al tipo de registro.
+     */
+    protected function opciones_cuentas_bancarias_por_tipo_registro($tipo_registro, array $opciones_respaldo)
+    {
+        try {
+            $medio_recaudo = TesoMedioRecaudo::findOrFail(
+                TesoMedioRecaudo::get_id_por_tipo_registro($tipo_registro)
+            );
+
+            return $medio_recaudo->opciones_cuentas_bancarias_destino();
+        } catch (\Exception $e) {
+            return $opciones_respaldo;
+        }
     }
 
     /**

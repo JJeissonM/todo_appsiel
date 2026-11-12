@@ -107,7 +107,7 @@ class TesoMedioRecaudo extends Model
     {
         $descripciones_por_defecto = [
             'efectivo' => ['Efectivo'],
-            'transferencia_consignacion' => ['QR/Transf', 'Banco (Consignación)', 'Transferencia', 'Consignación'],
+            'transferencia_consignacion' => ['Banco (QR/Transf)', 'QR/Transf', 'Banco (Consignación)', 'Transferencia', 'Consignación'],
             'tarjeta_debito' => ['Tarjeta débito', 'Tarj. Deb/Cre'],
             'tarjeta_credito' => ['Tarjeta crédito', 'Tarj. Deb/Cre'],
             'cheque_propio' => ['Cheque propio', 'Cheque'],

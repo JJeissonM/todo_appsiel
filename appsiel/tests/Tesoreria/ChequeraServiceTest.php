@@ -22,7 +22,11 @@ class ChequeraServiceTest extends TestCase
 
     protected function tearDown()
     {
-        config(['tesoreria.modalidad_cheques_pago' => 'cheques_creados']);
+        config([
+            'tesoreria.modalidad_cheques_pago' => 'cheques_creados',
+            'tesoreria.medios_recaudo_por_tipo_registro.transferencia_consignacion' => [],
+            'tesoreria.medios_recaudo_por_tipo_registro.cheque_propio' => []
+        ]);
         parent::tearDown();
     }
 
@@ -289,6 +293,91 @@ class ChequeraServiceTest extends TestCase
         $this->assertNotContains('N° Cheque', $response->getContent());
     }
 
+    public function test_formulario_separa_las_cuentas_de_transferencia_y_cheque()
+    {
+        config(['tesoreria.modalidad_cheques_pago' => 'usar_chequera']);
+
+        $usuario = User::whereNotNull('empresa_id')->get()->first(function ($item) {
+            return !$item->hasRole('Agencia');
+        });
+        $this->assertNotNull($usuario);
+        $this->be($usuario);
+
+        $cuentaPlantilla = TesoCuentaBancaria::first();
+        $this->assertNotNull($cuentaPlantilla);
+
+        $cuentaTransferencia = TesoCuentaBancaria::create([
+            'core_empresa_id' => $usuario->empresa_id,
+            'entidad_financiera_id' => $cuentaPlantilla->entidad_financiera_id,
+            'tipo_cuenta' => $cuentaPlantilla->tipo_cuenta,
+            'descripcion' => 'CUENTA EXCLUSIVA TRANSFERENCIA PRUEBA',
+            'por_defecto' => 'No',
+            'estado' => 'Activo',
+            'contab_cuenta_id' => $cuentaPlantilla->contab_cuenta_id
+        ]);
+        $cuentaCheque = TesoCuentaBancaria::create([
+            'core_empresa_id' => $usuario->empresa_id,
+            'entidad_financiera_id' => $cuentaPlantilla->entidad_financiera_id,
+            'tipo_cuenta' => $cuentaPlantilla->tipo_cuenta,
+            'descripcion' => 'CUENTA EXCLUSIVA CHEQUE PRUEBA',
+            'por_defecto' => 'No',
+            'estado' => 'Activo',
+            'contab_cuenta_id' => $cuentaPlantilla->contab_cuenta_id
+        ]);
+
+        $medioTransferencia = TesoMedioRecaudo::create([
+            'descripcion' => 'Transferencia prueba separación',
+            'comportamiento' => 'Otro',
+            'por_defecto' => '',
+            'maneja_puntos' => 'No',
+            'estado' => 'Activo'
+        ]);
+        $medioCheque = TesoMedioRecaudo::create([
+            'descripcion' => 'Cheque prueba separación',
+            'comportamiento' => 'Cheque',
+            'por_defecto' => '',
+            'maneja_puntos' => 'No',
+            'estado' => 'Activo'
+        ]);
+
+        TesoMedioRecaudoDestino::create([
+            'teso_medio_recaudo_id' => $medioTransferencia->id,
+            'teso_caja_id' => null,
+            'teso_cuenta_bancaria_id' => $cuentaTransferencia->id,
+            'estado' => 'Activo'
+        ]);
+        TesoMedioRecaudoDestino::create([
+            'teso_medio_recaudo_id' => $medioCheque->id,
+            'teso_caja_id' => null,
+            'teso_cuenta_bancaria_id' => $cuentaCheque->id,
+            'estado' => 'Activo'
+        ]);
+
+        config([
+            'tesoreria.medios_recaudo_por_tipo_registro.transferencia_consignacion' => [$medioTransferencia->descripcion],
+            'tesoreria.medios_recaudo_por_tipo_registro.cheque_propio' => [$medioCheque->descripcion]
+        ]);
+        $_SERVER['HTTP_REFERER'] = 'http://localhost/web?id=3&id_modelo=150';
+
+        $response = $this->call(
+            'GET',
+            '/tesoreria/pagos_cxp/create',
+            ['id' => 3, 'id_modelo' => 150, 'id_transaccion' => 33],
+            [],
+            [],
+            ['HTTP_REFERER' => 'http://localhost/web?id=3&id_modelo=150']
+        );
+
+        $this->assertResponseOk();
+        $selectTransferencia = $this->extraerSelect($response->getContent(), 'banco_id_transferencia_consignacion');
+        $selectCheque = $this->extraerSelect($response->getContent(), 'teso_cuenta_bancaria_id_cheque');
+
+        $this->assertContains($cuentaTransferencia->descripcion, $selectTransferencia);
+        $this->assertNotContains($cuentaCheque->descripcion, $selectTransferencia);
+        $this->assertContains($cuentaCheque->descripcion, $selectCheque);
+        $this->assertNotContains($cuentaTransferencia->descripcion, $selectCheque);
+    }
+
     public function test_formulario_de_pago_conserva_la_modalidad_actual()
     {
         config(['tesoreria.modalidad_cheques_pago' => 'cheques_creados']);
@@ -403,5 +492,14 @@ class ChequeraServiceTest extends TestCase
     protected function siguienteRango()
     {
         return max(900000, (int)TesoChequera::max('numero_final') + 100);
+    }
+
+    protected function extraerSelect($html, $nombre)
+    {
+        $patron = '/<select\\b(?=[^>]*\\bname="' . preg_quote($nombre, '/') . '")[^>]*>.*?<\\/select>/s';
+        $resultado = preg_match($patron, $html, $coincidencias);
+        $this->assertSame(1, $resultado, 'No se encontró el selector ' . $nombre . '.');
+
+        return $coincidencias[0];
     }
 }

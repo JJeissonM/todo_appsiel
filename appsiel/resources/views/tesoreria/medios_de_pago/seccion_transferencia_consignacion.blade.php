@@ -34,7 +34,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsSelect('banco_id_transferencia_consignacion', null, 'Cta. Bancaria', $cuentas_bancarias, []) }}
+									{{ Form::bsSelect('banco_id_transferencia_consignacion', null, 'Cta. Bancaria', isset($cuentas_bancarias_transferencia_consignacion) ? $cuentas_bancarias_transferencia_consignacion : $cuentas_bancarias, []) }}
 								</div>
 							</div>
 							<div class="col-md-6">

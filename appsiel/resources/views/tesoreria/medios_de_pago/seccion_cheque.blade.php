@@ -31,7 +31,7 @@
 							@if($usar_chequera_pago)
 								<div class="col-md-6">
 									<div class="row" style="padding:5px;">
-										{{ Form::bsSelect('teso_cuenta_bancaria_id_cheque', null, 'Cta. bancaria', $cuentas_bancarias, []) }}
+										{{ Form::bsSelect('teso_cuenta_bancaria_id_cheque', null, 'Cta. bancaria', isset($cuentas_bancarias_cheque) ? $cuentas_bancarias_cheque : $cuentas_bancarias, []) }}
 									</div>
 								</div>
 								<div class="col-md-6">
