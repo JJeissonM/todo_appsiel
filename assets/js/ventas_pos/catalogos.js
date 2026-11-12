@@ -88,6 +88,16 @@ function set_catalogos(pdv_id) {
     })
     .fail(function( jqXHR, textStatus, errorThrown ) {
 
+      if (jqXHR.responseJSON && typeof jqXHR.responseJSON.message === 'string') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al cargar los catálogos!',
+          text: jqXHR.responseJSON.message
+        });
+        finalizar_modal_carga_catalogos();
+        return;
+      }
+
 
       // If the server returned HTML, you can parse it and find elements by class
       if (jqXHR.responseText) {

@@ -108,6 +108,17 @@ class CrudService
         {
             $impuesto_id = (int)config('contabilidad.impoconsumo_default_id');
             $impoconsumo_default = Impuesto::find($impuesto_id);
+            if (is_null($impoconsumo_default)) {
+                return response()->json([
+                    'message' => 'No se pueden cargar los catálogos del punto de venta ' . $pdv->descripcion .
+                        ' (ID ' . $pdv->id . '): tiene activado el manejo de impoconsumo, pero el impuesto ' .
+                        'predeterminado de Contabilidad ' .
+                        ($impuesto_id > 0 ? '(ID ' . $impuesto_id . ') no existe.' : 'no está configurado.') .
+                        ' Revise Configuración de Contabilidad > Impuesto de impoconsumo por defecto y seleccione ' .
+                        'el impuesto que corresponde a este negocio. Si el punto de venta no maneja impoconsumo, ' .
+                        'revise esa opción en la configuración del punto de venta.'
+                ], 422);
+            }
             foreach ($productos as $item)
             {
                 if ($item->tasa_impuesto == 0) {
