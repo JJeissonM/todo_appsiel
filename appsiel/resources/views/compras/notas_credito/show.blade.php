@@ -21,7 +21,25 @@
 
 @section('datos_adicionales_encabezado')
 	<br/>
-	<b>Devolución: </b> {!! $docs_relacionados[0] !!}
+	<?php
+		// get_registro_impresion no trae todos los campos del encabezado.
+		$nota_bot = \App\Compras\ComprasDocEncabezado::find( $doc_encabezado->id );
+		$factura_nota = !is_null($nota_bot) && (int)$nota_bot->compras_doc_relacionado_id > 0
+			? \App\Compras\ComprasDocEncabezado::find( $nota_bot->compras_doc_relacionado_id )
+			: null;
+	?>
+	<b>Factura de compra: </b>
+	@if( !is_null($factura_nota) )
+		<a href="{{ url('compras/'.$factura_nota->id.'?id='.Input::get('id').'&id_modelo='.config('compras.fc_modelo_id').'&id_transaccion='.$factura_nota->core_tipo_transaccion_id) }}" target="_blank">{{ $factura_nota->get_label_documento() }}</a>
+	@else
+		<span class="text-danger">Sin factura relacionada</span>
+	@endif
+	<br/>
+	@if( !is_null($nota_bot) && $nota_bot->estado != 'Anulado' && $nota_bot->es_nota_bot_pendiente() )
+		<b>Devolución: </b> <span class="text-warning">Pendiente (nota sincronizada desde la DIAN, aún sin aplicar)</span>
+	@else
+		<b>Devolución: </b> {!! $docs_relacionados[0] !!}
+	@endif
 @endsection
 
 @section('filas_adicionales_encabezado')

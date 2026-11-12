@@ -8,6 +8,7 @@ use App\Compras\ComprasPivotItemXml;
 use App\Compras\Proveedor;
 use App\Compras\SyncFacturaCompraLog;
 use App\Core\Tercero;
+use App\Core\TipoDocApp;
 use App\Sistema\TipoTransaccion;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -32,7 +33,7 @@ class SyncFacturaCompraService
             'detalle'    => [],
         ];
 
-        foreach ($payload['data'] as $item_payload) {
+        foreach ($this->facturas_antes_que_notas($payload['data']) as $item_payload) {
             $cufe    = $item_payload['cufe'];
             $invoice = $item_payload['invoice_data']['invoice'];
             $resultado['procesadas']++;
@@ -48,7 +49,7 @@ class SyncFacturaCompraService
                 $resultado['detalle'][] = [
                     'cufe'        => $cufe,
                     'estado'      => 'duplicado',
-                    'mensaje'     => 'La factura con este CUFE ya fue sincronizada.',
+                    'mensaje'     => 'El documento con este CUFE ya fue sincronizado.',
                     'documento'   => $encabezado_existente ? $this->etiqueta_documento($encabezado_existente) : null,
                     'consecutivo' => $encabezado_existente ? $encabezado_existente->consecutivo : null,
                 ];
@@ -60,13 +61,29 @@ class SyncFacturaCompraService
                 $detalle = DB::transaction(function () use (
                     $cufe, $invoice, $empresa_id, $creado_por
                 ) {
+                    $tipo_documento = $this->tipo_documento($invoice);
+
+                    if ($tipo_documento === 'DebitNote') {
+                        throw new \Exception('Las notas débito de compras todavía no se sincronizan desde la DIAN. Regístrela manualmente.');
+                    }
+
                     $proveedor  = $this->resolver_proveedor(
                         $invoice['supplier'],
                         $empresa_id
                     );
-                    $encabezado = $this->crear_encabezado(
-                        $cufe, $invoice, $proveedor, $empresa_id, $creado_por
-                    );
+
+                    $factura_relacionada = null;
+                    if ($tipo_documento === 'CreditNote') {
+                        // Antes toda nota crédito recibida se creaba como factura de compra.
+                        $factura_relacionada = $this->buscar_factura_referenciada($invoice, $proveedor, $empresa_id);
+                        $encabezado = $this->crear_encabezado_nota_credito(
+                            $cufe, $invoice, $proveedor, $factura_relacionada, $empresa_id, $creado_por
+                        );
+                    } else {
+                        $encabezado = $this->crear_encabezado(
+                            $cufe, $invoice, $proveedor, $empresa_id, $creado_por
+                        );
+                    }
                     $this->crear_registros_items(
                         $invoice['items'], $encabezado, $creado_por, $proveedor
                     );
@@ -79,15 +96,29 @@ class SyncFacturaCompraService
                         $log->id
                     );
 
-                    return [
+                    if ($tipo_documento !== 'CreditNote') {
+                        // Notas que llegaron antes que la factura que afectan.
+                        $this->relacionar_notas_pendientes($encabezado);
+                    }
+
+                    $detalle = [
                         'cufe'                 => $cufe,
                         'estado'               => 'procesado',
+                        'tipo'                 => $tipo_documento === 'CreditNote' ? 'nota_credito' : 'factura',
                         // El BOT muestra el documento tal como se ve en el ERP
                         // ("FC 67"), no el id de compras_doc_encabezados.
                         'documento'            => $this->etiqueta_documento($encabezado),
                         'consecutivo'          => $encabezado->consecutivo,
                         'proveedor_encontrado' => !is_null($proveedor),
                     ];
+
+                    if ($tipo_documento === 'CreditNote') {
+                        $detalle['factura_relacionada'] = $factura_relacionada
+                            ? $this->etiqueta_documento($factura_relacionada)
+                            : null;
+                    }
+
+                    return $detalle;
                 });
 
                 $resultado['exitosas']++;
@@ -245,7 +276,8 @@ class SyncFacturaCompraService
             ->where('core_empresa_id', $empresa_id)
             ->where('estado', 'procesado')
             ->whereNotNull('compras_doc_encabezado_id')
-            ->orderByDesc('id')
+            // orderByDesc() no existe en Laravel 5.2.
+            ->orderBy('id', 'desc')
             ->first();
 
         return $log ? $log->encabezado : null;
@@ -300,6 +332,218 @@ class SyncFacturaCompraService
             'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
             'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
         ];
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // NOTAS CRÉDITO
+    // ─────────────────────────────────────────────────────────────
+
+    /**
+     * Tipo de documento según OSEI: nombre del nodo raíz del XML (Invoice,
+     * CreditNote, DebitNote). Si no viene, se asume factura como antes.
+     */
+    private function tipo_documento(array $invoice): string
+    {
+        $tipo = $invoice['document_type'] ?? '';
+
+        return in_array($tipo, ['CreditNote', 'DebitNote'], true) ? $tipo : 'Invoice';
+    }
+
+    /**
+     * Las facturas se procesan primero: así una nota que llega en el mismo lote
+     * que su factura queda relacionada con ella.
+     */
+    private function facturas_antes_que_notas(array $items): array
+    {
+        $facturas = [];
+        $notas = [];
+
+        foreach ($items as $item) {
+            $invoice = $item['invoice_data']['invoice'] ?? [];
+            if ($this->tipo_documento($invoice) === 'Invoice') {
+                $facturas[] = $item;
+            } else {
+                $notas[] = $item;
+            }
+        }
+
+        return array_merge($facturas, $notas);
+    }
+
+    /**
+     * Factura de compra que afecta la nota (cac:BillingReference del XML).
+     * Primero por CUFE, que es inequívoco; si no, por proveedor + prefijo + número.
+     */
+    private function buscar_factura_referenciada(array $invoice, ?Proveedor $proveedor, int $empresa_id): ?ComprasDocEncabezado
+    {
+        $referencia = $invoice['billing_reference'] ?? [];
+        $tipo_transaccion_fc = $this->getFacturaCompraDocumentConfig()['core_tipo_transaccion_id'];
+
+        $consulta = function () use ($empresa_id, $tipo_transaccion_fc) {
+            return ComprasDocEncabezado::where('core_empresa_id', $empresa_id)
+                ->where('core_tipo_transaccion_id', $tipo_transaccion_fc)
+                ->where('estado', '<>', 'Anulado');
+        };
+
+        $cufe_factura = trim((string) ($referencia['uuid'] ?? ''));
+        if ($cufe_factura !== '') {
+            $factura = $consulta()->where('cufe', $cufe_factura)->orderBy('id', 'desc')->first();
+            if ($factura) {
+                return $factura;
+            }
+        }
+
+        $numero_factura = trim((string) ($referencia['id'] ?? ''));
+        if ($numero_factura === '' || !$proveedor) {
+            return null;
+        }
+
+        list($prefijo, $consecutivo) = $this->separar_prefijo_numero($numero_factura);
+
+        return $consulta()
+            ->where('proveedor_id', $proveedor->id)
+            ->where('doc_proveedor_prefijo', $prefijo)
+            ->where('doc_proveedor_consecutivo', $consecutivo)
+            ->orderBy('id', 'desc')
+            ->first();
+    }
+
+    /**
+     * Crea la nota crédito de compras (transacción 36) pendiente, igual que las
+     * facturas del BOT: sin devolución de inventario, sin CxP y sin contabilidad.
+     *
+     * Como en las notas hechas a mano, doc_proveedor_* guarda la factura del
+     * proveedor que se afecta. El número de la propia nota queda en la descripción
+     * y su CUFE en el campo cufe.
+     */
+    private function crear_encabezado_nota_credito(
+        string                $cufe,
+        array                 $invoice,
+        ?Proveedor            $proveedor,
+        ?ComprasDocEncabezado $factura,
+        int                   $empresa_id,
+        string                $creado_por
+    ): ComprasDocEncabezado {
+
+        $documentConfig = $this->getNotaCreditoDocumentConfig();
+
+        $numero_nota = $this->numero_documento_proveedor($invoice);
+        $numero_factura = trim((string) ($invoice['billing_reference']['id'] ?? ''));
+
+        if ($factura) {
+            $prefijo_factura = $factura->doc_proveedor_prefijo;
+            $consecutivo_factura = $factura->doc_proveedor_consecutivo;
+        } else {
+            list($prefijo_factura, $consecutivo_factura) = $this->separar_prefijo_numero($numero_factura);
+        }
+
+        $descripcion = trim('Nota crédito del proveedor ' . $numero_nota . '. ' . ($invoice['anotation'] ?? ''));
+        if (!$proveedor) {
+            $descripcion = '[SIN PROVEEDOR - REVISAR NIT: '
+                . $invoice['supplier']['identification_number'] . '] '
+                . $descripcion;
+        }
+
+        
+
+        return ComprasDocEncabezado::create([
+            'core_empresa_id'             => $empresa_id,
+            'core_tipo_transaccion_id'    => $documentConfig['core_tipo_transaccion_id'],
+            'core_tipo_doc_app_id'        => $documentConfig['core_tipo_doc_app_id'],
+            'core_tercero_id'             => $proveedor ? $proveedor->core_tercero_id : 0,
+            'proveedor_id'                => $proveedor ? $proveedor->id : 0,
+            'entrada_almacen_id'          => 0,
+            'compras_doc_relacionado_id'  => $factura ? $factura->id : 0,
+            'consecutivo'                 => TipoDocApp::reservar_consecutivo($empresa_id, $documentConfig['core_tipo_doc_app_id']),
+            'fecha'                       => $this->parsear_fecha($invoice['issue_date']),
+            'fecha_vencimiento'           => $this->parsear_fecha($invoice['issue_date']),
+            'doc_proveedor_prefijo'       => $prefijo_factura,
+            'doc_proveedor_consecutivo'   => $consecutivo_factura,
+            'cufe'                        => $cufe,
+            'forma_pago'                  => $factura
+                                                ? $factura->forma_pago
+                                                : $this->parsear_forma_pago($invoice['payment_means_type'] ?? ''),
+            'descripcion'                 => $descripcion,
+            'estado'                      => 'Activo',
+            'sincronizado_bot'            => true,
+            'valor_total'                 => $this->calcular_total_factura($invoice['items']),
+            'creado_por'                  => $creado_por,
+        ]);
+    }
+
+    /**
+     * Relaciona con la factura recién sincronizada las notas del BOT que llegaron
+     * antes que ella (quedaron con compras_doc_relacionado_id = 0).
+     */
+    private function relacionar_notas_pendientes(ComprasDocEncabezado $factura): void
+    {
+        if ((string) $factura->doc_proveedor_consecutivo === '' || !$factura->proveedor_id) {
+            return;
+        }
+
+        ComprasDocEncabezado::where('core_empresa_id', $factura->core_empresa_id)
+            ->where('core_tipo_transaccion_id', $this->getNotaCreditoDocumentConfig()['core_tipo_transaccion_id'])
+            ->where('sincronizado_bot', true)
+            ->where('compras_doc_relacionado_id', 0)
+            ->where('estado', '<>', 'Anulado')
+            ->where('proveedor_id', $factura->proveedor_id)
+            ->where('doc_proveedor_prefijo', $factura->doc_proveedor_prefijo)
+            ->where('doc_proveedor_consecutivo', $factura->doc_proveedor_consecutivo)
+            ->update([
+                'compras_doc_relacionado_id' => $factura->id,
+                'forma_pago'                 => $factura->forma_pago,
+            ]);
+    }
+
+    private function getNotaCreditoDocumentConfig(): array
+    {
+        $core_tipo_transaccion_id = (int) config('compras.nc_tipo_transaccion_id') ?: 36;
+        $core_tipo_doc_app_id = (int) config('compras.nc_tipo_doc_app_id');
+
+        if ($core_tipo_doc_app_id <= 0) {
+            $core_tipo_doc_app_id = (int) DB::table('core_transaccion_tiene_documento')
+                ->where('core_tipo_transaccion_id', $core_tipo_transaccion_id)
+                ->orderBy('orden')
+                ->value('core_tipo_doc_id');
+        }
+
+        if ($core_tipo_doc_app_id <= 0) {
+            throw new \Exception('No fue posible resolver el tipo de documento de la nota crédito de compras (transacción ' . $core_tipo_transaccion_id . ').');
+        }
+
+        return [
+            'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+        ];
+    }
+
+    /**
+     * Número del documento tal como lo emitió el proveedor ("ENC19137").
+     * OSEI lo envía en document_id; las versiones anteriores solo enviaban el
+     * número sin letras.
+     */
+    private function numero_documento_proveedor(array $invoice): string
+    {
+        if (!empty($invoice['document_id'])) {
+            return (string) $invoice['document_id'];
+        }
+
+        return ($invoice['resolution']['prefix'] ?? '') . $invoice['number'];
+    }
+
+    /**
+     * "A3309" → ['A', '3309']; "SETP-0012" → ['SETP', '12']. El número se guarda
+     * sin ceros a la izquierda, igual que el de las facturas que llegan de OSEI.
+     */
+    private function separar_prefijo_numero(string $numero): array
+    {
+        $numero = trim($numero);
+
+        if (preg_match('/^(.*?)(\d+)$/', $numero, $partes)) {
+            return [trim($partes[1], " -_"), (string) (int) $partes[2]];
+        }
+
+        return [$numero, ''];
     }
 
     // ─────────────────────────────────────────────────────────────

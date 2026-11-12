@@ -659,7 +659,18 @@ class NotaCreditoController extends TransaccionController
 
         $nota = ComprasDocEncabezado::find( $id );
 
-        $array_wheres = ['core_empresa_id'=>$nota->core_empresa_id, 
+        // Una nota del BOT sin aplicar no movió cantidades, CxP ni contabilidad:
+        // revertirlas descuadraría la factura (o fallaría si aún no tiene CxP).
+        if ( $nota->es_nota_bot_pendiente() )
+        {
+            $modificado_por = Auth::user()->email;
+            ComprasDocRegistro::where( 'compras_doc_encabezado_id', $nota->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
+            $nota->update( [ 'estado' => 'Anulado', 'compras_doc_relacionado_id' => '0', 'modificado_por' => $modificado_por] );
+
+            return redirect( 'compras/'.$id.'?id='.$this->app->id.'&id_modelo='.$this->modelo->id.'&id_transaccion='.$this->transaccion->id.'&vista=compras.notas_credito.show')->with('flash_message','Nota anulada correctamente.');
+        }
+
+        $array_wheres = ['core_empresa_id'=>$nota->core_empresa_id,
             'core_tipo_transaccion_id' => $nota->core_tipo_transaccion_id,
             'core_tipo_doc_app_id' => $nota->core_tipo_doc_app_id,
             'consecutivo' => $nota->consecutivo];

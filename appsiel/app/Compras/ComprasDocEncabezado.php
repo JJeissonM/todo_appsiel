@@ -75,6 +75,23 @@ class ComprasDocEncabezado extends Model
         return (bool)$this->sincronizado_bot && empty($this->turno_operativo_id);
     }
 
+    /**
+     * Nota crédito traída por el BOT que todavía no se ha aplicado: no tiene
+     * devolución de inventario ni movimiento de compras, CxP o contabilidad.
+     */
+    public function es_nota_bot_pendiente()
+    {
+        if (!(bool)$this->sincronizado_bot || !in_array((string)$this->entrada_almacen_id, ['', '0'], true)) {
+            return false;
+        }
+
+        return !ComprasMovimiento::where('core_empresa_id', $this->core_empresa_id)
+            ->where('core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $this->core_tipo_doc_app_id)
+            ->where('consecutivo', $this->consecutivo)
+            ->exists();
+    }
+
     public function tipo_transaccion()
     {
         return $this->belongsTo('App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id');
