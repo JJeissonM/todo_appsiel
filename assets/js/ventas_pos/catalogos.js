@@ -88,38 +88,50 @@ function set_catalogos(pdv_id) {
     })
     .fail(function( jqXHR, textStatus, errorThrown ) {
 
-      if (jqXHR.responseJSON && typeof jqXHR.responseJSON.message === 'string') {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al cargar los catálogos!',
-          text: jqXHR.responseJSON.message
-        });
-        finalizar_modal_carga_catalogos();
-        return;
-      }
+      var mensaje = 'No fue posible cargar los productos, precios y clientes del punto de venta. ' +
+        'Recargue la página. Si el problema continúa, comuníquese con el administrador para revisar la configuración del punto de venta.';
+      var respuesta = jqXHR.responseJSON;
 
-
-      // If the server returned HTML, you can parse it and find elements by class
-      if (jqXHR.responseText) {
+      if (!respuesta && jqXHR.responseText) {
         try {
-          // Create a temporary DOM from the response
-          var responseDOM = $("<div>").html(jqXHR.responseText);
-
-          // Find elements by class in the error HTML
-          var errorMessages = responseDOM.find(".block_exception.clear_fix").map(function () {
-            return $(this).text().trim();
-          }).get();
-
-          Swal.fire({
-            icon: 'error',
-            title: 'Error al cargar los catálogos!',
-            text: errorMessages
-          });
-
+          respuesta = JSON.parse(jqXHR.responseText);
         } catch (e) {
-          alert("Error parsing response:", e);
+          // Algunas versiones del servidor devuelven una página de error HTML.
         }
       }
+
+      if (respuesta && typeof respuesta.message === 'string' && respuesta.message.trim()) {
+        mensaje = respuesta.message.trim();
+      } else if (jqXHR.status === 0) {
+        mensaje = 'No se pudo conectar con el servidor para cargar los catálogos. ' +
+          'Revise su conexión a internet y recargue la página.';
+      } else if (jqXHR.status === 401 || jqXHR.status === 419) {
+        mensaje = 'La sesión ha vencido. Inicie sesión nuevamente y vuelva a abrir el punto de venta.';
+      } else if (jqXHR.status === 403) {
+        mensaje = 'Su usuario no tiene permiso para cargar los catálogos de este punto de venta. ' +
+          'Solicite al administrador que revise sus permisos.';
+      } else if (jqXHR.responseText) {
+        var errores = $("<div>").html(jqXHR.responseText).find(".block_exception.clear_fix").map(function () {
+          return $(this).text().trim();
+        }).get().filter(function (texto) { return texto.length > 0; }).join('\n');
+        if (errores) {
+          mensaje += '\n\nDetalle del error: ' + errores;
+        }
+      }
+
+      if (mensaje.indexOf('tasa_impuesto') !== -1 && mensaje.indexOf('non-object') !== -1) {
+        mensaje = 'El punto de venta tiene activado el impoconsumo, pero no se encontró el impuesto predeterminado. ' +
+          'Solicite al administrador que revise Configuración de Contabilidad > Impuesto de impoconsumo por defecto. ' +
+          'Después de corregirlo, recargue la página.';
+      }
+
+      Swal.fire({
+        icon: 'error',
+        title: 'No se pudieron cargar los catálogos',
+        text: mensaje,
+        confirmButtonText: 'Entendido',
+        width: 600
+      });
 
       finalizar_modal_carga_catalogos();
 
