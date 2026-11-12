@@ -8,26 +8,42 @@
  </p>
     <hr>
 
-@php
-    $cantidad_asignaturas_mostrar = 9;
-    $cantidad_asignaturas = count($asignaturas);
-    $mostrar_segunda_parte = true;
+<style>
+    .promedio-consolidado-tabla th, .promedio-consolidado-tabla td {
+        padding: 2px 1px;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+    .promedio-consolidado-tabla thead { display: table-header-group; }
+    .promedio-consolidado-tabla tr { page-break-inside: avoid; }
+</style>
 
-    if ( $cantidad_asignaturas_mostrar > $cantidad_asignaturas )
-    {
-        $cantidad_asignaturas_mostrar = $cantidad_asignaturas;
-        $mostrar_segunda_parte = false;
-    } 
-    
-    $np = count($periodos->toArray()); // Cantidad de periodos    
+@php
+    $np = count($periodos->toArray());
+    $partes_asignaturas = array_chunk($asignaturas, 8);
 @endphp
-<table class="table table-bordered table-striped tabla_contenido" style="margin-top: -4px; font-size:11px;">
+
+@foreach($partes_asignaturas as $numero_parte => $asignaturas_parte)
+    @if($numero_parte > 0)
+        <div class="page-break"></div>
+    @endif
+    @php
+        $cantidad_asignaturas_mostrar = count($asignaturas_parte);
+    @endphp
+<table data-excel-export="true" class="table table-bordered table-striped tabla_contenido promedio-consolidado-tabla" style="width:100%; table-layout:fixed; margin-top: -4px; font-size:11px;">
+    <colgroup>
+        <col style="width:4%;">
+        <col style="width:24%;">
+        @for($col=0; $col < $cantidad_asignaturas_mostrar; $col++)
+            <col style="width:{{ 72 / $cantidad_asignaturas_mostrar }}%;">
+        @endfor
+    </colgroup>
     <thead>
         <tr>
             <th rowspan="2"> No. </th>
             <th rowspan="2"> Estudiante </th>
             @for($i=0;$i<$cantidad_asignaturas_mostrar;$i++)
-                <th style="text-align: center;"> {{$asignaturas[$i]['abreviatura']}} </th>
+                <th style="text-align: center;"> {{$asignaturas_parte[$i]['abreviatura']}} </th>
             @endfor
         </tr>
         <tr>
@@ -63,7 +79,7 @@
                             foreach($periodos as $periodo)
                             {
                                     
-                                $cali = $calificaciones->whereLoose('id_estudiante',$estudiante->id_estudiante)->whereLoose('id_periodo',$periodo->id)->whereLoose('id_asignatura', $asignaturas[$j]['id'])->first();
+                                $cali = $calificaciones->whereLoose('id_estudiante',$estudiante->id_estudiante)->whereLoose('id_periodo',$periodo->id)->whereLoose('id_asignatura', $asignaturas_parte[$j]['id'])->first();
 
                                 if ( !is_null($cali) ) 
                                 {
@@ -134,121 +150,4 @@
 
     </tbody>
 </table>
-
-@if($mostrar_segunda_parte)
-    <div class="page-break"></div>
-
-
-    <table class="table table-bordered table-striped tabla_contenido" style="margin-top: -4px; font-size:11px;">
-        <thead>
-            <tr>
-                <th rowspan="2"> No. </th>
-                <th rowspan="2"> Estudiante </th>
-                @for($j=$cantidad_asignaturas_mostrar;$j<$cantidad_asignaturas;$j++)
-                    <th style="text-align: center;"> {{$asignaturas[$j]['abreviatura']}} </th>
-                @endfor
-            </tr>
-            <tr>
-                @for($j=$cantidad_asignaturas_mostrar;$j<$cantidad_asignaturas;$j++)
-                    <th> Prom </th>
-                @endfor
-            </tr>
-        </thead>
-        <tbody>
-            @php
-                $i = 0;
-            @endphp
-            @foreach($estudiantes as $estudiante)
-                    
-                <tr class="fila-{{$i}}" >
-                    <td>
-                       {{ $i+1 }}
-                    </td>
-                    <td>
-                       {{$estudiante->nombre_completo}}
-                    </td>
-
-                    @php 
-                        $n = 0; $cali_final = 0;
-                    
-                        for($k=$cantidad_asignaturas_mostrar; $k < $cantidad_asignaturas; $k++)
-                        {
-                            $cali_periodos_listos = []; // periodos que ya tienen calificación
-                            $periodos_listos=0;
-                            $periodos_faltantes=0;
-
-                            // <!-- Crear array con las notas de cada periodo -->
-                            foreach($periodos as $periodo)
-                            {
-                                    
-                                $cali = $calificaciones->whereLoose('id_estudiante',$estudiante->id_estudiante)->whereLoose('id_periodo',$periodo->id)->whereLoose('id_asignatura', $asignaturas[$k]['id'])->first();
-
-                                if ( !is_null($cali) ) 
-                                {
-                                    $cali_periodos_listos[$periodos_listos]['cali'] = $cali->calificacion;
-                                    $cali_periodos_listos[$periodos_listos]['text'] = number_format($cali->calificacion, (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
-                                    $cali_periodos_listos[$periodos_listos]['text_color'] = 'black';
-
-                                    if ( $cali->calificacion <= $tope_escala_valoracion_minima ) {
-                                        $cali_periodos_listos[$periodos_listos]['text_color'] = 'red';
-                                    }
-                                    $periodos_listos++;
-                                }else{
-                                    $periodos_faltantes++;
-                                }
-                            }
-
-                            // Prevenir división sobre cero
-                            $cali_faltante = 0;
-                            if( $periodos_faltantes != 0)
-                            {
-                                $cali_faltante = ( $tope_escala_valoracion_minima * $np - array_sum(array_column($cali_periodos_listos, 'cali')) ) / $periodos_faltantes;
-                            }
-                                
-                            $cali_faltante_text =number_format($cali_faltante, (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
-                            $cali_faltante_text_color = 'black';
-                            if ( $cali_faltante <= $tope_escala_valoracion_minima ) {
-                                $cali_faltante_text_color = 'red';
-                            }
-
-                            $npl=0; // Se mostrarán los periodos listos en orden, pero si hay un periodo "listo" que no tenga nota y después venga un periodo listo que si tenga nota, el array solo tendrá un elemento, pero deben ser dos elementos. Así, un periodo que ya está "listo", pero con nota en cero o inexistente (por algún motivo) le mostrará una nota proyectada
-
-
-                        // <!-- Dibujar la nota de cada periodo -->
-
-                                $total_nota = 0;
-                                $num = 0;
-                            foreach($periodos as $periodo)
-                            {
-                                if ( $npl < $periodos_listos )
-                                {
-                                    $total_nota += (float)$cali_periodos_listos[$npl]['cali'];
-                                    $num++;
-                                }
-                                $npl++;
-                            } // End foreach periodos
-                            $prom = 0;
-                            if( $num != 0)
-                            {
-                                $prom = $total_nota / $num;
-                            }
-                            $color = 'black';
-                            if ( $prom <= $tope_escala_valoracion_minima )
-                            {
-                                $color = 'red';
-                            }
-                            @endphp
-                                <td>
-                                    <span style="color: {{ $color }}"> {{ number_format( $prom, (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }} </span>
-                                </td>    
-                            @php
-
-                        } // end for asignaturas 
-
-                        @endphp
-                    </tr>
-                @php $i++; @endphp
-            @endforeach
-        </tbody>
-    </table>
-@endif
+@endforeach

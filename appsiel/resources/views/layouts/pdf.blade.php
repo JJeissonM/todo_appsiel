@@ -31,8 +31,6 @@
 				width: 186px;
 				height: 70px;
 				text-align: center;  
-				-moz-text-align-last: center; /* Code for Firefox */
-				text-align-last: center;
 			}
 
 			
