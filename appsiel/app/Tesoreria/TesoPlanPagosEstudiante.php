@@ -45,17 +45,39 @@ class TesoPlanPagosEstudiante extends Model
 
     public function sumar_abono_registro_cartera_estudiante( $valor_recaudo )
     {
-        $valor_pagado = $this->valor_pagado + $valor_recaudo;
-        $saldo_pendiente = $this->saldo_pendiente - $valor_recaudo;
-        $estado = $this->estado;
-        if( $valor_pagado == $this->valor_cartera )
-        {
-            $estado = "Pagada";
+        $valor_recaudo = (float) $valor_recaudo;
+
+        if ($valor_recaudo <= 0) {
+            throw new \InvalidArgumentException('El valor del recaudo debe ser mayor que cero.');
         }
-        $this->valor_pagado = $valor_pagado;
-        $this->saldo_pendiente = $saldo_pendiente;
-        $this->estado = $estado;
-        $this->save();
+
+        return DB::transaction(function () use ($valor_recaudo) {
+            $registro = TesoPlanPagosEstudiante::where('id', $this->id)
+                                                ->lockForUpdate()
+                                                ->first();
+
+            if (is_null($registro)) {
+                throw new \InvalidArgumentException('No se encontró el periodo de la libreta que se intenta recaudar.');
+            }
+
+            $saldo_pendiente = (float) $registro->saldo_pendiente;
+            if ($valor_recaudo - $saldo_pendiente > 0.01) {
+                throw new \InvalidArgumentException(
+                    'El valor del recaudo no puede superar el saldo pendiente del periodo.'
+                );
+            }
+
+            $registro->valor_pagado = (float) $registro->valor_pagado + $valor_recaudo;
+            $registro->saldo_pendiente = max(0, $saldo_pendiente - $valor_recaudo);
+            $registro->estado = $registro->saldo_pendiente <= 0.01 ? 'Pagada' : $registro->estado;
+            $registro->save();
+
+            $this->valor_pagado = $registro->valor_pagado;
+            $this->saldo_pendiente = $registro->saldo_pendiente;
+            $this->estado = $registro->estado;
+
+            return $this;
+        });
     }
 
     public function restar_abono_registro_cartera_estudiante( $valor_recaudo )

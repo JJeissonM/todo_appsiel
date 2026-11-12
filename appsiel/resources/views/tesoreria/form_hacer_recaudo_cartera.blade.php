@@ -12,7 +12,7 @@
 	    {{ Form::hidden('cliente_id', $factura->cliente_id) }}
 
 
-	    {{ Form::hidden( 'vtas_doc_encabezado_id', Input::get('vtas_doc_encabezado_id') ) }}
+	    {{ Form::hidden( 'vtas_doc_encabezado_id', $factura->id ) }}
 	    <!-- id_doc es el ID del movimiento de CxC -->
 	    {{ Form::hidden( 'id_doc', $id_doc ) }}
 

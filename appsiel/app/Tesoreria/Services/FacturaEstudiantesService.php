@@ -4,6 +4,7 @@ namespace App\Tesoreria\Services;
 
 use App\Matriculas\FacturaAuxEstudiante;
 
+use App\CxC\CxcMovimiento;
 use App\Tesoreria\TesoRecaudosLibreta;
 use App\Ventas\VtasDocEncabezado;
 
@@ -12,6 +13,7 @@ class FacturaEstudiantesService
     public function registrar_recaudo_cartera_estudiante( $doc_encabezado_recaudo, $registro_cxc_pendiente, $abono  )
     {
         $factura = VtasDocEncabezado::where([
+                                                [ 'core_empresa_id','=', $registro_cxc_pendiente->core_empresa_id ],
                                                 [ 'core_tipo_transaccion_id','=', $registro_cxc_pendiente->core_tipo_transaccion_id ],
                                                 [ 'core_tipo_doc_app_id','=', $registro_cxc_pendiente->core_tipo_doc_app_id ],
                                                 [ 'consecutivo','=', $registro_cxc_pendiente->consecutivo ]
@@ -27,6 +29,38 @@ class FacturaEstudiantesService
         if ( is_null($aux_factura) )
         {
             return false;
+        }
+
+        $movimientos_cxc = CxcMovimiento::where([
+                                    'core_empresa_id' => $registro_cxc_pendiente->core_empresa_id,
+                                    'core_tipo_transaccion_id' => $registro_cxc_pendiente->core_tipo_transaccion_id,
+                                    'core_tipo_doc_app_id' => $registro_cxc_pendiente->core_tipo_doc_app_id,
+                                    'consecutivo' => $registro_cxc_pendiente->consecutivo,
+                                    'core_tercero_id' => $registro_cxc_pendiente->core_tercero_id
+                                ])->lockForUpdate()->get();
+
+        if ($movimientos_cxc->count() !== 1 || (int)$movimientos_cxc->first()->id !== (int)$registro_cxc_pendiente->id)
+        {
+            throw new \InvalidArgumentException('La factura del plan de pagos debe tener un único movimiento de CxC antes de registrar el recaudo.');
+        }
+
+        $saldo_cxc_antes_del_abono = (float)$registro_cxc_pendiente->saldo_pendiente + (float)$abono;
+        $saldo_libreta = (float)$aux_factura->cartera_estudiante->saldo_pendiente;
+        if (abs($saldo_cxc_antes_del_abono - $saldo_libreta) > 0.01)
+        {
+            throw new \InvalidArgumentException('El saldo de la factura en CxC no coincide con el saldo del periodo de la libreta. Debe conciliarse antes de registrar el recaudo.');
+        }
+
+        $recaudo_existente = TesoRecaudosLibreta::where([
+                                    'core_tipo_transaccion_id' => (int)$doc_encabezado_recaudo->core_tipo_transaccion_id,
+                                    'core_tipo_doc_app_id' => (int)$doc_encabezado_recaudo->core_tipo_doc_app_id,
+                                    'consecutivo' => $doc_encabezado_recaudo->consecutivo,
+                                    'id_cartera' => $aux_factura->cartera_estudiante_id
+                                ])->lockForUpdate()->first();
+
+        if (!is_null($recaudo_existente))
+        {
+            return $recaudo_existente;
         }
 
         $teso_medio_recaudo_id = 1;
@@ -50,5 +84,7 @@ class FacturaEstudiantesService
 
         $recaudo->registro_cartera_estudiante->sumar_abono_registro_cartera_estudiante( $abono );
         $recaudo->libreta->actualizar_estado();
+
+        return $recaudo;
     }
 }

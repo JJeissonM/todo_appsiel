@@ -12,6 +12,7 @@ use App\Http\Controllers\Tesoreria\RecaudoCxcController;
 use App\Matriculas\Estudiante;
 use App\Matriculas\Matricula;
 use App\Matriculas\Curso;
+use App\Matriculas\FacturaAuxEstudiante;
 
 use App\Core\Colegio;
 use App\Core\Empresa;
@@ -31,6 +32,7 @@ use App\CxC\CxcMovimiento;
 use App\Tesoreria\Services\PaymentBookServices;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 use Khill\Lavacharts\Laravel\LavachartsFacade;
@@ -310,19 +312,56 @@ class LibretaPagoController extends ModeloController
     }
 
     public function hacer_recaudo_cartera($id_cartera)
-    {        
+    {
         $cartera = TesoPlanPagosEstudiante::find($id_cartera);
+        if (is_null($cartera)) {
+            return redirect()->back()->with('mensaje_error', 'No se encontró el periodo de la libreta que se intenta recaudar.');
+        }
+
         $libreta = TesoLibretasPago::find($cartera->id_libreta);
+        if (is_null($libreta)) {
+            return redirect()->back()->with('mensaje_error', 'No se encontró la libreta asociada al periodo seleccionado.');
+        }
+
         $estudiante = Estudiante::find( $libreta->id_estudiante );
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
 
-        $factura = VtasDocEncabezado::find( Input::get('vtas_doc_encabezado_id') );
+        $consulta_factura_auxiliar = FacturaAuxEstudiante::where('cartera_estudiante_id', $cartera->id);
+        if (!empty(Input::get('vtas_doc_encabezado_id'))) {
+            $consulta_factura_auxiliar->where('vtas_doc_encabezado_id', Input::get('vtas_doc_encabezado_id'));
+        }
+        $facturas_auxiliares = $consulta_factura_auxiliar->get();
 
-        $registro_cxc = CxcMovimiento::where( [ 'core_tipo_transaccion_id' => $factura->core_tipo_transaccion_id, 'core_tipo_doc_app_id' => $factura->core_tipo_doc_app_id, 'consecutivo' => $factura->consecutivo, ] )->get()->first();
+        if ($facturas_auxiliares->count() !== 1 || is_null($facturas_auxiliares->first()->encabezado_factura)) {
+            return redirect( 'tesoreria/ver_plan_pagos/' . $cartera->id_libreta . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') )
+                    ->with('mensaje_error', 'El periodo debe tener una única factura asociada antes de registrar el recaudo.');
+        }
 
-        if ( is_null($registro_cxc) )
+        $factura_auxiliar = $facturas_auxiliares->first();
+        $factura = $factura_auxiliar->encabezado_factura;
+
+        $registros_cxc = CxcMovimiento::where('core_empresa_id', $factura->core_empresa_id)
+                                     ->where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+                                     ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
+                                     ->where('consecutivo', $factura->consecutivo)
+                                     ->where('core_tercero_id', $factura->core_tercero_id)
+                                     ->get();
+
+        if ($registros_cxc->count() === 0)
         {
             return redirect( 'tesoreria/ver_plan_pagos/' . $cartera->id_libreta . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') )->with( 'mensaje_error', 'Factura <b>' . $factura->tipo_documento_app->prefijo . ' ' . $factura->consecutivo . '</b> no tiene registros de CxC.' );
+        }
+
+        if ($registros_cxc->count() > 1)
+        {
+            return redirect( 'tesoreria/ver_plan_pagos/' . $cartera->id_libreta . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') )->with( 'mensaje_error', 'Factura <b>' . $factura->tipo_documento_app->prefijo . ' ' . $factura->consecutivo . '</b> tiene más de un movimiento de CxC. Debe corregirse antes de registrar el recaudo.' );
+        }
+
+        $registro_cxc = $registros_cxc->first();
+
+        if (abs((float) $registro_cxc->saldo_pendiente - (float) $cartera->saldo_pendiente) > 0.01)
+        {
+            return redirect( 'tesoreria/ver_plan_pagos/' . $cartera->id_libreta . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') )->with( 'mensaje_error', 'El saldo de la factura en CxC no coincide con el saldo del periodo de la libreta. Debe conciliarse antes de registrar el recaudo.' );
         }
         
         $id_doc = $registro_cxc->id;
@@ -348,39 +387,132 @@ class LibretaPagoController extends ModeloController
     {
         $url_id_modelo = $request->url_id_modelo;
 
-        $fecha = $request->fecha_recaudo;
+        try {
+            DB::transaction(function () use ($request) {
+                $cartera = TesoPlanPagosEstudiante::where('id', $request->id_cartera)
+                                                    ->where('id_libreta', $request->id_libreta)
+                                                    ->lockForUpdate()
+                                                    ->first();
 
-        //$consecutivo_doc_recaudo = $this->get_consecutivo($request->core_empresa_id, $request->core_tipo_doc_app_id);
+                if (is_null($cartera)) {
+                    throw new \InvalidArgumentException('No se encontró el periodo de la libreta que se intenta recaudar.');
+                }
 
-        // Se REEMPLAZA la fecha en los datos del request
-        $datos = array_merge($request->all(),[ 'fecha' => $fecha, 'mi_token'=>'']);
+                $factura_auxiliar = FacturaAuxEstudiante::where('cartera_estudiante_id', $cartera->id)
+                                                            ->where('vtas_doc_encabezado_id', $request->vtas_doc_encabezado_id)
+                                                            ->first();
+                if (is_null($factura_auxiliar) || is_null($factura_auxiliar->encabezado_factura)) {
+                    throw new \InvalidArgumentException('La factura seleccionada no está asociada al periodo de esta libreta.');
+                }
 
-        // Se guarda el recaudo de la libreta
-        $recaudo_libreta = TesoRecaudosLibreta::create( $datos );
+                $factura = $factura_auxiliar->encabezado_factura;
+                if ((int) $factura->core_empresa_id !== (int) Auth::user()->empresa_id) {
+                    throw new \InvalidArgumentException('La factura seleccionada no pertenece a la empresa activa.');
+                }
 
-        $recaudo_libreta->registro_cartera_estudiante->sumar_abono_registro_cartera_estudiante( $request->valor_recaudo );
+                $valor_recaudo = (float) $request->valor_recaudo;
+                $saldo_pendiente = (float) $cartera->saldo_pendiente;
 
-        $recaudo_libreta->libreta->actualizar_estado();
+                if ($valor_recaudo <= 0) {
+                    throw new \InvalidArgumentException('El valor del recaudo debe ser mayor que cero.');
+                }
 
-        // Crear documento de recaudo de Tesorería, con todos sus procesos: teso_doc_encabezados, teso_doc_registros, teso_movimientos, cxc_abonos, cxc_movimientos, contab_movimientos
-        $request['fecha'] = $request->fecha_recaudo;
-        $request['referencia_tercero_id'] = $request->core_tercero_id;
-        $request['consecutivo'] = '';
-        $request['estado'] = 'Activo';
+                if ($valor_recaudo - $saldo_pendiente > 0.01) {
+                    throw new \InvalidArgumentException(
+                        'El valor del recaudo no puede superar el saldo pendiente del periodo. Saldo disponible: $' .
+                        number_format($saldo_pendiente, 0, ',', '.') . '.'
+                    );
+                }
 
-        $request['modificado_por'] = '';
-        $request['creado_por'] = Auth::user()->email;
-        $request['tipo_recaudo_aux'] = '';
-        
-        $request['lineas_registros'] = '[{"id_doc":"'. $request->id_doc .'","Cliente":"","Documento interno":"","Fecha":"","Fecha vencimiento":"","Valor Documento":"$0,00","Valor pagado":"$0,00","Saldo pendiente":"$00,00","abono":"' . $request->valor_recaudo . '"},{"id_doc":"","Cliente":"","Documento interno":"$0.00","Fecha":"","Fecha vencimiento":"","Valor Documento":"","Valor pagado":"","Saldo pendiente":""}]';
+                $movimiento_cxc = CxcMovimiento::where('id', $request->id_doc)
+                                                   ->lockForUpdate()
+                                                   ->first();
 
-        // Se crea un recaudo de Tesorería con su movimiento y contabilidad
-        $request['url_id_modelo'] = 153; // Recaudo de CxC
-        $recaudo_cxc = new RecaudoCxcController;
-        $registro_recaudo_cxc = $recaudo_cxc->almacenar( $request );
+                if (is_null($movimiento_cxc)) {
+                    throw new \InvalidArgumentException('No se encontró el movimiento de CxC de la factura seleccionada.');
+                }
 
-        $recaudo_libreta->consecutivo = $registro_recaudo_cxc->consecutivo;
-        $recaudo_libreta->save();
+                if ((int) $movimiento_cxc->core_empresa_id !== (int) $factura->core_empresa_id ||
+                    (int) $movimiento_cxc->core_tipo_transaccion_id !== (int) $factura->core_tipo_transaccion_id ||
+                    (int) $movimiento_cxc->core_tipo_doc_app_id !== (int) $factura->core_tipo_doc_app_id ||
+                    (string) $movimiento_cxc->consecutivo !== (string) $factura->consecutivo ||
+                    (int) $movimiento_cxc->core_tercero_id !== (int) $factura->core_tercero_id) {
+                    throw new \InvalidArgumentException('El movimiento de CxC no corresponde a la factura seleccionada.');
+                }
+
+                $cantidad_movimientos_cxc = CxcMovimiento::where('core_empresa_id', $factura->core_empresa_id)
+                                                        ->where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+                                                        ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
+                                                        ->where('consecutivo', $factura->consecutivo)
+                                                        ->where('core_tercero_id', $factura->core_tercero_id)
+                                                        ->lockForUpdate()
+                                                        ->get()
+                                                        ->count();
+                if ($cantidad_movimientos_cxc !== 1) {
+                    throw new \InvalidArgumentException('La factura debe tener un único movimiento de CxC antes de registrar el recaudo.');
+                }
+
+                if (abs((float) $movimiento_cxc->saldo_pendiente - $saldo_pendiente) > 0.01) {
+                    throw new \InvalidArgumentException('El saldo de la factura en CxC no coincide con el saldo del periodo de la libreta. Debe conciliarse antes de registrar el recaudo.');
+                }
+
+                $movimiento_cxc->validar_saldo_disponible_para_abono($valor_recaudo);
+
+                // Crear el documento completo antes de afectar el plan de pagos.
+                $request['fecha'] = $request->fecha_recaudo;
+                $request['referencia_tercero_id'] = $request->core_tercero_id;
+                $request['consecutivo'] = '';
+                $request['estado'] = 'Activo';
+                $request['modificado_por'] = '';
+                $request['creado_por'] = Auth::user()->email;
+                $request['tipo_recaudo_aux'] = '';
+                $request['vtas_doc_encabezado_id'] = $request->vtas_doc_encabezado_id ?: 0;
+                $request['lineas_registros'] = '[{"id_doc":"'. $request->id_doc .'","Cliente":"","Documento interno":"","Fecha":"","Fecha vencimiento":"","Valor Documento":"$0,00","Valor pagado":"$0,00","Saldo pendiente":"$00,00","abono":"' . $valor_recaudo . '"},{"id_doc":"","Cliente":"","Documento interno":"$0.00","Fecha":"","Fecha vencimiento":"","Valor Documento":"","Valor pagado":"","Saldo pendiente":""}]';
+                $request['url_id_modelo'] = 153; // Recaudo de CxC
+
+                $recaudo_cxc = new RecaudoCxcController;
+                $registro_recaudo_cxc = $recaudo_cxc->almacenar($request);
+
+                if (is_null($registro_recaudo_cxc) || empty($registro_recaudo_cxc->consecutivo)) {
+                    throw new \RuntimeException('No fue posible obtener el consecutivo del recaudo de CxC.');
+                }
+
+                // La asociación se crea con el consecutivo definitivo; nunca queda en cero.
+                $recaudo_libreta = TesoRecaudosLibreta::create([
+                    'core_tipo_transaccion_id' => $registro_recaudo_cxc->core_tipo_transaccion_id,
+                    'core_tipo_doc_app_id' => $registro_recaudo_cxc->core_tipo_doc_app_id,
+                    'consecutivo' => $registro_recaudo_cxc->consecutivo,
+                    'id_libreta' => $cartera->id_libreta,
+                    'id_cartera' => $cartera->id,
+                    'concepto' => $cartera->inv_producto_id,
+                    'fecha_recaudo' => $request->fecha_recaudo,
+                    'teso_medio_recaudo_id' => (int) explode('-', $request->teso_medio_recaudo_id)[0],
+                    'cantidad_cuotas' => 1,
+                    'valor_recaudo' => $valor_recaudo,
+                    'mi_token' => '',
+                    'creado_por' => Auth::user()->email,
+                    'modificado_por' => ''
+                ]);
+
+                $cartera->sumar_abono_registro_cartera_estudiante($valor_recaudo);
+                $recaudo_libreta->libreta->actualizar_estado();
+            });
+        } catch (\InvalidArgumentException $exception) {
+            return redirect()->back()
+                             ->withInput()
+                             ->with('mensaje_error', $exception->getMessage());
+        } catch (\Exception $exception) {
+            \Log::error('Error al guardar recaudo de libreta de pagos.', [
+                'id_libreta' => $request->id_libreta,
+                'id_cartera' => $request->id_cartera,
+                'id_doc' => $request->id_doc,
+                'error' => $exception->getMessage()
+            ]);
+
+            return redirect()->back()
+                             ->withInput()
+                             ->with('mensaje_error', 'No fue posible registrar el recaudo. No se aplicó ningún valor a la libreta.');
+        }
 
         return redirect( 'tesoreria/ver_plan_pagos/' . $request->id_libreta . '?id=' . $request->url_id . '&id_modelo=' . $url_id_modelo )->with( 'flash_message', 'Recaudo realizado correctamente.' );
     }
