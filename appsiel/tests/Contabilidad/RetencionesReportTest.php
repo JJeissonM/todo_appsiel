@@ -122,6 +122,65 @@ class RetencionesReportTest extends TestCase
         $this->assertNull($datos['detalle']->first()->casilla_retencion);
     }
 
+    public function test_filtra_fuente_historica_por_categoria_y_cuenta_sin_configuracion_anual()
+    {
+        $this->catalogoHistorico();
+        $datos=$this->datos(['tipo_impuesto'=>'FUENTE']);
+        $this->assertCount(2,$datos['detalle']);
+        $this->assertEquals(750000,$datos['retencion_total']);
+        $this->assertSame('honorarios',$datos['detalle']->first()->concepto);
+        $this->assertSame(95,$datos['detalle']->first()->casilla_retencion);
+        $this->assertSame(0,DB::table('contab_retenciones_reporte_config')->count());
+        $this->assertCount(1,$this->datos(['tipo_impuesto'=>'ICA'])['detalle']);
+        $this->assertCount(1,$this->datos(['tipo_impuesto'=>'IVA'])['detalle']);
+        $this->assertCount(2,$this->datos(['concepto'=>'honorarios'])['detalle']);
+        // Una decisión fiscal explícita para el año prevalece sobre la sugerencia contable.
+        DB::table('contab_retenciones_reporte_config')->insert(['core_empresa_id'=>1,'contab_retencion_id'=>1,'anio'=>2026,'tipo_impuesto'=>'FUENTE','concepto'=>'servicios','modificado_por'=>'test']);
+        $this->assertSame('servicios',$this->datos(['tipo_impuesto'=>'FUENTE'])['detalle']->first()->concepto);
+    }
+
+    public function test_octubre_incluye_nomina_sin_catalogo_y_no_resta_pagos_a_la_dian()
+    {
+        $this->catalogoHistorico();
+        DB::table('contab_cuentas')->insert(['id'=>159,'core_empresa_id'=>1,'codigo'=>'236505','descripcion'=>'SALARIOS Y PAGOS LABORALES']);
+        DB::statement('CREATE TABLE nom_doc_encabezados (id INTEGER, core_empresa_id INTEGER, core_tipo_transaccion_id INTEGER, core_tipo_doc_app_id INTEGER, consecutivo INTEGER, fecha TEXT, estado TEXT)');
+        DB::table('nom_doc_encabezados')->insert(['id'=>20,'core_empresa_id'=>1,'core_tipo_transaccion_id'=>45,'core_tipo_doc_app_id'=>30,'consecutivo'=>372,'fecha'=>'2026-10-30','estado'=>'Contabilizado']);
+        DB::statement('CREATE TABLE contab_doc_encabezados (id INTEGER, core_empresa_id INTEGER, core_tercero_id INTEGER, core_tipo_transaccion_id INTEGER, core_tipo_doc_app_id INTEGER, consecutivo INTEGER, fecha TEXT, estado TEXT)');
+        DB::table('contab_doc_encabezados')->insert(['id'=>30,'core_empresa_id'=>1,'core_tercero_id'=>2,'core_tipo_transaccion_id'=>9,'core_tipo_doc_app_id'=>15,'consecutivo'=>1889,'fecha'=>'2026-10-14','estado'=>'Activo']);
+        $valores=[630000,2117725,420000,393750,945000];
+        foreach($valores as $i=>$valor){
+            $terceroId=10+$i;
+            DB::table('core_terceros')->insert(['id'=>$terceroId,'core_empresa_id'=>1,'tipo'=>'Persona natural','descripcion'=>'Empleado '.$i,'numero_identificacion'=>'500'.$i,'digito_verificacion'=>'']);
+            DB::table('contab_movimientos')->insert(['core_empresa_id'=>1,'core_tipo_transaccion_id'=>45,'core_tipo_doc_app_id'=>30,'consecutivo'=>372,'core_tercero_id'=>$terceroId,'contab_cuenta_id'=>159,'fecha'=>'2026-10-30','estado'=>'Activo','valor_debito'=>0,'valor_credito'=>-$valor]);
+        }
+        DB::table('contab_movimientos')->insert(['core_empresa_id'=>1,'core_tipo_transaccion_id'=>9,'core_tipo_doc_app_id'=>15,'consecutivo'=>1889,'core_tercero_id'=>2,'contab_cuenta_id'=>159,'fecha'=>'2026-10-14','estado'=>'Activo','valor_debito'=>4507000,'valor_credito'=>0]);
+        DB::table('contab_movimientos')->insert(['core_empresa_id'=>2,'core_tipo_transaccion_id'=>45,'core_tipo_doc_app_id'=>30,'consecutivo'=>372,'core_tercero_id'=>3,'contab_cuenta_id'=>159,'fecha'=>'2026-10-30','estado'=>'Activo','valor_debito'=>0,'valor_credito'=>-999999]);
+        $datos=$this->datos(['fecha_desde'=>'2026-10-01','fecha_hasta'=>'2026-10-31','tipo_impuesto'=>'FUENTE']);
+        $this->assertCount(5,$datos['detalle']);
+        $this->assertEquals(450647500,$datos['retencion_total']);
+        $this->assertCount(5,$datos['terceros']);
+        $this->assertSame([10,11,12,13,14],array_map(function($r){return (int)$r->core_tercero_id;},$datos['detalle']->all()));
+        $this->assertSame('trabajo',$datos['resumen']->first()->concepto);
+        $this->assertSame(93,$datos['resumen']->first()->casilla_retencion);
+        $this->assertCount(0,DB::table('contab_retenciones')->where('cta_compras_id',159)->get());
+        $this->assertEquals(0,$datos['base_total']);
+    }
+
+    public function test_cuenta_de_proveedores_en_el_catalogo_no_se_suma_como_retencion()
+    {
+        $this->catalogoHistorico();
+        DB::table('contab_cuentas')->insert(['id'=>155,'core_empresa_id'=>1,'codigo'=>'233578','descripcion'=>'ELEMENTOS DE ASEO Y CAFETERIA']);
+        DB::table('contab_retenciones')->insert(['id'=>4,'descripcion'=>'Compras de elementos de aseo','categoria_retenciones_id'=>3,'cta_compras_id'=>155]);
+        $this->registro(1,4,58200,1455,'practicada');
+        (new TrazabilidadRetenciones)->reconstruir();
+        $this->documento(5,1,2,5,'Activo');
+        DB::table('contab_movimientos')->insert(['core_empresa_id'=>1,'core_tipo_transaccion_id'=>25,'core_tipo_doc_app_id'=>22,'consecutivo'=>5,'core_tercero_id'=>2,'contab_cuenta_id'=>155,'fecha'=>'2026-11-01','estado'=>'Activo','valor_debito'=>0,'valor_credito'=>-999999]);
+        $datos=$this->datos(['tipo_impuesto'=>'FUENTE']);
+        $this->assertCount(3,$datos['detalle']);
+        $this->assertEquals(895500,$datos['retencion_total']);
+        $this->assertNotEquals(99999900,$datos['detalle']->last()->retencion_centavos);
+    }
+
     public function test_asiento_manual_no_duplica_auxiliar_y_exige_conciliar_base()
     {
         $this->documento(5,1,2,5,'Activo');
@@ -245,6 +304,21 @@ class RetencionesReportTest extends TestCase
     private function datos(array $extra=[])
     {
         return (new RetencionesReportService)->generar(1,array_merge(['fecha_desde'=>'2026-11-01','fecha_hasta'=>'2026-11-30','naturaleza'=>'practicada'], $extra));
+    }
+
+    private function catalogoHistorico()
+    {
+        DB::table('contab_retenciones_reporte_config')->delete();
+        DB::statement('ALTER TABLE contab_retenciones ADD COLUMN categoria_retenciones_id INTEGER');
+        DB::statement('CREATE TABLE contab_categorias_retenciones (id INTEGER, descripcion TEXT, nombre_corto TEXT)');
+        DB::statement('CREATE TABLE contab_cuentas (id INTEGER, core_empresa_id INTEGER, codigo TEXT, descripcion TEXT)');
+        foreach([[3,'Retención en la fuente renta','RTEFTE'],[4,'Retención de industria y comercio','ReteICA'],[5,'Retención IVA','ReteIVA']] as $c){
+            DB::table('contab_categorias_retenciones')->insert(['id'=>$c[0],'descripcion'=>$c[1],'nombre_corto'=>$c[2]]);
+        }
+        foreach([[101,'236515','HONORARIOS'],[102,'236807','ACTIVIDADES COMERCIALES'],[103,'236701','RETENCIONES IVA']] as $c){
+            DB::table('contab_cuentas')->insert(['id'=>$c[0],'core_empresa_id'=>1,'codigo'=>$c[1],'descripcion'=>$c[2]]);
+        }
+        foreach([1=>3,2=>4,3=>5] as $retencion=>$categoria){ DB::table('contab_retenciones')->where('id',$retencion)->update(['categoria_retenciones_id'=>$categoria]); }
     }
     private function documento($id,$empresa,$tercero,$consecutivo,$estado)
     {

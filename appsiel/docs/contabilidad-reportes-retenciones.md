@@ -8,7 +8,8 @@ el reporte sin depender de un ID fijo, sus campos y dos permisos:
 `contab_reporte_retenciones` y `contab_configurar_retenciones`. Los administradores
 reciben los permisos; los demás usuarios los reciben mediante la administración de roles.
 
-1. En **Clasificación fiscal por año**, asocie cada retención a Fuente, ICA o IVA y
+1. El reporte reconoce categorías y cuentas contables identificables de los datos
+   históricos. En **Clasificación fiscal por año**, confirme cada retención a Fuente, ICA o IVA y
    a su concepto. Para ICA registre municipio DANE y actividad; use una retención
    por municipio y tarifa. Esta configuración pertenece a la empresa y al año.
 2. Seleccione fechas, impuesto, practicadas/sufridas y presentación. Puede filtrar
@@ -94,3 +95,34 @@ empresas, reconstrucción ambigua, períodos, anulaciones, filtros, naturaleza,
 casillas, redondeo, devoluciones, asientos sin base, configuración anual, permisos,
 registro idempotente, Excel y aislamiento del PDF. También se verificó la generación
 real de PDF en el entorno local y la suite transaccional de ReteICA de Compras.
+
+## Corrección de históricos sin clasificación anual
+
+Cuando no existe configuración anual, el impuesto se reconoce por la categoría
+(`RTEFTE`, `ReteICA`, `ReteIVA`) y las cuentas tributarias del plan de la empresa.
+Los conceptos inequívocos de las descripciones (honorarios, salarios, compras,
+servicios, arrendamientos, etc.) sirven como clasificación de apoyo y se señalan
+para validación. Una configuración anual explícita siempre prevalece; un conflicto
+entre categoría y cuenta permanece sin clasificar. No se deducen bases de tarifas.
+
+El reconocimiento de movimientos incluye las cuentas 2365/2367/2368 aunque no
+estén asociadas a una retención del catálogo, por ejemplo la 236505 de nómina.
+El beneficiario se conserva por asiento cuando el documento de nómina es colectivo.
+Los débitos de pago de la obligación a la DIAN se excluyen de las retenciones
+practicadas. Sólo una clasificación explícita de devolución permite usar el débito
+como ajuste de la retención. Las cuentas de proveedores asociadas por error al
+catálogo no se consideran cuentas tributarias para agregar asientos sin auxiliar;
+el registro explícito de retención conserva sus valores originales.
+
+Validación de solo lectura en `u883985631_colegiobilingu`, empresa 1,
+2026-10-01 a 2026-10-31, practicadas, Fuente: la consulta corregida recuperó
+**99 registros por $27.132.409,08**, incluidos **5 de nómina por $4.506.475,00**.
+Catorce registros necesitan confirmar la naturaleza del tercero; las bases de los
+asientos sin auxiliar siguen pendientes. No se crearon clasificaciones fiscales
+ni se alteraron movimientos o valores de la base de producción.
+
+El auxiliar contable muestra también pagos de obligaciones y puede contener
+contabilizaciones que difieran de los auxiliares de retención. Por ello, la suma
+neta de todos los movimientos del grupo 2365 no sustituye al valor de las
+retenciones practicadas del período. Deben conciliarse las diferencias de origen;
+no se suman nuevamente asientos de documentos ya soportados por el auxiliar.

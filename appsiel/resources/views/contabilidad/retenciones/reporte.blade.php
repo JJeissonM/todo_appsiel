@@ -77,12 +77,13 @@
 
     @if($filtros['detalla_terceros'] !== 'No' && (in_array($filtros['vista'], ['completo', 'detalle']) || count($pendientes)))
     <table class="table report-table" data-excel-export="detalle">
-        <thead><tr><th colspan="12">Detalle y conciliación por documento</th></tr>
-            <tr><th>Fecha</th><th>Documento</th><th>Impuesto</th><th>Retención / concepto</th><th>Identificación / tercero</th><th>Persona</th><th>Municipio / actividad</th><th>Tarifa %</th><th>Base</th><th>Retención</th><th>Certificado</th><th>Observaciones</th></tr></thead>
+        <thead><tr><th colspan="13">Detalle y conciliación por documento</th></tr>
+            <tr><th>Fecha</th><th>Documento</th><th>Origen</th><th>Impuesto</th><th>Retención / concepto</th><th>Identificación / tercero</th><th>Persona</th><th>Municipio / actividad</th><th>Tarifa %</th><th>Base</th><th>Retención</th><th>Certificado</th><th>Observaciones</th></tr></thead>
         <tbody>
         @foreach($detalle as $fila)
             <tr><td>{{ $fila->fecha }}</td>
                 <td><a href="{{ url('enlace_show_documento/14/'.$fila->core_tipo_transaccion_id.'/'.$fila->core_tipo_doc_app_id.'/'.$fila->consecutivo) }}" target="_blank" rel="noopener noreferrer">{{ $fila->prefijo }} {{ $fila->consecutivo }}</a></td>
+                <td>{{ empty($fila->origen_asiento) ? 'Registro de retención' : 'Asiento sin auxiliar' }}</td>
                 <td>{{ $fila->tipo_impuesto }}</td><td>{{ $fila->retencion }} / {{ $fila->concepto_nombre }}</td>
                 <td>{{ $fila->numero_identificacion }}-{{ $fila->digito_verificacion }} {{ $fila->tercero }}</td>
                 <td>{{ ['natural' => 'Natural', 'juridica' => 'Jurídica', 'sin_clasificar' => 'Sin clasificar'][$fila->persona] }}</td><td>{{ $fila->codigo_municipio }} / {{ $fila->actividad_ica }}</td>
@@ -91,7 +92,7 @@
                 <td>{{ $fila->numero_certificado }}</td><td>{{ implode('; ', $fila->observaciones) }}</td></tr>
         @endforeach
         </tbody>
-        <tfoot><tr><th colspan="8">TOTAL</th><th class="numero">{{ number_format($base_total / 100, 2, ',', '.') }}</th><th class="numero">{{ number_format($retencion_total / 100, 2, ',', '.') }}</th><td colspan="2"></td></tr></tfoot>
+        <tfoot><tr><th colspan="9">TOTAL</th><th class="numero">{{ number_format($base_total / 100, 2, ',', '.') }}</th><th class="numero">{{ number_format($retencion_total / 100, 2, ',', '.') }}</th><td colspan="2"></td></tr></tfoot>
     </table>
     @endif
     <p>Las bases se acumulan por retención y no representan el total de compras. Las cifras contables se muestran sin redondeo a miles; la tabla DIAN aproxima los acumulados por casilla del período después de sumar todos los terceros.

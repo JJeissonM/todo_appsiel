@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Schema;
 
 class TrazabilidadRetenciones
 {
+    private $documentos = [];
+    private $personas = [];
+    private $tablasDisponibles;
     public static function tablasDocumentos()
     {
         return ['compras_doc_encabezados', 'teso_doc_encabezados', 'vtas_doc_encabezados', 'contab_doc_encabezados', 'nom_doc_encabezados'];
@@ -14,33 +17,48 @@ class TrazabilidadRetenciones
 
     public function resolver(array $registro)
     {
-        $candidatos = [];
-        foreach (static::tablasDocumentos() as $tabla) {
-            if (!Schema::hasTable($tabla)) { continue; }
-            $query = DB::table($tabla);
-            foreach (['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo'] as $campo) {
-                if (empty($registro[$campo])) { continue 2; }
-                $query->where($campo, $registro[$campo]);
-            }
-            if (!empty($registro['core_empresa_id'])) {
-                $query->where('core_empresa_id', $registro['core_empresa_id']);
-            }
-            if (!empty($registro['compras_doc_registro_id'])) {
-                if ($tabla !== 'compras_doc_encabezados' || !Schema::hasTable('compras_doc_registros')) { continue; }
-                $query->whereIn('id', function ($lineas) use ($registro) {
-                    $lineas->select('compras_doc_encabezado_id')->from('compras_doc_registros')
-                        ->where('id', $registro['compras_doc_registro_id']);
-                });
-            }
-            foreach ($query->limit(2)->get() as $documento) {
-                $candidatos[] = [$tabla, $documento];
-            }
+        if ($this->tablasDisponibles === null) {
+            $this->tablasDisponibles = array_filter(static::tablasDocumentos(), function ($tabla) {
+                return Schema::hasTable($tabla);
+            });
         }
+        $clave = json_encode(array_intersect_key($registro, array_flip([
+            'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'compras_doc_registro_id'
+        ])));
+        if (!array_key_exists($clave, $this->documentos)) {
+            $candidatos = [];
+            foreach ($this->tablasDisponibles as $tabla) {
+                $query = DB::table($tabla);
+                foreach (['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo'] as $campo) {
+                    if (empty($registro[$campo])) { continue 2; }
+                    $query->where($campo, $registro[$campo]);
+                }
+                if (!empty($registro['core_empresa_id'])) {
+                    $query->where('core_empresa_id', $registro['core_empresa_id']);
+                }
+                if (!empty($registro['compras_doc_registro_id'])) {
+                    if ($tabla !== 'compras_doc_encabezados' || !Schema::hasTable('compras_doc_registros')) { continue; }
+                    $query->whereIn('id', function ($lineas) use ($registro) {
+                        $lineas->select('compras_doc_encabezado_id')->from('compras_doc_registros')
+                            ->where('id', $registro['compras_doc_registro_id']);
+                    });
+                }
+                foreach ($query->limit(2)->get() as $documento) {
+                    $candidatos[] = [$tabla, $documento];
+                }
+            }
+            $this->documentos[$clave] = $candidatos;
+        }
+        $candidatos = $this->documentos[$clave];
         if (count($candidatos) !== 1) { return []; }
         list($tabla, $documento) = $candidatos[0];
         $terceroId = isset($documento->core_tercero_id) ? $documento->core_tercero_id : (isset($registro['core_tercero_id']) ? $registro['core_tercero_id'] : null);
-        $persona = DB::table('core_terceros')->where('id', $terceroId)
-            ->where('core_empresa_id', $documento->core_empresa_id)->value('tipo');
+        $clavePersona = $documento->core_empresa_id.'|'.$terceroId;
+        if (!array_key_exists($clavePersona, $this->personas)) {
+            $this->personas[$clavePersona] = DB::table('core_terceros')->where('id', $terceroId)
+                ->where('core_empresa_id', $documento->core_empresa_id)->value('tipo');
+        }
+        $persona = $this->personas[$clavePersona];
         return [
             'core_empresa_id' => $documento->core_empresa_id, 'fecha' => $documento->fecha,
             'core_tercero_id' => $terceroId,

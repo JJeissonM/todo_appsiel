@@ -9,13 +9,9 @@ class RetencionesReportService
 {
     public function generar($empresaId, array $filtros)
     {
+        $clasificador = new ClasificacionRetenciones($empresaId);
         $query = DB::table('contab_registros_retenciones AS r')
             ->leftJoin('contab_retenciones AS ret', 'ret.id', '=', 'r.contab_retencion_id')
-            ->leftJoin('contab_retenciones_reporte_config AS cfg', function ($join) {
-                $join->on('cfg.contab_retencion_id', '=', 'r.contab_retencion_id')
-                    ->on('cfg.core_empresa_id', '=', 'r.core_empresa_id')
-                    ->on('cfg.anio', '=', DB::raw('SUBSTR(r.fecha, 1, 4)'));
-            })
             ->leftJoin('core_terceros AS t', function ($join) {
                 $join->on('t.id', '=', 'r.core_tercero_id')->on('t.core_empresa_id', '=', 'r.core_empresa_id');
             })
@@ -33,25 +29,28 @@ class RetencionesReportService
                     ->orWhereRaw('EXISTS (SELECT 1 FROM '.$tabla.' AS '.$alias.' WHERE '.$alias.'.id = r.documento_id AND '.$alias.'.core_empresa_id = ? AND '.$alias.'.estado <> ?)', [$empresaId, 'Anulado']);
             });
         }
-        foreach (['retencion_id' => 'r.contab_retencion_id', 'tercero_id' => 'r.core_tercero_id',
-                  'codigo_municipio' => 'cfg.codigo_municipio', 'concepto' => 'cfg.concepto'] as $filtro => $campo) {
+        foreach (['retencion_id' => 'r.contab_retencion_id', 'tercero_id' => 'r.core_tercero_id'] as $filtro => $campo) {
             if (!empty($filtros[$filtro])) { $query->where($campo, $filtros[$filtro]); }
         }
         if (isset($filtros['tarifa']) && $filtros['tarifa'] !== '') { $query->where('r.tasa_retencion', $filtros['tarifa']); }
         $rows = $query->select('r.*', 'ret.descripcion AS retencion', 't.tipo AS persona_actual',
             't.numero_identificacion', 't.digito_verificacion', 't.descripcion AS tercero',
-            'td.prefijo', 'cfg.tipo_impuesto', 'cfg.concepto', 'cfg.codigo_municipio', 'cfg.actividad_ica')
+            'td.prefijo')
             ->orderBy('r.fecha')->orderBy('r.id')->get();
 
-        $rows = array_merge($rows, (new AsientosRetenciones)->obtener($empresaId, $filtros));
+        $rows = array_merge($rows, (new AsientosRetenciones)->obtener($empresaId, $filtros, $clasificador));
 
         $detalle = []; $resumen = []; $terceros = []; $pendientes = []; $sinClasificar = 0; $casillas = []; $totalesDeclaracion = [];
         foreach ($rows as $row) {
+            if (empty($row->origen_asiento)) {
+                $clasificacion = $clasificador->porRetencion($row->contab_retencion_id, $filtros['naturaleza'], substr($row->fecha, 0, 4));
+                foreach ($clasificacion as $campo => $valor) { $row->$campo = $valor; }
+            }
+            if (!empty($filtros['codigo_municipio']) && $row->codigo_municipio !== $filtros['codigo_municipio']) { continue; }
+            if (!empty($filtros['concepto']) && $row->concepto !== $filtros['concepto']) { continue; }
             if (!empty($row->origen_asiento)) {
                 if (!empty($filtros['retencion_id']) && (int)$row->contab_retencion_id !== (int)$filtros['retencion_id']) { continue; }
                 if (!empty($filtros['tercero_id']) && (int)$row->core_tercero_id !== (int)$filtros['tercero_id']) { continue; }
-                if (!empty($filtros['codigo_municipio']) && $row->codigo_municipio !== $filtros['codigo_municipio']) { continue; }
-                if (!empty($filtros['concepto']) && $row->concepto !== $filtros['concepto']) { continue; }
                 if (isset($filtros['tarifa']) && $filtros['tarifa'] !== '' && ($row->tasa_retencion === null || (float)$row->tasa_retencion !== (float)$filtros['tarifa'])) { continue; }
             }
             $row->tipo_impuesto = $row->tipo_impuesto ?: 'SIN_CLASIFICAR';
@@ -66,6 +65,9 @@ class RetencionesReportService
             list($row->casilla_base, $row->casilla_retencion) = ConceptosDeclaracion::casillas($row->concepto, $row->persona, $row->anio);
             if ($filtros['naturaleza'] !== 'practicada') { $row->casilla_base = null; $row->casilla_retencion = null; }
             $row->observaciones = [];
+            if (!empty($row->clasificacion_origen) && $row->clasificacion_origen !== 'configuracion') {
+                $row->observaciones[] = 'Clasificación de categoría/cuenta; validar en la configuración fiscal anual';
+            }
             if (!empty($row->base_desconocida)) { $row->observaciones[] = 'Asiento sin auxiliar: base sujeta y tarifa pendientes de conciliación'; }
             if (strpos((string)$row->concepto, 'exterior_') === 0) {
                 $row->observaciones[] = 'Completar anexo de pagos al exterior: país, beneficiario y convenio';
