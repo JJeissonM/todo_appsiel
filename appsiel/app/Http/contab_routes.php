@@ -24,6 +24,9 @@ Route::resource('contabilidad/mov','Contabilidad\ContabMovimientoController');
 Route::get('contab_get_grupos_cuentas/{clase_id}','Contabilidad\ContabilidadController@contab_get_grupos_cuentas');
 
 // REPORTES
+Route::post('contab_reporte_retenciones', 'Contabilidad\RetencionesReportController@generar');
+Route::get('contab_retenciones/configuracion', 'Contabilidad\RetencionesReportController@configuracion');
+Route::post('contab_retenciones/configuracion', 'Contabilidad\RetencionesReportController@guardarConfiguracion');
 Route::get('contab_auxiliar_terceros', 'Contabilidad\AuxiliarTercerosController@index');
 Route::post('contab_auxiliar_terceros/exportar', 'Contabilidad\AuxiliarTercerosController@export');
 Route::get('contab_reporte_prueba', 'Contabilidad\ContabReportesController@reporte_prueba');

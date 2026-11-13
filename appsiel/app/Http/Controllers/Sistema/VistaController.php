@@ -29,6 +29,15 @@ class VistaController extends Controller
     */
     public function generar_pdf( $reporte_id )
     {
+        if (DB::table('sys_reportes')->where('id', $reporte_id)->where('url_form_action', 'contab_reporte_retenciones')->exists()) {
+            \App\Http\Controllers\Contabilidad\RetencionesReportController::autorizar();
+            $contenido = Cache::get(\App\Http\Controllers\Contabilidad\RetencionesReportController::cacheKey($reporte_id));
+            abort_unless($contenido, 404, 'Genere el reporte de retenciones antes de descargar el PDF.');
+            $papel = in_array(Input::get('tam_hoja'), ['letter', 'folio', 'a4']) ? Input::get('tam_hoja') : 'letter';
+            $orientacion = in_array(Input::get('orientacion'), ['Portrait', 'Landscape']) ? Input::get('orientacion') : 'Landscape';
+            return App::make('dompdf.wrapper')->loadHTML(View::make('core.pdf_documento', ['contenido' => $contenido]))
+                ->setPaper($papel, $orientacion)->stream('retenciones.pdf');
+        }
         $tam_hoja = 'Letter';
         $orientacion = 'Portrait';
 

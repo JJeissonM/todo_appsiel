@@ -35,6 +35,9 @@
 					</div>
 				@endif
 			@endforeach
+            @if($reporte->url_form_action == 'contab_reporte_retenciones')
+                <p><a href="{{ url('contab_retenciones/configuracion?id='.Input::get('id')) }}" target="_blank" rel="noopener noreferrer">Clasificación fiscal por año</a></p>
+            @endif
             @if($reporte->url_form_action == 'pos_movimientos_ventas'
                 && config('turnos.modules.ventas_pos.integrated', false)
                 && Auth::check()
@@ -51,6 +54,7 @@
 					];
 			$tam_hoja_default = null;
 			$orientacion_default = null;
+			if ($reporte->url_form_action == 'contab_reporte_retenciones') { $orientacion_default = 'Landscape'; }
 			if ( $reporte->url_form_action == 'hotel/reports/migration' )
 			{
 				$tam_hoja_default = 'folio';
@@ -212,7 +216,7 @@
 
                     create_btns_for_print_barcodes();
                 }).fail(function (xhr) {
-                    if (['pos_movimientos_ventas', 'gestion_documental/paz_y_salvo'].indexOf($('#form_consulta').attr('data-url_form_action')) === -1) { return; }
+                    if (['pos_movimientos_ventas', 'gestion_documental/paz_y_salvo', 'contab_reporte_retenciones'].indexOf($('#form_consulta').attr('data-url_form_action')) === -1) { return; }
                     $('#div_cargando, #div_spin').hide();
                     var mensaje = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'No fue posible generar el resumen. Revise los filtros e intente nuevamente.';
                     $('#resultado_consulta').empty().append($('<div class="alert alert-danger" role="alert">').text(mensaje));

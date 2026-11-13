@@ -11,6 +11,27 @@ class RegistroRetencion extends Model
 {
     protected $table = 'contab_registros_retenciones';
 
+    public function fill(array $attributes)
+    {
+        // Permite desplegar el código antes de ejecutar la migración.
+        if ($attributes && \Illuminate\Support\Facades\Schema::hasColumn($this->getTable(), 'core_empresa_id')) {
+            $this->fillable = array_merge($this->fillable, [
+                'core_empresa_id', 'core_tercero_id', 'fecha', 'tipo_persona_retenida', 'documento_tabla', 'documento_id'
+            ]);
+        }
+        return parent::fill($attributes);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($registro) {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn($registro->getTable(), 'documento_id')) { return; }
+            $datos = (new \App\Contabilidad\Services\Retenciones\TrazabilidadRetenciones)->resolver($registro->getAttributes());
+            foreach ($datos as $campo => $valor) { $registro->$campo = $valor; }
+        });
+    }
+
     // tipo = { sufrida | practicada }
     protected $fillable = [ 'tipo', 'numero_certificado', 'fecha_certificado', 'fecha_recepcion_certificado', 'numero_doc_identidad_agente_retencion', 'razon_social_agente_retencion', 'contab_retencion_id', 'compras_doc_registro_id', 'valor_base_retencion', 'tasa_retencion', 'valor', 'detalle', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'creado_por', 'modificado_por', 'estado'];
 
