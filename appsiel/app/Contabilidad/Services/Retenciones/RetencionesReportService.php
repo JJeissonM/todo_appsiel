@@ -118,9 +118,13 @@ class RetencionesReportService
             $this->acumular($terceros, json_encode([$clave, $row->core_tercero_id, $row->tasa_retencion]), $row);
         }
         $casillas = array_merge($casillas, $totalesDeclaracion);
+        $ordenListado = function ($fila) {
+            return str_slug($fila->concepto_nombre).'|'.$fila->persona.'|'.$fila->periodo.'|'
+                .$fila->tipo_impuesto.'|'.str_slug($fila->tercero).'|'.$fila->core_tercero_id;
+        };
         return [
-            'detalle' => collect($detalle), 'resumen' => collect(array_values($resumen)),
-            'terceros' => collect(array_values($terceros)), 'pendientes' => collect($pendientes),
+            'detalle' => collect($detalle), 'resumen' => collect(array_values($resumen))->sortBy($ordenListado)->values(),
+            'terceros' => collect(array_values($terceros))->sortBy($ordenListado)->values(), 'pendientes' => collect($pendientes),
             'sin_clasificar' => $sinClasificar, 'casillas' => collect(array_values($casillas))->sortBy(function ($casilla) { return $casilla->periodo.'|'.str_pad($casilla->casilla, 3, '0', STR_PAD_LEFT); }),
             'base_total' => array_sum(array_map(function ($r) { return $r->base_centavos; }, $detalle)),
             'retencion_total' => array_sum(array_map(function ($r) { return $r->retencion_centavos; }, $detalle)),
