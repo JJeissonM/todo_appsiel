@@ -123,6 +123,7 @@ class ReportesController extends Controller
         $fecha_hasta  = $request->fecha_hasta;
 
         $agrupar_por = $request->agrupar_por;
+        $ordenar_por = $request->input('ordenar_por', 'mayor_vendido');
         $detalla_productos  = (int)$request->detalla_productos;
         $detalla_clientes  = (int)$request->detalla_clientes;
         // El reporte simplificado de Ventas POS (reporte 47) no muestra el
@@ -146,7 +147,7 @@ class ReportesController extends Controller
             $mensaje = 'IVA <b>NO</b> incluido en precio';
         }
 
-        $vista = View::make('ventas.reportes.reporte_ventas_ordenado', compact('movimiento','agrupar_por','mensaje','iva_incluido','detalla_productos'))->render();
+        $vista = View::make('ventas.reportes.reporte_ventas_ordenado', compact('movimiento','agrupar_por','mensaje','iva_incluido','detalla_productos', 'ordenar_por'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
@@ -172,7 +173,8 @@ class ReportesController extends Controller
                 $fecha_hasta,
                 $agrupar_por,
                 null,
-                $cliente_id
+                $cliente_id,
+                $request->input('pdv_id')
             );
         }
 
@@ -182,14 +184,17 @@ class ReportesController extends Controller
             $agrupar_por,
             'Todos',
             null,
-            0
+            $request->input('pdv_id', 0)
         );
 
         $movimiento_estandar = VtasMovimiento::get_movimiento_ventas_por_transaccion(
             $fecha_desde,
             $fecha_hasta,
             $agrupar_por,
-            [23, 38, 41, 44, 49, 50, 52, 53, 54, 55]
+            [23, 38, 41, 44, 49, 50, 52, 53, 54, 55],
+            null,
+            0,
+            $request->input('pdv_id')
         );
 
         foreach ($movimiento_estandar as $campo_agrupado => $registros) {

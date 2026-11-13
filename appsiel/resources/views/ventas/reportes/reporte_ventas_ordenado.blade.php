@@ -42,7 +42,7 @@
                 <th> {{ $primer_encabezado }} </th>
                 <th> Cantidad total </th>
                 <th> Precio promedio </th>
-                <th> Venta total <i class="fa fa-sort-amount-desc"></i></th>
+                <th> Venta total @if(!isset($ordenar_por) || !in_array($ordenar_por, ['id', 'alfabetico']))<i class="fa fa-sort-amount-desc"></i>@endif</th>
             </tr>
         </thead>
         <tbody>
@@ -74,6 +74,15 @@
                     $base_impuesto_total = $coleccion_movimiento->sum('base_impuesto_total');
 
                     $array_lista[$i]['descripcion'] = $label;
+                    $primer_movimiento = $coleccion_movimiento->first();
+                    $campo_id = $agrupar_por == 'lista_precios' ? 'lista_precios_id' : $agrupar_por;
+                    $array_lista[$i]['orden_id'] = isset($primer_movimiento->{$campo_id})
+                        ? $primer_movimiento->{$campo_id} : $campo_agrupado;
+                    $array_lista[$i]['orden_nombre'] = $agrupar_por == 'inv_producto_id'
+                        ? $primer_movimiento->item->descripcion : (string)$label;
+                    if (in_array($agrupar_por, ['cliente_id', 'core_tercero_id']) && $primer_movimiento->tercero) {
+                        $array_lista[$i]['orden_nombre'] = $primer_movimiento->tercero->descripcion;
+                    }
                     $array_lista[$i]['cantidad'] = $cantidad;
 
                     if ( $iva_incluido )
@@ -134,9 +143,10 @@
                     $i++;
                 }
 
-                $columna_precio  = array_column($array_lista, 'precio');
-                array_multisort($columna_precio, SORT_DESC, $array_lista);
-                $cantidad_elementos = count($columna_precio);
+                $array_lista = \App\Ventas\Services\ProfitabilityReportService::sortRows(
+                    $array_lista, isset($ordenar_por) ? $ordenar_por : null
+                );
+                $cantidad_elementos = count($array_lista);
 
                 $j = 1;
             ?>

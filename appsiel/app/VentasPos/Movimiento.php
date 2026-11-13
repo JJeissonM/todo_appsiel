@@ -318,6 +318,7 @@ class Movimiento extends Model
                                         'vtas_pos_doc_encabezados.cliente_id',
                                         'vtas_pos_doc_encabezados.core_tercero_id',
                                         'vtas_clases_clientes.descripcion AS clase_cliente',
+                                        'vtas_clases_clientes.id AS clase_cliente_id',
                                         'vtas_pos_doc_registros.tasa_impuesto AS tasa_impuesto',
                                         'sys_tipos_transacciones.descripcion AS descripcion_tipo_transaccion',
                                         'vtas_pos_doc_encabezados.pdv_id',

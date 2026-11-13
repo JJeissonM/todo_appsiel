@@ -66,7 +66,16 @@ class ProfitabilityReportTest extends PHPUnit_Framework_TestCase
         $this->assertCount(0, Report::filterByPdv($connection->table('vtas_movimientos'), 999)->get());
     }
 
-    public function testMigrationIsIdempotentAndRollbackPreservesExistingFields()
+    public function migrationCases()
+    {
+        return [
+            ['vtas_reporte_rentabilidad', '2026_11_10_000001_add_sales_profitability_report_filters.php', 'AddSalesProfitabilityReportFilters'],
+            ['vtas_reporte_ventas', '2026_11_13_000001_add_sales_report_filters.php', 'AddSalesReportFilters'],
+        ];
+    }
+
+    /** @dataProvider migrationCases */
+    public function testMigrationIsIdempotentAndRollbackPreservesExistingFields($reportUrl, $migrationFile, $migrationClass)
     {
         $old = Facade::getFacadeApplication();
         $container = new Container();
@@ -89,12 +98,12 @@ class ProfitabilityReportTest extends PHPUnit_Framework_TestCase
                 foreach (['core_reporte_id', 'core_campo_id', 'orden'] as $c) $t->integer($c);
             });
             $schema->create('sys_modelo_tiene_campos', function ($t) { $t->integer('core_campo_id'); });
-            DB::table('sys_reportes')->insert(['id' => 1, 'url_form_action' => 'vtas_reporte_rentabilidad']);
+            DB::table('sys_reportes')->insert(['id' => 1, 'url_form_action' => $reportUrl]);
             DB::table('sys_reportes')->insert(['id' => 2, 'url_form_action' => 'otro_reporte']);
             DB::table('sys_campos')->insert(['id' => 1, 'name' => 'fecha_desde']);
             DB::table('sys_reporte_tiene_campos')->insert(['core_reporte_id' => 1, 'core_campo_id' => 1, 'orden' => 5]);
-            require_once __DIR__.'/../../database/migrations/2026_11_10_000001_add_sales_profitability_report_filters.php';
-            $migration = new AddSalesProfitabilityReportFilters();
+            require_once __DIR__.'/../../database/migrations/'.$migrationFile;
+            $migration = new $migrationClass();
             $migration->up();
             $migration->up();
             $this->assertSame(3, DB::table('sys_campos')->count());
