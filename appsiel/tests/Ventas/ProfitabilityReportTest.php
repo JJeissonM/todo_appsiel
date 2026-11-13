@@ -71,6 +71,7 @@ class ProfitabilityReportTest extends PHPUnit_Framework_TestCase
         return [
             ['vtas_reporte_rentabilidad', '2026_11_10_000001_add_sales_profitability_report_filters.php', 'AddSalesProfitabilityReportFilters'],
             ['vtas_reporte_ventas', '2026_11_13_000001_add_sales_report_filters.php', 'AddSalesReportFilters'],
+            ['pos_movimientos_ventas', '2026_11_13_000002_add_pos_sales_summary_report_filters.php', 'AddPosSalesSummaryReportFilters'],
         ];
     }
 
@@ -102,6 +103,11 @@ class ProfitabilityReportTest extends PHPUnit_Framework_TestCase
             DB::table('sys_reportes')->insert(['id' => 2, 'url_form_action' => 'otro_reporte']);
             DB::table('sys_campos')->insert(['id' => 1, 'name' => 'fecha_desde']);
             DB::table('sys_reporte_tiene_campos')->insert(['core_reporte_id' => 1, 'core_campo_id' => 1, 'orden' => 5]);
+            $hasExistingPdv = $reportUrl === 'pos_movimientos_ventas';
+            if ($hasExistingPdv) {
+                DB::table('sys_campos')->insert(['id' => 2, 'name' => 'pdv_id', 'opciones' => 'conservar_opciones']);
+                DB::table('sys_reporte_tiene_campos')->insert(['core_reporte_id' => 1, 'core_campo_id' => 2, 'orden' => 6]);
+            }
             require_once __DIR__.'/../../database/migrations/'.$migrationFile;
             $migration = new $migrationClass();
             $migration->up();
@@ -111,8 +117,11 @@ class ProfitabilityReportTest extends PHPUnit_Framework_TestCase
             $this->assertEquals(7, DB::table('sys_reporte_tiene_campos')->max('orden'));
             $this->assertSame('mayor_vendido', DB::table('sys_campos')->where('name', 'ordenar_por')->value('value'));
             $migration->down();
-            $this->assertEquals([1], DB::table('sys_campos')->lists('id'));
-            $this->assertSame(1, DB::table('sys_reporte_tiene_campos')->count());
+            $this->assertEquals($hasExistingPdv ? [1, 2] : [1], DB::table('sys_campos')->lists('id'));
+            $this->assertSame($hasExistingPdv ? 2 : 1, DB::table('sys_reporte_tiene_campos')->count());
+            if ($hasExistingPdv) {
+                $this->assertSame('conservar_opciones', DB::table('sys_campos')->where('id', 2)->value('opciones'));
+            }
         } finally {
             Facade::clearResolvedInstances();
             Facade::setFacadeApplication($old);

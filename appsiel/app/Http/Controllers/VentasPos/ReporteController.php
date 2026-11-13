@@ -332,6 +332,7 @@ class ReporteController extends Controller
         $fecha_hasta  = $request->fecha_hasta;
 
         $agrupar_por = $request->agrupar_por;
+        $ordenar_por = $request->input('ordenar_por', 'mayor_vendido');
         $detalla_productos  = (int)$request->detalla_productos;
         $detalla_clientes  = (int)$request->detalla_clientes;
         $iva_incluido  = (int)$request->iva_incluido;
@@ -386,7 +387,7 @@ class ReporteController extends Controller
         // documentos ya emitidos. No deben aparecer al solicitar solamente
         // facturas POS pendientes.
         if ($estado_facturas != 'Pendiente') {
-            $movimiento_vtas_no_pos = VtasMovimiento::get_movimiento_ventas_por_transaccion($fecha_desde, $fecha_hasta, $agrupar_por, [23, 38, 41, 44, 49, 50, 52, 53, 54, 55], $turno ? $turno->id : null, $turno ? $pdv_id : 0);
+            $movimiento_vtas_no_pos = VtasMovimiento::get_movimiento_ventas_por_transaccion($fecha_desde, $fecha_hasta, $agrupar_por, [23, 38, 41, 44, 49, 50, 52, 53, 54, 55], $turno ? $turno->id : null, $turno ? $pdv_id : 0, $turno ? null : $pdv_id);
 
             $array_lista = ($turno || $agrupar_por == 'inv_bodega_id') ? [] : $this->get_array_lista_registros($array_lista, $movimiento_vtas_no_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'Estandar_FE', $user_cajero_pdv);
         }
@@ -426,7 +427,7 @@ class ReporteController extends Controller
             $mensaje = 'IVA <b>NO</b> incluido en precio';
         }
 
-        $vista = View::make('ventas_pos.reportes.reporte_ventas_ordenado', compact('array_lista', 'agrupar_por', 'mensaje', 'iva_incluido', 'detalla_productos', 'pdv', 'turno', 'fecha_desde', 'fecha_hasta'))->render();
+        $vista = View::make('ventas_pos.reportes.reporte_ventas_ordenado', compact('array_lista', 'agrupar_por', 'mensaje', 'iva_incluido', 'detalla_productos', 'pdv', 'turno', 'fecha_desde', 'fecha_hasta', 'ordenar_por'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
@@ -497,6 +498,15 @@ class ReporteController extends Controller
             }
             
             $array_lista[$i]['descripcion'] = $label;
+            $primero = $coleccion_movimiento->first();
+            $campo_id = $agrupar_por == 'lista_precios' ? 'lista_precios_id' : $agrupar_por;
+            $array_lista[$i]['orden_id'] = isset($primero->{$campo_id}) ? $primero->{$campo_id} : $campo_agrupado;
+            $array_lista[$i]['orden_nombre'] = $agrupar_por == 'inv_producto_id'
+                ? $primero->item->descripcion : (string)$label;
+            if (in_array($agrupar_por, ['cliente_id', 'core_tercero_id']) && $primero->tercero) {
+                $array_lista[$i]['orden_nombre'] = $primero->tercero->descripcion;
+            }
+
 
             $array_lista[$i]['cantidad'] = $cantidad;
 

@@ -140,4 +140,20 @@ class SalesReportShiftTest extends TestCase
         $this->assertTrue(strpos($html, '> Prueba </td>') < strpos($html, '> Bodega menor </td>'));
         $this->assertContains('Bodega menor', $html);
     }
+    public function test_nuevos_ordenamientos_conservan_los_totales_del_turno()
+    {
+        DB::table('inv_bodegas')->insert(['id' => 2, 'descripcion' => 'Almacen A']);
+        DB::table('vtas_pos_doc_encabezados')->where('id', 2)->update(['turno_operativo_id' => 1]);
+        DB::table('vtas_pos_doc_registros')->where('id', 2)->update(['inv_bodega_id' => 2]);
+        foreach (['mayor_vendido', 'id', 'alfabetico'] as $orden) {
+            $html = $this->report(['ordenar_por' => $orden]);
+            $this->assertContains('400,00', $html);
+            $a = strpos($html, '> Almacen A </td>');
+            $b = strpos($html, '> Prueba </td>');
+            $this->assertNotFalse($a);
+            $this->assertNotFalse($b);
+            $this->assertTrue($orden === 'alfabetico' ? $a < $b : $b < $a);
+        }
+    }
+
 }

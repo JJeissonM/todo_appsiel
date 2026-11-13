@@ -59,18 +59,17 @@
                 <th> {{ $primer_encabezado }} </th>
                 <th> Cantidad total </th>
                 <th> Precio promedio </th>
-                <th> Venta total <i class="fa fa-sort-amount-desc"></i></th>
+                <th> Venta total @if(!isset($ordenar_por) || !in_array($ordenar_por, ['id', 'alfabetico']))<i class="fa fa-sort-amount-desc"></i>@endif</th>
             </tr>
         </thead>
         <tbody>
 
             <?php
 
-                $columna_precio  = array_column($array_lista, 'precio');
-                
-                array_multisort($columna_precio, SORT_DESC, $array_lista);
-                        
-                $cantidad_elementos = count($columna_precio);
+                $array_lista = \App\Ventas\Services\ProfitabilityReportService::sortRows(
+                    $array_lista, isset($ordenar_por) ? $ordenar_por : null
+                );
+                $cantidad_elementos = count($array_lista);
 
                 $j = 1;
                 
