@@ -53,7 +53,7 @@ class CxpDocEncabezado extends Model
                                     'cxp_doc_encabezados.estado AS campo6',
                                     'cxp_doc_encabezados.id AS campo7'
                                 )
-                                ->orderBy('cxp_doc_encabezados.created_at', 'DESC')
+                                ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('cxp_doc_encabezados'))
                                 ->paginate($nro_registros);
         }
 
@@ -76,7 +76,7 @@ class CxpDocEncabezado extends Model
             ->orWhere("cxp_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("cxp_doc_encabezados.valor_total", "LIKE", "%$search%")
             ->orWhere("cxp_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('cxp_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('cxp_doc_encabezados'))
             ->paginate($nro_registros);
     }
 
@@ -102,7 +102,7 @@ class CxpDocEncabezado extends Model
             ->orWhere("cxp_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("cxp_doc_encabezados.valor_total", "LIKE", "%$search%")
             ->orWhere("cxp_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('cxp_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('cxp_doc_encabezados'))
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }

@@ -6,7 +6,10 @@ class TransactionIndexOrder
 {
     public static function sql($table)
     {
-        if (!in_array($table, ['vtas_doc_encabezados', 'vtas_pos_doc_encabezados'], true)) {
+        if (!in_array($table, [
+            'vtas_doc_encabezados', 'vtas_pos_doc_encabezados',
+            'cxc_doc_encabezados', 'cxp_doc_encabezados', 'teso_doc_encabezados',
+        ], true)) {
             throw new \InvalidArgumentException('Tabla no habilitada para el ordenamiento de transacciones.');
         }
 

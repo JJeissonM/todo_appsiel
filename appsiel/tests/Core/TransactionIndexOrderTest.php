@@ -10,6 +10,10 @@ class TransactionIndexOrderTest extends PHPUnit_Framework_TestCase
     private $previousContainer;
     private $container;
     private $connection;
+    private $tables = [
+        'vtas_doc_encabezados', 'vtas_pos_doc_encabezados',
+        'cxc_doc_encabezados', 'cxp_doc_encabezados', 'teso_doc_encabezados',
+    ];
 
     protected function setUp()
     {
@@ -20,7 +24,7 @@ class TransactionIndexOrderTest extends PHPUnit_Framework_TestCase
         $capsule = new Capsule($this->container);
         $capsule->addConnection(['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
         $this->connection = $capsule->getConnection();
-        foreach (['vtas_doc_encabezados', 'vtas_pos_doc_encabezados'] as $table) {
+        foreach ($this->tables as $table) {
             $this->connection->getSchemaBuilder()->create($table, function ($t) {
                 $t->increments('id');
                 $t->integer('consecutivo');
@@ -45,7 +49,7 @@ class TransactionIndexOrderTest extends PHPUnit_Framework_TestCase
     {
         foreach ([null, 'consecutivo', 'invalid'] as $value) {
             if ($value !== null) $this->container['config']->set('configuracion.orden_transacciones_index', $value);
-            foreach (['vtas_doc_encabezados', 'vtas_pos_doc_encabezados'] as $table) {
+            foreach ($this->tables as $table) {
                 $this->assertSame([1, 4, 3, 2], $this->orderedIds($table));
             }
         }
@@ -54,7 +58,7 @@ class TransactionIndexOrderTest extends PHPUnit_Framework_TestCase
     public function testDocumentDatePrecedesCreationTimeWithStableTiesAndPagination()
     {
         $this->container['config']->set('configuracion.orden_transacciones_index', 'fecha');
-        foreach (['vtas_doc_encabezados', 'vtas_pos_doc_encabezados'] as $table) {
+        foreach ($this->tables as $table) {
             $this->assertSame([4, 3, 2, 1], $this->orderedIds($table));
             $this->assertSame([2, 1], $this->orderedIds($table, 2));
         }

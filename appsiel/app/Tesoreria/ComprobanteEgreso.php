@@ -78,7 +78,7 @@ class ComprobanteEgreso extends Model
                                     'teso_doc_encabezados.valor_total AS campo5',
                                     'teso_doc_encabezados.estado AS campo6',
                                     'teso_doc_encabezados.id AS campo7')
-                        ->orderBy('teso_doc_encabezados.fecha', 'DESC')
+                        ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('teso_doc_encabezados'))
                         ->paginate($nro_registros);
             }
 
@@ -94,7 +94,7 @@ class ComprobanteEgreso extends Model
                                     'teso_doc_encabezados.valor_total AS campo5',
                                     'teso_doc_encabezados.estado AS campo6',
                                     'teso_doc_encabezados.id AS campo7')
-                        ->orderBy('teso_doc_encabezados.fecha', 'DESC')
+                        ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('teso_doc_encabezados'))
                         ->paginate($nro_registros);
         }
 
@@ -116,7 +116,7 @@ class ComprobanteEgreso extends Model
                     ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
                     ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
                     ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
-                    ->orderBy('teso_doc_encabezados.fecha', 'DESC')
+                    ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('teso_doc_encabezados'))
                     ->paginate($nro_registros);
     }
 
@@ -164,7 +164,7 @@ class ComprobanteEgreso extends Model
                     ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
                     ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
                     ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
-                    ->orderBy('teso_doc_encabezados.fecha', 'DESC')
+                    ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('teso_doc_encabezados'))
                     ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }

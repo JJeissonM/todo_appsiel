@@ -64,7 +64,7 @@ class CxcDocEncabezado extends Model
 
         $query = self::aplicarFiltroCreadoPor($query, 'cxc_doc_encabezados.creado_por');
 
-        return $query->orderBy('cxc_doc_encabezados.created_at', 'DESC')->paginate($nro_registros);
+        return $query->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('cxc_doc_encabezados'))->paginate($nro_registros);
     }
 
     public static function sqlString($search)
@@ -91,7 +91,7 @@ class CxcDocEncabezado extends Model
 
         $query = self::aplicarFiltroCreadoPor($query, 'cxc_doc_encabezados.creado_por');
 
-        $string = $query->orderBy('cxc_doc_encabezados.created_at', 'DESC')->toSql();
+        $string = $query->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('cxc_doc_encabezados'))->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 

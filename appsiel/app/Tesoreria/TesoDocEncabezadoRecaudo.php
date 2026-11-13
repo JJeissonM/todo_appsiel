@@ -58,7 +58,7 @@ class TesoDocEncabezadoRecaudo extends TesoDocEncabezado
 
         $query = self::aplicarFiltroCreadoPor($query, 'teso_doc_encabezados.creado_por');
 
-        $collection = $query->orderBy('teso_doc_encabezados.created_at', 'DESC')->get();
+        $collection = $query->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('teso_doc_encabezados'))->get();
 
         //hacemos el filtro de $search si $search tiene contenido
         $nuevaColeccion = [];
@@ -151,7 +151,7 @@ class TesoDocEncabezadoRecaudo extends TesoDocEncabezado
 
         $query = self::aplicarFiltroCreadoPor($query, 'teso_doc_encabezados.creado_por');
 
-        $string = $query->orderBy('teso_doc_encabezados.created_at', 'DESC')->toSql();
+        $string = $query->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('teso_doc_encabezados'))->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 

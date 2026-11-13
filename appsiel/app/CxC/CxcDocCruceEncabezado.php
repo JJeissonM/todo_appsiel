@@ -52,7 +52,7 @@ class CxcDocCruceEncabezado extends CxcDocEncabezado
 
         $query = self::aplicarFiltroCreadoPor($query, 'cxc_doc_encabezados.creado_por');
 
-        $collection = $query->orderBy('cxc_doc_encabezados.created_at', 'DESC')->get();
+        $collection = $query->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('cxc_doc_encabezados'))->get();
 
         //hacemos el filtro de $search si $search tiene contenido
         $nuevaColeccion = [];
@@ -143,7 +143,7 @@ class CxcDocCruceEncabezado extends CxcDocEncabezado
 
         $query = self::aplicarFiltroCreadoPor($query, 'cxc_doc_encabezados.creado_por');
 
-        $string = $query->orderBy('cxc_doc_encabezados.created_at', 'DESC')->toSql();
+        $string = $query->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('cxc_doc_encabezados'))->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 

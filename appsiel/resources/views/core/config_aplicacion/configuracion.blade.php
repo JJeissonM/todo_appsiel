@@ -25,7 +25,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         {{ Form::bsSelect('orden_transacciones_index', isset($parametros['orden_transacciones_index']) ? $parametros['orden_transacciones_index'] : 'consecutivo', 'Orden de registros en transacciones', ['consecutivo' => 'Consecutivo (predeterminado)', 'fecha' => 'Fecha (más reciente primero)'], ['class' => 'form-control']) }}
-                        <p class="help-block">Inicialmente aplica a los listados de documentos de ventas y POS. La fecha corresponde a la fecha del documento.</p>
+                        <p class="help-block">Aplica a los listados de documentos de ventas, POS, CxC, CxP, pagos generales y recaudos generales. La fecha corresponde a la fecha del documento.</p>
                     </div>
                 </div>
 

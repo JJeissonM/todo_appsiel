@@ -34,7 +34,7 @@ class CxcDocCancelacionesEncabezado extends Model
                 'cxc_doc_encabezados.descripcion AS campo4',
                 'cxc_doc_encabezados.id AS campo5'
             )
-            ->orderBy('cxc_doc_encabezados.created_at', 'DESC')
+            ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('cxc_doc_encabezados'))
             ->paginate($nro_registros);
 
         return $registros;
