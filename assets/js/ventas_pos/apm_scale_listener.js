@@ -5,7 +5,7 @@
         return element ? String(element.value || '').trim() : '';
     };
 
-    const isEnabled = () => parseInt(getValue('#apm_scale_listener_activo') || '0', 10) === 1;
+    const isEnabled = () => getValue('#pos_ocultar_cantidad') !== '1' && parseInt(getValue('#apm_scale_listener_activo') || '0', 10) === 1;
 
     const getScaleId = () => getValue('#apm_scale_id_pos');
 

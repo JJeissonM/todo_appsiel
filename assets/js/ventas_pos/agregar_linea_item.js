@@ -86,6 +86,12 @@ class StockService
  */
 function agregar_la_linea() 
 {
+    if (typeof pos_cantidad_unitaria_activa === 'function' && pos_cantidad_unitaria_activa()) {
+        pos_preparar_cantidad_nueva();
+        calcular_valor_descuento();
+        calcular_impuestos();
+        if (!calcular_precio_total()) { return false; }
+    }
     var stock_service = new StockService();    
 
     stock_service.verificarExistencia( inv_producto_id, $('#inv_bodega_id').val(), cantidad, $('#fecha').val(), 0 );
@@ -214,6 +220,7 @@ function mandar_codigo2(item_id) {
     $("#tasa_descuento").val(get_descuento(producto.id));
 
     cantidad = 1;
+    if (typeof pos_preparar_cantidad_nueva === 'function') { pos_preparar_cantidad_nueva(); }
     $("#cantidad").val(cantidad);
     calcular_valor_descuento();
     calcular_impuestos();
@@ -252,7 +259,9 @@ function mandar_codigo3(item_id) {
     $("#precio_unitario").val(get_precio(producto.id));
     $("#tasa_descuento").val(get_descuento(producto.id));
 
-    $("#cantidad").select();
+    if (typeof pos_cantidad_unitaria_activa === 'function' && pos_cantidad_unitaria_activa()) {
+        pos_enfocar_precio_unitario();
+    } else { $("#cantidad").select(); }
 }
 
 /**
@@ -281,6 +290,7 @@ function mandar_codigo4(item_id) {
         cantidad = 1;
     }
 
+    if (typeof pos_preparar_cantidad_nueva === 'function') { pos_preparar_cantidad_nueva(); }
     $("#cantidad").val(cantidad);
     calcular_valor_descuento();
     calcular_impuestos();

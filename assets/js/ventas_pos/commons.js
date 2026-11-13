@@ -1335,6 +1335,7 @@ function reset_linea_ingreso_default() {
   tasa_descuento = 0;
   valor_total_descuento = 0;
   cantidad = 0;
+  if (typeof pos_preparar_cantidad_nueva === 'function') { pos_preparar_cantidad_nueva(); }
   costo_unitario = 0;
   precio_unitario = 0;
   base_impuesto_unitario = 0;
@@ -1400,7 +1401,9 @@ function agregar_linea_producto_ingresado(
 
   if (campo_busqueda == "id" || campo_busqueda == "referencia") 
   {
-    $("#cantidad").select();
+    if (typeof pos_cantidad_unitaria_activa === 'function' && pos_cantidad_unitaria_activa()) {
+      pos_enfocar_precio_unitario();
+    } else { $("#cantidad").select(); }
   } else {
     // Por código de barras, se agrega la línea con un unidad de producto
     $("#cantidad").val(1);
@@ -1417,6 +1420,7 @@ function agregar_linea_producto_ingresado(
       }
     }
 
+    if (typeof pos_preparar_cantidad_nueva === 'function') { pos_preparar_cantidad_nueva(); }
     calcular_valor_descuento();
     calcular_impuestos();    
 
@@ -1543,6 +1547,11 @@ function activar_boton_guardar_factura()
  */
 function agregar_nueva_linea() 
 {
+  if (typeof pos_cantidad_unitaria_activa === 'function' && pos_cantidad_unitaria_activa()) {
+    pos_preparar_cantidad_nueva();
+    calcular_valor_descuento();
+    calcular_impuestos();
+  }
 
   if (!calcular_precio_total()) {
 

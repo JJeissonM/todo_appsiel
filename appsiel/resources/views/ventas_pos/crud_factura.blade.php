@@ -170,14 +170,16 @@
 
     <script src="{{ asset( 'assets/js/ventas_pos/catalogos.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/sistema/form_builder.js?v=' . $asset_v )}}"></script>
+    <style>.pos-cantidad-oculta { display: none !important; }</style>
+    <script src="{{ asset('assets/js/ventas_pos/cantidad_unitaria.js?v=1') }}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/precios.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/clientes.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas/consulta_adquiriente.js?v=' . $asset_v )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?v=' . $asset_v )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/commons.js?v=' . $asset_v . '-pos-efectivo-exacto-4' )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?v=cantidad-1-' . $asset_v )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/commons.js?v=' . $asset_v . '-pos-cantidad-1' )}}"></script>
 
     <script src="{{ asset( 'assets/js/apm/client.js?v=' . $asset_v )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/apm_scale_listener.js?v=' . $asset_v )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/apm_scale_listener.js?v=cantidad-1-' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?v=' . $asset_v . '&aux=' . uniqid() )}}"></script>
     
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas.js?v=' . $asset_v )}}"></script>

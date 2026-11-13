@@ -14,6 +14,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         config([
+            'ventas_pos.ocultar_cantidad_lineas_factura' => config('ventas_pos.ocultar_cantidad_lineas_factura', '0'),
             'session.lifetime' => env('SESSION_LIFETIME', config('session.lifetime')),
             'session.cookie' => env('SESSION_COOKIE', config('session.cookie')),
             'session.same_site' => env('SESSION_SAME_SITE', config('session.same_site')),

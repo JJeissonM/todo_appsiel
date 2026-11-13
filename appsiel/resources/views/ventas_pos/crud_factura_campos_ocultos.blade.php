@@ -201,3 +201,5 @@ value="{{ config('ventas_pos.mostrar_saldo_pendiente_cxc_al_imprimir') }}">
 
 <!-- Boton para hacer pruebas -->
 <button onclick="testing_print_jspm();" style="display: none;" id="btn_pruebas">testing_print_jspm</button>
+
+<input type="hidden" id="pos_ocultar_cantidad" value="{{ (int)config('ventas_pos.ocultar_cantidad_lineas_factura', 0) }}">

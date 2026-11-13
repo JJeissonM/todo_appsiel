@@ -28,6 +28,15 @@
 				<h4> Parámetros Generales  </h4>
 				<hr>
 
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="row" style="padding:5px;">
+                            {{ Form::bsSelect('ocultar_cantidad_lineas_factura', isset($parametros['ocultar_cantidad_lineas_factura']) ? $parametros['ocultar_cantidad_lineas_factura'] : '0', 'Ocultar cantidad en líneas de factura POS', ['1' => 'Sí', '0' => 'No'], ['class' => 'form-control', 'required' => 'required']) }}
+                            <p class="help-block">Al activar esta opción, las líneas nuevas se agregan con cantidad 1. Las facturas editadas y los pedidos cargados conservan sus cantidades originales.</p>
+                        </div>
+                    </div>
+                </div>
+
 				<div class="row">
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
