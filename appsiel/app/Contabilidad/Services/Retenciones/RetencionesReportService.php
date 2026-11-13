@@ -56,7 +56,8 @@ class RetencionesReportService
             $row->tipo_impuesto = $row->tipo_impuesto ?: 'SIN_CLASIFICAR';
             if ($row->tipo_impuesto === 'SIN_CLASIFICAR') { $sinClasificar++; }
             if (!empty($filtros['tipo_impuesto']) && $row->tipo_impuesto !== $filtros['tipo_impuesto']) { continue; }
-            $row->persona = $row->tipo_persona_retenida ?: ConceptosDeclaracion::persona($row->persona_actual);
+            $row->persona = in_array($row->tipo_persona_retenida, ['natural', 'juridica'], true)
+                ? $row->tipo_persona_retenida : ConceptosDeclaracion::persona($row->persona_actual);
             if (!empty($filtros['tipo_persona']) && $row->persona !== $filtros['tipo_persona']) { continue; }
             $row->anio = (int)substr($row->fecha, 0, 4);
             $row->periodo = substr($row->fecha, 0, 7);

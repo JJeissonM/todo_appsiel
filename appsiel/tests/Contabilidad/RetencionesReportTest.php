@@ -122,6 +122,25 @@ class RetencionesReportTest extends TestCase
         $this->assertNull($datos['detalle']->first()->casilla_retencion);
     }
 
+    public function test_recupera_persona_corregida_sin_reescribir_clasificaciones_historicas_validas()
+    {
+        DB::table('contab_registros_retenciones')->where('id',1)->update(['tipo_persona_retenida'=>'sin_clasificar']);
+        DB::table('core_terceros')->where('id',2)->update(['tipo'=>'Persona natural']);
+        $datos=$this->datos(['tipo_impuesto'=>'FUENTE']);
+        $natural=$datos['detalle']->filter(function($r){return $r->core_tercero_id==1;})->first();
+        $juridica=$datos['detalle']->filter(function($r){return $r->core_tercero_id==2;})->first();
+        $this->assertSame('natural',$natural->persona);
+        $this->assertSame(102,$natural->casilla_retencion);
+        $this->assertSame('juridica',$juridica->persona);
+        $this->assertSame(49,$juridica->casilla_retencion);
+        $this->assertSame('sin_clasificar',DB::table('contab_registros_retenciones')->where('id',1)->value('tipo_persona_retenida'));
+        $this->assertCount(1,$this->datos(['tipo_impuesto'=>'FUENTE','tipo_persona'=>'natural'])['detalle']);
+        DB::table('core_terceros')->where('id',1)->update(['tipo'=>'Interno']);
+        $interno=$this->datos(['tipo_impuesto'=>'FUENTE','tipo_persona'=>'sin_clasificar']);
+        $this->assertCount(1,$interno['detalle']);
+        $this->assertNull($interno['detalle']->first()->casilla_retencion);
+    }
+
     public function test_filtra_fuente_historica_por_categoria_y_cuenta_sin_configuracion_anual()
     {
         $this->catalogoHistorico();
