@@ -18,7 +18,7 @@ class MakePosDocumentIdentityUnique extends Migration
         $duplicate = DB::table('vtas_pos_doc_encabezados')->select($columns)
             ->groupBy($columns)->havingRaw('COUNT(*) > 1')->first();
         if ($duplicate !== null) {
-            throw new RuntimeException('Concilie las facturas POS duplicadas por empresa/transacción/tipo/consecutivo antes de activar su unicidad. No se renumeraron documentos.');
+            throw new RuntimeException('Concilie las facturas POS duplicadas por empresa/transacción/tipo/consecutivo antes de activar su unicidad. Ejecute php artisan pos:conciliar-consecutivos para diagnosticar y agregue --ejecutar para aplicar el plan validado. No se renumeraron documentos.');
         }
 
         Schema::table('vtas_pos_doc_encabezados', function (Blueprint $table) use ($columns) {
