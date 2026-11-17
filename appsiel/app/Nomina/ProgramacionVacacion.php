@@ -268,6 +268,34 @@ class ProgramacionVacacion extends Model
         return $lista_campos;
     }
 
+    public function show_adicional($lista_campos, $registro)
+    {
+        $libro_vacaciones = LibroVacacion::where('novedad_tnl_id', $registro->id)->first();
+        $campos_libro = [
+            'cantidad_dias_tomados' => 'dias_pagados',
+            'dias_compensados' => 'dias_compensados',
+            'dias_no_habiles' => 'dias_no_habiles',
+        ];
+
+        $lista_campos = array_filter($lista_campos, function ($campo) {
+            return !in_array($campo['name'], ['separador1', 'separador2', 'separador3'], true);
+        });
+
+        foreach ($lista_campos as &$campo) {
+            if (!isset($campos_libro[$campo['name']])) {
+                continue;
+            }
+
+            $campo_libro = $campos_libro[$campo['name']];
+            $campo['value'] = is_null($libro_vacaciones)
+                ? 0
+                : $libro_vacaciones->$campo_libro;
+        }
+        unset($campo);
+
+        return array_values($lista_campos);
+    }
+
     public function update_adicional($datos, $id)
     {
         $programacion = self::findOrFail($id);
