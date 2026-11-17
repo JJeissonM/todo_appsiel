@@ -86,6 +86,14 @@ class ProgramacionVacacion extends Model
         if (empty($contratoId) && !is_null($id)) {
             $programacion = self::find($id);
             $contratoId = is_null($programacion) ? null : $programacion->nom_contrato_id;
+
+            // En edición algunos controles combobox muestran el empleado pero
+            // no vuelven a enviar el valor si no fue modificado. Mantener el
+            // contrato del registro permite que la validación required/exists
+            // opere sobre el ID real, sin omitir ninguna validación.
+            if (!empty($contratoId)) {
+                $request->merge(['nom_contrato_id' => $contratoId]);
+            }
         }
 
         try {

@@ -162,6 +162,40 @@ class CalculoFechaVacacionesTest extends TestCase
     }
 
     /** @test */
+    public function al_editar_recupera_el_contrato_del_registro_si_el_combobox_no_lo_envia()
+    {
+        $this->crearParametro(1);
+        DB::table('nom_contratos')->insert([
+            'id' => 10,
+            'grupo_empleado_id' => 1,
+            'fecha_ingreso' => '2020-01-01',
+            'contrato_hasta' => '2027-12-31',
+        ]);
+        DB::table('nom_parametros_legales')->insert([
+            'fecha_inicio' => '2026-01-01',
+            'fecha_fin' => '2026-12-31',
+            'horas_laborales' => 210,
+            'horas_dia_laboral' => 7,
+            'estado' => 'Activo',
+        ]);
+        DB::table('nom_novedades_tnl')->insert([
+            'id' => 1,
+            'nom_contrato_id' => 10,
+        ]);
+
+        $request = Request::create('/', 'POST', [
+            'fecha_inicial_tnl' => '2026-11-17',
+            'cantidad_dias_tomados' => 15,
+            'dias_compensados' => 3,
+        ]);
+
+        (new ProgramacionVacacion())->preparar_request_validacion($request, 1);
+
+        $this->assertEquals(10, $request->nom_contrato_id);
+        $this->assertSame('2026-11-30', $request->fecha_final_tnl);
+    }
+
+    /** @test */
     public function exige_parametrizacion_de_vacaciones_para_el_grupo()
     {
         $this->setExpectedException(
@@ -210,6 +244,11 @@ class CalculoFechaVacacionesTest extends TestCase
             $table->decimal('horas_laborales', 10, 2);
             $table->decimal('horas_dia_laboral', 10, 2);
             $table->string('estado');
+        });
+
+        Schema::create('nom_novedades_tnl', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('nom_contrato_id');
         });
     }
 }
