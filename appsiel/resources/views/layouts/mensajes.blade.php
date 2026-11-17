@@ -6,6 +6,15 @@
 		</div>
 	</div>
 @endif
+
+@if(Session::has('mensaje_advertencia'))
+	<div class="container" style="clear: both; width: auto;">
+		<div class="alert alert-warning alert-dismissible">
+			<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			<em><i class="fa fa-warning" aria-hidden="true"></i> {{ session('mensaje_advertencia') }}</em>
+		</div>
+	</div>
+@endif
  
 @if(Session::has('mensaje_error'))
 	<div class="container" style="clear: both; width: auto;">      

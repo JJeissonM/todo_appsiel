@@ -11,6 +11,11 @@ use Carbon\Carbon;
 
 class LiquidacionPorTurnosService
 {
+    public function es_registro_automatico_turnos(NomDocRegistro $registro)
+    {
+        return (int)$registro->nom_concepto_id === (int)config('nomina.concepto_pago_turnos');
+    }
+
     public function almacenar_registro_empleado(NomContrato $empleado, NomDocEncabezado $documento, $usuario)
     {
         $lapso = $documento->lapso();

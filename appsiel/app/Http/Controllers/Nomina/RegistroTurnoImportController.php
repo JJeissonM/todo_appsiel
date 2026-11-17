@@ -51,6 +51,7 @@ class RegistroTurnoImportController extends Controller
         }
 
         $cacheContratos = []; // fingerprint_reader_id => modelo contrato
+        $cacheContratosNoActivos = []; // fingerprint_reader_id => existe contrato no activo
         $cacheContratosPorId = []; // contrato_id => modelo contrato
         $dedup = [];          // contrato|Y-m-d H:i:s
         $marcas = [];         // contrato|fecha => [horas]
@@ -58,6 +59,9 @@ class RegistroTurnoImportController extends Controller
 
         $fechasArchivo = [];      // set de fechas ajustadas (Y-m-d)
         $contratosArchivo = [];   // set de contratos presentes en el archivo
+        $marcacionesOmitidasContratoNoActivo = 0;
+        $lectoresContratosNoActivos = [];
+        $turnosCreados = 0;
 
         $tolerancia = (int)config('nomina.tolerancia_minutos_turnos_importacion');
 
@@ -77,19 +81,34 @@ class RegistroTurnoImportController extends Controller
                 continue;
             }
 
-            if (!isset($cacheContratos[$fingerId])) {
-                    $cacheContratos[$fingerId] = NomContrato::where('fingerprint_reader_id', 'like', '%'.$fingerId.'%')
-                        ->where('clase_contrato', 'por_turnos')
-                        ->select('id', 'cargo_id', 'turno_default_id')
-                        ->with('turno_default')
-                        ->orderByRaw("CASE WHEN estado = 'Activo' THEN 0 ELSE 1 END")
-                        ->orderBy('id', 'DESC')
-                        ->first();
+            if (!array_key_exists($fingerId, $cacheContratos)) {
+                $cacheContratos[$fingerId] = NomContrato::where('fingerprint_reader_id', 'like', '%'.$fingerId.'%')
+                    ->where('clase_contrato', 'por_turnos')
+                    ->where('estado', 'Activo')
+                    ->select('id', 'cargo_id', 'turno_default_id')
+                    ->with('turno_default')
+                    ->orderBy('id', 'DESC')
+                    ->first();
             }
             
             $contrato = $cacheContratos[$fingerId];
             
             if (!$contrato) {
+                if (!array_key_exists($fingerId, $cacheContratosNoActivos)) {
+                    $cacheContratosNoActivos[$fingerId] = NomContrato::where('fingerprint_reader_id', 'like', '%'.$fingerId.'%')
+                        ->where('clase_contrato', 'por_turnos')
+                        ->where(function ($query) {
+                            $query->where('estado', '<>', 'Activo')
+                                ->orWhereNull('estado');
+                        })
+                        ->exists();
+                }
+
+                if ($cacheContratosNoActivos[$fingerId]) {
+                    $marcacionesOmitidasContratoNoActivo++;
+                    $lectoresContratosNoActivos[$fingerId] = true;
+                }
+
                 continue; // sin contrato asociado
             }
 
@@ -258,11 +277,27 @@ class RegistroTurnoImportController extends Controller
                     'anotacion'       => '',
                     'estado'          => 'Pendiente',
                 ]);
+                $turnosCreados++;
             }
             
         }
         
-        return redirect( 'nom_turnos_registros/create?id=' . $request->app_id . '&id_modelo=' . $request->modelo_id . '&fecha=' . $fechaPrimerDia )->with( 'flash_message','Turnos importados correctamente. Fecha primer día: ' . $fechaPrimerDia );
+        $respuesta = redirect( 'nom_turnos_registros/create?id=' . $request->app_id . '&id_modelo=' . $request->modelo_id . '&fecha=' . $fechaPrimerDia )
+            ->with(
+                'flash_message',
+                'Importación procesada correctamente. Turnos cargados: ' . $turnosCreados . '. Fecha primer día: ' . $fechaPrimerDia
+            );
+
+        if ($marcacionesOmitidasContratoNoActivo > 0) {
+            $respuesta->with(
+                'mensaje_advertencia',
+                'Se omitieron ' . $marcacionesOmitidasContratoNoActivo .
+                ' marcaciones de los ID de lector ' . implode(', ', array_keys($lectoresContratosNoActivos)) .
+                ' porque sus contratos tienen estado diferente a Activo. No se cargaron turnos para estas marcaciones.'
+            );
+        }
+
+        return $respuesta;
     }
 
     public function borrar_registros($fecha_primer_dia, $fecha_corte_final)

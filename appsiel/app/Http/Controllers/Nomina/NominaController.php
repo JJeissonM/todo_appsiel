@@ -428,7 +428,13 @@ class NominaController extends TransaccionController
 
             if ( $registro->contrato->clase_contrato == 'por_turnos' )
             {
-                $liquidacion_turnos_service->retirar_registro_empleado( $registro->contrato, $documento_nomina, $registro );
+                // Los contratos por turnos también pueden tener conceptos ingresados
+                // manualmente. Al retirar la liquidación automática solamente se debe
+                // reversar el registro que fue generado por los turnos.
+                if ( $liquidacion_turnos_service->es_registro_automatico_turnos($registro) )
+                {
+                    $liquidacion_turnos_service->retirar_registro_empleado( $registro->contrato, $documento_nomina, $registro );
+                }
                 continue;
             }
 
