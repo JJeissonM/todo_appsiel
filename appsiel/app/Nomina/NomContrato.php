@@ -40,6 +40,18 @@ class NomContrato extends Model
         return $this->belongsTo(Tercero::class, 'core_tercero_id');
     }
 
+    public static function activosPorTurnosOrdenadosPorEmpleado()
+    {
+        return self::join('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
+            ->where('nom_contratos.estado', 'Activo')
+            ->where('nom_contratos.clase_contrato', 'por_turnos')
+            ->select('nom_contratos.*')
+            ->with('tercero')
+            ->orderBy('core_terceros.descripcion', 'ASC')
+            ->orderBy('nom_contratos.id', 'ASC')
+            ->get();
+    }
+
     public function cargo()
     {
         return $this->belongsTo(NomCargo::class, 'cargo_id');

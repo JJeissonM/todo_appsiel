@@ -35,11 +35,7 @@ class GestionTurnosController extends TransaccionController
      */
     public function create()
     {
-        $empleados = NomContrato::where([
-                                            ['estado','=','Activo'],
-                                            ['clase_contrato','=','por_turnos']
-                                        ])
-                                ->get();
+        $empleados = NomContrato::activosPorTurnosOrdenadosPorEmpleado();
 
         $turnos_activos = TipoTurno::where('estado', 'Activo')
                             ->with('cargos')
