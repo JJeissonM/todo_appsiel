@@ -25,6 +25,17 @@ class CertificadosRetencionesTest extends TestCase
         foreach ([[10,1,'Proveedor A'],[11,1,'Proveedor B'],[20,2,'Ajeno']] as $t) {
             DB::table('core_terceros')->insert(['id'=>$t[0],'core_empresa_id'=>$t[1],'tipo'=>'Persona jurídica','descripcion'=>$t[2],'numero_identificacion'=>'123'.$t[0],'digito_verificacion'=>'1','email'=>'proveedor'.$t[0].'@example.com']);
         }
+        DB::statement('CREATE TABLE core_firmas_autorizadas (id INTEGER, core_empresa_id INTEGER, core_tercero_id INTEGER, titulo_tercero TEXT, estado TEXT, imagen TEXT)');
+        DB::table('core_firmas_autorizadas')->insert([
+            ['id'=>1,'core_empresa_id'=>1,'core_tercero_id'=>10,'titulo_tercero'=>'Contador','estado'=>'Activo','imagen'=>'certificados_prueba.png'],
+            ['id'=>2,'core_empresa_id'=>1,'core_tercero_id'=>11,'titulo_tercero'=>'Responsable sin imagen','estado'=>'Activo','imagen'=>''],
+            ['id'=>3,'core_empresa_id'=>1,'core_tercero_id'=>10,'titulo_tercero'=>'Inactivo','estado'=>'Inactivo','imagen'=>''],
+            ['id'=>4,'core_empresa_id'=>2,'core_tercero_id'=>20,'titulo_tercero'=>'Ajeno','estado'=>'Activo','imagen'=>''],
+            ['id'=>5,'core_empresa_id'=>1,'core_tercero_id'=>20,'titulo_tercero'=>'Tercero ajeno','estado'=>'Activo','imagen'=>'']
+        ]);
+        $imagen=imagecreatetruecolor(16,8);imagefill($imagen,0,0,imagecolorallocate($imagen,255,255,255));
+        ob_start();imagepng($imagen);$bytes=ob_get_clean();imagedestroy($imagen);
+        Storage::disk('local')->put('firmas_autorizadas/certificados_prueba.png',$bytes);
         DB::statement('CREATE TABLE compras_proveedores (id INTEGER,core_tercero_id INTEGER,clase_proveedor_id INTEGER)');
         DB::table('compras_proveedores')->insert([['id'=>1,'core_tercero_id'=>10,'clase_proveedor_id'=>1],['id'=>2,'core_tercero_id'=>11,'clase_proveedor_id'=>2],['id'=>3,'core_tercero_id'=>20,'clase_proveedor_id'=>3]]);
         DB::statement('CREATE TABLE compras_clases_proveedores (id INTEGER,descripcion TEXT)');
@@ -76,13 +87,14 @@ class CertificadosRetencionesTest extends TestCase
     private function filtros(array $extra=[])
     {
         return FiltrosCertificados::normalizar(array_merge(['periodo'=>'bimestral','anio'=>2026,'bimestre'=>5,
-            'ciudad_consignacion'=>'Valledupar','responsable'=>'Responsable','identificacion_responsable'=>'123',
+            'ciudad_consignacion'=>'Valledupar','firma_autorizada_id'=>1,
             'firma_fuente'=>'computador','tercero_id'=>10],$extra));
     }
 
     public function tearDown()
     {
         foreach (DB::table('contab_certificados_retenciones')->whereNotNull('pdf_path')->lists('pdf_path') as $path) { Storage::disk('local')->delete($path); }
+        Storage::disk('local')->delete('firmas_autorizadas/certificados_prueba.png');
         DB::purge('certificados_test');DB::setDefaultConnection($this->conexion);
         parent::tearDown();
     }
@@ -133,7 +145,7 @@ class CertificadosRetencionesTest extends TestCase
         $f=$this->filtros();$this->assertSame('2026-09-01',$f['fecha_desde']);$this->assertSame('2026-10-31',$f['fecha_hasta']);
         $f=$this->filtros(['periodo'=>'anual']);$this->assertSame('2026-01-01',$f['fecha_desde']);$this->assertSame('2026-12-31',$f['fecha_hasta']);
         $f=$this->filtros(['anio'=>2024,'bimestre'=>1]);$this->assertSame('2024-02-29',$f['fecha_hasta']);
-        foreach ([['bimestre'=>7],['periodo'=>'fechas','fecha_desde'=>'2026-10-31','fecha_hasta'=>'2026-10-01'],['tipo_impuesto'=>'IVA'],['grupo_id'=>2],['responsable'=>''],['tipo_impuesto'=>'ICA']] as $invalido) {
+        foreach ([['bimestre'=>7],['periodo'=>'fechas','fecha_desde'=>'2026-10-31','fecha_hasta'=>'2026-10-01'],['tipo_impuesto'=>'IVA'],['grupo_id'=>2],['firma_autorizada_id'=>''],['tipo_impuesto'=>'ICA']] as $invalido) {
             try {$this->filtros($invalido);$this->fail('Se aceptó un filtro inválido');}catch(InvalidArgumentException $e){$this->assertNotEmpty($e->getMessage());}
         }
     }
@@ -168,8 +180,8 @@ class CertificadosRetencionesTest extends TestCase
     public function test_impide_envio_sin_firma_o_email_y_emision_sin_concepto()
     {
         $s=new CertificadosCorreoPrueba;
-        $r=$s->previsualizar(1,5,$this->filtros(['firma_fuente'=>'manual']))[0];
-        try{$s->enviar($r['token'],1,5);$this->fail('Envío sin firma');}catch(InvalidArgumentException $e){$this->assertContains('firma',$e->getMessage());}
+        try{$s->previsualizar(1,5,$this->filtros(['firma_fuente'=>'manual','firma_autorizada_id'=>2]));$this->fail('Aceptó firma manual sin imagen');}
+        catch(InvalidArgumentException $e){$this->assertContains('imagen de firma adjunta',$e->getMessage());}
         DB::table('core_terceros')->where('id',10)->update(['email'=>'invalido']);
         $r=$s->previsualizar(1,5,$this->filtros())[0];
         try{$s->enviar($r['token'],1,5);$this->fail('Envío sin email');}catch(InvalidArgumentException $e){$this->assertContains('correo válido',$e->getMessage());}
@@ -185,6 +197,7 @@ class CertificadosRetencionesTest extends TestCase
         $controller=new App\Http\Controllers\Contabilidad\CertificadosRetencionesController;
         $vista=$controller->index();$this->assertSame('contabilidad.certificados.index',$vista->name());
         $this->assertCount(2,$vista->getData()['terceros']);$this->assertCount(2,$vista->getData()['grupos']);
+        $this->assertCount(2,$vista->getData()['firmas']);
         $vista=$controller->previsualizar(new Request($this->filtros()))->render();
         $this->assertContains('Proveedor A',$vista);$this->assertContains('Emitir / descargar PDF',$vista);
         try{$controller->previsualizar(new Request($this->filtros(['tercero_id'=>20])));$this->fail('Acceso ajeno');}
@@ -230,6 +243,48 @@ class CertificadosRetencionesTest extends TestCase
         $s=new CertificadosRetencionesService;$r=$s->previsualizar(1,5,$this->filtros())[0];
         try{$s->emitir($r['token'],1,5);$this->fail('Emitió sin base');}
         catch(InvalidArgumentException $e){$this->assertContains('sin base o tarifa verificable',$e->getMessage());}
+    }
+
+    public function test_firma_del_catalogo_sustituye_datos_enviados_y_firma_pdf_manual()
+    {
+        $s=new CertificadosCorreoPrueba;
+        $f=$this->filtros(['firma_fuente'=>'manual','responsable'=>'Nombre falso','identificacion_responsable'=>'999','firma_imagen'=>'imagen falsa']);
+        $r=$s->previsualizar(1,5,$f)[0];$datos=$r['datos']['filtros'];
+        $this->assertSame('Proveedor A',$datos['responsable']);$this->assertEquals('12310',$datos['identificacion_responsable']);
+        $this->assertSame('Contador',$datos['titulo_responsable']);$this->assertStringStartsWith('data:image/png;base64,',$datos['firma_imagen']);
+        $pdf=$s->emitir($r['token'],1,5);$this->assertSame('%PDF',substr($pdf['bytes'],0,4));
+        $this->assertContains('Contador',$pdf['registro']->html);$this->assertNotContains('Nombre falso',$pdf['registro']->html);
+        $s->enviar($r['token'],1,5);$this->assertSame('Enviado',DB::table('contab_certificados_envios')->value('estado'));
+    }
+
+    public function test_rechaza_firmas_ajenas_inactivas_y_archivos_ausentes()
+    {
+        $s=new CertificadosRetencionesService;
+        foreach([3,4,5,999] as $id){
+            try{$s->previsualizar(1,5,$this->filtros(['firma_autorizada_id'=>$id]));$this->fail('Aceptó firma no autorizada');}
+            catch(InvalidArgumentException $e){$this->assertContains('firma autorizada activa',$e->getMessage());}
+        }
+        DB::table('core_firmas_autorizadas')->where('id',1)->update(['imagen'=>'no_existe.png']);
+        foreach(['manual','ica'] as $modo){
+            $extra=['firma_fuente'=>'manual'];
+            if($modo==='ica'){$extra=['firma_fuente'=>'computador','tipo_impuesto'=>'ICA','codigo_municipio'=>'20001','municipio'=>'Valledupar','norma_ica'=>'Acuerdo municipal'];}
+            try{$s->previsualizar(1,5,$this->filtros($extra));$this->fail('Aceptó archivo inexistente');}
+            catch(InvalidArgumentException $e){$this->assertContains('imagen de firma adjunta',$e->getMessage());}
+        }
+        $r=$s->previsualizar(1,5,$this->filtros(['firma_autorizada_id'=>2]))[0];
+        $this->assertSame('',$r['datos']['filtros']['firma_imagen']);
+        $this->assertSame(1,DB::table('contab_certificados_retenciones')->count());
+    }
+
+    public function test_cambio_de_firma_impide_emision_y_conserva_pdf_emitido()
+    {
+        $s=new CertificadosRetencionesService;$r=$s->previsualizar(1,5,$this->filtros())[0];
+        DB::table('core_firmas_autorizadas')->where('id',1)->update(['titulo_tercero'=>'Otro cargo']);
+        try{$s->emitir($r['token'],1,5);$this->fail('Emitió con firma desactualizada');}
+        catch(InvalidArgumentException $e){$this->assertContains('firma autorizada cambió',$e->getMessage());}
+        $r=$s->previsualizar(1,5,$this->filtros())[0];$pdf=$s->emitir($r['token'],1,5);
+        DB::table('core_firmas_autorizadas')->where('id',1)->update(['estado'=>'Inactivo']);
+        $this->assertSame($pdf['bytes'],$s->emitir($r['token'],1,5)['bytes']);
     }
 
     public function test_anulacion_posterior_exige_nueva_previsualizacion_y_no_emite()

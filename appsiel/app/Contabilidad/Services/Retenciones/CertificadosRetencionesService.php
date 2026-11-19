@@ -9,6 +9,7 @@ class CertificadosRetencionesService
 {
     public function previsualizar($empresaId, $usuarioId, array $filtros)
     {
+        $filtros=array_merge($filtros,(new FirmaCertificadosService)->resolver($empresaId,$filtros));
         $datos = (new DatosCertificadosService)->generar($empresaId, $filtros);
         return DB::transaction(function () use ($empresaId, $usuarioId, $datos, $filtros) {
             $salida = [];
@@ -58,6 +59,12 @@ class CertificadosRetencionesService
                 $bytes = Storage::disk('local')->get($r->pdf_path);
                 if (hash('sha256', $bytes) !== $r->pdf_sha256) { throw new \RuntimeException('El PDF archivado no pasó la verificación de integridad.'); }
                 return ['registro'=>$r, 'bytes'=>$bytes, 'nombre'=>$this->nombre($r)];
+            }
+            $firma=(new FirmaCertificadosService)->resolver($empresaId,$c['filtros']);
+            foreach ($firma as $campo=>$valor) {
+                if (!array_key_exists($campo,$c['filtros']) || $c['filtros'][$campo]!=$valor) {
+                    throw new \InvalidArgumentException('La firma autorizada cambió. Genere una nueva previsualización.');
+                }
             }
             // Una anulación o corrección posterior a la consulta exige una nueva previsualización.
             $f=$c['filtros']; $f['tercero_id']=$r->core_tercero_id; $f['grupo_id']='';
@@ -117,7 +124,7 @@ class CertificadosRetencionesService
         $email = trim(isset($c['tercero']['email']) ? $c['tercero']['email'] : '');
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { throw new \InvalidArgumentException('El proveedor no tiene un correo válido. Corríjalo y genere una nueva previsualización.'); }
         if (($c['filtros']['tipo_impuesto']==='ICA' || $c['filtros']['firma_fuente']==='manual') && empty($c['filtros']['firma_imagen'])) {
-            throw new \InvalidArgumentException('Adjunte la firma del responsable y genere una nueva previsualización antes de enviar.');
+            throw new \InvalidArgumentException('Actualice la imagen de la firma autorizada en el catálogo y genere una nueva previsualización antes de enviar.');
         }
         $pdf = $this->emitir($token, $empresaId, $usuarioId);
         $envioId = DB::transaction(function () use ($r, $usuarioId, $email) {

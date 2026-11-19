@@ -1,8 +1,8 @@
 @extends('layouts.principal')
 @section('estilos_1')
 <style>
-#cert-tercero .custom-combobox { width: calc(100% - 24px); }
-#cert-tercero .custom-combobox-input { width: 100%; box-sizing: border-box; }
+#cert-tercero .custom-combobox, #cert-firma-autorizada .custom-combobox { width: calc(100% - 24px); }
+#cert-tercero .custom-combobox-input, #cert-firma-autorizada .custom-combobox-input { width: 100%; box-sizing: border-box; }
 .cert-tercero-opciones { max-height: 280px; overflow-y: auto; overflow-x: hidden; }
 </style>
 @endsection
@@ -25,10 +25,10 @@
 <div class="col-md-3"><label>Compras incluidas</label><select name="compras" class="form-control"><option value="retenidas">Documentos con retención</option><option value="todas">Todas, incluso sin retención</option></select></div>
 </div>
 <div class="row"><div class="col-md-4"><label>Ciudad donde se consignó la retención</label><input name="ciudad_consignacion" maxlength="150" class="form-control" required></div>
-<div class="col-md-4"><label>Responsable del certificado</label><input name="responsable" maxlength="150" class="form-control" required></div>
-<div class="col-md-4"><label>Identificación del responsable</label><input name="identificacion_responsable" maxlength="50" class="form-control" required></div></div>
+<div class="col-md-8" id="cert-firma-autorizada"><label for="cert-firma-busqueda">Firma autorizada</label><select name="firma_autorizada_id" id="cert-firma-id" class="form-control combobox"><option value="">Seleccione</option>@foreach($firmas as $firma)<option value="{{ $firma->id }}">{{ $firma->descripcion }} ({{ $firma->numero_identificacion }}) — {{ $firma->titulo_tercero }}</option>@endforeach</select>
+<small>El nombre, la identificación y la imagen se toman del catálogo de firmas autorizadas. Para firma manual e ICA debe tener una firma adjunta.</small></div></div>
 <div class="row"><div class="col-md-4"><label>Firma para Retefuente</label><select name="firma_fuente" class="form-control"><option value="manual">Firma del responsable</option><option value="computador">Generado por computador (retenedor persona jurídica)</option></select></div>
-<div class="col-md-4"><label>Firma del responsable (PNG/JPG, hasta 2 MB)</label><input type="file" name="firma" accept="image/png,image/jpeg"><small>Para enviar ICA o Retefuente con firma manual debe adjuntar la firma.</small></div></div>
+</div>
 <fieldset id="cert-ica"><legend>Jurisdicción de ICA</legend><div class="row">
 <div class="col-md-3"><label>Código DANE</label><input name="codigo_municipio" pattern="[0-9]{5}" maxlength="5" class="form-control"></div>
 <div class="col-md-3"><label>Municipio</label><input name="municipio" maxlength="150" class="form-control"></div>

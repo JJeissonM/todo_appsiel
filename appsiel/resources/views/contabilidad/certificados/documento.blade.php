@@ -46,7 +46,7 @@ Ciudad de consignación de la retención: {{ $c['filtros']['ciudad_consignacion'
 <div class="firma">
 @if(!empty($c['filtros']['firma_imagen']))<img src="{{ $c['filtros']['firma_imagen'] }}" style="max-width:180px;max-height:70px;"><br>
 @elseif($c['filtros']['tipo_impuesto']==='ICA' || $c['filtros']['firma_fuente']==='manual')<p>__________________________________<br>Firma del agente retenedor — requiere firma antes de su entrega.</p>@endif
-<strong>{{ $c['filtros']['responsable'] }}</strong><br>Identificación: {{ $c['filtros']['identificacion_responsable'] }}<br>Responsable del certificado
+<strong>{{ $c['filtros']['responsable'] }}</strong><br>Identificación: {{ $c['filtros']['identificacion_responsable'] }}<br>{{ !empty($c['filtros']['titulo_responsable']) ? $c['filtros']['titulo_responsable'] : 'Responsable del certificado' }}
 </div>
 @if($c['filtros']['tipo_impuesto']==='FUENTE')
 <p>Certificación de otros conceptos conforme al artículo 381 del Estatuto Tributario.

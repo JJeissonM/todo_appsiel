@@ -11,8 +11,8 @@ class FiltrosCertificados
         $f = array_merge(['periodo'=>'anual', 'anio'=>date('Y'), 'bimestre'=>1,
             'tipo_impuesto'=>'FUENTE', 'compras'=>'retenidas', 'tercero_id'=>'', 'grupo_id'=>'',
             'codigo_municipio'=>'', 'municipio'=>'', 'confirmar_municipio'=>0,
-            'ciudad_consignacion'=>'', 'responsable'=>'', 'identificacion_responsable'=>'',
-            'norma_ica'=>'', 'firma_fuente'=>'manual', 'firma_imagen'=>''], $entrada);
+            'ciudad_consignacion'=>'', 'firma_autorizada_id'=>'',
+            'norma_ica'=>'', 'firma_fuente'=>'manual'], $entrada);
         foreach (['confirmar_municipio'=>0, 'tercero_id'=>'', 'grupo_id'=>''] as $campo=>$defecto) {
             if ($f[$campo] === null || $f[$campo] === '') { $f[$campo]=$defecto; }
         }
@@ -20,8 +20,8 @@ class FiltrosCertificados
             'periodo'=>'required|in:anual,bimestral,fechas', 'anio'=>'required|integer|between:2000,2100',
             'bimestre'=>'required|integer|between:1,6', 'tipo_impuesto'=>'required|in:FUENTE,ICA',
             'compras'=>'required|in:todas,retenidas', 'tercero_id'=>'integer|min:1', 'grupo_id'=>'integer|min:1',
-            'ciudad_consignacion'=>'required|max:150', 'responsable'=>'required|max:150',
-            'identificacion_responsable'=>'required|max:50', 'firma_fuente'=>'required|in:manual,computador',
+            'ciudad_consignacion'=>'required|max:150', 'firma_autorizada_id'=>'required|integer|min:1',
+            'firma_fuente'=>'required|in:manual,computador',
             'codigo_municipio'=>'required_if:tipo_impuesto,ICA|regex:/^[0-9]{5}$/',
             'municipio'=>'required_if:tipo_impuesto,ICA|max:150', 'norma_ica'=>'required_if:tipo_impuesto,ICA|max:250',
             'confirmar_municipio'=>'in:0,1',

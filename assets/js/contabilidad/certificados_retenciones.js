@@ -4,21 +4,21 @@
         var form = $('#cert-filtros'), enviando = false;
         var base = form.attr('action').replace(/\/previsualizar$/, '');
         var tercero = $('#cert-tercero-id');
-        tercero.combobox();
-        var busquedaTercero = tercero.combobox('instance').input;
-        busquedaTercero.attr({id: 'cert-tercero-busqueda', placeholder: 'Buscar por nombre o identificación', autocomplete: 'off'}).addClass('form-control');
-        busquedaTercero.autocomplete('widget').addClass('cert-tercero-opciones');
-        busquedaTercero.on('input', function () {
-            tercero.val('');
-            this.setCustomValidity('Seleccione un tercero de las sugerencias.');
-        });
-        busquedaTercero.on('autocompletechange', function () {
-            this.setCustomValidity(tercero.val() && this.value === tercero.find(':selected').text() ? '' : 'Seleccione un tercero de las sugerencias.');
-        });
-        tercero.on('comboboxselect', function () {
-            busquedaTercero[0].setCustomValidity('');
-            form.trigger('change');
-        });
+        function autocompleteCatalogo(select, id, mensaje) {
+            select.combobox();
+            var input = select.combobox('instance').input;
+            input.attr({id: id, placeholder: 'Buscar por nombre o identificación', autocomplete: 'off'}).addClass('form-control');
+            input.autocomplete('widget').addClass('cert-tercero-opciones');
+            input.on('input', function () { select.val(''); this.setCustomValidity(mensaje); });
+            input.on('autocompletechange', function () {
+                this.setCustomValidity(select.val() && this.value === select.find(':selected').text() ? '' : mensaje);
+            });
+            select.on('comboboxselect', function () { input[0].setCustomValidity(''); form.trigger('change'); });
+            return input;
+        }
+        var busquedaTercero = autocompleteCatalogo(tercero, 'cert-tercero-busqueda', 'Seleccione un tercero de las sugerencias.');
+        var firma = $('#cert-firma-id');
+        var busquedaFirma = autocompleteCatalogo(firma, 'cert-firma-busqueda', 'Seleccione una firma autorizada de las sugerencias.').prop('required', true);
         function opciones() {
             var periodo = $('#cert-periodo').val(), ica = $('#cert-impuesto').val() === 'ICA';
             $('#cert-bimestre').toggle(periodo === 'bimestral');
@@ -38,6 +38,11 @@
         form.on('submit', function (event) {
             event.preventDefault();
             if (enviando) { return; }
+            if (!firma.val() || busquedaFirma.val() !== firma.find(':selected').text()) {
+                busquedaFirma[0].setCustomValidity('Seleccione una firma autorizada de las sugerencias.');
+                busquedaFirma[0].reportValidity();
+                return;
+            }
             if ($('#cert-alcance').val() === 'tercero' && (!tercero.val() || busquedaTercero.val() !== tercero.find(':selected').text())) {
                 busquedaTercero[0].setCustomValidity('Seleccione un tercero de las sugerencias.');
                 busquedaTercero[0].reportValidity();

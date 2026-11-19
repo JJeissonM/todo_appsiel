@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Contabilidad;
 use App\Http\Controllers\Controller;
 use App\Contabilidad\Services\Retenciones\FiltrosCertificados;
 use App\Contabilidad\Services\Retenciones\CertificadosRetencionesService;
+use App\Contabilidad\Services\Retenciones\FirmaCertificadosService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,8 @@ class CertificadosRetencionesController extends Controller
         $historial=DB::table('contab_certificados_retenciones AS c')->join('core_terceros AS t','t.id','=','c.core_tercero_id')
             ->where('c.core_empresa_id',$empresaId)->where('c.user_id',Auth::id())->where('c.estado','Emitido')
             ->orderBy('c.id','desc')->take(50)->select('c.*','t.descripcion AS proveedor')->get();
-        return view('contabilidad.certificados.index',compact('terceros','grupos','historial'));
+        $firmas=(new FirmaCertificadosService)->opciones($empresaId);
+        return view('contabilidad.certificados.index',compact('terceros','grupos','historial','firmas'));
     }
 
     public function previsualizar(Request $request)
@@ -36,17 +38,9 @@ class CertificadosRetencionesController extends Controller
         $this->autorizar();
         try {
             $campos=['periodo','anio','bimestre','fecha_desde','fecha_hasta','tipo_impuesto','compras','tercero_id','grupo_id',
-                'codigo_municipio','municipio','confirmar_municipio','ciudad_consignacion','responsable',
-                'identificacion_responsable','norma_ica','firma_fuente'];
+                'codigo_municipio','municipio','confirmar_municipio','ciudad_consignacion','firma_autorizada_id',
+                'norma_ica','firma_fuente'];
             $f=FiltrosCertificados::normalizar($request->only($campos));
-            if ($request->hasFile('firma')) {
-                $archivo=$request->file('firma');
-                $info=$archivo->isValid() ? @getimagesize($archivo->getRealPath()) : false;
-                if (!$info || !in_array($info['mime'],['image/png','image/jpeg']) || $archivo->getSize()>2097152 || $info[0]>3000 || $info[1]>3000) {
-                    throw new \InvalidArgumentException('La firma debe ser PNG o JPG, hasta 2 MB y 3000 × 3000 píxeles.');
-                }
-                $f['firma_imagen']='data:'.$info['mime'].';base64,'.base64_encode(file_get_contents($archivo->getRealPath()));
-            }
             if ($f['tercero_id'] && !DB::table('core_terceros')->where('core_empresa_id',Auth::user()->empresa_id)->where('id',$f['tercero_id'])->exists()) { abort(403); }
             if ($f['grupo_id'] && !DB::table('compras_proveedores AS p')->join('core_terceros AS t','t.id','=','p.core_tercero_id')
                 ->where('t.core_empresa_id',Auth::user()->empresa_id)->where('p.clase_proveedor_id',$f['grupo_id'])->exists()) { abort(403); }
