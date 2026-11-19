@@ -3,6 +3,22 @@
     $(function () {
         var form = $('#cert-filtros'), enviando = false;
         var base = form.attr('action').replace(/\/previsualizar$/, '');
+        var tercero = $('#cert-tercero-id');
+        tercero.combobox();
+        var busquedaTercero = tercero.combobox('instance').input;
+        busquedaTercero.attr({id: 'cert-tercero-busqueda', placeholder: 'Buscar por nombre o identificación', autocomplete: 'off'}).addClass('form-control');
+        busquedaTercero.autocomplete('widget').addClass('cert-tercero-opciones');
+        busquedaTercero.on('input', function () {
+            tercero.val('');
+            this.setCustomValidity('Seleccione un tercero de las sugerencias.');
+        });
+        busquedaTercero.on('autocompletechange', function () {
+            this.setCustomValidity(tercero.val() && this.value === tercero.find(':selected').text() ? '' : 'Seleccione un tercero de las sugerencias.');
+        });
+        tercero.on('comboboxselect', function () {
+            busquedaTercero[0].setCustomValidity('');
+            form.trigger('change');
+        });
         function opciones() {
             var periodo = $('#cert-periodo').val(), ica = $('#cert-impuesto').val() === 'ICA';
             $('#cert-bimestre').toggle(periodo === 'bimestral');
@@ -10,7 +26,9 @@
             $('#cert-ica').toggle(ica).find('input').prop('disabled', !ica);
             $('#cert-ica input:not([type=checkbox])').prop('required', ica);
             var alcance = $('#cert-alcance').val();
-            $('#cert-tercero').toggle(alcance === 'tercero').find('select').prop('disabled', alcance !== 'tercero').prop('required', alcance === 'tercero');
+            $('#cert-tercero').toggle(alcance === 'tercero');
+            tercero.prop('disabled', alcance !== 'tercero').prop('required', false);
+            busquedaTercero.prop('disabled', alcance !== 'tercero').prop('required', alcance === 'tercero');
             $('#cert-grupo').toggle(alcance === 'grupo').find('select').prop('disabled', alcance !== 'grupo').prop('required', alcance === 'grupo');
         }
         $('#cert-periodo,#cert-impuesto,#cert-alcance').on('change', opciones);
@@ -20,6 +38,11 @@
         form.on('submit', function (event) {
             event.preventDefault();
             if (enviando) { return; }
+            if ($('#cert-alcance').val() === 'tercero' && (!tercero.val() || busquedaTercero.val() !== tercero.find(':selected').text())) {
+                busquedaTercero[0].setCustomValidity('Seleccione un tercero de las sugerencias.');
+                busquedaTercero[0].reportValidity();
+                return;
+            }
             $('#cert-error').hide(); $('#cert-resultados').empty();
             $('#cert-previsualizar').prop('disabled', true); $('#cert-cargando').text('Consultando operaciones…');
             $.ajax({url: form.attr('action'), type: 'POST', data: new FormData(form[0]), processData: false, contentType: false})

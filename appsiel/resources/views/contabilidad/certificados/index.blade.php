@@ -1,4 +1,11 @@
 @extends('layouts.principal')
+@section('estilos_1')
+<style>
+#cert-tercero .custom-combobox { width: calc(100% - 24px); }
+#cert-tercero .custom-combobox-input { width: 100%; box-sizing: border-box; }
+.cert-tercero-opciones { max-height: 280px; overflow-y: auto; overflow-x: hidden; }
+</style>
+@endsection
 @section('content')
 <div class="container-fluid"><h2>Certificados de Retefuente e ICA</h2>
 <p>Retefuente: certificado anual de otros conceptos o parcial a solicitud del beneficiario. ICA: seleccione la jurisdicción y su norma municipal. Esta opción certifica compras; los certificados laborales se tramitan en Nómina.</p>
@@ -13,7 +20,7 @@
 <div class="row" id="cert-fechas"><div class="col-md-3"><label>Desde</label><input type="date" name="fecha_desde" class="form-control"></div><div class="col-md-3"><label>Hasta</label><input type="date" name="fecha_hasta" class="form-control"></div></div>
 <div class="row">
 <div class="col-md-3"><label>Proveedores</label><select id="cert-alcance" class="form-control"><option value="todos">Todos con operaciones</option><option value="tercero">Un tercero</option><option value="grupo">Grupo de proveedores</option></select></div>
-<div class="col-md-3" id="cert-tercero"><label>Tercero</label><select name="tercero_id" class="form-control"><option value="">Seleccione</option>@foreach($terceros as $t)<option value="{{ $t->id }}">{{ $t->descripcion }} ({{ $t->numero_identificacion }})</option>@endforeach</select></div>
+<div class="col-md-3" id="cert-tercero"><label for="cert-tercero-busqueda">Tercero</label><select name="tercero_id" id="cert-tercero-id" class="form-control combobox"><option value="">Seleccione</option>@foreach($terceros as $t)<option value="{{ $t->id }}">{{ $t->descripcion }} ({{ $t->numero_identificacion }})</option>@endforeach</select></div>
 <div class="col-md-3" id="cert-grupo"><label>Grupo (clase de proveedor)</label><select name="grupo_id" class="form-control"><option value="">Seleccione</option>@foreach($grupos as $g)<option value="{{ $g->id }}">{{ $g->descripcion }}</option>@endforeach</select></div>
 <div class="col-md-3"><label>Compras incluidas</label><select name="compras" class="form-control"><option value="retenidas">Documentos con retención</option><option value="todas">Todas, incluso sin retención</option></select></div>
 </div>
