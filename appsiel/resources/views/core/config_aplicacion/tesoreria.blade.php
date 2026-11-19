@@ -216,7 +216,7 @@
 					</div>
 				</div>
 
-				<h4> Impresion APM </h4>
+				<h4> Impresión de pagos CxP </h4>
 				<hr>
 
 				<div class="row">
@@ -243,7 +243,11 @@
 									$apm_printer_id_pago_cxp = $parametros['apm_printer_id_pago_cxp'];
 								}
 							?>
-							{{ Form::bsText('apm_printer_id_pago_cxp', $apm_printer_id_pago_cxp, 'APM PrinterId pagos CxP', ['class'=>'form-control']) }}
+							@if( \App\Ventas\Services\ApmAvailability::enabled() )
+								{{ Form::bsText('apm_printer_id_pago_cxp', $apm_printer_id_pago_cxp, 'APM PrinterId pagos CxP', ['class'=>'form-control']) }}
+							@else
+								{{ Form::hidden('apm_printer_id_pago_cxp', $apm_printer_id_pago_cxp) }}
+							@endif
 						</div>
 					</div>
 

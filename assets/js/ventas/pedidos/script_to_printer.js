@@ -1,5 +1,11 @@
 ﻿$(document).ready(function() {
 
+    var metodo_impresion_pedido = $('#metodo_impresion_pedido_ventas').val() || 'normal';
+    if ( metodo_impresion_pedido == 'jspm' && window.JSPM ) {
+        JSPM.JSPrintManager.auto_reconnect = true;
+        JSPM.JSPrintManager.start();
+    }
+
     $("#btn_imprimir_en_cocina").on('click',function(event){
         event.preventDefault();
 
@@ -20,6 +26,22 @@
                         text: error && error.ErrorMessage ? error.ErrorMessage : 'No fue posible enviar el pedido a APM.'
                     });
                 });
+        } else if ( metodo_impresion_pedido == 'jspm' ) {
+            print_comanda_jspm()
+                .then(function () {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Muy bien!',
+                        text: 'Pedido enviado a la impresora de COCINA.'
+                    });
+                })
+                .catch(function (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: error.message || 'No fue posible enviar el pedido a JSPrintManager.'
+                    });
+                });
         } else {
             if ( typeof ventana_imprimir === 'function' ) {
                 ventana_imprimir();
@@ -30,6 +52,62 @@
     });
     
 });
+
+function print_comanda_jspm() {
+    if ( !window.JSPM || JSPM.JSPrintManager.websocket_status !== JSPM.WSStatus.Open ) {
+        return Promise.reject(new Error('JSPrintManager no está conectado. Verifique que JSPM Client App esté instalado y ejecutándose, y que permita el acceso a este sitio.'));
+    }
+
+    var impresora = $('#impresora_cocina_por_defecto').val();
+    if ( !impresora ) {
+        return Promise.reject(new Error('Configure la impresora de cocina en Ventas POS.'));
+    }
+
+    return Promise.resolve().then(function () {
+        var cpj = new JSPM.ClientPrintJob();
+        cpj.clientPrinter = new JSPM.InstalledPrinter(impresora);
+        cpj.binaryPrinterCommands = crear_comanda_jspm_pedido_ventas();
+        return cpj.sendToClient();
+    });
+}
+
+function crear_comanda_jspm_pedido_ventas() {
+    var escpos = Neodynamic.JSESCPOSBuilder;
+    var doc = new escpos.Document();
+    var lineas = '\n  CANT.        ITEM\n______________________________\n';
+    var cantidad_items = 0;
+
+    $('.linea_registro').each(function () {
+        var nombre = $(this).find('.lbl_producto_descripcion').text().trim();
+        lineas += $(this).find('.cantidad').text().trim() + ' - ' + nombre.substring(0, 20) + '\n';
+        for (var inicio = 20; inicio < nombre.length; inicio += 20) {
+            lineas += ' ' + nombre.substring(inicio, inicio + 20) + '\n';
+        }
+        lineas += '\n';
+        cantidad_items++;
+    });
+
+    lineas += 'Detalle: ' + $('#lbl_descripcion_doc_encabezado').val() + '\n\n';
+    lineas += '# TOTAL ITEMS: ' + cantidad_items + '\n';
+    lineas += 'VENTA TOTAL: ' + $('#lbl_total_factura').val() + '\n';
+
+    return doc
+        .beep(3, 2)
+        .font(escpos.FontFamily.A)
+        .align(escpos.TextAlignment.Center)
+        .style([escpos.FontStyle.Bold])
+        .size(0, 1)
+        .text('PEDIDO # ' + $('#lbl_consecutivo_doc_encabezado').val())
+        .text('F. ' + $('#lbl_fecha').val())
+        .text($('#lbl_cliente_descripcion').val())
+        .text('Atiende: ' + $('#nombre_vendedor').val())
+        .font(escpos.FontFamily.B)
+        .size(1, parseFloat($('#tamanio_letra_impresion_items_cocina').val()) || 0)
+        .text(lineas)
+        .feed(5)
+        .cut()
+        .generateUInt8Array();
+}
 
 function print_comanda_apm() {
     if ( !window.APM_CLIENT || typeof window.APM_CLIENT.enqueuePrintJob !== 'function' ) {

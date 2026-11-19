@@ -27,8 +27,14 @@ class Menu extends Model
 
     public function optionsMenu($core_app_id)
     {
-        return $this->where('enabled', 1)
-            ->where('core_app_id', $core_app_id)
+        $query = $this->where('enabled', 1)
+            ->where('core_app_id', $core_app_id);
+
+        if (!\App\Ventas\Services\ApmAvailability::enabled()) {
+            $query->where('name', 'NOT LIKE', '%apm%');
+        }
+
+        return $query
             ->orderby('parent')
             ->orderby('orden')
             ->orderby('name')

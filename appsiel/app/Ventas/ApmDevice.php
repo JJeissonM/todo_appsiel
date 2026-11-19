@@ -120,6 +120,10 @@ class ApmDevice extends Model
 
     public static function activeOptions($deviceType = null)
     {
+        if (!\App\Ventas\Services\ApmAvailability::enabled()) {
+            return ['' => ''];
+        }
+
         $query = self::where('estado', 'Activo')->orderBy('device_name')->orderBy('device_id');
 
         if (!is_null($deviceType)) {
@@ -136,6 +140,10 @@ class ApmDevice extends Model
 
     public static function frontConfigByDeviceIds(array $deviceIds)
     {
+        if (!\App\Ventas\Services\ApmAvailability::enabled()) {
+            return [];
+        }
+
         $deviceIds = array_filter(array_unique($deviceIds));
 
         if (empty($deviceIds)) {

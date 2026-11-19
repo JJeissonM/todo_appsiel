@@ -1,3 +1,4 @@
+<?php if (!\App\Ventas\Services\ApmAvailability::enabled()) { abort(404); } ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

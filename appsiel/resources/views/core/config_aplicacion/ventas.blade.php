@@ -165,7 +165,7 @@
 
 				</div>
 
-				<h4> Método de impresión (APM) </h4>
+				<h4> Métodos de impresión </h4>
 				<hr>
 
 				<div class="row">
@@ -179,7 +179,11 @@
 									$apm_ws_url = $parametros['apm_ws_url'];
 								}
 							?>
-							{{ Form::bsText('apm_ws_url', $apm_ws_url, 'APM WebSocket URL', ['class'=>'form-control']) }}
+							@if( \App\Ventas\Services\ApmAvailability::enabled() )
+								{{ Form::bsText('apm_ws_url', $apm_ws_url, 'APM WebSocket URL', ['class'=>'form-control']) }}
+							@else
+								{{ Form::hidden('apm_ws_url', $apm_ws_url) }}
+							@endif
 						</div>
 					</div>
 

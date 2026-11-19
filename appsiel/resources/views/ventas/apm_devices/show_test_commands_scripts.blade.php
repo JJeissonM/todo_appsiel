@@ -1,5 +1,5 @@
-@if($registro->device_type == 'printer')
-    <script src="{{ asset('assets/js/apm/client.js') }}"></script>
+@if(\App\Ventas\Services\ApmAvailability::enabled() && $registro->device_type == 'printer')
+    @include('ventas.apm_scripts')
     <script>
         (function (global) {
             function notify(type, title, text) {

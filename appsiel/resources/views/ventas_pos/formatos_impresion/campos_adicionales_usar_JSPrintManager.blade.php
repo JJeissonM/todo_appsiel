@@ -1,3 +1,4 @@
+<input type="hidden" id="usar_complemento_JSPrintManager" value="{{ $params_JSPrintManager->usar_complemento_JSPrintManager }}">
 <input type="hidden" id="enviar_impresion_directamente_a_la_impresora" name="enviar_impresion_directamente_a_la_impresora" value="{{ $params_JSPrintManager->enviar_impresion_directamente_a_la_impresora }}">
 
 <input type="hidden" id="imprimir_factura_automaticamente" name="imprimir_factura_automaticamente" value="{{ $params_JSPrintManager->imprimir_factura_automaticamente }}">

@@ -1,4 +1,17 @@
 
+$(document).ready(function () {
+    if (pos_usar_jspm_cocina() && window.JSPM) {
+        JSPM.JSPrintManager.auto_reconnect = true;
+        JSPM.JSPrintManager.start();
+    }
+});
+
+function pos_usar_jspm_cocina()
+{
+    return $('#metodo_impresion_pedido_restaurante').val() !== 'apm' &&
+        $('#usar_complemento_JSPrintManager').val() == '1';
+}
+
 function enviar_impresion( doc_encabezado )
 {
     if ( doc_encabezado == 'prefactura' ) {
@@ -424,6 +437,22 @@ function print_comanda_apm( doc_encabezado )
 //Do printing...
 function print_comanda( doc_encabezado ) 
 {
+    if (pos_usar_jspm_cocina()) {
+        return print_comanda_jspm(doc_encabezado).then(function () {
+            Swal.fire({
+                icon: 'info',
+                title: 'Impresión enviada',
+                text: 'Comanda ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' enviada a la cocina por JSPrintManager.'
+            });
+        }).catch(function (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de impresión en cocina',
+                text: error.message || 'No fue posible enviar la comanda a JSPrintManager.'
+            });
+        });
+    }
+
     var url = url_raiz + '/sys_send_printing_to_server'
 
     var data = crear_string_json_para_envio_servidor_impresion_comanda( doc_encabezado )
@@ -467,6 +496,66 @@ function print_comanda( doc_encabezado )
             });
         }
     });
+}
+
+function print_comanda_jspm(doc_encabezado)
+{
+    // Preparar los comandos antes de que enviar_impresion limpie el formulario.
+    try {
+        if (!window.JSPM || JSPM.JSPrintManager.websocket_status !== JSPM.WSStatus.Open) {
+            throw new Error('JSPrintManager no está conectado. Verifique que JSPM Client App esté instalado y ejecutándose, y que permita el acceso a este sitio.');
+        }
+        var impresora = $('#impresora_cocina_por_defecto').val();
+        if (!impresora) {
+            throw new Error('Configure la impresora de cocina del punto de venta.');
+        }
+        var cpj = new JSPM.ClientPrintJob();
+        cpj.clientPrinter = new JSPM.InstalledPrinter(impresora);
+        cpj.binaryPrinterCommands = crear_comanda_jspm_pos(doc_encabezado);
+        return Promise.resolve(cpj.sendToClient());
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
+function crear_comanda_jspm_pos(doc_encabezado)
+{
+    var escpos = Neodynamic.JSESCPOSBuilder;
+    var doc = new escpos.Document();
+    var lineas = '\n  CANT.        ITEM\n______________________________\n';
+    var cantidad_items = 0;
+    $('.linea_registro').each(function () {
+        var nombre = $(this).find('.lbl_producto_descripcion').text().trim();
+        lineas += $(this).find('.cantidad').text().trim() + ' - ' + nombre.substring(0, 20) + '\n';
+        for (var inicio = 20; inicio < nombre.length; inicio += 20) {
+            lineas += ' ' + nombre.substring(inicio, inicio + 20) + '\n';
+        }
+        var notas = $(this).find('.lbl_observaciones').text().trim();
+        if (notas) {
+            lineas += 'Obs: ' + notas + '\n';
+        }
+        lineas += '\n';
+        cantidad_items++;
+    });
+    lineas += 'Detalle: ' + (doc_encabezado.doc_encabezado_descripcion || '') + '\n';
+    lineas += '# TOTAL ITEMS: ' + cantidad_items + '\n';
+    lineas += 'VENTA TOTAL: ' + ($('#valor_total_factura').val() || '') + '\n';
+
+    return doc.beep(3, 2)
+        .font(escpos.FontFamily.A)
+        .align(escpos.TextAlignment.Center)
+        .style([escpos.FontStyle.Bold])
+        .size(0, 1)
+        .text('COMANDA ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo)
+        .text('F. ' + doc_encabezado.doc_encabezado_fecha)
+        .text(doc_encabezado.doc_encabezado_tercero_nombre_completo || '')
+        .text('Atiende: ' + (doc_encabezado.doc_encabezado_vendedor_descripcion || ''))
+        .font(escpos.FontFamily.B)
+        .size(1, parseFloat($('#tamanio_letra_impresion_items_cocina').val()) || 0)
+        .text(lineas)
+        .feed(5)
+        .cut()
+        .generateUInt8Array();
 }
 
 function crear_payload_apm_comanda( doc_encabezado )

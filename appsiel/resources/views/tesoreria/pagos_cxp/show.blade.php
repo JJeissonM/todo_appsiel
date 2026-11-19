@@ -76,7 +76,7 @@
         <input type="hidden" id="pago_cxp_core_tipo_doc_app_id" value="{{ $doc_encabezado->core_tipo_doc_app_id }}">
         <input type="hidden" id="pago_cxp_consecutivo" value="{{ $doc_encabezado->consecutivo }}">
 
-        <script src="{{ asset('assets/js/apm/client.js?aux=' . uniqid()) }}"></script>
+        @include('ventas.apm_scripts')
         <script src="{{ asset('assets/js/tesoreria/pagos_cxp_apm.js?aux=' . uniqid()) }}"></script>
     @endif
 @endsection

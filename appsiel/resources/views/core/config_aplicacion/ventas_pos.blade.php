@@ -240,7 +240,7 @@
 					</div>
 				</div>
 
-				<h4> Appsiel Print Manager (APM) - Báscula </h4>
+				<h4> Integración de báscula </h4>
 				<hr>
 
 				<div class="row">
@@ -266,7 +266,11 @@
 									$apm_scale_id_pos = $parametros['apm_scale_id_pos'];
 								}
 							?>
-							{{ Form::bsSelect('apm_scale_id_pos', $apm_scale_id_pos, 'Báscula APM para POS', App\Ventas\ApmDevice::scaleOptions(), ['class'=>'form-control']) }}
+							@if( \App\Ventas\Services\ApmAvailability::enabled() )
+								{{ Form::bsSelect('apm_scale_id_pos', $apm_scale_id_pos, 'Báscula APM para POS', App\Ventas\ApmDevice::scaleOptions(), ['class'=>'form-control']) }}
+							@else
+								{{ Form::hidden('apm_scale_id_pos', $apm_scale_id_pos) }}
+							@endif
 						</div>
 					</div>
 				</div>

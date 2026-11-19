@@ -12,6 +12,7 @@ const context = {
     serialize() { return values['#uniqid']; }
   }),
   pos_get_manejo_recargos_flags: () => ({}),
+  pos_serializar_formulario_factura: () => values['#uniqid'],
   pos_validar_y_recalcular_lineas_registros: () => true,
   get_json_registros_medios_recaudo: () => '[]',
   update_uniqid: () => { values['#uniqid'] = 'nueva-' + ++generated; },

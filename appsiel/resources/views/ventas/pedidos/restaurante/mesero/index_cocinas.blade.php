@@ -48,7 +48,7 @@
     @endif
 </div>
 
-<script src="{{ asset( 'assets/js/apm/client.js?aux=' . uniqid() )}}"></script>
+@include('ventas.apm_scripts')
 <script type="text/javascript">
     (function () {
         var apm_modal_open = false;

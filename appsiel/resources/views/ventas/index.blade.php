@@ -84,9 +84,11 @@
 	<input type="hidden" id="metodo_impresion_pedido_restaurante" value="{{ config('ventas.metodo_impresion_pedido_restaurante') }}">
 	<input type="hidden" id="apm_ws_url" value="{{ config('ventas.apm_ws_url') }}">
 
-	<div id="apm_status_banner" class="alert alert-danger" style="display:{{ $apm_activo_en_alguna_config ? 'block' : 'none' }}; margin: 10px 0;">
+	@if( $apm_activo_en_alguna_config )
+	<div id="apm_status_banner" class="alert alert-danger" style="margin: 10px 0;">
 		APM no conectado. Appsiel Print Manager (APM) debe estar en linea para tomar pedidos de restaurante.
 	</div>
+	@endif
 
 	@can('vtas_bloquear_vista_index')
 		<div class="container-fluid">
@@ -319,7 +321,7 @@
 
 @section('scripts')
 	@parent
-	<script src="{{ asset( 'assets/js/apm/client.js?aux=' . uniqid() )}}"></script>
+	@include('ventas.apm_scripts')
 	<script type="text/javascript">
 		(function () {
 			if( $('#user_rol').val() == 'SupervisorCajas')
@@ -358,7 +360,9 @@
 			}
 
 			validar_apm();
-			setInterval(validar_apm, 2000);
+			if (is_apm_required()) {
+				setInterval(validar_apm, 2000);
+			}
 		})();
 	</script>
 @endsection

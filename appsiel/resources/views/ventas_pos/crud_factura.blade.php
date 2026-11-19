@@ -178,8 +178,11 @@
     <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?v=cantidad-1-' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/commons.js?v=' . $asset_v . '-pos-cantidad-1' )}}"></script>
 
-    <script src="{{ asset( 'assets/js/apm/client.js?v=' . $asset_v )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/apm_scale_listener.js?v=cantidad-1-' . $asset_v )}}"></script>
+    @include('ventas.apm_scripts')
+    @if( \App\Ventas\Services\ApmAvailability::enabled() )
+        <script src="{{ asset( 'assets/js/ventas_pos/apm_scale_listener.js?v=cantidad-1-' . $asset_v )}}"></script>
+    @endif
+    @include('ventas_pos.formatos_impresion.scripts_comanda_jspm')
     <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?v=' . $asset_v . '&aux=' . uniqid() )}}"></script>
     
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas.js?v=' . $asset_v )}}"></script>

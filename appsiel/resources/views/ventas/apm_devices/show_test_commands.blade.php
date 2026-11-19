@@ -1,4 +1,4 @@
-@if($registro->device_type == 'printer')
+@if(\App\Ventas\Services\ApmAvailability::enabled() && $registro->device_type == 'printer')
     @php
         $apmUser = Auth::user();
         $canTestApmDevice = !is_null($apmUser) && (

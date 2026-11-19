@@ -28,8 +28,11 @@ class ConfiguracionController extends ModeloController
      */
     public function index()
     {
-		$permisos = Permiso::where('core_app_id',Input::get('id'))
-                                ->where('parent',0)
+		$consulta = Permiso::where('core_app_id',Input::get('id'))->where('parent',0);
+        if (!\App\Ventas\Services\ApmAvailability::enabled()) {
+            $consulta->where('name', 'NOT LIKE', '%apm%');
+        }
+        $permisos = $consulta
                                 ->orderBy('orden','ASC')
                                 ->get();
 

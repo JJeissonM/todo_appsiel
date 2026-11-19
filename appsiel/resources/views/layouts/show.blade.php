@@ -55,7 +55,7 @@
 @endsection
 
 @section('scripts')
-	@if($registro instanceof \App\Ventas\ApmDevice)
+	@if(\App\Ventas\Services\ApmAvailability::enabled() && $registro instanceof \App\Ventas\ApmDevice)
 		@include('ventas.apm_devices.show_test_commands_scripts')
 	@endif
 

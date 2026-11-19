@@ -2,6 +2,11 @@
 	$variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion;
 
 	$user = \Illuminate\Support\Facades\Auth::user();
+	$metodo_impresion_pedido = config('ventas.metodo_impresion_pedido_ventas') ?: 'normal';
+	// Los clientes anteriores a APM habilitan JSPrintManager desde Ventas POS.
+	if ( $metodo_impresion_pedido != 'apm' && (int)config('ventas_pos.imprimir_pedidos_en_cocina') ) {
+		$metodo_impresion_pedido = 'jspm';
+	}
 ?>
 
 @extends('transaccion.show')
@@ -230,13 +235,19 @@
 
 @section('otros_scripts')
 
-	<input type="hidden" id="metodo_impresion_pedido_ventas" value="{{ config('ventas.metodo_impresion_pedido_ventas') }}">
+	<input type="hidden" id="metodo_impresion_pedido_ventas" value="{{ $metodo_impresion_pedido }}">
 	<input type="hidden" id="apm_ws_url" value="{{ config('ventas.apm_ws_url') }}">
 	<input type="hidden" id="impresora_cocina_por_defecto" value="{{ config('ventas_pos.impresora_cocina_por_defecto') }}">
 	<input type="hidden" id="apm_printer_id_pedidos_ventas" value="{{ config('ventas.apm_printer_id_pedidos_ventas') }}">
 	<input type="hidden" id="apm_devices_config" value="{{ e(json_encode(App\Ventas\ApmDevice::frontConfigByDeviceIds([config('ventas.apm_printer_id_pedidos_ventas')]))) }}">
 
-	<script src="{{ asset( 'assets/js/apm/client.js?aux=' . uniqid() )}}"></script>
+	@include('ventas.apm_scripts')
+	@if( $metodo_impresion_pedido == 'jspm' )
+		<script src="{{ asset( 'assets/js/ventas_pos/external_print/cptable.js' )}}"></script>
+		<script src="{{ asset( 'assets/js/ventas_pos/external_print/cputils.js' )}}"></script>
+		<script src="{{ asset( 'assets/js/ventas_pos/external_print/JSESCPOSBuilder.js' )}}"></script>
+		<script src="{{ asset( 'assets/js/ventas_pos/external_print/JSPrintManager.js' )}}"></script>
+	@endif
 	<script src="{{ asset( 'assets/js/ventas/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
 
 	<script type="text/javascript">

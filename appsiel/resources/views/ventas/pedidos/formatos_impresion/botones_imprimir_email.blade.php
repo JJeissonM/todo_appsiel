@@ -13,13 +13,11 @@
     {{ Form::bsBtnPrint( 'vtas_pedidos_imprimir/'.$id.$variables_url.'&formato_impresion_id=' . $default_key ) }}
     {{ Form::bsBtnEmail( 'vtas_pedidos_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=' . $default_key ) }}
 
-    @if( config('ventas.metodo_impresion_pedido_ventas') == 'apm' )
+    @if( config('ventas.metodo_impresion_pedido_ventas') == 'apm' || (int)config('ventas_pos.imprimir_pedidos_en_cocina') )
         <div class="col">
             <br><br>
             <button class="btn btn-success btn-sm" id="btn_imprimir_en_cocina"><i class="fa fa-btn fa-print"></i> Imprimir en Cocina </button>
             
-            <input type="hidden" id="impresora_cocina_por_defecto" name="impresora_cocina_por_defecto" value="{{ config('ventas_pos.impresora_cocina_por_defecto') }}">
-
             <input type="hidden" id="tamanio_letra_impresion_items_cocina" name="tamanio_letra_impresion_items_cocina" value="{{ config('ventas_pos.tamanio_letra_impresion_items_cocina') }}">
 
             <input type="hidden" id="lbl_consecutivo_doc_encabezado" value="{{ $doc_encabezado->consecutivo }}">
