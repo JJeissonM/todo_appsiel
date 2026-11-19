@@ -17,7 +17,7 @@ class RegisterRetentionCertificatesProcess extends Migration
                 $menu=$nombre==='contab_certificados_retenciones';
                 $data=['name'=>$nombre,'descripcion'=>$descripcion,'core_app_id'=>$appId,'modelo_id'=>0,
                     'url'=>'contab_certificados_retenciones','parent'=>$parent ?: 0,'orden'=>95,
-                    'enabled'=>$menu ? 1 : 0,'fa_icon'=>'file-pdf-o',
+                    'enabled'=>$menu ? 0 : 0,'fa_icon'=>'file-pdf-o',
                     'created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s')];
                 if (Schema::hasColumn('permissions','guard_name')) { $data['guard_name']='web'; }
                 $id=DB::table('permissions')->insertGetId($data);
