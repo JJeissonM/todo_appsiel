@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 
 class RetencionesReportService
 {
-    public function generar($empresaId, array $filtros)
+    public function generar($empresaId, array $filtros, $incluirAsientos = true)
     {
         $clasificador = new ClasificacionRetenciones($empresaId);
         $query = DB::table('contab_registros_retenciones AS r')
@@ -38,7 +38,9 @@ class RetencionesReportService
             'td.prefijo')
             ->orderBy('r.fecha')->orderBy('r.id')->get();
 
-        $rows = array_merge($rows, (new AsientosRetenciones)->obtener($empresaId, $filtros, $clasificador));
+        if ($incluirAsientos) {
+            $rows = array_merge($rows, (new AsientosRetenciones)->obtener($empresaId, $filtros, $clasificador));
+        }
 
         $detalle = []; $resumen = []; $terceros = []; $pendientes = []; $sinClasificar = 0; $casillas = []; $totalesDeclaracion = [];
         foreach ($rows as $row) {

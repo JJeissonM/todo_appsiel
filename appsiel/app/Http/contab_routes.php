@@ -24,6 +24,12 @@ Route::resource('contabilidad/mov','Contabilidad\ContabMovimientoController');
 Route::get('contab_get_grupos_cuentas/{clase_id}','Contabilidad\ContabilidadController@contab_get_grupos_cuentas');
 
 // REPORTES
+Route::get('contab_certificados_retenciones', 'Contabilidad\CertificadosRetencionesController@index');
+Route::post('contab_certificados_retenciones/previsualizar', 'Contabilidad\CertificadosRetencionesController@previsualizar');
+Route::post('contab_certificados_retenciones/descargar', 'Contabilidad\CertificadosRetencionesController@descargarLote');
+Route::get('contab_certificados_retenciones/{token}', 'Contabilidad\CertificadosRetencionesController@ver');
+Route::post('contab_certificados_retenciones/{token}/pdf', 'Contabilidad\CertificadosRetencionesController@pdf');
+Route::post('contab_certificados_retenciones/{token}/enviar', 'Contabilidad\CertificadosRetencionesController@enviar');
 Route::post('contab_reporte_retenciones', 'Contabilidad\RetencionesReportController@generar');
 Route::get('contab_retenciones/configuracion', 'Contabilidad\RetencionesReportController@configuracion');
 Route::post('contab_retenciones/configuracion', 'Contabilidad\RetencionesReportController@guardarConfiguracion');
