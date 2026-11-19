@@ -754,10 +754,19 @@ class ContabReportesController extends Controller
     {
         $empresa_id = Auth::user()->empresa_id;
 
-        $grupos_cuentas = ContabArbolGruposCuenta::orderBy('abuelo_id')
-                                                //->orderBy('padre_id')
-                                                //->orderBy('hijo_id')
-                                                ->get();
+        $grupos = ContabCuentaGrupo::where('core_empresa_id', $empresa_id)->orderBy('codigo')->get()->keyBy('id');
+        $grupos_por_clase = [];
+        foreach ($grupos as $grupo) {
+            $ruta = [];
+            $actual = $grupo;
+            $visitados = [];
+            while ($actual && !isset($visitados[$actual->id])) {
+                $visitados[$actual->id] = true;
+                array_unshift($ruta, $actual->descripcion);
+                $actual = $grupos->get($actual->grupo_padre_id);
+            }
+            $grupos_por_clase[$grupo->contab_cuenta_clase_id][$grupo->id] = implode(' > ', $ruta);
+        }
 
         $cuentas = ContabCuenta::where('core_empresa_id', $empresa_id)->orderBy('codigo','ASC')->get();
 
@@ -767,27 +776,41 @@ class ContabReportesController extends Controller
                 ['url'=>'NO','etiqueta'=>'Árbol de grupos de cuentas']
             ];
 
-        return view('contabilidad.reasignar_grupos_cuentas', compact('cuentas', 'grupos_cuentas','miga_pan'));
+        return view('contabilidad.reasignar_grupos_cuentas', compact('cuentas', 'grupos_por_clase', 'miga_pan'));
 
     }
 
-    public static function get_select_grupo_cuentas( $grupo_id, $cuenta_id )
+    public function reasignar_grupos_cuentas_save(Request $request, $cuenta_id)
     {
-        $grupos = ContabCuentaGrupo::where('core_empresa_id', Auth::user()->empresa_id)->get();
-
-        foreach ($grupos as $fila)
-        {
-            $vec[$fila->id] = $fila->descripcion;
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'grupo_id' => 'required|integer|min:1',
+            'grupo_anterior_id' => 'required|integer|min:0'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['message'=>'Seleccione un grupo válido.', 'errors'=>$validator->errors()], 422);
         }
 
-        return FormFacade::select('cuenta_id_'.$cuenta_id, $vec, $grupo_id, ['id' => $cuenta_id, 'class' => 'combobox2']);
-    }
+        return DB::transaction(function () use ($request, $cuenta_id) {
+            $cuenta = ContabCuenta::where('core_empresa_id', Auth::user()->empresa_id)
+                ->where('id', $cuenta_id)->lockForUpdate()->first();
+            if (!$cuenta) {
+                return response()->json(['message'=>'Cuenta no disponible.'], 404);
+            }
+            $grupo = ContabCuentaGrupo::where('core_empresa_id', Auth::user()->empresa_id)
+                ->where('contab_cuenta_clase_id', $cuenta->contab_cuenta_clase_id)
+                ->where('id', $request->grupo_id)->first();
+            if (!$grupo) {
+                return response()->json(['message'=>'El grupo debe pertenecer a la empresa y a la misma clase de la cuenta.'], 422);
+            }
+            if ((int)$cuenta->contab_cuenta_grupo_id !== (int)$request->grupo_anterior_id) {
+                return response()->json(['message'=>'Otro usuario cambió el grupo de esta cuenta. Recargue la página antes de confirmar.'], 409);
+            }
+            $cuenta->contab_cuenta_grupo_id = $grupo->id;
+            $cuenta->modificado_por = Auth::user()->email;
+            $cuenta->save();
 
-    public function reasignar_grupos_cuentas_save($cuenta_id, $grupo_id)
-    {
-        ContabCuenta::where('id', $cuenta_id)->update( ['contab_cuenta_grupo_id' => $grupo_id ]);
-
-        return "  Grupo Actualizado.";
+            return response()->json(['message'=>'Grupo actualizado.', 'cuenta_id'=>$cuenta->id, 'grupo_id'=>$grupo->id]);
+        });
     }
 
     public function lista_documentos_descuadrados( Request $request )

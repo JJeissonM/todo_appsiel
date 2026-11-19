@@ -62,7 +62,7 @@ Route::post('contab_ajax_balance_comprobacion', 'Contabilidad\ContabReportesCont
 
 // OTRAS TAREAS
 Route::get('reasignar_grupos_cuentas_form','Contabilidad\ContabReportesController@reasignar_grupos_cuentas_form');
-Route::get('reasignar_grupos_cuentas_save/{cuenta_id}/{grupo_id}','Contabilidad\ContabReportesController@reasignar_grupos_cuentas_save');
+Route::post('reasignar_grupos_cuentas_save/{cuenta_id}','Contabilidad\ContabReportesController@reasignar_grupos_cuentas_save');
 
 // PROCESOS
 Route::post('contab_generar_listado_cierre_ejercicio','Contabilidad\ProcesosController@generar_listado_cierre_ejercicio');
