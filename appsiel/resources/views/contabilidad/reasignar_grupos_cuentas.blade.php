@@ -16,12 +16,12 @@
                         <td>{{ $fila->codigo }}</td>
                         <td>{{ $fila->descripcion }}</td>
                         <td>
-                            <select id="grupo-cuenta-{{ $fila->id }}" class="form-control grupo-cuenta" aria-label="Grupo de la cuenta {{ $fila->codigo }}">
-                                <option value="">Seleccione un grupo</option>
-                                @foreach (isset($grupos_por_clase[$fila->contab_cuenta_clase_id]) ? $grupos_por_clase[$fila->contab_cuenta_clase_id] : [] as $grupo_id => $descripcion)
-                                    <option value="{{ $grupo_id }}" {{ (int)$grupo_id === (int)$fila->contab_cuenta_grupo_id ? 'selected' : '' }}>{{ $descripcion }}</option>
-                                @endforeach
-                            </select>
+                            <input type="text" id="grupo-cuenta-{{ $fila->id }}"
+                                class="form-control grupo-cuenta-busqueda" autocomplete="off"
+                                data-clase="{{ $fila->contab_cuenta_clase_id }}"
+                                value="{{ isset($grupos_por_clase[$fila->contab_cuenta_clase_id][$fila->contab_cuenta_grupo_id]) ? $grupos_por_clase[$fila->contab_cuenta_clase_id][$fila->contab_cuenta_grupo_id] : '' }}"
+                                placeholder="Buscar grupo…" aria-label="Grupo de la cuenta {{ $fila->codigo }}">
+                            <input type="hidden" class="grupo-cuenta" value="{{ (int)$fila->contab_cuenta_grupo_id }}">
                         </td>
                         <td>
                             <button type="button" class="btn btn-primary confirmar-grupo" disabled>Confirmar</button>
@@ -35,8 +35,42 @@
 @endsection
 
 @section('scripts')
+    <style>
+        .grupos-cuentas-sugerencias { max-height: 280px; overflow-y: auto; overflow-x: hidden; z-index: 10000; }
+        .grupos-cuentas-sugerencias .ui-menu-item-wrapper { white-space: normal; overflow-wrap: break-word; }
+    </style>
     <script>
         $(function () {
+            var gruposPorClase = {!! json_encode($grupos_por_clase, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
+            var opcionesPorClase = {};
+            $.each(gruposPorClase, function (clase, grupos) {
+                opcionesPorClase[clase] = [];
+                $.each(grupos, function (id, label) {
+                    opcionesPorClase[clase].push({id: String(id), label: label, value: label});
+                });
+            });
+            $('.grupo-cuenta-busqueda').each(function () {
+                var input = $(this);
+                input.autocomplete({
+                    minLength: 0,
+                    appendTo: 'body',
+                    source: function (request, response) {
+                        response($.ui.autocomplete.filter(opcionesPorClase[input.attr('data-clase')] || [], request.term).slice(0, 30));
+                    },
+                    focus: function () { return false; },
+                    select: function (event, ui) {
+                        input.val(ui.item.label);
+                        input.closest('.fila-reasignacion').find('.grupo-cuenta').val(ui.item.id).trigger('change');
+                        return false;
+                    }
+                }).on('input', function () {
+                    input.closest('.fila-reasignacion').find('.grupo-cuenta').val('').trigger('change');
+                }).on('focus', function () {
+                    input.autocomplete('search', '');
+                });
+                input.autocomplete('widget').addClass('grupos-cuentas-sugerencias');
+            });
+
             var csrfToken = {!! json_encode(csrf_token()) !!};
 
             $('#table_content').on('change', '.grupo-cuenta', function () {
@@ -57,7 +91,7 @@
                     return;
                 }
                 button.prop('disabled', true).text('Guardando…');
-                select.prop('disabled', true);
+                row.find('.grupo-cuenta-busqueda').autocomplete('close').prop('disabled', true);
                 status.removeClass('text-success text-danger').text('');
                 $.ajax({
                     url: row.attr('data-url'),
@@ -71,8 +105,8 @@
                     var message = xhr.responseJSON && xhr.responseJSON.message;
                     status.addClass('text-danger').text(message || 'No se pudo guardar. Intente nuevamente.');
                 }).always(function () {
-                    select.prop('disabled', false);
-                    button.text('Confirmar').prop('disabled', String(select.val()) === String(row.attr('data-grupo-original')));
+                    row.find('.grupo-cuenta-busqueda').prop('disabled', false);
+                    button.text('Confirmar').prop('disabled', !select.val() || String(select.val()) === String(row.attr('data-grupo-original')));
                 });
             });
         });
