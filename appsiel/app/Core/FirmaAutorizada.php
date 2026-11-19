@@ -21,9 +21,12 @@ class FirmaAutorizada extends Model
 
     public function show_adicional($campos, $registro)
     {
-        if (empty($registro->imagen)) { return $campos; }
         foreach ($campos as &$campo) {
-            if ($campo['name'] === 'imagen' && $campo['tipo'] === 'imagen') {
+            if ($campo['name'] === 'core_tercero_id') {
+                $tercero = $registro->tercero;
+                $campo['show_value'] = $tercero ? e($tercero->descripcion) : 'Tercero no disponible';
+            }
+            if ($campo['name'] === 'imagen' && $campo['tipo'] === 'imagen' && !empty($registro->imagen)) {
                 $campo['value'] = view('core.vistas.firma_autorizada_protegida', ['imagen'=>$campo['value']])->render();
             }
         }
