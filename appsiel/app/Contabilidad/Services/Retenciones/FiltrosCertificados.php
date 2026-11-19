@@ -12,8 +12,8 @@ class FiltrosCertificados
             'tipo_impuesto'=>'FUENTE', 'compras'=>'retenidas', 'tercero_id'=>'', 'grupo_id'=>'',
             'codigo_municipio'=>'', 'municipio'=>'', 'confirmar_municipio'=>0,
             'ciudad_consignacion'=>'', 'firma_autorizada_id'=>'',
-            'norma_ica'=>'', 'firma_fuente'=>'manual'], $entrada);
-        foreach (['confirmar_municipio'=>0, 'tercero_id'=>'', 'grupo_id'=>''] as $campo=>$defecto) {
+            'norma_ica'=>'', 'firma_fuente'=>'manual', 'mostrar_detalle_operaciones'=>'Si'], $entrada);
+        foreach (['confirmar_municipio'=>0, 'tercero_id'=>'', 'grupo_id'=>'', 'mostrar_detalle_operaciones'=>'Si'] as $campo=>$defecto) {
             if ($f[$campo] === null || $f[$campo] === '') { $f[$campo]=$defecto; }
         }
         $v = Validator::make($f, [
@@ -22,6 +22,7 @@ class FiltrosCertificados
             'compras'=>'required|in:todas,retenidas', 'tercero_id'=>'integer|min:1', 'grupo_id'=>'integer|min:1',
             'ciudad_consignacion'=>'required|max:150', 'firma_autorizada_id'=>'required|integer|min:1',
             'firma_fuente'=>'required|in:manual,computador',
+            'mostrar_detalle_operaciones'=>'required|in:Si,No',
             'codigo_municipio'=>'required_if:tipo_impuesto,ICA|regex:/^[0-9]{5}$/',
             'municipio'=>'required_if:tipo_impuesto,ICA|max:150', 'norma_ica'=>'required_if:tipo_impuesto,ICA|max:250',
             'confirmar_municipio'=>'in:0,1',

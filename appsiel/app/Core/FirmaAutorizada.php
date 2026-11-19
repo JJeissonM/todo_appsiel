@@ -19,6 +19,18 @@ class FirmaAutorizada extends Model
         return $this->belongsTo(Tercero::class, 'core_tercero_id');
     }
 
+    public function show_adicional($campos, $registro)
+    {
+        if (empty($registro->imagen)) { return $campos; }
+        foreach ($campos as &$campo) {
+            if ($campo['name'] === 'imagen' && $campo['tipo'] === 'imagen') {
+                $campo['value'] = view('core.vistas.firma_autorizada_protegida', ['imagen'=>$campo['value']])->render();
+            }
+        }
+        unset($campo);
+        return $campos;
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo1';

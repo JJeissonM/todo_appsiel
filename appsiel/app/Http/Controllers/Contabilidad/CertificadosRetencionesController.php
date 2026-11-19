@@ -39,7 +39,7 @@ class CertificadosRetencionesController extends Controller
         try {
             $campos=['periodo','anio','bimestre','fecha_desde','fecha_hasta','tipo_impuesto','compras','tercero_id','grupo_id',
                 'codigo_municipio','municipio','confirmar_municipio','ciudad_consignacion','firma_autorizada_id',
-                'norma_ica','firma_fuente'];
+                'norma_ica','firma_fuente','mostrar_detalle_operaciones'];
             $f=FiltrosCertificados::normalizar($request->only($campos));
             if ($f['tercero_id'] && !DB::table('core_terceros')->where('core_empresa_id',Auth::user()->empresa_id)->where('id',$f['tercero_id'])->exists()) { abort(403); }
             if ($f['grupo_id'] && !DB::table('compras_proveedores AS p')->join('core_terceros AS t','t.id','=','p.core_tercero_id')

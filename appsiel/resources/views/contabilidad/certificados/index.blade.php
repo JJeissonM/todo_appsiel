@@ -28,6 +28,7 @@
 <div class="col-md-8" id="cert-firma-autorizada"><label for="cert-firma-busqueda">Firma autorizada</label><select name="firma_autorizada_id" id="cert-firma-id" class="form-control combobox"><option value="">Seleccione</option>@foreach($firmas as $firma)<option value="{{ $firma->id }}">{{ $firma->descripcion }} ({{ $firma->numero_identificacion }}) — {{ $firma->titulo_tercero }}</option>@endforeach</select>
 <small>El nombre, la identificación y la imagen se toman del catálogo de firmas autorizadas. Para firma manual e ICA debe tener una firma adjunta.</small></div></div>
 <div class="row"><div class="col-md-4"><label>Firma para Retefuente</label><select name="firma_fuente" class="form-control"><option value="manual">Firma del responsable</option><option value="computador">Generado por computador (retenedor persona jurídica)</option></select></div>
+<div class="col-md-4"><label for="cert-mostrar-detalle">Mostrar detalle de operaciones</label><select name="mostrar_detalle_operaciones" id="cert-mostrar-detalle" class="form-control"><option value="Si">Sí</option><option value="No">No</option></select></div>
 </div>
 <fieldset id="cert-ica"><legend>Jurisdicción de ICA</legend><div class="row">
 <div class="col-md-3"><label>Código DANE</label><input name="codigo_municipio" pattern="[0-9]{5}" maxlength="5" class="form-control"></div>

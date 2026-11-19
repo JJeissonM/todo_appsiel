@@ -33,12 +33,14 @@ Ciudad de consignación de la retención: {{ $c['filtros']['ciudad_consignacion'
 <strong>Suma de bases por concepto y tarifa:</strong> ${{ number_format($c['base_total']/100, 2, ',', '.') }}<br>
 <strong>Retención neta certificada:</strong> ${{ number_format($c['retencion_total']/100, 2, ',', '.') }}</p>
 <p>Compras incluidas: {{ $c['filtros']['compras']==='todas' ? 'todas las compras contabilizadas del período, incluso sin retención' : 'documentos de compra con retención del impuesto seleccionado' }}. Los valores de compra no se duplican por tarifa. Las devoluciones se presentan con signo negativo.</p>
+@if(!isset($c['filtros']['mostrar_detalle_operaciones']) || $c['filtros']['mostrar_detalle_operaciones'] !== 'No')
 <h2>Detalle de operaciones</h2>
 <table><thead><tr><th>Fecha</th><th>Documento / factura</th><th>Concepto del pago o abono</th><th>Compra total ($)</th><th>Con retención</th></tr></thead><tbody>
 @foreach($c['documentos'] as $d)
 <tr><td>{{ $d['fecha'] }}</td><td>{{ $d['documento'] }} / {{ $d['factura'] }}</td><td>{{ $d['concepto'] }}</td><td class="numero">{{ number_format($d['total']/100, 2, ',', '.') }}</td><td>{{ $d['con_retencion'] ? 'Sí' : 'No' }}</td></tr>
 @endforeach
 </tbody></table>
+@endif
 @if(!$emitido)
 @foreach($c['bloqueos'] as $error)<p class="aviso">{{ $error }}</p>@endforeach
 @foreach($c['avisos'] as $aviso)<p>{{ $aviso }}</p>@endforeach
