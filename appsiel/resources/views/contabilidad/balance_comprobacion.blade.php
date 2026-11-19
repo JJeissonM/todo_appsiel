@@ -22,19 +22,11 @@
 						{{ Form::date('fecha_hasta',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_hasta']) }}
 					</div>
 					<div class="col-sm-3">
-						{{ Form::label('contab_cuenta_grupo_id','Grupo de cuentas') }}
-						{{ Form::select('contab_cuenta_grupo_id',$grupos,'todos',[ 'class' => 'form-control','id'=>'contab_cuenta_grupo_id']) }}
-					</div>
-					<div class="col-sm-3">
 						{{ Form::label('detalla_terceros','Detalla terceros') }}
 						{{ Form::select('detalla_terceros',['No'=>'No', 'Si'=>'Si'],null,[ 'class' => 'form-control','id'=>'detalla_terceros']) }}
 					</div>
 				</div>
 				<div class="row" style="margin-top:15px;">
-					<div class="col-sm-3">
-						{{ Form::label('agrupar_por_grupo','Agrupar por grupo con subtotales') }}
-						{{ Form::select('agrupar_por_grupo',[0=>'No', 1=>'Sí'],0,['class'=>'form-control','id'=>'agrupar_por_grupo']) }}
-					</div>
 					<div class="col-sm-3">
 						{{ Form::label(' ','.') }}
 						<button type="submit" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> Generar</button>

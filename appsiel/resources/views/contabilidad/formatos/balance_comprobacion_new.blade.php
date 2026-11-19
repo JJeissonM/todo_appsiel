@@ -1,108 +1,39 @@
-<?php
-	$total_debitos = 0;
-    $total_creditos = 0;
-    $total_saldo_inicial = 0;
-    $total_saldo_final = 0;
-    $j=0;
-?>
-
-<h3 style="width: 100%; text-align: center;"> Balance de comprobación </h3>
+<h3 style="width:100%;text-align:center;">Balance de comprobación</h3>
+<p style="text-align:center;">Desde {{ $fecha_desde }} hasta {{ $fecha_hasta }}</p>
 <hr>
-
 <div class="table-responsive">
-    <table id="myTable" class="table table-striped" style="margin-top: -4px;">
+    <table id="myTable" data-excel-format="xlsx" data-excel-filename="balance_de_comprobacion" class="table table-striped" style="margin-top:-4px;width:100%;">
+        <colgroup>
+            <col style="width:{{ $detallar_terceros ? 24 : 40 }}%;">
+            @if($detallar_terceros)<col style="width:24%;">@endif
+            @for($columna = 0; $columna < 4; $columna++)<col style="width:{{ $detallar_terceros ? 13 : 15 }}%;">@endfor
+        </colgroup>
         <thead>
             <tr>
-                <th>
-                   Cuenta
-                </th>
-                <th>
-                   NIT / Tercero
-                </th>
-                <th>
-                   Saldo inicial
-                </th>
-                <th>
-                   Mov. Débito
-                </th>
-                <th>
-                   Mov. Crédito
-                </th>
-                <th>
-                   Saldo Final
-                </th>
+                <th>Cuenta</th>
+                @if($detallar_terceros)<th>NIT / Tercero</th>@endif
+                <th>Saldo inicial</th><th>Mov. Débito</th><th>Mov. Crédito</th><th>Saldo Final</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($grupos_movimientos as $movimientos_grupo)
-                @if($agrupar_por_grupo)
-                    <?php $grupo = $movimientos_grupo->first()->grupo; ?>
-                    <tr class="encabezado-grupo" style="background-color:#e8eaf6;font-weight:bold;">
-                        <td colspan="6">Grupo: {{ $grupo->codigo }} {{ $grupo->descripcion }}</td>
-                    </tr>
-                @endif
-                @foreach($movimientos_grupo as $movimiento_cuenta)
-                        
-                <tr class="fila-{{$j}}" >
-                    <td>
-                        {{ $movimiento_cuenta->cuenta->codigo }} {{ $movimiento_cuenta->cuenta->descripcion }}
-                    </td>
-                    <td>
-                        @if( $movimiento_cuenta->tercero != null)
-                            {{ $movimiento_cuenta->tercero->numero_identificacion }} {{ $movimiento_cuenta->tercero->descripcion }}
-                        @endif
-                    </td>
-                    <td class="text-right">
-                    {{ number_format($movimiento_cuenta->saldo_inicial, 0, ',', '.')}}
-                    </td>
-                    <td class="text-right">
-                    {{ number_format($movimiento_cuenta->debitos, 0, ',', '.')}}
-                    </td>
-                    <td class="text-right">
-                    {{ number_format($movimiento_cuenta->creditos, 0, ',', '.')}}
-                    </td>
-                    <td class="text-right">
-                    {{ number_format( $movimiento_cuenta->saldo_final , 0, ',', '.')}}
-                    </td>
-                </tr>
-
+            @foreach($filas as $fila)
                 <?php
-                    $j++;
-                    if ($j==3) {
-                        $j=1;
-                    }
-                    $total_debitos += $movimiento_cuenta->debitos;
-                    $total_creditos += $movimiento_cuenta->creditos;
-                    $total_saldo_inicial += $movimiento_cuenta->saldo_inicial;
-                    $total_saldo_final += $movimiento_cuenta->saldo_final;
+                    $fondo = $fila->tipo === 'clase' ? '#90a4ae' : ($fila->tipo === 'grupo' ? ($fila->nivel === 1 ? '#b0bec5' : '#cfd8dc') : '#ffffff');
+                    $negrita = in_array($fila->tipo, ['clase', 'grupo', 'cuenta']) ? 'bold' : 'normal';
                 ?>
+                <tr class="fila-{{ $fila->tipo }}" data-nivel="{{ $fila->nivel }}" style="background-color:{{ $fondo }};font-weight:{{ $negrita }};">
+                    <td style="padding-left:{{ $fila->nivel * 2 }}rem;">{{ $fila->tipo !== 'tercero' ? $fila->descripcion : '' }}</td>
+                    @if($detallar_terceros)<td>{{ $fila->tipo === 'tercero' ? $fila->descripcion : '' }}</td>@endif
+                    @foreach($fila->valores as $valor)
+                        <td align="right" class="text-right" data-excel-value="{{ $valor }}">{{ number_format($valor, 0, ',', '.') }}</td>
+                    @endforeach
+                </tr>
             @endforeach
-                @if($agrupar_por_grupo)
-                    <tr class="subtotal-grupo" style="background-color:#f5f5f5;font-weight:bold;">
-                        <td colspan="2">Subtotal {{ $grupo->codigo }} {{ $grupo->descripcion }}</td>
-                        <td class="text-right">{{ number_format($movimientos_grupo->sum('saldo_inicial'), 0, ',', '.') }}</td>
-                        <td class="text-right">{{ number_format($movimientos_grupo->sum('debitos'), 0, ',', '.') }}</td>
-                        <td class="text-right">{{ number_format($movimientos_grupo->sum('creditos'), 0, ',', '.') }}</td>
-                        <td class="text-right">{{ number_format($movimientos_grupo->sum('saldo_final'), 0, ',', '.') }}</td>
-                    </tr>
-                @endif
-            @endforeach
-            <tr class="fila-{{$j}} total-general">
-                <td colspan="2">
-                   TOTAL GENERAL
-                </td>
-                <td class="text-right">
-                   {{ number_format($total_saldo_inicial, 0, ',', '.')}}
-                </td>
-                <td class="text-right">
-                   {{ number_format($total_debitos, 0, ',', '.')}}
-                </td>
-                <td class="text-right">
-                   {{ number_format($total_creditos, 0, ',', '.')}}
-                </td>
-                <td class="text-right">
-                   {{ number_format($total_saldo_final, 0, ',', '.')}}
-                </td>
+            <tr class="total-general" style="background-color:#90a4ae;font-weight:bold;">
+                <td colspan="{{ $detallar_terceros ? 2 : 1 }}">TOTAL GENERAL</td>
+                @foreach($totales as $valor)
+                    <td align="right" class="text-right" data-excel-value="{{ $valor }}">{{ number_format($valor, 0, ',', '.') }}</td>
+                @endforeach
             </tr>
         </tbody>
     </table>

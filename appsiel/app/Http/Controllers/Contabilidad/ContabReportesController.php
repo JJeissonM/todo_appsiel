@@ -63,23 +63,13 @@ class ContabReportesController extends Controller
 
     public function balance_comprobacion()
     {
-        $registros = ContabCuenta::where('core_empresa_id','=',Auth::user()->empresa_id)->orderBy('codigo')->get();
-        $cuentas['todas'] = '';
-
-        foreach ($registros as $fila)
-        {
-            $cuentas[$fila->id] = $fila->codigo." ".$fila->descripcion; 
-        }
-
-        $grupos = ContabCuentaGrupo::opciones_balance_comprobacion();
-
         $miga_pan = [
                 ['url'=>'contabilidad?id='.Input::get('id'),'etiqueta'=>'Contabilidad'],
                 ['url'=>'NO','etiqueta'=>'Estados finacieros'],
                 ['url'=>'NO','etiqueta'=>'Balance de comprobación']
             ];
 
-        return view('contabilidad.balance_comprobacion',compact('cuentas','grupos','miga_pan'));
+        return view('contabilidad.balance_comprobacion',compact('miga_pan'));
     }
 
     public function contab_ajax_balance_comprobacion(Request $request)
@@ -87,7 +77,6 @@ class ContabReportesController extends Controller
         try {
             // Se conserva el parámetro anterior para consumidores existentes del reporte.
             $contab_grupo_cuenta_id = $request->input('contab_cuenta_grupo_id', $request->input('contab_grupo_cuenta_id', 'todos'));
-            $agrupar_por_grupo = (int)$request->input('agrupar_por_grupo', 0) === 1;
             $contab_cuenta_id = $request->has('contab_cuenta_id') ? $request->contab_cuenta_id : 'todas';
             $fecha_desde = $request->fecha_desde;
             $fecha_hasta = $request->fecha_hasta;
@@ -105,21 +94,21 @@ class ContabReportesController extends Controller
                 $contab_cuenta_id
             );
 
-            $grupos_movimientos = $agrupar_por_grupo
-                ? $movimientos_cuentas->groupBy(function ($movimiento) {
-                    return $movimiento->grupo->id;
-                })->sortBy(function ($movimientos) {
-                    $grupo = $movimientos->first()->grupo;
-                    return $grupo->codigo . '|' . str_pad($grupo->id, 12, '0', STR_PAD_LEFT);
-                })
-                : collect([$movimientos_cuentas]);
-
+            $detallar_terceros = $detallar_terceros == 'Si';
+            $estructura = (new \App\Contabilidad\Services\BalanceComprobacionJerarquiaService())->generar(
+                $movimientos_cuentas,
+                ContabCuentaGrupo::where('core_empresa_id', Auth::user()->empresa_id)->get(),
+                ClaseCuenta::orderBy('id')->get(),
+                $detallar_terceros
+            );
+            $filas = $estructura['filas'];
+            $totales = $estructura['totales'];
             $vista = View::make('contabilidad.formatos.balance_comprobacion_new', compact(
-                'movimientos_cuentas', 'fecha_desde', 'fecha_hasta', 'agrupar_por_grupo', 'grupos_movimientos'
+                'filas', 'totales', 'fecha_desde', 'fecha_hasta', 'detallar_terceros'
             ))->render();
 
             if ($request->has('reporte_instancia')) {
-                Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+                Cache::put(\App\Contabilidad\Services\BalanceComprobacionPdfService::cacheKey(json_decode($request->reporte_instancia)->id), $vista, 60);
             }
 
             return $vista;
@@ -189,6 +178,7 @@ class ContabReportesController extends Controller
         $selects = [
             'contab_movimientos.contab_cuenta_id',
             'contab_cuentas.codigo AS cuenta_codigo',
+            'contab_cuentas.contab_cuenta_clase_id AS cuenta_clase_id',
             'contab_cuentas.descripcion AS cuenta_descripcion',
             'contab_cuentas.contab_cuenta_grupo_id',
             'contab_cuenta_grupos.codigo AS grupo_codigo',
@@ -220,6 +210,7 @@ class ContabReportesController extends Controller
             $query->groupBy(
                 'contab_movimientos.contab_cuenta_id',
                 'contab_cuentas.codigo',
+                'contab_cuentas.contab_cuenta_clase_id',
                 'contab_cuentas.contab_cuenta_grupo_id',
                 'contab_cuenta_grupos.codigo',
                 'contab_cuenta_grupos.descripcion',
@@ -232,6 +223,7 @@ class ContabReportesController extends Controller
             $query->groupBy(
                 'contab_movimientos.contab_cuenta_id',
                 'contab_cuentas.codigo',
+                'contab_cuentas.contab_cuenta_clase_id',
                 'contab_cuentas.contab_cuenta_grupo_id',
                 'contab_cuenta_grupos.codigo',
                 'contab_cuenta_grupos.descripcion',
@@ -255,6 +247,7 @@ class ContabReportesController extends Controller
             $arr = (object)[];
             $arr->cuenta = (object)[
                 'id' => $row->contab_cuenta_id,
+                'clase_id' => $row->cuenta_clase_id,
                 'codigo' => $row->cuenta_codigo,
                 'descripcion' => $row->cuenta_descripcion
             ];

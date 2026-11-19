@@ -1,5 +1,12 @@
 ﻿@extends('layouts.principal')
 
+	<?php
+		$metodo_impresion_pedido = config('ventas.metodo_impresion_pedido_ventas') ?: 'normal';
+		if ($metodo_impresion_pedido != 'apm' && (int)config('ventas_pos.imprimir_pedidos_en_cocina')) {
+			$metodo_impresion_pedido = 'jspm';
+		}
+	?>
+
 @section('estilos_2')
 	<style>
 
@@ -63,7 +70,7 @@
                 <br><br>
                                 
                 <input type="hidden" id="impresora_cocina_por_defecto" name="impresora_cocina_por_defecto" value="{{ config('ventas_pos.impresora_cocina_por_defecto') }}">
-                <input type="hidden" id="metodo_impresion_pedido_ventas" value="{{ config('ventas.metodo_impresion_pedido_ventas') }}">
+                <input type="hidden" id="metodo_impresion_pedido_ventas" value="{{ $metodo_impresion_pedido }}">
                 <input type="hidden" id="apm_ws_url" value="{{ config('ventas.apm_ws_url') }}">
                 <input type="hidden" id="apm_printer_id_pedidos_ventas" value="{{ config('ventas.apm_printer_id_pedidos_ventas') }}">
                 <input type="hidden" id="apm_devices_config" value="{{ e(json_encode(App\Ventas\ApmDevice::frontConfigByDeviceIds([config('ventas.apm_printer_id_pedidos_ventas')]))) }}">
@@ -79,7 +86,7 @@
                 <input type="hidden" id="core_tipo_transaccion_id" value="42">
                 <input type="hidden" id="core_tipo_doc_app_id" value="0">
 
-                <table class="table table-bordered table-striped" id="tabla_lineas_registros" style="display: block;">
+                <table class="table table-bordered table-striped" id="tabla_lineas_registros" style="display: none;">
                     <tbody>
                     </tbody>
                 </table>
@@ -92,44 +99,12 @@
 @section('scripts')
 
     @include('ventas.apm_scripts')
+    @if( $metodo_impresion_pedido == 'jspm' )
+        <script src="{{ asset('assets/js/ventas_pos/external_print/cptable.js') }}"></script>
+        <script src="{{ asset('assets/js/ventas_pos/external_print/cputils.js') }}"></script>
+        <script src="{{ asset('assets/js/ventas_pos/external_print/JSESCPOSBuilder.js') }}"></script>
+        <script src="{{ asset('assets/js/ventas_pos/external_print/JSPrintManager.js') }}"></script>
+    @endif
     <script src="{{ asset( 'assets/js/ventas/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
-
-	<script type="text/javascript">
-        $(".btn_imprimir_en_cocina").on('click',function(event){
-            event.preventDefault();
-
-            $('#tabla_lineas_registros tbody').empty();
-
-            $('#lbl_consecutivo_doc_encabezado').val( $(this).data('lbl_consecutivo_doc_encabezado') );
-            $('#lbl_fecha').val( $(this).data('lbl_fecha') );
-            $('#lbl_cliente_descripcion').val( $(this).data('lbl_cliente_descripcion') );$('#lbl_descripcion_doc_encabezado').val( $(this).data('lbl_descripcion_doc_encabezado') );
-            $('#lbl_total_factura').val( $(this).data('lbl_total_factura') );
-            $('#nombre_vendedor').val( $(this).data('nombre_vendedor') );
-            $('#core_tipo_transaccion_id').val( $(this).data('core_tipo_transaccion_id') );
-            $('#core_tipo_doc_app_id').val( $(this).data('core_tipo_doc_app_id') );
-
-            var lineas_registros = $(this).data('lineas_registros');
-                
-            $.each(lineas_registros, function(i, element) {
-                var linea = element;                
-                $('#tabla_lineas_registros tbody').append('<tr class="linea_registro"><td>' + (parseInt(i) + 1) + '</td><td class="lbl_producto_descripcion">' + linea.lbl_producto_descripcion + '</td><td class="cantidad">' + linea.cantidad + '</td><td>' + linea.cantidad_pendiente + '</td><td>' + linea.precio_unitario + '</td><td>' + linea.tasa_impuesto + '</td><td>' + linea.precio_subtotal + '</td><td>' + linea.valor_total_descuento + '</td><td>' + linea.precio_total + '</td></tr>');
-            });
-
-            var metodo_impresion_pedido = $('#metodo_impresion_pedido_ventas').val() || 'normal';
-            if ( metodo_impresion_pedido == 'apm' ) {
-                print_comanda_apm();
-            } else {
-                window.print();
-            }
-            
-            $('#tabla_lineas_registros tbody').empty();
-
-            Swal.fire({
-                icon: 'info',
-                title: 'Muy bien!',
-                text: 'Pedido enviado a la impresora de COCINA.'
-            });
-
-        });
-	</script>
+    <script src="{{ asset('assets/js/ventas/pedidos/pendientes_cocina.js?aux=' . uniqid()) }}"></script>
 @endsection

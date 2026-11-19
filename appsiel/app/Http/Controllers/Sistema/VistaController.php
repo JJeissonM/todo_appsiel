@@ -50,6 +50,12 @@ class VistaController extends Controller
         {
             $orientacion = Input::get('orientacion');
         }
+        if (DB::table('sys_reportes')->where('id', $reporte_id)->where('url_form_action', 'contab_ajax_balance_comprobacion')->exists()) {
+            $contenido = Cache::get(\App\Contabilidad\Services\BalanceComprobacionPdfService::cacheKey($reporte_id));
+            abort_unless($contenido, 404, 'Genere el balance de comprobación antes de descargar el PDF.');
+            $bytes = (new \App\Contabilidad\Services\BalanceComprobacionPdfService())->generar($contenido, $tam_hoja, $orientacion);
+            return response($bytes, 200, ['Content-Type'=>'application/pdf', 'Content-Disposition'=>'inline; filename="balance_de_comprobacion.pdf"']);
+        }
         $pdf = App::make('dompdf.wrapper');
 
         $pdf->loadHTML( View::make('core.pdf_documento', [ 'contenido' => Cache::get( 'pdf_reporte_'.$reporte_id ) ] )  )->setPaper($tam_hoja, $orientacion);

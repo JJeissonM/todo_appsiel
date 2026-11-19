@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 
 use App\Sistema\Reporte;
 use App\Sistema\Aplicacion;
-use App\Contabilidad\ContabCuentaGrupo;
 use App\Sistema\Services\ModeloService;
 use App\VentasPos\Services\ReportsServices;
 use App\Http\Controllers\Hotel\HotelReportController;
@@ -63,17 +62,6 @@ class ReporteController extends Controller
                 'contab_cuenta_grupo_id', 'contab_grupo_cuenta_id', 'agrupar_por_grupo'
             ]);
         }));
-        foreach ([
-            ['contab_cuenta_grupo_id', 'Grupo de cuentas', ContabCuentaGrupo::opciones_balance_comprobacion()],
-            ['agrupar_por_grupo', 'Agrupar por grupo con subtotales', [0 => 'No', 1 => 'Sí']]
-        ] as $definicion) {
-            $lista_campos[] = [
-                'name' => $definicion[0], 'descripcion' => $definicion[1], 'tipo' => 'select',
-                'opciones' => $definicion[2], 'value' => null, 'requerido' => 0,
-                'atributos' => ['class' => 'form-control', 'id' => $definicion[0]]
-            ];
-        }
-
         return $lista_campos;
     }
 

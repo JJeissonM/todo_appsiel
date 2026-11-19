@@ -241,6 +241,41 @@ $(document).ready(function () {
 			alert('No hay datos para exportar.');
 			return false;
 		}
+        if (tabla.getAttribute('data-excel-format') === 'xlsx') {
+            if (!window.XLSX) {
+                alert('No se pudo cargar el exportador de Excel. Recargue la página e intente nuevamente.');
+                return false;
+            }
+            var copiaExcel = tabla.cloneNode(true);
+            var celdasExcel = copiaExcel.querySelectorAll('td, th');
+            for (var celdaIndex = 0; celdaIndex < celdasExcel.length; celdaIndex++) {
+                var celdaExcel = celdasExcel[celdaIndex];
+                if (celdaExcel.hasAttribute('data-excel-value')) {
+                    celdaExcel.setAttribute('v', celdaExcel.getAttribute('data-excel-value'));
+                    celdaExcel.setAttribute('z', '#,##0');
+                } else {
+                    celdaExcel.setAttribute('t', 's');
+                }
+            }
+            var filasExcel = copiaExcel.getElementsByTagName('tr');
+            for (var filaIndex = 0; filaIndex < filasExcel.length; filaIndex++) {
+                var filaExcel = filasExcel[filaIndex];
+                var nivelExcel = parseInt(filaExcel.getAttribute('data-nivel'), 10) || 0;
+                var etiquetaExcel = filaExcel.children[0];
+                if (etiquetaExcel && etiquetaExcel.textContent.trim()) {
+                    etiquetaExcel.setAttribute('v', new Array(nivelExcel * 2 + 1).join(' ') + etiquetaExcel.textContent.trim());
+                }
+            }
+            var libroExcel = XLSX.utils.table_to_book(copiaExcel, {sheet: 'Balance comprobación'});
+            var anchosExcel = [];
+            var columnasExcel = filasExcel[0].children.length;
+            for (var columnaExcel = 0; columnaExcel < columnasExcel; columnaExcel++) {
+                anchosExcel.push({wch: columnaExcel < columnasExcel - 4 ? 56 : 24});
+            }
+            libroExcel.Sheets['Balance comprobación']['!cols'] = anchosExcel;
+            XLSX.writeFile(libroExcel, (tabla.getAttribute('data-excel-filename') || nombre_listado) + '.xlsx');
+            return false;
+        }
 		var tT = new XMLSerializer().serializeToString(tabla); //Serialised table
 		if (tablasReporte.length) {
 			var partes = [];
