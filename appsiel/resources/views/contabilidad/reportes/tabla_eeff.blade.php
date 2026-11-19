@@ -84,7 +84,7 @@
                 }
             ?>
             <tr class="{{$tr_class}}">
-                <td>
+                <td @if(isset($fila->nivel)) style="padding-left: {{ $fila->nivel * 2 }}rem;" @endif>
                     {{ $label }}
                 </td>
                 <td align="right">

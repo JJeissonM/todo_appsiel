@@ -1036,15 +1036,8 @@ class ContabReportesController extends Controller
 
     public function get_filas_eeff_new( $ids_clases_cuentas, $detallar_cuentas, $fecha_inicial, $fecha_final, $obj_repor_serv)
     {
-        $obj_repor_serv->totales_clases = [ 0, 0, 0, 0, 0, 0, 0 ];
-        $estructura = [];
-        $cuentas_sin_catalogo = [];
-        $cuentas_con_configuracion_invalida = [];
-
         $movimientos_agrupados = ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
                             ->leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuentas.contab_cuenta_clase_id')
-                            ->leftJoin('contab_cuenta_grupos AS grupos_hijos', 'grupos_hijos.id', '=', 'contab_cuentas.contab_cuenta_grupo_id')
-                            ->leftJoin('contab_cuenta_grupos AS grupos_padres', 'grupos_padres.id', '=', 'grupos_hijos.grupo_padre_id')
                             ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
                             ->whereBetween('contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ])
                             ->whereIn('contab_cuentas.contab_cuenta_clase_id', $ids_clases_cuentas)
@@ -1055,9 +1048,6 @@ class ContabReportesController extends Controller
                                 'contab_cuentas.contab_cuenta_clase_id AS cuenta_clase_id',
                                 'contab_cuenta_clases.descripcion AS cuenta_clase_descripcion',
                                 'contab_cuentas.contab_cuenta_grupo_id AS cuenta_grupo_hijo_id',
-                                'grupos_hijos.descripcion AS cuenta_grupo_hijo_descripcion',
-                                'grupos_padres.id AS cuenta_grupo_padre_id',
-                                'grupos_padres.descripcion AS cuenta_grupo_padre_descripcion',
                                 DB::raw('SUM(contab_movimientos.valor_saldo) AS valor_saldo')
                             )
                             ->groupBy(
@@ -1066,156 +1056,15 @@ class ContabReportesController extends Controller
                                 'contab_cuentas.descripcion',
                                 'contab_cuentas.contab_cuenta_clase_id',
                                 'contab_cuenta_clases.descripcion',
-                                'contab_cuentas.contab_cuenta_grupo_id',
-                                'grupos_hijos.descripcion',
-                                'grupos_padres.id',
-                                'grupos_padres.descripcion'
+                                'contab_cuentas.contab_cuenta_grupo_id'
                             )
                             ->orderBy('contab_cuentas.codigo')
                             ->get();
 
-        foreach ($movimientos_agrupados as $linea_movim) {
-            if (is_null($linea_movim->cuenta_codigo) || $linea_movim->cuenta_codigo === '') {
-                $cuentas_sin_catalogo[$linea_movim->cuenta_id] = $linea_movim->cuenta_id;
-                continue;
-            }
-
-            if (empty($linea_movim->cuenta_clase_id) || empty($linea_movim->cuenta_grupo_hijo_id) || empty($linea_movim->cuenta_grupo_padre_id)) {
-                $cuentas_con_configuracion_invalida[$linea_movim->cuenta_codigo . ' ' . $linea_movim->cuenta_descripcion] = $linea_movim->cuenta_codigo . ' ' . $linea_movim->cuenta_descripcion;
-                continue;
-            }
-
-            $clase_cuenta_id = (int)$linea_movim->cuenta_clase_id;
-            $grupo_padre_id = (int)$linea_movim->cuenta_grupo_padre_id;
-            $grupo_hijo_id = (int)$linea_movim->cuenta_grupo_hijo_id;
-            $valor_saldo = (float)$linea_movim->valor_saldo;
-
-            if (!isset($estructura[$clase_cuenta_id])) {
-                $estructura[$clase_cuenta_id] = [
-                    'descripcion' => strtoupper($linea_movim->cuenta_clase_descripcion),
-                    'valor' => 0,
-                    'grupos_padres' => []
-                ];
-            }
-
-            if (!isset($estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id])) {
-                $estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id] = [
-                    'descripcion' => $linea_movim->cuenta_grupo_padre_descripcion,
-                    'valor' => 0,
-                    'grupos_hijos' => []
-                ];
-            }
-
-            if (!isset($estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id]['grupos_hijos'][$grupo_hijo_id])) {
-                $estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id]['grupos_hijos'][$grupo_hijo_id] = [
-                    'descripcion' => $linea_movim->cuenta_grupo_hijo_descripcion,
-                    'valor' => 0,
-                    'cuentas' => []
-                ];
-            }
-
-            $estructura[$clase_cuenta_id]['valor'] += $valor_saldo;
-            $estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id]['valor'] += $valor_saldo;
-            $estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id]['grupos_hijos'][$grupo_hijo_id]['valor'] += $valor_saldo;
-
-            if ($detallar_cuentas) {
-                $estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id]['grupos_hijos'][$grupo_hijo_id]['cuentas'][] = (object)[
-                    'descripcion' => $linea_movim->cuenta_codigo . ' ' . $linea_movim->cuenta_descripcion,
-                    'valor' => $valor_saldo
-                ];
-            }
-        }
-
-        if (!empty($cuentas_sin_catalogo)) {
-            throw new \RuntimeException('Hay movimientos con cuentas inexistentes en el catalogo: ' . implode(', ', array_values($cuentas_sin_catalogo)) . '.');
-        }
-
-        if (!empty($cuentas_con_configuracion_invalida)) {
-            throw new \RuntimeException('Las siguientes cuentas no tienen correctamente asociado un grupo hijo con grupo padre: ' . implode(', ', array_values($cuentas_con_configuracion_invalida)) . '.');
-        }
-
-        $filas = [];
-        foreach ( $ids_clases_cuentas as $key => $clase_cuenta_id ) {
-            if (!isset($estructura[$clase_cuenta_id]) || $estructura[$clase_cuenta_id]['valor'] == 0) {
-                continue;
-            }
-
-            $valor_clase = (object)[ 
-                'descripcion' => $estructura[$clase_cuenta_id]['descripcion'],
-                'valor' => $estructura[$clase_cuenta_id]['valor']
-            ];
-            
-            if ( $valor_clase->valor == 0 )
-            {
-                continue;
-            }
-
-            $obj_repor_serv->totales_clases[$clase_cuenta_id] = $valor_clase->valor;
-
-            $filas[] = (object)[
-                                'datos_clase_cuenta' => $valor_clase,
-                                'datos_grupo_padre' => 0,
-                                'datos_grupo_hijo' => 0,
-                                'datos_cuenta' => 0
-                                ];
-            
-            foreach ( $estructura[$clase_cuenta_id]['grupos_padres'] as $grupo_padre_id => $grupo_padre_data ) {
-                $valor_padre = (object)[ 
-                    'descripcion' => $grupo_padre_data['descripcion'],
-                    'valor' => $grupo_padre_data['valor']
-                ];
-
-                if ( $valor_padre->valor == 0 )
-                {
-                    continue;
-                }
-
-                $filas[] = (object)[
-                                    'datos_clase_cuenta' => 0,
-                                    'datos_grupo_padre' => $valor_padre,
-                                    'datos_grupo_hijo' => 0,
-                                    'datos_cuenta' => 0
-                                    ];
-
-                foreach ( $grupo_padre_data['grupos_hijos'] as $grupo_hijo_id => $grupo_hijo_data ) {
-                    $valor_hijo = (object)[ 
-                        'descripcion' => $grupo_hijo_data['descripcion'],
-                        'valor' => $grupo_hijo_data['valor']
-                    ];
-
-                    if ( $valor_hijo->valor == 0 )
-                    {
-                        continue;
-                    }
-
-                    $filas[] = (object)[
-                        'datos_clase_cuenta' => 0,
-                        'datos_grupo_padre' => 0,
-                        'datos_grupo_hijo' => $valor_hijo,
-                        'datos_cuenta' => 0
-                        ];
-                    
-                    foreach ($grupo_hijo_data['cuentas'] as $valor_cuenta) {
-                        if( !$detallar_cuentas )
-                        {
-                            continue;
-                        }
-
-                        if ( $valor_cuenta->valor == 0 )
-                        {
-                            continue;
-                        }
-
-                        $filas[] = (object)[
-                                                'datos_clase_cuenta' => 0,
-                                                'datos_grupo_padre' => 0,
-                                                'datos_grupo_hijo' => 0,
-                                                'datos_cuenta' => $valor_cuenta
-                                                ];
-                    }
-                }
-            }
-        }
+        $grupos = ContabCuentaGrupo::where('core_empresa_id', Auth::user()->empresa_id)->get();
+        $estructura = new \App\Contabilidad\Services\EstructuraEeffService();
+        $filas = $estructura->generar($movimientos_agrupados, $grupos, $ids_clases_cuentas, $detallar_cuentas);
+        $obj_repor_serv->totales_clases = $estructura->totales_clases;
 
         return $filas;
     }
