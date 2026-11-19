@@ -13,6 +13,9 @@ $(document).ready(function(){
 		var contab_cuenta_clase_id = $("#contab_cuenta_clase_id").val();
 		datos_registro = JSON.parse( $("#datos_registro").val() );
 		url = '../../contab_get_grupos_cuentas/' + contab_cuenta_clase_id;
+		if (typeof datos_registro.grupo_padre_id !== 'undefined') {
+			url += '?campo_destino=grupo_padre_id';
+		}
 		llenar_select_hijo( datos_registro, url);
 	}
 

@@ -163,13 +163,17 @@ class ContabCuentaGrupo extends Model
             ->get();
 
         $opciones = '<option value="">Seleccionar...</option>';
+        $descripciones = [];
+        foreach ($registros as $campo) {
+            $descripciones[$campo->id] = $campo->descripcion;
+        }
         foreach ($registros as $campo)
         {
-            $grupo = DB::table('contab_cuenta_grupos')
-                ->where('id', $campo->grupo_padre_id)
-                ->value('descripcion');
+            $grupo = isset($descripciones[$campo->grupo_padre_id])
+                ? $descripciones[$campo->grupo_padre_id] : null;
 
-            $opciones .= '<option value="' . $campo->id . '">' . $grupo . ' > ' . $campo->descripcion . '</option>';
+            $descripcion = $grupo ? $grupo . ' > ' . $campo->descripcion : $campo->descripcion;
+            $opciones .= '<option value="' . $campo->id . '">' . e($descripcion) . '</option>';
         }
         return $opciones;
     }

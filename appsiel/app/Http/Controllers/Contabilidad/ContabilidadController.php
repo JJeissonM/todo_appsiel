@@ -683,6 +683,10 @@ class ContabilidadController extends TransaccionController
 
     public function contab_get_grupos_cuentas($clase_id)
     {
+        if (Input::get('campo_destino') === 'grupo_padre_id') {
+            return \App\Contabilidad\ContabCuentaGrupo::get_registros_select_hijo($clase_id);
+        }
+
         $registros_c = DB::table('contab_cuenta_grupos')
                 ->where( [ 
                     [ 'contab_cuenta_clase_id', $clase_id ],
