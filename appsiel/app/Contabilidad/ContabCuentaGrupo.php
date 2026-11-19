@@ -22,6 +22,27 @@ class ContabCuentaGrupo extends Model
         return $this->belongsTo(ContabCuentaGrupo::class, 'grupo_padre_id');
     }
 
+    public function show_adicional($campos, $registro)
+    {
+        foreach ($campos as &$campo) {
+            if ($campo['name'] !== 'grupo_padre_id') {
+                continue;
+            }
+
+            if (empty($registro->grupo_padre_id)) {
+                $campo['show_value'] = 'Sin grupo padre';
+                continue;
+            }
+
+            $padre = $registro->grupo_padre()
+                ->where('core_empresa_id', $registro->core_empresa_id)->first();
+            $campo['show_value'] = $padre ? e($padre->descripcion) : 'Grupo padre no disponible';
+        }
+        unset($campo);
+
+        return $campos;
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $collection = ContabCuentaGrupo::leftJoin('contab_cuenta_grupos AS grupos_padres', 'grupos_padres.id', '=', 'contab_cuenta_grupos.grupo_padre_id')
