@@ -2,18 +2,7 @@
     $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.$id_transaccion;
 	$tipo_operacion = 'nota_credito';
 
-	$prefix = $doc_encabezado->tipo_documento_app->prefijo;
-	$number = $doc_encabezado->documento_transaccion_consecutivo;
-
-	switch (config('facturacion_electronica.proveedor_tecnologico_default'))
-	{
-		case 'OSEI':
-			$url = "https://osei.com.co/api/v1/invoices/download_pdf_appsiel/$prefix/$number";
-			break;
-		default:
-			$url = 'fe_consultar_documentos_emitidos/' . $doc_encabezado->id . '/' . $tipo_operacion . $variables_url;
-			break;
-	}
+	$url = 'fe_consultar_documentos_emitidos/' . $doc_encabezado->id . '/' . $tipo_operacion . $variables_url;
 ?>
 
 @extends('transaccion.show')
@@ -44,6 +33,10 @@
 
 	@if( !$docs_relacionados[1] && $doc_encabezado->estado == 'Enviada' )
     	<a class="btn-gmail" href="{{ url($url) }}" title="Representación gráfica (PDF)" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+
+		@if( config('facturacion_electronica.proveedor_tecnologico_default') == 'OSEI' )
+			<a class="btn-gmail btn-reenviar-correo-osei" href="#" title="Reenviar correo" data-url="{{ url('fe_reenviar_correo/' . $doc_encabezado->id . '/' . $tipo_operacion) }}" data-email="{{ $doc_encabezado->tercero ? $doc_encabezado->tercero->email : '' }}"><i class="fa fa-envelope"></i></a>
+		@endif
 	@endif
 
 
@@ -195,6 +188,21 @@
             		$('#form_edit').submit();
             	}
             });
+
+			$('.btn-reenviar-correo-osei').click(function(event){
+				event.preventDefault();
+
+				var boton = $(this);
+				var correo = prompt('Correo(s) destino (separe con coma):', boton.data('email') || '');
+				if (correo === null) return;
+
+				boton.children('i').attr('class', 'fa fa-spinner fa-spin');
+
+				$.post(boton.data('url'), {_token: '{{ csrf_token() }}', emails: correo})
+					.done(function(respuesta){ alert(respuesta.message); })
+					.fail(function(){ alert('No se pudo reenviar el correo.'); })
+					.always(function(){ boton.children('i').attr('class', 'fa fa-envelope'); });
+			});
 
 		});
 	</script>
