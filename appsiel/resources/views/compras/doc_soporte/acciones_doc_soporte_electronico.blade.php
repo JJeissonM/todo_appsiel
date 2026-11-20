@@ -15,6 +15,28 @@
     ?>
     @if( $doc_encabezado->enviado_electronicamente() )
         <a class="btn-gmail" href="{{ url( 'fe_consultar_documentos_emitidos/' . $doc_encabezado->id . '/' . $tipo_operacion2 . $variables_url ) }}" title="Representación gráfica (PDF)" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+
+        @if( config('facturacion_electronica.proveedor_tecnologico_default') == 'OSEI' )
+            <a class="btn-gmail btn-reenviar-correo-osei" href="#" title="Reenviar correo" data-url="{{ url('fe_reenviar_correo/' . $doc_encabezado->id . '/' . $tipo_operacion2) }}" data-email="{{ $doc_encabezado->proveedor->tercero->email }}"><i class="fa fa-envelope"></i></a>
+
+            <script type="text/javascript">
+                $('.btn-reenviar-correo-osei').click(function(event){
+                    event.preventDefault();
+
+                    var boton = $(this);
+                    var correo = prompt('Correo(s) destino (separe con coma):', boton.data('email') || '');
+                    if (correo === null) return;
+
+                    boton.children('i').attr('class', 'fa fa-spinner fa-spin');
+
+                    $.post(boton.data('url'), {_token: '{{ csrf_token() }}', emails: correo})
+                        .done(function(respuesta){ alert(respuesta.message); })
+                        .fail(function(){ alert('No se pudo reenviar el correo.'); })
+                        .always(function(){ boton.children('i').attr('class', 'fa fa-envelope'); });
+                });
+            </script>
+        @endif
+
         {!! $estado_envio !!}
     @else
         <?php

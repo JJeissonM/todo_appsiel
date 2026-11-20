@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('fe_consultar_documentos_emitidos/{doc_encabezado_id}/{tipo_operacion}', 'FacturacionElectronica\AplicacionController@consultar_documentos_emitidos');
 
+Route::post('fe_reenviar_correo/{doc_encabezado_id}/{tipo_operacion}', 'FacturacionElectronica\AplicacionController@reenviar_correo');
+
 Route::get('fe_consultar_adquiriente/{tipo}/{numero}', 'FacturacionElectronica\ConsultaAdquirienteController@consultar');
 
 Route::resource('facturacion_electronica', 'FacturacionElectronica\AplicacionController');
