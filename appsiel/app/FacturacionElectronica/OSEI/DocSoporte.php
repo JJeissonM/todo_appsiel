@@ -274,13 +274,28 @@ class DocSoporte
       // . ',"charges": []'
    }
 
-   public function get_einvoice_in_dataico()
+   /**
+    * Prefijo con el que este documento soporte se envió a OSEI: mismo
+    * criterio de get_einvoice_in_dataico, para que el PDF y el reenvío de
+    * correo busquen el documento correcto.
+    */
+   public function prefijo_osei()
+   {
+      return $this->resolucionParaOsei()->prefijo;
+   }
+
+   private function resolucionParaOsei()
    {
       if ($this->env == 'PRODUCCION') {
-         $resolucion = $this->doc_encabezado->resolucion_facturacion();
-      } else {
-         $resolucion = (object)['prefijo' => 'SETT', 'numero_resolucion' => 18760000001];
+         return $this->doc_encabezado->resolucion_facturacion();
       }
+
+      return (object)['prefijo' => 'SETT', 'numero_resolucion' => 18760000001];
+   }
+
+   public function get_einvoice_in_dataico()
+   {
+      $resolucion = $this->resolucionParaOsei();
 
       $prefijo_resolucion = $resolucion->prefijo;
       $consecutivo_doc_encabezado = $this->doc_encabezado->consecutivo;

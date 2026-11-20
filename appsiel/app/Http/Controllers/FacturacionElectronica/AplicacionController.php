@@ -6,6 +6,8 @@ use App\Core\Services\ResolucionFacturacionService;
 use App\Core\TipoDocApp;
 use App\FacturacionElectronica\DATAICO\DocSoporte as DATAICODocSoporte;
 use App\FacturacionElectronica\OSEI\DocSoporte as OSEIDocSoporte;
+use App\FacturacionElectronica\OSEI\DocumentosOsei;
+use App\FacturacionElectronica\OSEI\FacturaGeneralOsei;
 use App\Http\Controllers\Controller;
 
 use App\FacturacionElectronica\Factura;
@@ -30,22 +32,34 @@ class AplicacionController extends Controller
     	return view('facturacion_electronica.index', compact('msj_resolucion_facturacion'));
     }
 
-    // SOLO DATAICO
     public function consultar_documentos_emitidos( $doc_encabezado_id, $tipo_operacion )
     {
         switch ( $tipo_operacion )
         {
             case 'support_doc':
                 $encabezado_doc = DocSoporte::find( $doc_encabezado_id );
-                $documento_electronico = $this->get_documento_soporte_electronico( $encabezado_doc, $tipo_operacion );
                 break;
-            
+
             default:
                 $encabezado_doc = Factura::find( $doc_encabezado_id );
+                break;
+        }
+
+        if ( config('facturacion_electronica.proveedor_tecnologico_default') == 'OSEI' ) {
+            return $this->descargarPdfOsei( $encabezado_doc, $tipo_operacion );
+        }
+
+        switch ( $tipo_operacion )
+        {
+            case 'support_doc':
+                $documento_electronico = $this->get_documento_soporte_electronico( $encabezado_doc, $tipo_operacion );
+                break;
+
+            default:
                 $documento_electronico = new FacturaGeneral( $encabezado_doc, $tipo_operacion );
                 break;
         }
-        
+
         // Representacion Grafica (PDF)
         $json_dataico = $documento_electronico->get_einvoice_in_dataico();
 
@@ -89,6 +103,72 @@ class AplicacionController extends Controller
         }
 
         return new DATAICODocSoporte( $encabezado_doc, $tipo_operacion );
+    }
+
+    /**
+     * PDF de un documento ya emitido en OSEI (FEV, NC, ND o DS): resuelve el
+     * mismo prefijo que viajó en el JSON y lo descarga del endpoint para ERP
+     * aliados, en vez de ir a download_pdf_appsiel (sin token, lo deja Appsiel).
+     */
+    private function descargarPdfOsei( $encabezado_doc, $tipo_operacion )
+    {
+        $documento = $tipo_operacion == 'support_doc'
+            ? new OSEIDocSoporte( $encabezado_doc, $tipo_operacion )
+            : new FacturaGeneralOsei( $encabezado_doc, $tipo_operacion );
+
+        $prefijo = $documento->prefijo_osei();
+        $numero = $encabezado_doc->consecutivo;
+
+        $resultado = (new DocumentosOsei())->pdf( $prefijo, $numero );
+
+        if ( !$resultado['ok'] ) {
+            return redirect( 'inicio' )->with( 'mensaje_error', '<h5>' . e($resultado['message']) . '</h5>' );
+        }
+
+        return response( $resultado['content'], 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $prefijo . $numero . '.pdf"',
+        ] );
+    }
+
+    /**
+     * Reenvía el correo de un documento ya emitido en OSEI (FEV, NC, ND o DS).
+     */
+    public function reenviar_correo( $doc_encabezado_id, $tipo_operacion )
+    {
+        $emails = array_filter(array_map('trim', preg_split('/[,;]/', (string) request('emails'))));
+
+        foreach ( $emails as $email ) {
+            if ( !filter_var($email, FILTER_VALIDATE_EMAIL) ) {
+                return response()->json(['ok' => false, 'message' => "El correo \"$email\" no es válido."]);
+            }
+        }
+
+        if ( count($emails) > 10 ) {
+            return response()->json(['ok' => false, 'message' => 'Máximo 10 correos.']);
+        }
+
+        $encabezado_doc = $tipo_operacion == 'support_doc'
+            ? DocSoporte::find( $doc_encabezado_id )
+            : Factura::find( $doc_encabezado_id );
+
+        if ( !$encabezado_doc ) {
+            return response()->json(['ok' => false, 'message' => 'Documento no encontrado.'], 404);
+        }
+
+        $documento = $tipo_operacion == 'support_doc'
+            ? new OSEIDocSoporte( $encabezado_doc, $tipo_operacion )
+            : new FacturaGeneralOsei( $encabezado_doc, $tipo_operacion );
+
+        $prefijo = $documento->prefijo_osei();
+        $numero = $encabezado_doc->consecutivo;
+
+        $resultado = (new DocumentosOsei())->reenviarCorreo( $prefijo, $numero, $emails );
+
+        return response()->json([
+            'ok' => ($resultado['status'] ?? null) === 'success',
+            'message' => $resultado['message'] ?? 'OSEI no devolvió un mensaje.',
+        ]);
     }
 
     public function testing()

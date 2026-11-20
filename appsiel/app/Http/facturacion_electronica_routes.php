@@ -2,7 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('fe_consultar_documentos_emitidos/{doc_encabezado_id}/{tipo_operacion}', 'FacturacionElectronica\AplicacionController@consultar_documentos_emitidos');
+Route::get('fe_consultar_documentos_emitidos/{doc_encabezado_id}/{tipo_operacion}', 'FacturacionElectronica\AplicacionController@consultar_documentos_emitidos')->middleware('auth');
+
+// Sin auth cualquiera podría mandarse a su correo el documento de cualquier id.
+Route::post('fe_reenviar_correo/{doc_encabezado_id}/{tipo_operacion}', 'FacturacionElectronica\AplicacionController@reenviar_correo')->middleware('auth');
 
 Route::get('fe_consultar_adquiriente/{tipo}/{numero}', 'FacturacionElectronica\ConsultaAdquirienteController@consultar');
 

@@ -648,6 +648,35 @@ class FacturaGeneralOsei
         return $this->jsonData($aditionalInfo);
     }
 
+    /**
+     * Prefijo con el que este documento se envió (o se enviaría) a OSEI: el
+     * mismo criterio de get_encabezado_factura para facturas y de
+     * get_encabezado_nota_credito para notas, para que el PDF y el reenvío de
+     * correo busquen el documento con el prefijo correcto.
+     */
+    public function prefijo_osei()
+    {
+        if ($this->tipo_transaccion === 'factura') {
+            return $this->resolucionFacturaParaOsei()->prefijo;
+        }
+
+        return $this->doc_encabezado->tipo_documento_app->prefijo;
+    }
+
+    private function resolucionFacturaParaOsei()
+    {
+        $resolucion = (object)['prefijo' => 'FEE', 'numero_resolucion' => 18760000001];
+        if ($this->env == 'PRODUCCION') {
+            $resolucion = $this->doc_encabezado->resolucion_facturacion();
+        }
+
+        if ($resolucion == null) {
+            $resolucion = (object)['prefijo' => $this->doc_encabezado->tipo_documento_app->prefijo, 'numero_resolucion' => 18760000001];
+        }
+
+        return $resolucion;
+    }
+
     public function get_encabezado_factura($auth_token)
     {
         $payment_means_type = 'DEBITO';
@@ -657,14 +686,7 @@ class FacturaGeneralOsei
 
         $payment_means = 'MUTUAL_AGREEMENT';
 
-        $resolucion = (object)['prefijo' => 'FEE', 'numero_resolucion' => 18760000001];
-        if ($this->env == 'PRODUCCION') {
-            $resolucion = $this->doc_encabezado->resolucion_facturacion();
-        }
-
-        if ($resolucion == null) {
-            $resolucion = (object)['prefijo' => $this->doc_encabezado->tipo_documento_app->prefijo, 'numero_resolucion' => 18760000001];
-        }
+        $resolucion = $this->resolucionFacturaParaOsei();
 
         $flexible = 'true';
 
