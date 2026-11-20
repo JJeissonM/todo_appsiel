@@ -85,7 +85,7 @@ class EncabezadoCalificacionController extends Controller
             $mensaje_descripcion = '<span style="color:#ff4d4d; font-size: 0.9em;">Para eliminar el encabezado, deje vacía la descripción de la actividad y presione guardar.</span><br>';
         }
 
-        $actividad_agrupada = app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo();
+        $actividad_agrupada = app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->aplica($anio, $periodoId);
         if ($actividad_agrupada) {
             $columnas = app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->columnas($anio, $periodoId);
             if (!isset($columnas[Input::get('columna_calificacion')])) abort(422, 'Columna sin agrupación.');
@@ -103,7 +103,7 @@ class EncabezadoCalificacionController extends Controller
      */
     public function store(Request $request)
     {
-        if (app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo()) return $this->guardarActividadAgrupada($request);
+        if (app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->aplica((int)$request->anio, (int)$request->periodo_id)) return $this->guardarActividadAgrupada($request);
         $this->normalizarYValidarFecha($request);
 		$this->validate(
 			$request,

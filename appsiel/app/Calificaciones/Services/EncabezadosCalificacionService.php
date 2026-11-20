@@ -36,7 +36,7 @@ class EncabezadosCalificacionService
     /** Los encabezados de un periodo reemplazan por completo a los comunes del año. */
     public function getModoEncabezados($periodoId, $anio = null)
     {
-        if (app(AgrupacionesColumnasService::class)->activo()) return 'agrupaciones';
+        if (app(AgrupacionesColumnasService::class)->aplica($anio, $periodoId)) return 'agrupaciones';
         if (!$this->manejarEncabezadosFijosPorPeriodo()) {
             return 'estandar';
         }

@@ -53,6 +53,99 @@ class AgrupacionesColumnasServiceTest extends EncabezadosCalificacionServiceTest
         return Request::create('/calificaciones_encabezados', 'POST', array_merge(['anio'=>2026, 'periodo_id'=>201, 'curso_id'=>4, 'asignatura_id'=>9,
             'columna_calificacion'=>'C1', 'fecha'=>'2026-03-01', 'descripcion'=>'Evaluación escrita', 'id_encabezado_calificacion'=>0, 'peso'=>99], $extra));
     }
+    public function test_periodos_sin_agrupaciones_conservan_modal_pesos_y_calculo_estandar()
+    {
+        $this->activar();
+        config(['calificaciones.manejar_encabezados_por_anio_lectivo_en_calificaciones'=>'No']);
+        $g=$this->grupo('TERCER PERIODO',202);$this->columna($g,'C1',100,'NUEVA');
+        $controller=new EncabezadoCalificacionController;
+        $this->assertSame('CREADO',$controller->store($this->requestActividad(['peso'=>30,'label'=>'ANTIGUA'])));
+        $this->assertSame('CREADO',$controller->store($this->requestActividad(['columna_calificacion'=>'C2','peso'=>70])));
+        $servicio=new EncabezadosCalificacionService;
+        $this->assertSame('estandar',$servicio->getModoEncabezados(201,2026));
+        $this->assertSame('agrupaciones',$servicio->getModoEncabezados(202,2026));
+        $resumen=$servicio->getResumenParaCarga(2026,201,4,9);
+        $this->assertEquals(30,$resumen['array_pesos'][1]);
+        $this->assertSame('ANTIGUA',$resumen['columnas'][1]->label);
+        $this->assertFalse($resumen['usar_encabezados_fijos']);
+        $this->assertNull(EncabezadoCalificacion::where('periodo_id',201)->first()->agrupacion_columna_id);
+        $calc=new CalificacionDefinitivaService;
+        $this->assertEquals(4.4,$calc->calcular(2026,201,4,9,['C1'=>3,'C2'=>5]));
+        $this->assertEquals(0.9,$calc->calcular(2026,201,4,9,['C1'=>3]));
+        $this->assertFalse($g->fresh()->enUso());
+        $r=$this->requestActividad();$this->app->instance('request',$r);Illuminate\Support\Facades\Facade::clearResolvedInstance('request');
+        $html=$controller->create();
+        $this->assertNotContains('id="actividad_agrupada"',$html);
+        $this->assertContains('name="peso"',$html);
+    }
+
+    public function test_corregir_nota_anterior_no_bloquea_grupos_futuros_ni_recalcula_otros_estudiantes()
+    {
+        $this->activar();
+        config(['calificaciones.manejar_encabezados_por_anio_lectivo_en_calificaciones'=>'No']);
+        $g=$this->grupo('TERCER PERIODO',202);$this->columna($g,'C1',100);
+        $header=new EncabezadoCalificacionController;
+        $header->store($this->requestActividad(['peso'=>30]));
+        $header->store($this->requestActividad(['columna_calificacion'=>'C2','peso'=>70]));
+        Schema::table('sga_calificaciones',function($t){$t->text('logros')->nullable();$t->string('creado_por')->nullable();$t->string('modificado_por')->nullable();});
+        Schema::table('sga_calificaciones_auxiliares',function($t){$t->string('creado_por')->nullable();$t->string('modificado_por')->nullable();$t->timestamps();});
+        DB::table('sga_calificaciones')->insert(['id_colegio'=>1,'anio'=>2026,'id_periodo'=>201,'curso_id'=>4,'id_asignatura'=>9,'id_estudiante'=>2,'codigo_matricula'=>'M2','calificacion'=>4.9]);
+        $reflection=new ReflectionClass(App\Http\Controllers\Calificaciones\CalificacionController::class);
+        $controller=$reflection->newInstanceWithoutConstructor();$prop=$reflection->getProperty('colegio');$prop->setAccessible(true);$prop->setValue($controller,(object)['id'=>1]);
+        $base=['anio'=>2026,'id_periodo'=>201,'curso_id'=>4,'id_asignatura'=>9,'cantidad_calificaciones'=>16,'id_estudiante'=>1,'codigo_matricula'=>'M1','fila_id'=>'fila_1'];
+        $primera=$controller->store_calificacion(array_merge($base,['C1'=>3,'C2'=>5]));
+        $this->assertEquals(4.4,$primera[0]->calificacion_texto);
+        $corregida=$controller->store_calificacion(array_merge($base,['C1'=>4,'C2'=>5,'id_calificacion'=>$primera[0]->id_calificacion,'id_calificacion_aux'=>$primera[0]->id_calificacion_aux]));
+        $this->assertEquals(4.7,$corregida[0]->calificacion_texto);
+        $this->assertFalse(isset($corregida[0]->definitivas_alcance));
+        $this->assertEquals(4.9,DB::table('sga_calificaciones')->where('id_estudiante',2)->value('calificacion'));
+        $this->assertFalse($g->fresh()->enUso());
+    }
+
+    public function test_encabezado_anual_recalcula_periodos_antiguos_pero_no_los_agrupados()
+    {
+        $this->activar();
+        config(['calificaciones.manejar_encabezados_por_anio_lectivo_en_calificaciones'=>'Si']);
+        $this->columna($this->grupo('TERCER PERIODO',202),'C1',100);
+        foreach ([201=>1,202=>5] as $periodo=>$nota) {
+            DB::table('sga_calificaciones')->insert(['id_colegio'=>1,'anio'=>2026,'id_periodo'=>$periodo,'curso_id'=>4,'id_asignatura'=>9,'id_estudiante'=>1,'codigo_matricula'=>'M1','calificacion'=>$nota]);
+            DB::table('sga_calificaciones_auxiliares')->insert(['id_colegio'=>1,'anio'=>2026,'id_periodo'=>$periodo,'curso_id'=>4,'id_asignatura'=>9,'id_estudiante'=>1,'codigo_matricula'=>'M1','C1'=>3]);
+        }
+        $e=EncabezadoCalificacion::create(['anio'=>2026,'periodo_id'=>null,'curso_id'=>null,'asignatura_id'=>null,'columna_calificacion'=>'C1','peso'=>100]);
+        $servicio=new EncabezadosCalificacionService;
+        $this->assertSame('anio',$servicio->getModoEncabezados(201,2026));
+        $this->assertEquals(3,DB::table('sga_calificaciones')->where('id_periodo',201)->value('calificacion'));
+        $e->peso=80;$e->save();
+        $this->assertEquals(2.4,DB::table('sga_calificaciones')->where('id_periodo',201)->value('calificacion'));
+        $this->assertEquals(5,DB::table('sga_calificaciones')->where('id_periodo',202)->value('calificacion'));
+    }
+
+    public function test_agrupaciones_de_otra_empresa_o_anio_no_activan_el_modo()
+    {
+        $this->activar();
+        config(['calificaciones.manejar_encabezados_por_anio_lectivo_en_calificaciones'=>'No']);
+        DB::table('sga_agrupaciones_calificacion')->insert([
+            ['empresa_id'=>2,'anio'=>2026,'periodo_id'=>null,'titulo'=>'OTRO COLEGIO','peso'=>100,'estado'=>'Activo'],
+            ['empresa_id'=>1,'anio'=>2025,'periodo_id'=>null,'titulo'=>'OTRO AÑO','peso'=>100,'estado'=>'Activo']
+        ]);
+        $this->assertSame('estandar',(new EncabezadosCalificacionService)->getModoEncabezados(201,2026));
+    }
+
+    public function test_grupo_en_borrador_del_periodo_no_se_oculta_con_modo_estandar()
+    {
+        $this->activar();$g=$this->grupo('INCOMPLETO',201);
+        DB::table('sga_agrupaciones_calificacion')->where('id',$g->id)->update(['estado'=>'Borrador']);
+        $this->setExpectedException(Symfony\Component\HttpKernel\Exception\HttpException::class);
+        (new EncabezadosCalificacionService)->getResumenParaCarga(2026,201,4,9);
+    }
+
+    public function test_anio_falso_no_permite_eludir_las_agrupaciones_del_periodo()
+    {
+        $this->activar();$this->columna($this->grupo('TERCER PERIODO',202),'C1',100);
+        $this->setExpectedException(Symfony\Component\HttpKernel\Exception\HttpException::class);
+        (new EncabezadoCalificacionController)->store($this->requestActividad(['anio'=>2025,'periodo_id'=>202]));
+    }
+
     public function test_agrupaciones_definen_labels_y_pesos_antes_de_crear_actividades()
     {
         $this->activar();

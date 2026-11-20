@@ -109,7 +109,7 @@
                             <p class="help-block">No: encabezados individuales por curso y asignatura. Sí: se usan los encabezados del periodo; si no hay, los del mismo año sin periodo, curso ni asignatura asignados. Los encabezados del periodo reemplazan el conjunto anual completo.</p>
                             <hr>
                             {{ Form::bsSelect('usar_agrupaciones_columnas_calificaciones', isset($parametros['usar_agrupaciones_columnas_calificaciones']) ? $parametros['usar_agrupaciones_columnas_calificaciones'] : 'No', 'Usar agrupaciones de columnas con actividades independientes', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
-                            <p class="help-block">Este modo tiene prioridad sobre los encabezados fijos. Configure las agrupaciones en Catálogos: título y porcentaje por agrupación (total 100%), repartido por igual entre sus columnas; label por columna. La modal de cada columna permite registrar únicamente fecha y descripción por periodo, curso y asignatura.</p>
+                            <p class="help-block">Se aplica a los periodos con agrupaciones propias o comunes del año y tiene prioridad sobre los encabezados fijos. Los periodos sin agrupaciones conservan el esquema anterior. Para comenzar desde un periodo específico, asigne ese periodo a las agrupaciones; déjelo vacío solo si deben aplicarse a todo el año. Configure título y porcentaje por agrupación (total 100%), con label y porcentaje interno por columna. La modal de cada columna permite registrar únicamente fecha y descripción por periodo, curso y asignatura.</p>
 
 						</div>
 					</div>

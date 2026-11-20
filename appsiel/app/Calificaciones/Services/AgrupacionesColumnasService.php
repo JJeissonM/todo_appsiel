@@ -10,6 +10,21 @@ class AgrupacionesColumnasService
 {
     public function activo() { return config('calificaciones.usar_agrupaciones_columnas_calificaciones', 'No') === 'Si'; }
 
+    public function aplica($anio, $periodoId)
+    {
+        if (!$this->activo()) return false;
+        if ((int)$periodoId > 0) {
+            $periodo = \App\Calificaciones\Periodo::find($periodoId);
+            if ($periodo) $anio = (int)substr($periodo->fecha_desde, 0, 4);
+        }
+        if (!(int)$anio) return false;
+        // Un conjunto incompleto o en borrador también debe validarse, no ocultarse.
+        return AgrupacionCalificacion::where('anio', (int)$anio)->where(function ($q) use ($periodoId) {
+            $q->whereNull('periodo_id');
+            if ((int)$periodoId > 0) $q->orWhere('periodo_id', (int)$periodoId);
+        })->exists();
+    }
+
     public function grupos($anio, $periodoId)
     {
         $query = AgrupacionCalificacion::where('anio', $anio)->where('estado', 'Activo');
@@ -47,7 +62,8 @@ class AgrupacionesColumnasService
 
     public function aplicarActividad(EncabezadoCalificacion $actividad)
     {
-        if (!$this->activo()) return;
+        if (!$this->aplica($actividad->anio, $actividad->periodo_id)) return;
+        if (!$actividad->periodo_id && !$actividad->curso_id && !$actividad->asignatura_id) return;
         $this->validarContexto($actividad->curso_id, $actividad->asignatura_id);
         $periodo = \App\Calificaciones\Periodo::find($actividad->periodo_id);
         if (!$periodo || !(int)$actividad->curso_id || !(int)$actividad->asignatura_id) abort(422, 'La actividad requiere periodo, curso y asignatura.');
@@ -64,7 +80,7 @@ class AgrupacionesColumnasService
 
     public function bloquearPorCalificacion($auxiliar)
     {
-        if (!$this->activo()) return;
+        if (!$this->aplica($auxiliar->anio, $auxiliar->id_periodo)) return;
         $ids = [];
         foreach ($this->columnas($auxiliar->anio, $auxiliar->id_periodo) as $columna) $ids[] = $columna->agrupacion_id;
         AgrupacionCalificacion::whereIn('id', array_unique($ids))->update(['bloqueado' => true]);

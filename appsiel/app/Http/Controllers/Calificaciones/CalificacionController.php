@@ -449,7 +449,7 @@ class CalificacionController extends Controller
         }
 
         $calculadora = app(CalificacionDefinitivaService::class);
-        $linea_datos['calificacion'] = app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo() ? 0 : $calculadora->calcular(
+        $linea_datos['calificacion'] = app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->aplica($identificador['anio'], $identificador['id_periodo']) ? 0 : $calculadora->calcular(
             $identificador['anio'],
             $identificador['id_periodo'],
             $identificador['curso_id'],
@@ -463,7 +463,7 @@ class CalificacionController extends Controller
         $fila_id = $json_fila['fila_id'] ?? null;
 
         return DB::transaction(function () use ($id_calificacion, $linea_datos, $json_fila, $identificador, $request_time, $should_delete, $fila_id, $calculadora) {
-            if (app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo()) {
+            if (app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->aplica($identificador['anio'], $identificador['id_periodo'])) {
                 // Una nota puede activar una columna para toda la clase: serializar los guardados del curso.
                 Curso::where('id', $identificador['curso_id'])->lockForUpdate()->firstOrFail();
                 $linea_datos['calificacion'] = $calculadora->calcular($identificador['anio'], $identificador['id_periodo'],
@@ -573,7 +573,7 @@ class CalificacionController extends Controller
                 'id_calificacion_aux' => $id_calificacion_aux
             ]
         ];
-        if ($identificador && app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo()) {
+        if ($identificador && app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->aplica($identificador['anio'], $identificador['id_periodo'])) {
             $scope = array_intersect_key($identificador, array_flip(['id_colegio','anio','id_periodo','curso_id','id_asignatura']));
             $respuesta[0]->definitivas_alcance = Calificacion::where($scope)->get(['id_estudiante', 'calificacion'])->toArray();
             if (is_numeric($id_calificacion)) $respuesta[0]->calificacion_texto = Calificacion::where('id', $id_calificacion)->value('calificacion');

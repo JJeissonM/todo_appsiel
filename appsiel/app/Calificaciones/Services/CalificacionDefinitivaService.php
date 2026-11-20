@@ -82,8 +82,9 @@ class CalificacionDefinitivaService
         $usarFijos = $this->encabezadosCalificacionService->usarEncabezadosFijosEnPeriodo($periodoId);
 		$encabezadoGlobal = is_null($encabezado->curso_id) && is_null($encabezado->asignatura_id);
 
-        if ($encabezadoGlobal && app(AgrupacionesColumnasService::class)->activo()) return 0;
         $encabezadoAnual = $periodoId === 0 && $encabezadoGlobal;
+        $modo = $this->encabezadosCalificacionService->getModoEncabezados($periodoId, $encabezado->anio);
+        if ($encabezadoGlobal && !$encabezadoAnual && $modo === 'agrupaciones') return 0;
         if ($encabezadoAnual) {
             if (!$this->encabezadosCalificacionService->manejarEncabezadosFijosPorPeriodo() || (int)$encabezado->anio <= 0) {
                 return 0;
@@ -91,7 +92,7 @@ class CalificacionDefinitivaService
             $query = CalificacionAuxiliar::where('anio', (int)$encabezado->anio);
         } else {
             $query = CalificacionAuxiliar::where('id_periodo', $periodoId);
-            if ((!$usarFijos || app(AgrupacionesColumnasService::class)->activo()) && !$encabezadoGlobal) {
+            if ((!$usarFijos || $modo === 'agrupaciones') && !$encabezadoGlobal) {
                 $query->where('curso_id', $encabezado->curso_id)
                     ->where('id_asignatura', $encabezado->asignatura_id);
             }
@@ -101,7 +102,8 @@ class CalificacionDefinitivaService
         $query->chunk(200, function ($auxiliares) use (&$actualizadas, $encabezadoAnual) {
             foreach ($auxiliares as $auxiliar) {
                 // Los periodos con configuración propia no dependen del encabezado anual.
-                if ($encabezadoAnual && $this->encabezadosCalificacionService->periodoTieneEncabezadosFijos($auxiliar->id_periodo)) {
+                if ($encabezadoAnual && ($this->encabezadosCalificacionService->periodoTieneEncabezadosFijos($auxiliar->id_periodo)
+                    || $this->encabezadosCalificacionService->getModoEncabezados($auxiliar->id_periodo, $auxiliar->anio) === 'agrupaciones')) {
                     continue;
                 }
                 $definitiva = $this->calcular(
@@ -141,7 +143,7 @@ class CalificacionDefinitivaService
 
     public function recalcularAlcancePorAuxiliar($auxiliar)
     {
-        if (!app(AgrupacionesColumnasService::class)->activo()) return;
+        if (!app(AgrupacionesColumnasService::class)->aplica($auxiliar->anio, $auxiliar->id_periodo)) return;
         $servicio = app(ColumnasCalificadasService::class);
         $colegio = $auxiliar->id_colegio;
         $filas = $servicio->consulta($auxiliar->anio, $auxiliar->id_periodo, $auxiliar->curso_id, $auxiliar->id_asignatura, $colegio)->get();

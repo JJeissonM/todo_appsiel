@@ -103,7 +103,7 @@ class EncabezadoCalificacion extends Model
 		$reglaFecha = $this->esEncabezadoSoloPorPeriodo($request, $id)
 			? 'date_format:Y-m-d'
 			: 'required|date_format:Y-m-d';
-		$pesoMaximo = app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->activo()
+		$pesoMaximo = app(\App\Calificaciones\Services\AgrupacionesColumnasService::class)->aplica($request->input('anio'), $request->input('periodo_id'))
             ? 100 : max(0, 100 - $this->getSumaPesosDelAlcance($request, $id));
 
 		$controller->validate(
