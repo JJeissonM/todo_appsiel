@@ -35,7 +35,7 @@
     	<a class="btn-gmail" href="{{ url($url) }}" title="Representación gráfica (PDF)" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
 
 		@if( config('facturacion_electronica.proveedor_tecnologico_default') == 'OSEI' )
-			<a class="btn-gmail btn-reenviar-correo-osei" href="#" title="Reenviar correo" data-url="{{ url('fe_reenviar_correo/' . $doc_encabezado->id . '/' . $tipo_operacion) }}" data-email="{{ $doc_encabezado->tercero->email }}"><i class="fa fa-envelope"></i></a>
+			<a class="btn-gmail btn-reenviar-correo-osei" href="#" title="Reenviar correo" data-url="{{ url('fe_reenviar_correo/' . $doc_encabezado->id . '/' . $tipo_operacion) }}" data-email="{{ $doc_encabezado->tercero ? $doc_encabezado->tercero->email : '' }}"><i class="fa fa-envelope"></i></a>
 		@endif
 	@endif
 

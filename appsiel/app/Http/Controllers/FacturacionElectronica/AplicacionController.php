@@ -148,18 +148,17 @@ class AplicacionController extends Controller
             return response()->json(['ok' => false, 'message' => 'Máximo 10 correos.']);
         }
 
-        switch ( $tipo_operacion )
-        {
-            case 'support_doc':
-                $encabezado_doc = DocSoporte::find( $doc_encabezado_id );
-                $documento = new OSEIDocSoporte( $encabezado_doc, $tipo_operacion );
-                break;
+        $encabezado_doc = $tipo_operacion == 'support_doc'
+            ? DocSoporte::find( $doc_encabezado_id )
+            : Factura::find( $doc_encabezado_id );
 
-            default:
-                $encabezado_doc = Factura::find( $doc_encabezado_id );
-                $documento = new FacturaGeneralOsei( $encabezado_doc, $tipo_operacion );
-                break;
+        if ( !$encabezado_doc ) {
+            return response()->json(['ok' => false, 'message' => 'Documento no encontrado.'], 404);
         }
+
+        $documento = $tipo_operacion == 'support_doc'
+            ? new OSEIDocSoporte( $encabezado_doc, $tipo_operacion )
+            : new FacturaGeneralOsei( $encabezado_doc, $tipo_operacion );
 
         $prefijo = $documento->prefijo_osei();
         $numero = $encabezado_doc->consecutivo;
