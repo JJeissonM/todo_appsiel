@@ -144,6 +144,17 @@ class PedidosPosController extends TransaccionController
      */
     public function store(Request $request)
     {
+        // Validar antes de reservar consecutivos o crear encabezados/registros.
+        $transaccion = TipoTransaccion::find((int) $request->core_tipo_transaccion_id);
+        if (is_null($transaccion)
+            || !in_array((int) $transaccion->id, [42, 60], true)
+            || !$transaccion->tipos_documentos()
+                ->where('core_tipos_docs_apps.id', (int) $request->core_tipo_doc_app_id)->exists()) {
+            return response()->json([
+                'message' => 'El tipo de documento no corresponde a la transacción de pedidos. Recargue el formulario y seleccione un documento de pedido válido.'
+            ], 422);
+        }
+
         $lineas_registros = json_decode($request->lineas_registros);
 
         // Crear documento de Ventas
@@ -359,7 +370,11 @@ class PedidosPosController extends TransaccionController
         $lineas_registros = json_decode($request->lineas_registros);
         $total_factura = $this->get_total_factura_from_arr_lineas_registros($lineas_registros);
 
-        $doc_encabezado = VtasDocEncabezado::find($id);
+        $doc_encabezado = VtasDocEncabezado::findOrFail($id);
+        // Al editar, las líneas conservan la identidad del encabezado existente.
+        $request['core_tipo_transaccion_id'] = $doc_encabezado->core_tipo_transaccion_id;
+        $request['core_tipo_doc_app_id'] = $doc_encabezado->core_tipo_doc_app_id;
+        $request['consecutivo'] = $doc_encabezado->consecutivo;
         $doc_encabezado->fecha = $request->fecha;
         $doc_encabezado->descripcion = $request->descripcion;
         $doc_encabezado->forma_pago = $request->forma_pago;

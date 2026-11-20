@@ -170,7 +170,7 @@
 
             {{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
-            @include('ventas_pos.crud_factura_campos_ocultos')         
+            @include('ventas_pos.crud_factura_campos_ocultos', ['es_formulario_pedido' => true])
 
             <div class="container-fluid">
                 <div class="row well">

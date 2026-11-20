@@ -50,7 +50,10 @@
         required="required">
 <input type="hidden" name="core_empresa_id" id="core_empresa_id" value="{{ Auth::user()->empresa_id }}">
 <input type="hidden" name="core_tipo_transaccion_id" id="core_tipo_transaccion_id" value="{{ Input::get('id_transaccion') }}">
+{{-- Los pedidos ya tienen el tipo documental configurado en los campos del modelo. --}}
+@if(empty($es_formulario_pedido))
 <input type="hidden" name="core_tipo_doc_app_id" id="core_tipo_doc_app_id" value="{{ $pdv->tipo_doc_app_default_id }}">
+@endif
 
 {{ Form::hidden( 'pdv_id', Input::get('pdv_id'), ['id'=>'pdv_id'] ) }}
 {{ Form::hidden('cajero_id', Auth::user()->id, ['id'=>'cajero_id'] ) }}
