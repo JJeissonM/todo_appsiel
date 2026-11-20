@@ -174,7 +174,9 @@
     <script src="{{ asset('assets/js/ventas_pos/cantidad_unitaria.js?v=1') }}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/precios.js?v=' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/clientes.js?v=' . $asset_v )}}"></script>
+    @if(\App\Sistema\Aplicacion::facturacionElectronicaActiva())
     <script src="{{ asset( 'assets/js/ventas/consulta_adquiriente.js?v=' . $asset_v )}}"></script>
+    @endif
     <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?v=cantidad-1-' . $asset_v )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/commons.js?v=' . $asset_v . '-pos-cantidad-1' )}}"></script>
 

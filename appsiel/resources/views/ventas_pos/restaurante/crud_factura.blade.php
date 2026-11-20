@@ -179,7 +179,9 @@
     <script src="{{ asset( 'assets/js/ventas_pos/catalogos.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/precios.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/clientes.js?aux=' . uniqid() )}}"></script>
+    @if(\App\Sistema\Aplicacion::facturacionElectronicaActiva())
     <script src="{{ asset( 'assets/js/ventas/consulta_adquiriente.js?aux=' . uniqid() )}}"></script>
+    @endif
         
     <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/commons.js?aux=' . uniqid() )}}"></script>

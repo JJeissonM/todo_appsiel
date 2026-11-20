@@ -29,7 +29,12 @@ class ClienteController extends ModeloController
      */
     public function create()
     {
-        return parent::create()->with('archivo_js_create', 'assets/js/ventas/consulta_adquiriente.js');
+        $vista = parent::create();
+        if (\App\Sistema\Aplicacion::facturacionElectronicaActiva()) {
+            $vista->with('archivo_js_create', 'assets/js/ventas/consulta_adquiriente.js');
+        }
+
+        return $vista;
     }
 
     /**

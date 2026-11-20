@@ -12,6 +12,11 @@ class Aplicacion extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Ámbito', 'Descripción', 'Detalles', 'Tipo precio', 'Precio', 'Orden', 'Estado'];
 
+    public static function facturacionElectronicaActiva()
+    {
+        return static::where('id', 21)->where('estado', 'Activo')->exists();
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $registros = Aplicacion::select(

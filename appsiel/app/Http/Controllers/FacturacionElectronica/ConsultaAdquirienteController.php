@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\FacturacionElectronica;
 
 use App\Core\Tercero;
+use App\Sistema\Aplicacion;
 use App\FacturacionElectronica\OSEI\ConsultaAdquiriente;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,10 @@ class ConsultaAdquirienteController extends Controller
 
     public function consultar($tipo, $numero)
     {
+        if (!Aplicacion::facturacionElectronicaActiva()) {
+            return response()->json(['status' => ConsultaAdquiriente::DESHABILITADA]);
+        }
+
         if (!preg_match('/^\d{2}$/', $tipo) || !preg_match('/^[A-Za-z0-9-]{3,20}$/', $numero)) {
             return response()->json(['status' => ConsultaAdquiriente::NO_DISPONIBLE]);
         }
