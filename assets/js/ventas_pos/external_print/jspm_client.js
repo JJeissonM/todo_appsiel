@@ -52,7 +52,7 @@
 
     function send(printerName, commands) {
         if (!printerName || !String(printerName).trim()) {
-            return Promise.reject(new Error('Configure la impresora de cocina.'));
+            return Promise.reject(new Error('Configure la impresora de cocina en Ventas POS: impresora_cocina_por_defecto.'));
         }
         return waitUntilReady().then(function () {
             return new Promise(function (resolve, reject) {

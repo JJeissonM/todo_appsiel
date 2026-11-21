@@ -505,7 +505,7 @@ function print_comanda_jspm(doc_encabezado)
             throw new Error('No se pudo cargar la conexión con JSPrintManager. Recargue la página.');
         }
         return window.APPSIEL_JSPM.send(
-            $('#impresora_cocina_por_defecto').val(),
+            $('#jspm_impresora_cocina_por_defecto').val(),
             crear_comanda_jspm_pos(doc_encabezado)
         );
     } catch (error) {

@@ -1,4 +1,90 @@
-﻿function print_comanda() {
+$(document).ready(function () {
+    if (pedidos_metodo_impresion_cocina() === 'jspm' && window.APPSIEL_JSPM) {
+        window.APPSIEL_JSPM.start();
+    }
+});
+
+function pedidos_metodo_impresion_cocina() {
+    if ($('#metodo_impresion_pedido_ventas').val() === 'apm') {
+        return 'apm';
+    }
+    return $('#usar_complemento_JSPrintManager').val() === '1' ? 'jspm' : 'normal';
+}
+
+function pedidos_imprimir_guardado() {
+    var metodo = pedidos_metodo_impresion_cocina();
+    var modo = $('#enviar_impresion_directamente_a_la_impresora').val();
+    var directo = modo === '1';
+    if (metodo !== 'normal' && modo === '2') {
+        directo = confirm('¿Quiere imprimir el PEDIDO en la cocina?');
+    }
+    if (metodo === 'normal' || !directo) {
+        if (!ventana_imprimir()) {
+            pedidos_notificar_popup_bloqueado();
+        }
+        return Promise.resolve();
+    }
+
+    Swal.fire({
+        title: 'Enviando pedido a cocina',
+        text: 'Esperando conexión y confirmación de la impresora…',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        onOpen: function () { Swal.showLoading(); }
+    });
+    // print_comanda captura el pedido antes de que commons limpie el formulario.
+    return print_comanda().then(function () {
+        Swal.fire({ icon: 'info', title: 'Impresión enviada', text: 'Pedido enviado a la impresora de COCINA.' });
+    }).catch(function (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Pedido guardado con novedad de impresión',
+            text: error && (error.ErrorMessage || error.message) || 'No fue posible enviar el pedido a la cocina. Revise la impresora antes de reintentar.'
+        });
+    });
+}
+
+function crear_comanda_jspm_pedido_pos() {
+    var escpos = Neodynamic.JSESCPOSBuilder;
+    var doc = new escpos.Document();
+    var lineas = '\n  CANT.        ITEM\n______________________________\n';
+    var cantidad_items = 0;
+    $('.linea_registro').each(function () {
+        var nombre = $(this).find('.lbl_producto_descripcion').text().trim();
+        lineas += $(this).find('.cantidad').text().trim() + ' - ' + nombre.substring(0, 20) + '\n';
+        for (var inicio = 20; inicio < nombre.length; inicio += 20) {
+            lineas += ' ' + nombre.substring(inicio, inicio + 20) + '\n';
+        }
+        lineas += '\n';
+        cantidad_items++;
+    });
+    lineas += 'Detalle: ' + $('.lbl_descripcion_doc_encabezado').first().text() + '\n';
+    lineas += '# TOTAL ITEMS: ' + cantidad_items + '\n';
+    lineas += 'VENTA TOTAL: ' + $('.lbl_total_factura').first().text() + '\n';
+    return doc.beep(3, 2)
+        .font(escpos.FontFamily.A).align(escpos.TextAlignment.Center).style([escpos.FontStyle.Bold])
+        .size(0, 1)
+        .text('PEDIDO # ' + $('.lbl_consecutivo_doc_encabezado').first().text())
+        .text('F. ' + $('#lbl_fecha').text())
+        .text($('.lbl_cliente_descripcion').first().text())
+        .text('Atiende: ' + $('.lbl_atendido_por').first().text())
+        .font(escpos.FontFamily.B)
+        .size(1, parseFloat($('#tamanio_letra_impresion_items_cocina').val()) || 0)
+        .text(lineas).feed(5).cut().generateUInt8Array();
+}
+
+function print_comanda() {
+    if (pedidos_metodo_impresion_cocina() === 'jspm') {
+        try {
+            if (!window.APPSIEL_JSPM) {
+                throw new Error('No se pudo cargar la conexión con JSPrintManager. Recargue la página.');
+            }
+            return window.APPSIEL_JSPM.send($('#jspm_impresora_cocina_por_defecto').val(), crear_comanda_jspm_pedido_pos());
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
     if ( !window.APM_CLIENT || typeof window.APM_CLIENT.enqueuePrintJob !== 'function' ) {
         return Promise.reject({
             Status: 'ERROR',

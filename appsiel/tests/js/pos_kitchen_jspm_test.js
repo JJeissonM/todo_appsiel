@@ -9,7 +9,8 @@ function setup(options = {}) {
         '#usar_complemento_JSPrintManager': options.enabled === false ? '0' : '1',
         '#enviar_impresion_directamente_a_la_impresora': options.mode || '1',
         '#imprimir_factura_automaticamente': '0',
-        '#impresora_cocina_por_defecto': options.noPrinter ? '' : 'COCINA POS',
+        '#impresora_cocina_por_defecto': 'APM-PDV-DIFERENTE',
+        '#jspm_impresora_cocina_por_defecto': options.noPrinter ? '' : 'COCINA POS',
         '#action': 'create',
         '#valor_total_factura': '45000',
         '#tamanio_letra_impresion_items_cocina': '1'

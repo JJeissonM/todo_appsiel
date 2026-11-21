@@ -6,6 +6,7 @@
 <input type="hidden" id="impresora_principal_por_defecto" name="impresora_principal_por_defecto" value="{{ $params_JSPrintManager->impresora_principal_por_defecto }}">
 
 <input type="hidden" id="impresora_cocina_por_defecto" name="impresora_cocina_por_defecto" value="{{ $params_JSPrintManager->impresora_cocina_por_defecto }}">
+<input type="hidden" id="jspm_impresora_cocina_por_defecto" value="{{ config('ventas_pos.impresora_cocina_por_defecto') }}">
 
 <input type="hidden" id="ancho_formato_impresion" name="ancho_formato_impresion" value="{{ config('ventas_pos.ancho_formato_impresion') }}">
 

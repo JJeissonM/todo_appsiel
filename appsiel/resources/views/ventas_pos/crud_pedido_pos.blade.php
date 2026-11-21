@@ -274,6 +274,7 @@
     <script src="{{ asset( 'assets/js/ventas_pos/pedidos/commons.js?aux=' . uniqid() )}}"></script>
 
     @include('ventas.apm_scripts')
+    @include('ventas_pos.formatos_impresion.scripts_comanda_jspm', ['metodo_impresion_jspm' => config('ventas.metodo_impresion_pedido_ventas')])
     <script src="{{ asset( 'assets/js/ventas_pos/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/pedidos/facturas.js?aux=' . uniqid() )}}"></script>

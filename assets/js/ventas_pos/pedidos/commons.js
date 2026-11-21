@@ -568,22 +568,7 @@ $(document).ready(function () {
 
                 llenar_tabla_productos_facturados();
 
-                var metodo_impresion_pedido = $('#metodo_impresion_pedido_ventas').val() || 'normal';
-                if ( metodo_impresion_pedido == 'apm' && typeof print_comanda === 'function' )
-                {
-                    print_comanda().catch(function (error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: error && error.ErrorMessage ? error.ErrorMessage : 'No fue posible enviar el pedido a APM.'
-                        });
-                    });
-                }
-
-                var ventana_pedido_abierta = ventana_imprimir();
-                if (!ventana_pedido_abierta) {
-                    pedidos_notificar_popup_bloqueado();
-                }
+                pedidos_imprimir_guardado();
             }else{
 
                 // Cuando el formato de de impresion es cotizacion, doc_encabezado_consecutivo en realidad es el doc_encabezado_id
