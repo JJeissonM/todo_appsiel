@@ -8,7 +8,8 @@
         $registro->teso_caja_id,
         $registro->creado_por,
         $registro->turno_operativo_id,
-        $registro->core_empresa_id
+        $registro->core_empresa_id,
+        $registro->pdv_id
     );
 ?>
 

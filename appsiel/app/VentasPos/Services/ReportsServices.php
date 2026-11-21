@@ -76,9 +76,26 @@ class ReportsServices
         return View::make( 'ventas_pos.formatos_impresion.resumen_diario', compact('data_by_items', 'fecha_desde', 'fecha_hasta', 'ventas_por_medios_pago_con_iva', 'ventas_contado_sin_iva', 'ventas_credito_sin_iva', 'pdv_id', 'movimientos', 'view') )->render();
     }
 
-    public function resumen_ventas_arqueo_caja($fecha, $teso_caja_id, $creado_por = null)
+    protected function get_pdv_arqueo($teso_caja_id, $pdv_id, $empresa_id)
     {
-        $pdv = Pdv::where('caja_default_id',$teso_caja_id)->get()->first();
+        if ((int)$empresa_id <= 0 && auth()->check()) {
+            $empresa_id = (int)auth()->user()->empresa_id;
+        }
+        $query = Pdv::where('caja_default_id', (int)$teso_caja_id);
+        if ((int)$empresa_id > 0) {
+            $query->where('core_empresa_id', (int)$empresa_id);
+        }
+        if ((int)$pdv_id > 0) {
+            // Varias terminales pueden usar la misma caja. El arqueo identifica
+            // cuál se debe consultar; no sustituirlo por la primera terminal.
+            $query->where('id', (int)$pdv_id);
+        }
+        return $query->orderBy('id')->first();
+    }
+
+    public function resumen_ventas_arqueo_caja($fecha, $teso_caja_id, $creado_por = null, $pdv_id = 0, $empresa_id = null)
+    {
+        $pdv = $this->get_pdv_arqueo($teso_caja_id, $pdv_id, $empresa_id);
 
         if ($pdv == null) {
             return (object)[
@@ -96,7 +113,7 @@ class ReportsServices
                                 ->whereBetween('fecha', [$fecha, $fecha]);
 
         if ( !is_null($creado_por) ) {
-            $empresa_id = auth()->check() ? auth()->user()->empresa_id : null;
+            $empresa_id = (int)$pdv->core_empresa_id;
             $emails_filtro_creado_por = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
             $documentos_pdv->whereIn('creado_por', $emails_filtro_creado_por);
         }
@@ -168,9 +185,9 @@ class ReportsServices
     /**
      * 
      */
-    public function resumen_propinas_arqueo_caja($fecha, $teso_caja_id, $creado_por = null)
+    public function resumen_propinas_arqueo_caja($fecha, $teso_caja_id, $creado_por = null, $pdv_id = 0, $empresa_id = null)
     {
-        $pdv = Pdv::where('caja_default_id',$teso_caja_id)->get()->first();
+        $pdv = $this->get_pdv_arqueo($teso_caja_id, $pdv_id, $empresa_id);
 
         if ($pdv == null) {
             return (object)[
@@ -188,7 +205,7 @@ class ReportsServices
                                 ->whereBetween('fecha', [$fecha, $fecha]);
 
         if ( !is_null($creado_por) ) {
-            $empresa_id = auth()->check() ? auth()->user()->empresa_id : null;
+            $empresa_id = (int)$pdv->core_empresa_id;
             $emails_filtro_creado_por = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
             $documentos_pdv->whereIn('creado_por', $emails_filtro_creado_por);
         }
@@ -241,9 +258,9 @@ class ReportsServices
     /**
      * 
      */
-    public function resumen_ingresos_bolsas($fecha, $teso_caja_id)
+    public function resumen_ingresos_bolsas($fecha, $teso_caja_id, $pdv_id = 0, $empresa_id = null)
     {
-        $pdv = Pdv::where('caja_default_id',$teso_caja_id)->get()->first();
+        $pdv = $this->get_pdv_arqueo($teso_caja_id, $pdv_id, $empresa_id);
 
         if ($pdv == null) {
             return (object)[
@@ -498,7 +515,8 @@ class ReportsServices
         $teso_caja_id,
         $creado_por = null,
         $turno_operativo_id = null,
-        $empresa_id = null
+        $empresa_id = null,
+        $pdv_id = 0
     )
     {
         $empresa_id = (int)$empresa_id;
@@ -536,11 +554,7 @@ class ReportsServices
                 ->groupBy('teso_cuenta_bancaria_id');
         }
 
-        $pdv = Pdv::where('caja_default_id', $teso_caja_id);
-        if ($empresa_id > 0) {
-            $pdv->where('core_empresa_id', $empresa_id);
-        }
-        $pdv = $pdv->first();
+        $pdv = $this->get_pdv_arqueo($teso_caja_id, $pdv_id, $empresa_id);
         if ( is_null($pdv) ) {
             return collect([]);
         }

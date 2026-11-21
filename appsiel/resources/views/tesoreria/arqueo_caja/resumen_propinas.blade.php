@@ -2,7 +2,7 @@
 	use App\VentasPos\Services\ReportsServices;
 
     $service = new ReportsServices();
-    $result = $service->resumen_propinas_arqueo_caja($registro->fecha, $registro->teso_caja_id, $registro->creado_por);
+    $result = $service->resumen_propinas_arqueo_caja($registro->fecha, $registro->teso_caja_id, $registro->creado_por, $registro->pdv_id, $registro->core_empresa_id);
 
     $total_propinas = 0; 
 ?>

@@ -2,7 +2,7 @@
 	use App\VentasPos\Services\ReportsServices;
 
     $service = new ReportsServices();
-    $result = $service->resumen_ingresos_bolsas($registro->fecha, $registro->teso_caja_id);
+    $result = $service->resumen_ingresos_bolsas($registro->fecha, $registro->teso_caja_id, $registro->pdv_id, $registro->core_empresa_id);
 ?>
 
 @if( $result->status == 'success')
