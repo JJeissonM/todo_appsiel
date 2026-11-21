@@ -151,7 +151,7 @@
                                 <select name="mapeos[{{ $i }}][inv_producto_id]"
                                         class="form-control select2 select2-mapeo" {{ $solo_lectura ? 'disabled' : '' }}
                                         style="flex:1;">
-                                    <option value="">-- Seleccionar producto --</option>
+                                    <option value="">-- Seleccionar producto o servicio --</option>
                                     @foreach($productos_para_select as $prod)
                                         <option value="{{ $prod->id }}"
                                             {{ ($ya_mapeado && $pivot->inv_producto_id == $prod->id)

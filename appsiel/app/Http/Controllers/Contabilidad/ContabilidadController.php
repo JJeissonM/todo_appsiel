@@ -808,7 +808,7 @@ class ContabilidadController extends TransaccionController
                             [ 'valor_credito' => ($valor_credito * -1) ] + 
                             [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ] + 
                             [ 'teso_caja_id' => $teso_caja_id]  + 
-                            [ 'teso_cta_bancaria_id' => $teso_cta_bancaria_id] 
+                            [ 'teso_cuenta_bancaria_id' => $teso_cta_bancaria_id]
                         );
     }
 

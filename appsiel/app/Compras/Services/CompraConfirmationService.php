@@ -21,35 +21,83 @@ class CompraConfirmationService
 {
     public function confirm(ComprasDocEncabezado $documento, array $registros_medio_pago = [])
     {
-        if ($documento->estado === 'Anulado') {
-            throw new \Exception('No es posible confirmar un documento anulado.');
-        }
-
-        if ($this->hasPurchaseMovements($documento)) {
-            throw new \Exception('El documento ya tiene movimientos de compras registrados.');
-        }
-
-        if (!$documento->lineas_registros()->where('estado', 'Activo')->exists()) {
-            throw new \Exception('El documento no tiene líneas registradas para confirmar.');
-        }
-
-        if ($this->hasGeneratedFinancialRecords($documento)) {
-            throw new \Exception('El documento ya tiene contabilizaciones o registros financieros generados. Revise el estado antes de confirmar.');
-        }
-
         $operation = function () use ($documento, $registros_medio_pago) {
             return DB::transaction(function () use ($documento, $registros_medio_pago) {
+                // Mismo orden de bloqueo que la sincronización: empresa, factura, entradas.
+                \App\Core\Empresa::where('id', Auth::user()->empresa_id)->lockForUpdate()->firstOrFail();
+                $documento = ComprasDocEncabezado::where('core_empresa_id', Auth::user()->empresa_id)
+                    ->lockForUpdate()->findOrFail($documento->id);
+                if ($documento->estado === 'Anulado') {
+                    throw new \Exception('No es posible confirmar un documento anulado.');
+                }
+                if ($documento->sincronizado_bot && !empty($documento->cufe)
+                    && ComprasDocEncabezado::where('core_empresa_id', $documento->core_empresa_id)
+                        ->where('cufe', $documento->cufe)->where('id', '<>', $documento->id)
+                        ->where('estado', '<>', 'Anulado')->exists()) {
+                    throw new \Exception('Existe otra factura con el mismo CUFE. Revise el duplicado antes de generar una entrada de almacén.');
+                }
+                if ($this->hasPurchaseMovements($documento) || $this->hasGeneratedFinancialRecords($documento)) {
+                    throw new \Exception('El documento ya tiene movimientos o registros financieros. Revise el estado antes de confirmar.');
+                }
+                if (!$documento->lineas_registros()->where('estado', 'Activo')->exists()) {
+                    throw new \Exception('El documento no tiene líneas registradas para confirmar.');
+                }
                 $documento->load([
                     'lineas_registros' => function ($query) {
-                        $query->where('estado', 'Activo');
+                        $query->where('estado', 'Activo')->lockForUpdate();
                     },
                     'proveedor'
                 ]);
 
+                if (!$documento->proveedor || (int)$documento->proveedor->core_tercero_id !== (int)$documento->core_tercero_id) {
+                    throw new \Exception('La factura debe tener un proveedor válido asociado al mismo tercero.');
+                }
+
                 $this->ensureLinesHaveMotives($documento);
+                foreach ($documento->lineas_registros as $linea) {
+                    if (!(int)$linea->inv_producto_id) {
+                        throw new \Exception('La línea ' . $linea->id . ' está pendiente de mapear. '
+                            . 'Asocie el ítem del Bot a un producto o servicio antes de confirmar. '
+                            . 'Los servicios no generan movimientos de inventario.');
+                    }
+                    $producto = \App\Inventarios\InvProducto::where('core_empresa_id', $documento->core_empresa_id)
+                        ->where('estado', 'Activo')->find($linea->inv_producto_id);
+                    if (!$producto) {
+                        throw new \Exception('El producto o servicio de la línea ' . $linea->id
+                            . ' no está activo o no pertenece a la empresa. Revise su asociación.');
+                    }
+                    if (!is_finite((float)$linea->cantidad) || (float)$linea->cantidad <= 0) {
+                        throw new \Exception('La cantidad de la línea ' . $linea->id . ' debe ser positiva.');
+                    }
+                    $linea->update($this->getEffectiveLineValues($linea, $documento));
+                }
+                $neto = round($documento->lineas_registros->sum('precio_total')
+                    - $documento->lineas_registros->sum('valor_retencion')
+                    - (new ReteicaService())->liquidar_documento($documento), 2);
+                if ($documento->forma_pago == 'contado') {
+                    $motivo = \App\Tesoreria\TesoMotivo::where('core_empresa_id', $documento->core_empresa_id)
+                        ->where('estado', 'Activo')->where('movimiento', 'salida')
+                        ->find((int)config('tesoreria.motivo_tesoreria_compras_contado'));
+                    if (!$motivo) {
+                        throw new \InvalidArgumentException('Configure un motivo activo de compras de contado en tesorería para esta empresa.');
+                    }
+                    foreach ($registros_medio_pago as &$pago) {
+                        $pago['teso_motivo_id'] = $motivo->id;
+                    }
+                    unset($pago);
+                    $registros_medio_pago = (new CompraConfirmationPaymentService())->validate(
+                        $registros_medio_pago, $neto, $documento->core_empresa_id
+                    );
+                } else {
+                    $registros_medio_pago = [];
+                }
 
                 $request = $this->buildRequestFromDocument($documento);
                 $request['registros_medio_pago'] = $registros_medio_pago;
+                if (!\App\Inventarios\InvBodega::where('core_empresa_id', $documento->core_empresa_id)
+                    ->where('estado', 'Activo')->find($request->inv_bodega_id)) {
+                    throw new \Exception('Seleccione una bodega activa de la empresa para la entrada de almacén.');
+                }
 
                 if ($documento->forma_pago == 'contado' && empty($registros_medio_pago)) {
                     throw new \Exception('Debe ingresar un medio de pago para confirmar una factura de contado.');
@@ -72,6 +120,15 @@ class CompraConfirmationService
 
                 (new ReteicaService())->contabilizar($documento);
                 $this->ensureAccountingIsBalanced($documento);
+                $where = ['core_empresa_id'=>$documento->core_empresa_id,
+                    'core_tipo_transaccion_id'=>$documento->core_tipo_transaccion_id,
+                    'core_tipo_doc_app_id'=>$documento->core_tipo_doc_app_id, 'consecutivo'=>$documento->consecutivo];
+                $pagado = $documento->forma_pago == 'contado'
+                    ? abs((float)TesoMovimiento::where($where)->sum('valor_movimiento'))
+                    : (float)CxpMovimiento::where($where)->where('core_tercero_id', $documento->core_tercero_id)->sum('valor_documento');
+                if (round($pagado, 2) != $neto) {
+                    throw new \Exception('Los movimientos de tesorería o CxP no coinciden con el valor neto a pagar.');
+                }
             });
         };
 
@@ -92,6 +149,29 @@ class CompraConfirmationService
         }
 
         return $operation();
+    }
+
+    public function getPayableTotal(ComprasDocEncabezado $documento)
+    {
+        $total = 0;
+        $base = 0;
+        $retenciones = 0;
+        foreach ($documento->lineas_registros()->where('estado', 'Activo')->get() as $linea) {
+            $valores = $this->getEffectiveLineValues($linea, $documento);
+            $total += $valores['precio_total'];
+            $base += $valores['base_impuesto'];
+            $retenciones += (float)$linea->valor_retencion;
+        }
+        $reteica = (float)$documento->reteica_valor;
+        if ((int)$documento->reteica_retencion_id) {
+            $retencion = \App\Contabilidad\Retencion::where('estado', 'Activo')->find($documento->reteica_retencion_id);
+            if ($retencion) {
+                $original = ComprasDocEncabezado::where('core_empresa_id', $documento->core_empresa_id)->findOrFail($documento->id);
+                $base = $original->reteica_base_manual ? (float)$original->reteica_base : $base;
+                $reteica = (new ReteicaService())->calcular($base, $retencion->tasa_retencion);
+            }
+        }
+        return round($total - $retenciones - $reteica, 2);
     }
 
     protected function buildRequestFromDocument(ComprasDocEncabezado $documento)
@@ -139,6 +219,11 @@ class CompraConfirmationService
                 'cantidad' => $cantidad,
                 'costo_unitario' => $costo_unitario,
                 'costo_total' => $costo_total,
+                'precio_unitario' => (float)$linea->precio_unitario,
+                'precio_total' => (float)$linea->precio_total,
+                'base_impuesto' => (float)$linea->base_impuesto,
+                'tasa_impuesto' => (float)$linea->tasa_impuesto,
+                'valor_impuesto' => (float)$linea->valor_impuesto,
                 'tasa_descuento' => (float)$linea->tasa_descuento,
                 'valor_total_descuento' => (float)$linea->valor_total_descuento,
                 'base_retencion' => $linea->base_retencion,
@@ -238,6 +323,9 @@ class CompraConfirmationService
         }
         $total_documento = round($total_documento, 2);
 
+        if ($documento->forma_pago == 'contado') {
+            (new CompraConfirmationPaymentService())->validate($datos['registros_medio_pago'], $total_documento, $documento->core_empresa_id);
+        }
         CompraController::contabilizar_movimiento_credito($documento->forma_pago, $datos, $total_documento, $detalle_operacion);
         CompraController::crear_registro_pago($documento->forma_pago, $datos, $total_documento, $detalle_operacion);
     }
@@ -259,7 +347,8 @@ class CompraConfirmationService
         }
 
         if (!$liquida_impuestos) {
-            $precio_total = $base_impuesto;
+            $precio_total = $precio_total != 0 ? $precio_total : $base_impuesto;
+            $base_impuesto = $precio_total;
             $valor_impuesto = 0;
             $tasa_impuesto = 0;
         }
@@ -299,6 +388,10 @@ class CompraConfirmationService
             if (empty($linea->inv_motivo_id) || (int)$linea->inv_motivo_id <= 0) {
                 $linea->inv_motivo_id = $motive_default_id;
                 $linea->save();
+            }
+            if (!InvMotivo::where('core_empresa_id', $documento->core_empresa_id)
+                ->where('estado', 'Activo')->where('movimiento', 'entrada')->find($linea->inv_motivo_id)) {
+                throw new \Exception('Configure un motivo de entrada activo para las líneas de compra.');
             }
         }
     }
@@ -360,9 +453,49 @@ class CompraConfirmationService
     protected function ensureWarehouseEntriesExist(ComprasDocEncabezado $documento)
     {
         $ids = $this->getWarehouseEntryIds($documento);
-        foreach ($ids as $entrada_almacen_id) {
-            if (InvDocEncabezado::find($entrada_almacen_id) == null) {
-                throw new \Exception('La factura tiene una entrada de almacén vinculada que no existe: ' . $entrada_almacen_id . '.');
+        $entradas = InvDocEncabezado::whereIn('id', $ids)->where('core_empresa_id', $documento->core_empresa_id)
+            ->where('core_tercero_id', $documento->core_tercero_id)
+            ->where('core_tipo_transaccion_id', (int)config('compras.ea_tipo_transaccion_id'))
+            ->where('estado', '<>', 'Anulado')->lockForUpdate()->get();
+        if ($entradas->count() != count($ids)) {
+            throw new \Exception('Las entradas vinculadas deben existir y pertenecer al proveedor y a la empresa de la factura.');
+        }
+        $otraFactura = ComprasDocEncabezado::where('core_empresa_id', $documento->core_empresa_id)
+            ->where('id', '<>', $documento->id)->where('estado', '<>', 'Anulado')
+            ->where(function ($query) use ($ids) {
+                foreach ($ids as $id) {
+                    $query->orWhere('entrada_almacen_id', (string)$id)
+                        ->orWhere('entrada_almacen_id', 'LIKE', $id . ',%')
+                        ->orWhere('entrada_almacen_id', 'LIKE', '%,' . $id)
+                        ->orWhere('entrada_almacen_id', 'LIKE', '%,' . $id . ',%');
+                }
+            })->exists();
+        if ($otraFactura) {
+            throw new \Exception('Una entrada vinculada ya pertenece a otra factura.');
+        }
+        $reales = [];
+        foreach ($entradas as $entrada) {
+            foreach ($entrada->lineas_registros()->where('estado', '<>', 'Anulado')->get() as $linea) {
+                $key = $linea->inv_producto_id;
+                if (!isset($reales[$key])) $reales[$key] = ['cantidad'=>0, 'base'=>0];
+                $reales[$key]['cantidad'] += (float)$linea->cantidad;
+                $reales[$key]['base'] += (float)$linea->costo_total;
+            }
+        }
+        $esperados = [];
+        foreach ($documento->lineas_registros as $linea) {
+            $key = $linea->inv_producto_id;
+            if (!isset($esperados[$key])) $esperados[$key] = ['cantidad'=>0, 'base'=>0];
+            $esperados[$key]['cantidad'] += (float)$linea->cantidad;
+            $esperados[$key]['base'] += (float)$linea->base_impuesto;
+        }
+        if (count($reales) != count($esperados)) {
+            throw new \Exception('Las líneas de las entradas vinculadas no coinciden con la factura.');
+        }
+        foreach ($esperados as $key=>$valor) {
+            if (!isset($reales[$key]) || abs($reales[$key]['cantidad'] - $valor['cantidad']) > 0.000001
+                || abs($reales[$key]['base'] - $valor['base']) > 0.01) {
+                throw new \Exception('Las cantidades o costos de las entradas vinculadas no coinciden con la factura.');
             }
         }
     }
@@ -373,12 +506,15 @@ class CompraConfirmationService
             return [];
         }
 
-        return array_values(array_filter(
-            array_map('intval', explode(',', $documento->entrada_almacen_id)),
-            function ($id) {
-                return $id > 0;
+        $ids = [];
+        foreach (explode(',', $documento->entrada_almacen_id) as $value) {
+            $value = trim($value);
+            if (!preg_match('/^[1-9][0-9]*$/', $value) || isset($ids[(int)$value])) {
+                throw new \Exception('La referencia a las entradas vinculadas es inválida o está repetida.');
             }
-        ));
+            $ids[(int)$value] = (int)$value;
+        }
+        return array_values($ids);
     }
 
     protected function markWarehouseEntriesAsBilled($entrada_almacen_id)

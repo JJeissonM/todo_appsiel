@@ -587,15 +587,11 @@ class CompraController extends TransaccionController
         }
 
         if ($forma_pago == 'contado') {
-            $caja = TesoCaja::get()->first();
-
             if (empty($datos['registros_medio_pago'])) {
+                $caja = TesoCaja::get()->first();
                 $cta_caja_id = $caja->contab_cuenta_id;
                 ContabilidadController::contabilizar_registro2($datos, $cta_caja_id, $detalle_operacion, 0, abs($total_documento), $caja->id, 0);
             } else {
-
-                // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
-                $contab_cuenta_id = $caja->contab_cuenta_id;
 
                 $registros_medio_pago = $datos['registros_medio_pago'];
                 foreach ($registros_medio_pago as $linea_registro_medio_pago) {
@@ -740,30 +736,16 @@ class CompraController extends TransaccionController
         }        
 
         $medios_recaudo_confirmacion = RecaudoController::get_medios_recaudo();
-        $cajas_confirmacion = RecaudoController::get_cajas();
+        $cajas_confirmacion = TesoCaja::whereIn('id', TesoCaja::get_cajas_permitidas()->pluck('id')->all())
+            ->where('core_empresa_id', Auth::user()->empresa_id)->where('estado', 'Activo')
+            ->pluck('descripcion', 'id')->all();
         $cuentas_bancarias_confirmacion = RecaudoController::get_cuentas_bancarias();
         $motivo_pago_contado = TesoMotivo::find((int)config('tesoreria.motivo_tesoreria_compras_contado'));
-        if (is_null($motivo_pago_contado)) {
-            $motivo_pago_contado = TesoMotivo::find((int)config('tesoreria.motivo_comprobante_egresos_id'));
-        }
-        $motivos_pago_confirmacion = [];
-        if (!is_null($motivo_pago_contado)) {
-            $motivos_pago_confirmacion[$motivo_pago_contado->id . '-' . $motivo_pago_contado->descripcion] = $motivo_pago_contado->descripcion;
-        }
+        $destinos_medios_recaudo_confirmacion = (new \App\VentasPos\Services\PosPaymentModalService())->buildDestinationsData(
+            $medios_recaudo_confirmacion, $cajas_confirmacion, $cuentas_bancarias_confirmacion
+        );
 
-        $lineas_confirmacion = ComprasDocRegistro::where([
-            'compras_doc_encabezado_id' => $doc_encabezado->id,
-            'estado' => 'Activo'
-        ])->get();
-
-        $valor_total_confirmacion = $this->get_total_contable_desde_lineas_documento($lineas_confirmacion, $doc_encabezado);
-
-        $valor_retenciones_confirmacion = 0;
-        if (Schema::hasColumn('compras_doc_registros', 'valor_retencion')) {
-            $valor_retenciones_confirmacion = (float) $lineas_confirmacion->sum('valor_retencion');
-        }
-
-        $valor_neto_confirmacion = round($valor_total_confirmacion - $valor_retenciones_confirmacion - (float)$doc_encabezado->reteica_valor, 2);
+        $valor_neto_confirmacion = (new CompraConfirmationService())->getPayableTotal($doc_encabezado);
         $factura_es_contado = strtolower((string)$doc_encabezado->forma_pago) == 'contado';
 
         $mostrar_boton_confirmar = false;
@@ -799,10 +781,11 @@ class CompraController extends TransaccionController
             'bodegas_ingreso_mercancia',
             'mensaje_advertencia_retencion',
             'mostrar_boton_confirmar',
+            'destinos_medios_recaudo_confirmacion',
             'medios_recaudo_confirmacion',
             'cajas_confirmacion',
             'cuentas_bancarias_confirmacion',
-            'motivos_pago_confirmacion',
+            'motivo_pago_contado',
             'valor_neto_confirmacion',
             'factura_es_contado'
         ));
@@ -810,46 +793,21 @@ class CompraController extends TransaccionController
 
     public function confirmar_documento(Request $request)
     {
-        $factura = ComprasDocEncabezado::find( (int)$request->factura_id );
-
-        if ( is_null( $factura ) )
-        {
-            return redirect()->back()->with('mensaje_error','No se encontró el documento de compras a confirmar.');
+        $factura = ComprasDocEncabezado::where('core_empresa_id', Auth::user()->empresa_id)
+            ->find((int)$request->factura_id);
+        if (!$factura) {
+            return redirect()->back()->with('mensaje_error', 'No se encontró el documento de compras a confirmar.');
         }
-
-        $registros_medio_pago = [];
-        if ($factura->forma_pago == 'contado') {
-            $lineas_registros_collection = $factura->lineas_registros()->where('estado', 'Activo')->get();
-            $lineas_registros = $lineas_registros_collection->toArray();
-            $total_documento = $this->get_total_contable_desde_lineas_documento($lineas_registros_collection, $factura);
-
-            if (Schema::hasColumn('compras_doc_registros', 'valor_retencion')) {
-                $total_documento -= (float)$lineas_registros_collection->sum('valor_retencion');
-            }
-            $total_documento = round($total_documento - (float)$factura->reteica_valor, 2);
-
-            $lineas_medios_pago = $request->lineas_registros_medios_recaudo;
-            if (empty($lineas_medios_pago) || $lineas_medios_pago == '0') {
-                return redirect('compras/'.$factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion)
-                    ->with('mensaje_error', 'Debe ingresar un medio de pago para confirmar una factura de contado.');
-            }
-
-            $registros_medio_pago = (new RegistrosMediosPago())->get_datos_ids($lineas_medios_pago, $lineas_registros, $total_documento, 'compras');
-            $total_medios_pago = array_sum(array_column($registros_medio_pago, 'valor_recaudo'));
-
-            if (round($total_medios_pago, 2) != round($total_documento, 2)) {
-                return redirect('compras/'.$factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion)
-                    ->with('mensaje_error', 'El total de los medios de pago no coincide con el valor neto a pagar de la factura.');
-            }
-        }
-
+        $url = 'compras/'.$factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion;
         try {
-            (new CompraConfirmationService())->confirm( $factura, $registros_medio_pago );
+            $pagos = $factura->forma_pago == 'contado'
+                ? (new \App\Compras\Services\CompraConfirmationPaymentService())->fromJson($request->lineas_registros_medios_recaudo)
+                : [];
+            (new CompraConfirmationService())->confirm($factura, $pagos);
         } catch (\Exception $e) {
-            return redirect( 'compras/'.$factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error', $e->getMessage() );
+            return redirect($url)->with('mensaje_error', $e->getMessage());
         }
-
-        return redirect( 'compras/'.$factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('flash_message','Documento confirmado correctamente.');
+        return redirect($url)->with('flash_message', 'Documento confirmado correctamente.');
     }
 
     protected function get_total_contable_desde_lineas_documento($lineas, $documento = null)
@@ -863,7 +821,7 @@ class CompraController extends TransaccionController
         foreach ($lineas as $linea) {
             $base_impuesto = (float)$linea->base_impuesto;
             $valor_impuesto = (float)$linea->valor_impuesto;
-            $valor_contable = $base_impuesto + ($liquida_impuestos ? $valor_impuesto : 0);
+            $valor_contable = $liquida_impuestos ? $base_impuesto + $valor_impuesto : (float)$linea->precio_total;
 
             if ($valor_contable == 0) {
                 $valor_contable = (float)$linea->precio_total;

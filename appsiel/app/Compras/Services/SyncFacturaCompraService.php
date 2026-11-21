@@ -38,29 +38,28 @@ class SyncFacturaCompraService
             $invoice = $item_payload['invoice_data']['invoice'];
             $resultado['procesadas']++;
 
-            // ── Idempotencia ──────────────────────────────────────
-            if (SyncFacturaCompraLog::ya_procesado($cufe, $empresa_id)) {
-                $resultado['duplicadas']++;
-
-                // También se informa el documento que ya existe: sin él, las filas
-                // duplicadas se veían en blanco en la columna DOCUMENTO del BOT.
-                $encabezado_existente = $this->encabezado_ya_sincronizado($cufe, $empresa_id);
-
-                $resultado['detalle'][] = [
-                    'cufe'        => $cufe,
-                    'estado'      => 'duplicado',
-                    'mensaje'     => 'El documento con este CUFE ya fue sincronizado.',
-                    'documento'   => $encabezado_existente ? $this->etiqueta_documento($encabezado_existente) : null,
-                    'consecutivo' => $encabezado_existente ? $encabezado_existente->consecutivo : null,
-                ];
-                continue;
-            }
-
             // ── Procesar dentro de transacción DB ─────────────────
             try {
                 $detalle = DB::transaction(function () use (
                     $cufe, $invoice, $empresa_id, $creado_por
                 ) {
+                    // Serializa las importaciones de la empresa incluso cuando el CUFE
+                    // todavía no tiene fila que se pueda bloquear.
+                    \App\Core\Empresa::where('id', $empresa_id)->lockForUpdate()->firstOrFail();
+                    if (!is_string($cufe) || trim($cufe) === '') {
+                        throw new \InvalidArgumentException('El documento del Bot debe tener un CUFE válido.');
+                    }
+                    $existente = ComprasDocEncabezado::where('core_empresa_id', $empresa_id)
+                        ->where('cufe', $cufe)->lockForUpdate()->first();
+                    if ($existente || SyncFacturaCompraLog::ya_procesado($cufe, $empresa_id)) {
+                        return [
+                            'cufe' => $cufe, 'estado' => 'duplicado',
+                            'mensaje' => 'El documento con este CUFE ya fue sincronizado.',
+                            'documento' => $existente ? $this->etiqueta_documento($existente) : null,
+                            'consecutivo' => $existente ? $existente->consecutivo : null,
+                        ];
+                    }
+
                     $tipo_documento = $this->tipo_documento($invoice);
 
                     if ($tipo_documento === 'DebitNote') {
@@ -121,7 +120,7 @@ class SyncFacturaCompraService
                     return $detalle;
                 });
 
-                $resultado['exitosas']++;
+                $resultado[$detalle['estado'] === 'duplicado' ? 'duplicadas' : 'exitosas']++;
                 $resultado['detalle'][] = $detalle;
 
             } catch (\Exception $e) {
@@ -131,9 +130,15 @@ class SyncFacturaCompraService
                     'estado'  => 'fallido',
                     'mensaje' => $e->getMessage(),
                 ];
-                $this->registrar_log(
-                    $cufe, $empresa_id, null, 'fallido', $e->getMessage(), $creado_por
-                );
+                DB::transaction(function () use ($cufe, $empresa_id, $e, $creado_por) {
+                    \App\Core\Empresa::where('id', $empresa_id)->lockForUpdate()->firstOrFail();
+                    // Un intento fallido no debe borrar el éxito de otra solicitud.
+                    if (!SyncFacturaCompraLog::ya_procesado($cufe, $empresa_id)) {
+                        $this->registrar_log(
+                            $cufe, $empresa_id, null, 'fallido', $e->getMessage(), $creado_por
+                        );
+                    }
+                });
             }
         }
 
@@ -251,7 +256,7 @@ class SyncFacturaCompraService
             'doc_proveedor_prefijo'       => $invoice['resolution']['prefix'] ?? '',
             'doc_proveedor_consecutivo'   => (string) $invoice['number'],
             'cufe'                        => $cufe,
-            'forma_pago'                  => $this->parsear_forma_pago($invoice['payment_means_type']),
+            'forma_pago'                  => $this->parsear_forma_pago($invoice['payment_means_type'] ?? null),
             'descripcion'                 => $descripcion,
             'estado'                      => 'Activo',
             'sincronizado_bot'            => true,
@@ -739,10 +744,27 @@ class SyncFacturaCompraService
         return $fecha;
     }
 
-    /** "CONTADO" → "contado" | cualquier otro valor → "credito" */
-    private function parsear_forma_pago(string $tipo): string
+    /** La forma de pago es distinta del medio de pago (efectivo, banco, etc.). */
+    private function parsear_forma_pago($tipo): string
     {
-        return strtolower($tipo) === 'contado' ? 'contado' : 'credito';
+        if (is_string($tipo)) {
+            $normalizado = strtoupper(trim(strtr($tipo, [
+                'é' => 'e', 'É' => 'E', 'í' => 'i', 'Í' => 'I',
+            ])));
+
+            // OSEI/Dataico representan contado mediante DEBITO.
+            if (in_array($normalizado, ['CONTADO', 'DEBITO'], true)) {
+                return 'contado';
+            }
+            if ($normalizado === 'CREDITO') {
+                return 'credito';
+            }
+        }
+
+        throw new \InvalidArgumentException(
+            'La forma de pago del Bot (payment_means_type) está vacía o no es reconocida. '
+            . 'Debe indicar CONTADO, DEBITO o CREDITO.'
+        );
     }
 
     /** Suma line_extension_amount + tax_amount de todos los ítems */
