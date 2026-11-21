@@ -54,7 +54,7 @@ function setup(method = 'jspm', options = {}) {
         generateUInt8Array() { return new Uint8Array([27, 64]); }
     }
     const context = {
-        $, document, Promise, Error, Date,
+        $, document, Promise, Error, setTimeout, clearTimeout, Date,
         Swal: { fire(alert) { result.alerts.push(alert); } },
         JSPM: {
             JSPrintManager: { websocket_status: options.closed ? 0 : 1, start() { result.starts++; } },
@@ -74,6 +74,8 @@ function setup(method = 'jspm', options = {}) {
     if (options.missingLibrary) delete context.JSPM;
     context.window = context;
     vm.createContext(context);
+    vm.runInContext(fs.readFileSync('assets/js/ventas_pos/external_print/jspm_client.js', 'utf8'), context);
+    context.APPSIEL_JSPM.connectionTimeoutMs = 0;
     for (const file of ['script_to_printer.js', 'pendientes_cocina.js']) {
         vm.runInContext(fs.readFileSync('assets/js/ventas/pedidos/' + file, 'utf8'), context);
     }

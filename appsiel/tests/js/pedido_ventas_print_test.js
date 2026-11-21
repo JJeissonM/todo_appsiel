@@ -19,7 +19,7 @@ function setup(method, options = {}) {
     const row = { find(selector) { return { text: () => ({
         '.lbl_producto_descripcion': itemName, '.cantidad': '2'
     })[selector] }; } };
-    let click;
+    let click, finishSend;
     const document = {};
     function $(selector) {
         if (selector === document) return { ready(callback) { callback(); } };
@@ -42,7 +42,7 @@ function setup(method, options = {}) {
         generateUInt8Array() { return new Uint8Array([27, 64]); }
     }
     const context = {
-        $, document, Promise, Error,
+        $, document, Promise, Error, setTimeout, clearTimeout,
         Swal: { fire(value) { result.alerts.push(value); } },
         JSPM: {
             JSPrintManager: { websocket_status: options.closed ? 0 : 1, start() { result.starts++; } },
@@ -51,6 +51,7 @@ function setup(method, options = {}) {
             ClientPrintJob: function () {
                 this.sendToClient = () => {
                     result.sent.push(this);
+                    if (options.pending) return new Promise(resolve => { finishSend = resolve; });
                     return options.sendError ? Promise.reject(new Error('Envio fallido')) : Promise.resolve();
                 };
             }
@@ -60,13 +61,15 @@ function setup(method, options = {}) {
     };
     context.window = context;
     vm.createContext(context);
+    vm.runInContext(fs.readFileSync('assets/js/ventas_pos/external_print/jspm_client.js', 'utf8'), context);
+    context.APPSIEL_JSPM.connectionTimeoutMs = 0;
     vm.runInContext(fs.readFileSync('assets/js/ventas/pedidos/script_to_printer.js', 'utf8'), context);
     context.print_comanda_apm = () => { result.apm++; return Promise.resolve({ CopyLabel: 'ORIGINAL' }); };
     return {
-        result, itemName,
+        result, itemName, finish() { finishSend(); },
         async click() {
             click({ preventDefault() {} });
-            for (let i = 0; i < 10; i++) await Promise.resolve();
+            for (let i = 0; i < 30; i++) await Promise.resolve();
         }
     };
 }
@@ -85,13 +88,22 @@ function setup(method, options = {}) {
     }
     assert.ok(lines.includes('Detalle: Sin sal'));
     assert.ok(lines.includes('VENTA TOTAL: $ 25.000'));
-    assert.strictEqual(legacy.result.alerts[0].icon, 'info');
+    assert.strictEqual(legacy.result.alerts[1].icon, 'info');
+
+    const pending = setup('jspm', { pending: true });
+    await pending.click();
+    await pending.click();
+    assert.strictEqual(pending.result.sent.length, 1, 'Un solo envio mientras se espera confirmacion');
+    assert.strictEqual(pending.result.alerts.length, 1, 'Mostrar espera sin anunciar exito');
+    pending.finish();
+    for (let i = 0; i < 30; i++) await Promise.resolve();
+    assert.strictEqual(pending.result.alerts[1].icon, 'info');
 
     for (const options of [{ closed: true }, { noPrinter: true }, { sendError: true }]) {
         const failed = setup('jspm', options);
         await failed.click();
-        assert.strictEqual(failed.result.alerts.length, 1);
-        assert.strictEqual(failed.result.alerts[0].icon, 'error');
+        assert.strictEqual(failed.result.alerts.length, 2);
+        assert.strictEqual(failed.result.alerts[1].icon, 'error');
         if (!options.sendError) assert.strictEqual(failed.result.sent.length, 0);
     }
 

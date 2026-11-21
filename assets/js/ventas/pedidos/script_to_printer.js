@@ -1,9 +1,9 @@
 ﻿$(document).ready(function() {
 
     var metodo_impresion_pedido = $('#metodo_impresion_pedido_ventas').val() || 'normal';
-    if ( metodo_impresion_pedido == 'jspm' && window.JSPM ) {
-        JSPM.JSPrintManager.auto_reconnect = true;
-        JSPM.JSPrintManager.start();
+    var imprimiendo_jspm = false;
+    if ( metodo_impresion_pedido == 'jspm' && window.APPSIEL_JSPM ) {
+        window.APPSIEL_JSPM.start();
     }
 
     $("#btn_imprimir_en_cocina").on('click',function(event){
@@ -27,6 +27,18 @@
                     });
                 });
         } else if ( metodo_impresion_pedido == 'jspm' ) {
+            if (imprimiendo_jspm) {
+                return;
+            }
+            imprimiendo_jspm = true;
+            Swal.fire({
+                title: 'Enviando pedido a cocina',
+                text: 'Esperando conexión y confirmación de JSPrintManager…',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                onOpen: function () { Swal.showLoading(); }
+            });
             print_comanda_jspm()
                 .then(function () {
                     Swal.fire({
@@ -41,6 +53,8 @@
                         title: 'Error!',
                         text: error.message || 'No fue posible enviar el pedido a JSPrintManager.'
                     });
+                }).then(function () {
+                    imprimiendo_jspm = false;
                 });
         } else {
             if ( typeof ventana_imprimir === 'function' ) {
@@ -54,21 +68,18 @@
 });
 
 function print_comanda_jspm() {
-    if ( !window.JSPM || JSPM.JSPrintManager.websocket_status !== JSPM.WSStatus.Open ) {
-        return Promise.reject(new Error('JSPrintManager no está conectado. Verifique que JSPM Client App esté instalado y ejecutándose, y que permita el acceso a este sitio.'));
+    try {
+        if (!window.APPSIEL_JSPM) {
+            throw new Error('No se pudo cargar la conexión con JSPrintManager. Recargue la página.');
+        }
+        // Capturar la comanda antes de esperar la conexión o cambiar de pedido.
+        return window.APPSIEL_JSPM.send(
+            $('#impresora_cocina_por_defecto').val(),
+            crear_comanda_jspm_pedido_ventas()
+        );
+    } catch (error) {
+        return Promise.reject(error);
     }
-
-    var impresora = $('#impresora_cocina_por_defecto').val();
-    if ( !impresora ) {
-        return Promise.reject(new Error('Configure la impresora de cocina en Ventas POS.'));
-    }
-
-    return Promise.resolve().then(function () {
-        var cpj = new JSPM.ClientPrintJob();
-        cpj.clientPrinter = new JSPM.InstalledPrinter(impresora);
-        cpj.binaryPrinterCommands = crear_comanda_jspm_pedido_ventas();
-        return cpj.sendToClient();
-    });
 }
 
 function crear_comanda_jspm_pedido_ventas() {

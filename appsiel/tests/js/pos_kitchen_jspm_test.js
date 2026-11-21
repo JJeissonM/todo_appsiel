@@ -39,7 +39,7 @@ function setup(options = {}) {
         generateUInt8Array() { return new Uint8Array([27, 64]); }
     }
     const context = {
-        $, document, Promise, Error, url_raiz: '/app',
+        $, document, Promise, Error, setTimeout, clearTimeout, url_raiz: '/app',
         confirm: () => options.confirm !== false,
         Swal: { fire(data) { result.alerts.push(data); } },
         ventana_imprimir() { result.previews++; return true; },
@@ -60,6 +60,8 @@ function setup(options = {}) {
     if (options.missingLibrary) delete context.JSPM;
     context.window = context;
     vm.createContext(context);
+    vm.runInContext(fs.readFileSync('assets/js/ventas_pos/external_print/jspm_client.js', 'utf8'), context);
+    context.APPSIEL_JSPM.connectionTimeoutMs = 0;
     vm.runInContext(fs.readFileSync('assets/js/ventas_pos/script_to_printer.js', 'utf8'), context);
     context.print_comanda_apm = () => { result.apm++; return Promise.resolve({}); };
     context.pos_mostrar_modal_apm = () => {};
@@ -73,7 +75,7 @@ function setup(options = {}) {
                 doc_encabezado_vendedor_descripcion: 'Cajero',
                 doc_encabezado_descripcion: 'Para llevar'
             });
-            for (let i = 0; i < 10; i++) await Promise.resolve();
+            for (let i = 0; i < 30; i++) await Promise.resolve();
         }
     };
 }

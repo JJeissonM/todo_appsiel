@@ -1,8 +1,7 @@
 
 $(document).ready(function () {
-    if (pos_usar_jspm_cocina() && window.JSPM) {
-        JSPM.JSPrintManager.auto_reconnect = true;
-        JSPM.JSPrintManager.start();
+    if (pos_usar_jspm_cocina() && window.APPSIEL_JSPM) {
+        window.APPSIEL_JSPM.start();
     }
 });
 
@@ -502,17 +501,13 @@ function print_comanda_jspm(doc_encabezado)
 {
     // Preparar los comandos antes de que enviar_impresion limpie el formulario.
     try {
-        if (!window.JSPM || JSPM.JSPrintManager.websocket_status !== JSPM.WSStatus.Open) {
-            throw new Error('JSPrintManager no está conectado. Verifique que JSPM Client App esté instalado y ejecutándose, y que permita el acceso a este sitio.');
+        if (!window.APPSIEL_JSPM) {
+            throw new Error('No se pudo cargar la conexión con JSPrintManager. Recargue la página.');
         }
-        var impresora = $('#impresora_cocina_por_defecto').val();
-        if (!impresora) {
-            throw new Error('Configure la impresora de cocina del punto de venta.');
-        }
-        var cpj = new JSPM.ClientPrintJob();
-        cpj.clientPrinter = new JSPM.InstalledPrinter(impresora);
-        cpj.binaryPrinterCommands = crear_comanda_jspm_pos(doc_encabezado);
-        return Promise.resolve(cpj.sendToClient());
+        return window.APPSIEL_JSPM.send(
+            $('#impresora_cocina_por_defecto').val(),
+            crear_comanda_jspm_pos(doc_encabezado)
+        );
     } catch (error) {
         return Promise.reject(error);
     }

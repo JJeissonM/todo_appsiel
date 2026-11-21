@@ -247,6 +247,7 @@
 		<script src="{{ asset( 'assets/js/ventas_pos/external_print/cputils.js' )}}"></script>
 		<script src="{{ asset( 'assets/js/ventas_pos/external_print/JSESCPOSBuilder.js' )}}"></script>
 		<script src="{{ asset( 'assets/js/ventas_pos/external_print/JSPrintManager.js' )}}"></script>
+		<script src="{{ asset('assets/js/ventas_pos/external_print/jspm_client.js?aux=' . uniqid()) }}"></script>
 	@endif
 	<script src="{{ asset( 'assets/js/ventas/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
 
