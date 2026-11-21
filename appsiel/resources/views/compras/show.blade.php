@@ -123,6 +123,10 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 							<br><br>
 							Esta operación debe ejecutarse una sola vez.
 						</div>
+						<p>
+							<strong>Forma de pago:</strong>
+							<span id="confirmar_forma_pago" class="label {{ $factura_es_contado ? 'label-success' : 'label-info' }}">{{ $factura_es_contado ? 'Contado' : 'Crédito' }}</span>
+						</p>
 						@if($factura_es_contado)
 							<div class="panel panel-default">
 								<div class="panel-heading">
