@@ -73,9 +73,19 @@ class DocumentosOsei
         return new Client(['base_uri' => $this->baseUrl()]);
     }
 
+    /**
+     * Esquema y host de la URL de emisión (WSDL = https://osei.com.co/api/v1/invoices).
+     * No usar url_bot_osei: es la URL del bot y puede traer el token en la ruta.
+     */
     private function baseUrl()
     {
-        return rtrim((string) config('facturacion_electronica.url_bot_osei', 'https://osei.com.co/'), '/');
+        $partes = parse_url((string) config('facturacion_electronica.WSDL'));
+
+        if (empty($partes['scheme']) || empty($partes['host'])) {
+            return 'https://osei.com.co';
+        }
+
+        return $partes['scheme'] . '://' . $partes['host'] . (isset($partes['port']) ? ':' . $partes['port'] : '');
     }
 
     private function url($prefijo, $numero, $accion)
