@@ -34,6 +34,19 @@ class DocumentosOseiTest extends TestCase
         };
     }
 
+    public function test_the_url_uses_the_api_host_and_ignores_the_bot_url()
+    {
+        config([
+            'facturacion_electronica.WSDL' => 'https://osei.com.co/api/v1/invoices',
+            'facturacion_electronica.url_bot_osei' => 'https://osei.com.co/ed5b78db8a6c7d07/',
+        ]);
+
+        $documentos = $this->withResponses([new Response(200, [], '%PDF-1.4')]);
+        $documentos->pdf('APSI', '837');
+
+        $this->assertSame('https://osei.com.co/api/v1/documents/APSI/837/pdf', (string) $this->history[0]['request']->getUri());
+    }
+
     public function test_pdf_sends_the_bearer_token_and_the_right_url()
     {
         config(['facturacion_electronica.tokenEmpresa' => 'token-de-prueba']);
