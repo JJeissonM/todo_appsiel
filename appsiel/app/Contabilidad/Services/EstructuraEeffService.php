@@ -32,6 +32,9 @@ class EstructuraEeffService
                 throw new \RuntimeException('La cuenta ' . $movimiento->cuenta_codigo . ' no tiene grupo contable.');
             }
             $centavos = (int)round($movimiento->valor_saldo * 100);
+            if ($centavos === 0) {
+                continue;
+            }
             if (!isset($arbol[$clase])) {
                 $arbol[$clase] = ['descripcion'=>strtoupper($movimiento->cuenta_clase_descripcion), 'valor'=>0, 'hijos'=>[]];
             }

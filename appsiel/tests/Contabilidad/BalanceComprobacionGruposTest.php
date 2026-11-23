@@ -246,6 +246,62 @@ class BalanceComprobacionGruposTest extends TestCase
         }
     }
 
+    public function test_muestra_grupos_y_clase_con_las_cuatro_columnas_en_cero()
+    {
+        DB::table('contab_movimientos')->where('core_empresa_id', 1)->delete();
+        foreach ([[1, 1, 500], [2, 2, -500]] as $dato) {
+            DB::table('contab_movimientos')->insert([
+                'core_empresa_id'=>1, 'contab_cuenta_id'=>$dato[0], 'core_tercero_id'=>$dato[1],
+                'fecha'=>'2026-08-31', 'valor_debito'=>max($dato[2],0),
+                'valor_credito'=>min($dato[2],0), 'valor_saldo'=>$dato[2]
+            ]);
+        }
+        foreach (['No', 'Si'] as $detalle) {
+            $html = $this->reporte(['detalla_terceros'=>$detalle]);
+            $xpath = $this->xpath($html);
+            foreach (['Activos corrientes', 'Efectivo', 'Disponible'] as $grupo) {
+                $row = $xpath->query('//tr[@class="fila-grupo" and contains(.,"'.$grupo.'")]')->item(0);
+                $this->assertNotNull($row);
+                $this->assertSame($this->celdas($grupo, ['0','0','0','0'], $detalle), $this->valores($row));
+            }
+            $this->assertSame(1, $xpath->query('//tr[@class="fila-clase"]')->length);
+            $this->assertSame(2, $xpath->query('//tr[@class="fila-cuenta"]')->length);
+            $this->assertSame(['TOTAL GENERAL','0','0','0','0'], $this->total($xpath));
+        }
+    }
+
+    public function test_oculta_grupo_si_sus_cuentas_y_columnas_estan_en_cero()
+    {
+        DB::table('contab_movimientos')->where('core_empresa_id',1)->delete();
+        // Los terceros se compensan dentro de una misma cuenta, cuyo total es cero.
+        foreach ([[1,500], [2,-500]] as $dato) {
+            DB::table('contab_movimientos')->insert([
+                'core_empresa_id'=>1, 'contab_cuenta_id'=>1, 'core_tercero_id'=>$dato[0],
+                'fecha'=>'2026-08-31', 'valor_debito'=>max($dato[1],0),
+                'valor_credito'=>min($dato[1],0), 'valor_saldo'=>$dato[1]
+            ]);
+        }
+        foreach (['No','Si'] as $detalle) {
+            $xpath = $this->xpath($this->reporte(['detalla_terceros'=>$detalle]));
+            $this->assertSame(0, $xpath->query('//tr[@class="fila-grupo"]')->length);
+            $this->assertSame(0, $xpath->query('//tr[@class="fila-clase"]')->length);
+            $this->assertSame(0, $xpath->query('//tr[@class="fila-cuenta"]')->length);
+            $this->assertSame(['TOTAL GENERAL','0','0','0','0'], $this->total($xpath));
+        }
+    }
+
+    public function test_cuenta_con_movimientos_se_muestra_aunque_su_saldo_final_sea_cero()
+    {
+        DB::table('contab_movimientos')->where('core_empresa_id',1)->delete();
+        DB::table('contab_movimientos')->insert([
+            'core_empresa_id'=>1,'contab_cuenta_id'=>1,'core_tercero_id'=>1,
+            'fecha'=>'2026-09-15','valor_debito'=>100,'valor_credito'=>-100,'valor_saldo'=>0
+        ]);
+        $xpath = $this->xpath($this->reporte());
+        $this->assertSame(3, $xpath->query('//tr[@class="fila-grupo"]')->length);
+        $this->assertSame(['TOTAL GENERAL','0','100','-100','0'], $this->total($xpath));
+    }
+
     private function celdas($descripcion, $valores, $detallar)
     {
         return array_merge([$descripcion], $detallar === 'Si' ? [''] : [], $valores);

@@ -43,6 +43,15 @@ class BalanceComprobacionJerarquiaService
         $arbol = [];
         $total = $this->ceros();
         foreach ($cuentas as $movimiento) {
+            $valores = [];
+            foreach (['saldo_inicial', 'debitos', 'creditos'] as $campo) {
+                $valores[$campo] = (int)round($movimiento->$campo * 100);
+            }
+            $valores['saldo_final'] = array_sum($valores);
+            // Una cuenta sin saldo ni movimientos no debe crear grupos vacios.
+            if (!array_filter($valores)) {
+                continue;
+            }
             $clase = (int)$movimiento->cuenta->clase_id;
             if (!isset($arbol[$clase])) {
                 $arbol[$clase] = $this->nodo(isset($nombres[$clase]) ? $nombres[$clase] : 'SIN CLASE');
@@ -62,11 +71,6 @@ class BalanceComprobacionJerarquiaService
                 }
                 $ruta = array_reverse($ruta, true);
             }
-            $valores = [];
-            foreach (['saldo_inicial', 'debitos', 'creditos'] as $campo) {
-                $valores[$campo] = (int)round($movimiento->$campo * 100);
-            }
-            $valores['saldo_final'] = array_sum($valores);
             $this->sumar($total, $valores);
             $nodo = &$arbol[$clase];
             $this->sumar($nodo['valores'], $valores);

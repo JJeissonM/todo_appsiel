@@ -79,7 +79,9 @@
                 }
             ?>
             <?php 
-                if (abs($value) == 0) {
+                // Un grupo puede tener cuentas con saldos que se compensan.
+                // Se conserva su encabezado para no perder la jerarquia.
+                if ($tr_class === 'tr_cuenta' && abs($value) == 0) {
                     continue;
                 }
             ?>

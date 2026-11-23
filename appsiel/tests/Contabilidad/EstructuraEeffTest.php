@@ -45,6 +45,26 @@ class EstructuraEeffTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(20,$rows[3]->datos_grupo_hijo->valor);
     }
 
+    public function testOcultaLaJerarquiaSiTodasSusCuentasTienenSaldoCero()
+    {
+        foreach ([true, false] as $detalle) {
+            $service = new EstructuraEeffService;
+            $rows = $service->generar([$this->movimiento('191004',63,0)], $this->grupos(), [1], $detalle);
+            $this->assertSame([], $rows);
+            $this->assertEquals(0, $service->totales_clases[1]);
+        }
+    }
+
+    public function testOcultaSoloElSubgrupoSinSaldosYConservaSusAncestrosActivos()
+    {
+        $service = new EstructuraEeffService;
+        $rows = $service->generar([$this->movimiento('150405',49,100),$this->movimiento('191004',63,0)], $this->grupos(), [1], true);
+        $this->assertCount(4, $rows);
+        $this->assertEquals('PPE', $rows[1]->datos_grupo_padre->descripcion);
+        $this->assertEquals('TERRENOS', $rows[2]->datos_grupo_hijo->descripcion);
+        $this->assertEquals(100, $service->totales_clases[1]);
+    }
+
     public function testRechazaCiclosEnLaJerarquia()
     {
         $grupos = $this->grupos();
