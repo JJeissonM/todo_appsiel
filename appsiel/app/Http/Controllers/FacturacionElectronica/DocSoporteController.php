@@ -5,6 +5,8 @@ namespace App\Http\Controllers\FacturacionElectronica;
 use App\Http\Controllers\Core\TransaccionController;
 
 use App\FacturacionElectronica\DocSoporte;
+use App\FacturacionElectronica\NotaAjusteDocSoporte;
+use App\FacturacionElectronica\OSEI\NotaAjusteDocSoporte as OSEINotaAjusteDocSoporte;
 use Illuminate\Support\Facades\Input;
 
 class DocSoporteController extends TransaccionController
@@ -35,4 +37,34 @@ class DocSoporteController extends TransaccionController
 
         return redirect( 'compras/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
     }    
+
+    // Nota de ajuste al documento soporte (transacción 62)
+    public function enviar_nota_ajuste( $id )
+    {
+        $nota = NotaAjusteDocSoporte::find( $id );
+
+        $url_nota = 'compras_notas_ajuste_doc_soporte/' . $nota->id . '?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion');
+
+        if ( $nota->estado == 'Anulado' || $nota->enviado_electronicamente() )
+        {
+            return redirect( $url_nota )->with( 'mensaje_error', 'La nota de ajuste está anulada o ya fue enviada.');
+        }
+
+        // La validación del proveedor vive en DocSoporte (mismo encabezado de compras).
+        $validation = DocSoporte::find( $nota->id )->validate_customer_data();
+        if ( $validation->error )
+        {
+            return redirect( $url_nota )->with( 'mensaje_error', 'Documento no puede ser enviado. Presenta errores en los datos del proveedor: ' . $validation->message);
+        }
+
+        $mensaje = (new OSEINotaAjusteDocSoporte( $nota, 'support_doc_note' ))->procesar_envio_factura();
+
+        if ( $mensaje->tipo != 'mensaje_error' )
+        {
+            $nota->estado = 'Enviado';
+            $nota->save();
+        }
+
+        return redirect( $url_nota )->with( $mensaje->tipo, $mensaje->contenido);
+    }
 }
