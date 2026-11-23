@@ -29,6 +29,13 @@
 			<strong>¡Advertencia!</strong> Documento está descuadrado.
 		</div>
 
+		<div class="alert alert-danger" id="div_error_guardado_recaudo" style="display: none;">
+			<button type="button" class="close" aria-label="Cerrar" onclick="$('#div_error_guardado_recaudo').hide();">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			<strong>Error:</strong> <span id="mensaje_error_guardado_recaudo"></span>
+		</div>
+
 		{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
 		{{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
@@ -37,18 +44,18 @@
 
 		{{ Form::hidden( 'tipo_recaudo_aux', '', [ 'id' => 'tipo_recaudo_aux' ] ) }}
 
-		<input type="hidden" name="lineas_registros" id="lineas_registros" value="">
-		<input type="hidden" name="lineas_registros_retenciones" id="lineas_registros_retenciones" value="">
+		<input type="hidden" name="lineas_registros" id="lineas_registros" value="{{ old('lineas_registros', '') }}">
+		<input type="hidden" name="lineas_registros_retenciones" id="lineas_registros_retenciones" value="{{ old('lineas_registros_retenciones', '') }}">
 		<input type="hidden" name="lineas_registros_descuento_pronto_pagos" id="lineas_registros_descuento_pronto_pagos"
-			value="">
+			value="{{ old('lineas_registros_descuento_pronto_pagos', '') }}">
 		<input type="hidden" name="lineas_registros_asientos_contables" id="lineas_registros_asientos_contables"
-			value="">
-		<input type="hidden" name="lineas_registros_efectivo" id="lineas_registros_efectivo" value="">
+			value="{{ old('lineas_registros_asientos_contables', '') }}">
+		<input type="hidden" name="lineas_registros_efectivo" id="lineas_registros_efectivo" value="{{ old('lineas_registros_efectivo', '') }}">
 		<input type="hidden" name="lineas_registros_transferencia_consignacion"
-			id="lineas_registros_transferencia_consignacion" value="">
-		<input type="hidden" name="lineas_registros_tarjeta_debito" id="lineas_registros_tarjeta_debito" value="">
-		<input type="hidden" name="lineas_registros_tarjeta_credito" id="lineas_registros_tarjeta_credito" value="">
-		<input type="hidden" name="lineas_registros_cheques" id="lineas_registros_cheques" value="">
+			id="lineas_registros_transferencia_consignacion" value="{{ old('lineas_registros_transferencia_consignacion', '') }}">
+		<input type="hidden" name="lineas_registros_tarjeta_debito" id="lineas_registros_tarjeta_debito" value="{{ old('lineas_registros_tarjeta_debito', '') }}">
+		<input type="hidden" name="lineas_registros_tarjeta_credito" id="lineas_registros_tarjeta_credito" value="{{ old('lineas_registros_tarjeta_credito', '') }}">
+		<input type="hidden" name="lineas_registros_cheques" id="lineas_registros_cheques" value="{{ old('lineas_registros_cheques', '') }}">
 
 		{{ Form::close() }}
 
@@ -85,7 +92,16 @@
 		
 		$(document).ready(function(){
 			
-			asignar_fecha_hoy();
+			// No reemplazar una fecha restaurada por Laravel después de un error.
+			if ($('#fecha').val() == '') {
+				asignar_fecha_hoy();
+			}
+
+			// También controla envíos con Enter u otros disparadores del formulario.
+			$('#form_create').on('submit', function(event) {
+				event.preventDefault();
+				$('#btn_guardar').trigger('click');
+			});
 
 			$('#cliente_input').focus();
 
@@ -222,13 +238,51 @@
 					return false;
 				}
   
-				// Desactivar el click del botón
-				$( this ).off( event );
-
-				// Enviar formulario
+				// Los registros de las tablas son dinámicos. El envío por AJAX permite
+				// mostrar cualquier excepción sin recargar ni perder lo ingresado.
 				habilitar_campos_form_create();
-				$('#form_create').submit();					
+				guardar_recaudo_cxc();
 			});
+
+			function guardar_recaudo_cxc()
+			{
+				var boton_guardar = $('#btn_guardar');
+				boton_guardar.prop('disabled', true);
+				$('#div_error_guardado_recaudo').hide();
+
+				$.ajax({
+					url: $('#form_create').attr('action'),
+					type: 'POST',
+					data: $('#form_create').serialize(),
+					dataType: 'json'
+				}).done(function(respuesta) {
+					if (respuesta.redirect) {
+						window.location.href = respuesta.redirect;
+						return;
+					}
+
+					mostrar_error_guardado('El recaudo fue procesado, pero no se recibió la URL del documento.');
+				}).fail(function(xhr) {
+					var mensaje = 'Ocurrió un error al registrar el recaudo.';
+
+					if (xhr.responseJSON && xhr.responseJSON.mensaje) {
+						mensaje = xhr.responseJSON.mensaje;
+					}
+
+					mostrar_error_guardado(mensaje);
+				}).always(function() {
+					boton_guardar.prop('disabled', false);
+				});
+			}
+
+			function mostrar_error_guardado(mensaje)
+			{
+				$('#mensaje_error_guardado_recaudo').text(mensaje);
+				$('#div_error_guardado_recaudo').show();
+				$('html, body').animate({
+					scrollTop: $('#div_error_guardado_recaudo').offset().top - 20
+				}, 300);
+			}
 
 		    function seleccionar_cliente(item_sugerencia)
 		    {

@@ -170,13 +170,50 @@ class RecaudoCxcController extends Controller
                 $doc_encabezado->actualizar_valor_total();
 
                 // se llama la vista de RecaudoCxcController@show
-                return redirect('tesoreria/recaudos_cxc/' . $doc_encabezado->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+                $url_show = url('tesoreria/recaudos_cxc/' . $doc_encabezado->id)
+                    . '?id=' . $request->url_id
+                    . '&id_modelo=' . $request->url_id_modelo
+                    . '&id_transaccion=' . $request->url_id_transaccion;
+
+                if ($request->ajax()) {
+                    return response()->json([
+                        'guardado' => true,
+                        'redirect' => $url_show
+                    ]);
+                }
+
+                return redirect($url_show);
             });
         } catch (\InvalidArgumentException $exception) {
-            return redirect()->back()
-                ->withInput($request->except('_token'))
-                ->with('mensaje_error', 'No fue posible registrar el recaudo: ' . $exception->getMessage());
+            return $this->respuestaErrorAlGuardar($request, $exception);
+        } catch (\Exception $exception) {
+            return $this->respuestaErrorAlGuardar($request, $exception);
         }
+    }
+
+    /**
+     * Informa el error sin abandonar el formulario cuando el guardado se hace
+     * por AJAX. El flujo tradicional conserva el input como respaldo.
+     */
+    protected function respuestaErrorAlGuardar(Request $request, \Exception $exception)
+    {
+        $mensaje = 'No fue posible registrar el recaudo: ' . $exception->getMessage();
+
+        \Log::error($mensaje, [
+            'exception' => get_class($exception),
+            'usuario' => Auth::check() ? Auth::user()->email : null
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'guardado' => false,
+                'mensaje' => $mensaje
+            ], 422);
+        }
+
+        return redirect()->back()
+            ->withInput($request->except('_token'))
+            ->with('mensaje_error', $mensaje);
     }
 
     /**
