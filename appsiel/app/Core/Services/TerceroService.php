@@ -97,7 +97,7 @@ class TerceroService
     public function crear_tercero_como_cliente_y_proveedor($tercero_id)
     {
 
-        if (!Schema::hasTable('vtas_clientes')) {
+        if (Schema::hasTable('vtas_clientes')) {
             $cliente = Cliente::where('core_tercero_id', $tercero_id)->get()->first();
 
             if ( $cliente == null ) {
@@ -122,7 +122,7 @@ class TerceroService
             }
         }
 
-        if (!Schema::hasTable('compras_proveedores')) {
+        if (Schema::hasTable('compras_proveedores')) {
             $proveedor = Proveedor::where('core_tercero_id', $tercero_id)->get()->first();
 
             if ( $proveedor == null ) {
