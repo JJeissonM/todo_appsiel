@@ -3,18 +3,31 @@
 use Illuminate\Support\Facades\Input;
 
 $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion');
+
+// Un documento soporte aceptado por la DIAN solo se corrige o anula con una nota de ajuste.
+$ds_enviado = $doc_encabezado->core_tipo_transaccion_id == 48 && $doc_encabezado->enviado_electronicamente();
+if ($ds_enviado) {
+	$url_nota_ajuste = 'compras_notas_ajuste_doc_soporte/create?doc_soporte_id=' . $doc_encabezado->id . '&id=' . Input::get('id')
+		. '&id_modelo=' . Illuminate\Support\Facades\DB::table('sys_modelos')->where('name_space', 'App\FacturacionElectronica\NotaAjusteDocSoporte')->value('id')
+		. '&id_transaccion=62';
+}
 ?>
 
 @extends('transaccion.show')
 
 @section('botones_acciones')
 	@if($doc_encabezado->estado != 'Anulado')
+		@if($ds_enviado)
+			<a class="btn-gmail" href="{{ url($url_nota_ajuste . '&concepto=2') }}" title="Anular con nota de ajuste"><i class="fa fa-close"></i></a>
+			<a class="btn-gmail" href="{{ url($url_nota_ajuste) }}" title="Nota de ajuste"><i class="fa fa-file-text"></i></a>
+		@else
         <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
+		@endif
 		@if($mostrar_boton_confirmar)
 			<button class="btn-gmail" id="btn_confirmar_documento" title="Confirmar"><i class="fa fa-check"></i></button>
 		@endif
 		<a href="{{ url('tesoreria/pagos_cxp/create?id=3&id_modelo=150&id_transaccion=33') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>	
-        @if(!$docs_relacionados[1])
+        @if(!$docs_relacionados[1] && !$ds_enviado)
         	<!-- WARNING: Solo se hacen notas para facturas con una sola éntrada de almacén -->
         	<a class="btn-gmail" href="{{ url('compras_notas_credito/create?factura_id='.$id.'&id='.Input::get('id').'&id_modelo=166&id_transaccion=36') }}" title="Nota crédito"><i class="fa fa-file-text"></i></a>
 			
@@ -225,7 +238,13 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 @section('registros_otros_documentos')
 {!! $medios_pago !!}
 @include('compras.incluir.registros_abonos')
-@include('compras.incluir.notas_credito')
+@if($doc_encabezado->core_tipo_transaccion_id == 48)
+	{{-- Las notas de ajuste (62) se listan aparte, con su estado. --}}
+	@include('compras.incluir.notas_credito', ['notas_credito' => is_null($notas_credito) ? null : $notas_credito->filter(function ($n) { return $n->core_tipo_transaccion_id != 62; })])
+	@include('compras.incluir.notas_ajuste_doc_soporte')
+@else
+	@include('compras.incluir.notas_credito')
+@endif
 
 {{-- Entradas de Almacén vinculadas: visible siempre que la factura tenga proveedor --}}
 @if($doc_encabezado->proveedor_id)

@@ -34,6 +34,12 @@ Route::resource('compras_notas_credito_valor', 'Compras\NotaCreditoValorControll
 Route::get('compras_notas_credito_directa_anular/{id}', 'Compras\NotaCreditoDirectaController@anular');
 Route::resource('compras_notas_credito_directa', 'Compras\NotaCreditoDirectaController');
 
+// NOTA DE AJUSTE AL DOCUMENTO SOPORTE
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('compras_notas_ajuste_doc_soporte_anular/{id}', 'FacturacionElectronica\NotaAjusteDocSoporteController@anular');
+    Route::resource('compras_notas_ajuste_doc_soporte', 'FacturacionElectronica\NotaAjusteDocSoporteController', ['only' => ['create', 'store', 'show']]);
+});
+
 // IMPRIMIR - ENVIAR X EMAIL
 Route::get('compras_imprimir/{id}', 'Compras\CompraController@imprimir');
 Route::get('compras_enviar_por_email/{id}', 'Compras\CompraController@enviar_por_email');
