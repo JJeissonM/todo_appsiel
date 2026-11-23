@@ -273,7 +273,7 @@ class DocCruceController extends TransaccionController
   public function almacenar_abono_cxc($doc_encabezado, $movimiento_cartera, $movimiento_afavor, $abono)
   {
     // Almacenar registro de abono
-    $datos = ['core_tipo_transaccion_id' => $movimiento_afavor->core_tipo_transaccion_id] +
+    $datos = ['cxc_movimiento_id'=>$movimiento_cartera->id]+['core_tipo_transaccion_id' => $movimiento_afavor->core_tipo_transaccion_id] +
       ['core_tipo_doc_app_id' => $movimiento_afavor->core_tipo_doc_app_id] +
       ['consecutivo' => $movimiento_afavor->consecutivo] +
       ['fecha' => $doc_encabezado->fecha] +
@@ -559,13 +559,7 @@ class DocCruceController extends TransaccionController
       );
 
       foreach ($documentos_abonados as $linea) {
-        $mov_documento_cartera = CxcMovimiento::where('core_empresa_id', $linea->core_empresa_id)
-          ->where('core_tipo_transaccion_id', $linea->doc_cxc_transacc_id)
-          ->where('core_tipo_doc_app_id', $linea->doc_cxc_tipo_doc_id)
-          ->where('consecutivo', $linea->doc_cxc_consecutivo)
-          ->where('core_tercero_id', $documento->core_tercero_id)
-          ->lockForUpdate()
-          ->first();
+        $mov_documento_cartera = $linea->getMovimientoCxc(true);
 
         if (is_null($mov_documento_cartera)) {
           throw new \RuntimeException('No se encontró el movimiento de cartera que se debe reversar. El cruce no fue anulado.');

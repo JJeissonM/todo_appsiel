@@ -354,17 +354,11 @@ class RecaudoCxcController extends Controller
 
         foreach ( $documentos_abonados as $linea )
         {
-            $documento_cxc_pendiente = CxcMovimiento::where('core_empresa_id', $linea->core_empresa_id)
-                                                        ->where('core_tercero_id', $linea->core_tercero_id)
-                                                        ->where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
-                                                        ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
-                                                        ->where('consecutivo',$linea->doc_cxc_consecutivo)
-                                                        ->lockForUpdate()
-                                                        ->first();
-            
+            $documento_cxc_pendiente = $linea->getMovimientoCxc(true);
+
             if($documento_cxc_pendiente == null)
             {
-                throw new \RuntimeException('No se encontró el movimiento de cartera abonado por el recaudo. El recaudo no fue anulado.');
+                throw new \RuntimeException('No se identifico de forma unica el movimiento de cartera abonado por el recaudo. El recaudo no fue anulado.');
             }
 
             // Se aplica exactamente la operación inversa del abono original.
@@ -445,6 +439,7 @@ class RecaudoCxcController extends Controller
     // ESTE METODO SE LLAMA DESDE LIBRETAPAGOCONTROLLER
     public function almacenar( Request $request )
     {
+        return DB::transaction(function () use ($request) {
         // Crear Documento de tesorería (RECAUDO)
         $doc_encabezado = RecaudoCxcController::crear_encabezado_documento($request, $request->url_id_modelo);
 
@@ -460,11 +455,11 @@ class RecaudoCxcController extends Controller
         for ($i=0; $i < $cantidad; $i++) 
         {
             $abono = (float)$lineas_registros[$i]->abono;
-            $registro_documento_pendiente = CxcMovimiento::find( $lineas_registros[$i]->id_doc );
+            $registro_documento_pendiente = (new \App\CxC\Services\RecaudoCxcMovimientoService)->seleccionar($doc_encabezado, $lineas_registros[$i]->id_doc, $abono);
             $registro_documento_pendiente->validar_saldo_disponible_para_abono($abono);
             
             // Almacenar registro de abono
-            $datos = ['core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id]+
+            $datos = ['cxc_movimiento_id'=>$registro_documento_pendiente->id]+['core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id]+
                         ['core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id]+
                         ['consecutivo' => $doc_encabezado->consecutivo]+
                         ['core_empresa_id' => $doc_encabezado->core_empresa_id]+
@@ -493,23 +488,13 @@ class RecaudoCxcController extends Controller
 
             // MOVIMIENTO CREDITO: Cartera Cuenta por pagar. Cada Documento pagado puede tener cuenta por pagar distinta.
             // Del movimiento contable, Se llama al ID de la cuenta (moviento DB) afectada por el documento cxc
-            $cta_x_cobrar_id = ContabMovimiento::where('core_tipo_transaccion_id',$registro_documento_pendiente->core_tipo_transaccion_id)
-                                                ->where('core_tipo_doc_app_id',$registro_documento_pendiente->core_tipo_doc_app_id)
-                                                ->where('consecutivo',$registro_documento_pendiente->consecutivo)
-                                                ->where('core_tercero_id',$registro_documento_pendiente->core_tercero_id)
-                                                ->where('valor_credito',0)
-                                                ->value('contab_cuenta_id');
+            $cta_x_cobrar_id = (new \App\CxC\Services\RecaudoCxcMovimientoService)->cuenta($registro_documento_pendiente);
 
-            if( is_null( $cta_x_cobrar_id ) )
-            {
-                $cta_x_cobrar_id = config('configuracion.cta_cartera_default');
-            }
-            
             ContabilidadController::contabilizar_registro2( array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] ), $cta_x_cobrar_id, $detalle_operacion, 0, $abono);
 
 
             // Se diminuye el saldo_pendiente en el documento pendiente, si saldo_pendiente == 0 se marca como pagado
-            CxcMovimiento::actualizar_valores_doc_cxc( $registro_documento_pendiente, $abono);
+            $registro_documento_pendiente->actualizar_saldos($abono);
 
             $valor_total += $abono;
 
@@ -566,6 +551,7 @@ class RecaudoCxcController extends Controller
         ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $valor_total, 0);
 
         return $doc_encabezado;
+        });
     }
 
 

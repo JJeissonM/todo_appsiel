@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Tesoreria\Services;
 
@@ -18,36 +18,47 @@ class AccountsReceivableServices
 {
     public function create_record_payment_accounts_receivable( TesoDocEncabezado $payment_document_header,string $account_receivable_lines)
     {
-        $arr_account_receivable_lines = json_decode($account_receivable_lines);
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($payment_document_header, $account_receivable_lines) {
+            $arr_account_receivable_lines = json_decode($account_receivable_lines);
+            if (!is_array($arr_account_receivable_lines) || count($arr_account_receivable_lines) < 2) {
+                throw new \InvalidArgumentException('Debe seleccionar al menos un movimiento de CxC.');
+            }
 
-        array_pop($arr_account_receivable_lines);
-        
-        $cantidad = count($arr_account_receivable_lines);
-        for ($i=0; $i < $cantidad; $i++) 
-        {
-            $abono = (float)$arr_account_receivable_lines[$i]->abono;
-            $accounts_receivable_record = CxcMovimiento::find( (int)$arr_account_receivable_lines[$i]->id_doc );
-            $accounts_receivable_record->validar_saldo_disponible_para_abono($abono);
+            array_pop($arr_account_receivable_lines);
 
-            // Almacenar Abono
-            $obj_ar_payment = new AccountsReceivablePayment();
-            $model = new CxcAbono();
-            $data = $this->set_data($payment_document_header,$accounts_receivable_record,$abono);
-            $account_receivable_payment = $obj_ar_payment->store($model,$data);
+            $servicio = new \App\CxC\Services\RecaudoCxcMovimientoService;
+            $seleccionados = [];
+            $cantidad = count($arr_account_receivable_lines);
+            for ($i=0; $i < $cantidad; $i++)
+            {
+                $id = (int)$arr_account_receivable_lines[$i]->id_doc;
+                if (isset($seleccionados[$id])) {
+                    throw new \InvalidArgumentException('El movimiento de CxC esta repetido en el recaudo.');
+                }
+                $seleccionados[$id] = true;
+                $accounts_receivable_record = $servicio->seleccionar($payment_document_header, $arr_account_receivable_lines[$i]->id_doc, $arr_account_receivable_lines[$i]->abono);
+                $abono = round((float)$arr_account_receivable_lines[$i]->abono, 2);
 
-            // Contabilizar Abono
-            $obj_ar_accou_serv = new AccountingServices();
-            $obj_ar_accou_serv->create_accounting_movement( $account_receivable_payment );
+                // Almacenar Abono
+                $obj_ar_payment = new AccountsReceivablePayment();
+                $model = new CxcAbono();
+                $data = $this->set_data($payment_document_header,$accounts_receivable_record,$abono);
+                $account_receivable_payment = $obj_ar_payment->store($model,$data);
 
-            // Actualizar Saldo
-            $accounts_receivable_record->actualizar_saldos($abono);
-        }
+                // Contabilizar Abono
+                $obj_ar_accou_serv = new AccountingServices();
+                $obj_ar_accou_serv->create_accounting_movement( $account_receivable_payment );
+
+                // Actualizar Saldo
+                $accounts_receivable_record->actualizar_saldos($abono);
+            }
+        });
     }
 
     public function set_data($payment_document_header,$accounts_receivable_record,$payment_value)
     {
         // Almacenar registro de abono
-        $datos = ['core_tipo_transaccion_id' => $payment_document_header->core_tipo_transaccion_id]+
+        $datos = ['cxc_movimiento_id'=>$accounts_receivable_record->id]+['core_tipo_transaccion_id' => $payment_document_header->core_tipo_transaccion_id]+
         ['core_tipo_doc_app_id' => $payment_document_header->core_tipo_doc_app_id]+
         ['consecutivo' => $payment_document_header->consecutivo]+
         ['core_empresa_id' => $payment_document_header->core_empresa_id]+

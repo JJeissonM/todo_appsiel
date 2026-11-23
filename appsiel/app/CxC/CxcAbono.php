@@ -16,7 +16,7 @@ class CxcAbono extends Model
     // Normalmente son documentos de Recaudos de Tesorería
     protected $table = 'cxc_abonos';
 
-    protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'core_empresa_id', 'core_tercero_id', 'modelo_referencia_tercero_index', 'referencia_tercero_id', 'fecha', 'doc_cxc_transacc_id', 'doc_cxc_tipo_doc_id', 'doc_cxc_consecutivo', 'doc_cruce_transacc_id', 'doc_cruce_tipo_doc_id', 'doc_cruce_consecutivo', 'abono', 'creado_por', 'modificado_por'];
+    protected $fillable = ['cxc_movimiento_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'core_empresa_id', 'core_tercero_id', 'modelo_referencia_tercero_index', 'referencia_tercero_id', 'fecha', 'doc_cxc_transacc_id', 'doc_cxc_tipo_doc_id', 'doc_cxc_consecutivo', 'doc_cruce_transacc_id', 'doc_cruce_tipo_doc_id', 'doc_cruce_consecutivo', 'abono', 'creado_por', 'modificado_por'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento recaudo', 'Proveedor', 'Documento CxC Abonado', 'Doc. cruce', 'Valor abono'];
 
@@ -73,6 +73,24 @@ class CxcAbono extends Model
         return static::queryDocumentoOrigen($documento)
             ->where('doc_cruce_transacc_id', '<>', 0)
             ->exists();
+    }
+
+    public function getMovimientoCxc($bloquear = false)
+    {
+        $query = CxcMovimiento::where('core_empresa_id', $this->core_empresa_id)
+            ->where('core_tercero_id', $this->core_tercero_id)
+            ->where('core_tipo_transaccion_id', $this->doc_cxc_transacc_id)
+            ->where('core_tipo_doc_app_id', $this->doc_cxc_tipo_doc_id)
+            ->where('consecutivo', $this->doc_cxc_consecutivo);
+        if (!empty($this->cxc_movimiento_id)) {
+            $query->where('id', $this->cxc_movimiento_id);
+        }
+        if ($bloquear) {
+            $query->lockForUpdate();
+        }
+        $candidatos = $query->take(2)->get();
+        // Compatibilidad historica solamente cuando existe un unico movimiento.
+        return $candidatos->count() === 1 ? $candidatos->first() : null;
     }
 
     public function tipo_transaccion()
@@ -280,15 +298,7 @@ class CxcAbono extends Model
             ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_abonos.doc_cxc_tipo_doc_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_abonos.core_tercero_id')
             ->select(
-                'cxc_abonos.id',
-                'cxc_abonos.core_empresa_id',
-                'cxc_abonos.core_tercero_id',
-                'cxc_abonos.referencia_tercero_id',
-                'cxc_abonos.doc_cxc_transacc_id',
-                'cxc_abonos.doc_cxc_tipo_doc_id',
-                'cxc_abonos.doc_cxc_consecutivo',
-                'cxc_abonos.fecha',
-                'cxc_abonos.abono',
+                'cxc_abonos.*',
                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxc_abonos.doc_cxc_consecutivo) AS documento_prefijo_consecutivo'),
                 'core_terceros.descripcion AS tercero_nombre_completo',

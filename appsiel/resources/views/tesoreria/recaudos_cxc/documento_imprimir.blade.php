@@ -115,14 +115,13 @@
                 <?php 
             
                     $el_documento = app( App\Sistema\TipoTransaccion::find( $linea->doc_cxc_transacc_id )->modelo_encabezados_documentos )->where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
-                    ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
+                    ->where('core_empresa_id',$linea->core_empresa_id)
+                                                        ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
                     ->where('consecutivo',$linea->doc_cxc_consecutivo)
                     ->get()->first();
 
-                    $saldo_pendiente = App\CxC\CxcMovimiento::where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
-                                                        ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
-                                                        ->where('consecutivo',$linea->doc_cxc_consecutivo)
-                                                        ->value('saldo_pendiente');
+                    $movimiento_abonado = $linea->getMovimientoCxc();
+                    $saldo_pendiente = $movimiento_abonado ? $movimiento_abonado->saldo_pendiente : null;
                 ?>
 
                 <tr>
@@ -131,11 +130,11 @@
                     <td> {{ $el_documento->fecha }} </td>
                     <td> {{ $el_documento->descripcion }} </td>
                     <td class="text-right"> {{ '$ '.number_format( $linea->abono, 0, ',', '.') }} </td>
-                    <td class="text-right"> ${{ number_format( $saldo_pendiente, 0, ',', '.') }} </td>
+                    <td class="text-right"> ${{ ($saldo_pendiente === null ? 'Por conciliar' : number_format($saldo_pendiente, 0, ',', '.')) }} </td>
                 </tr>
                 <?php 
                     $total_abono += $linea->abono;
-                    $total_pendiente += $saldo_pendiente;
+                    $total_pendiente = ($total_pendiente === null || $saldo_pendiente === null) ? null : $total_pendiente + $saldo_pendiente;
                 ?>
             @endforeach
         </tbody>
@@ -143,7 +142,7 @@
             <tr style="font-weight: bold;">
                 <td colspan="4" style="text-align: right;"> Totales </td>
                 <td class="text-right"> ${{ number_format($total_abono, 0, ',', '.') }} </td>
-                <td class="text-right"> ${{ number_format($total_pendiente, 0, ',', '.') }} </td>
+                <td class="text-right"> ${{ ($total_pendiente === null ? 'Por conciliar' : number_format($total_pendiente, 0, ',', '.')) }} </td>
             </tr>
         </tfoot>
     </table>

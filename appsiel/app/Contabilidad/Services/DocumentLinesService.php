@@ -100,6 +100,7 @@ class DocumentLinesService
                 $datos['saldo_pendiente'] = $valor_debito;
                 $datos['fecha_vencimiento'] = $tabla_registros_documento[$i]->fecha_vencimiento;
                 $datos['estado'] = 'Pendiente';
+                $datos['contab_cuenta_id'] = (int)$contab_cuenta_id;
                 CxcMovimiento::create( $datos );
             }
 
@@ -111,6 +112,7 @@ class DocumentLinesService
                 $datos['saldo_pendiente'] = $valor_credito * -1;
                 $datos['fecha_vencimiento'] = $tabla_registros_documento[$i]->fecha_vencimiento;
                 $datos['estado'] = 'Pendiente';
+                $datos['contab_cuenta_id'] = (int)$contab_cuenta_id;
                 CxcMovimiento::create( $datos );
             }
 

@@ -181,20 +181,11 @@ class AccountingServices
 
     public function get_main_account($movement)
     {
-        // Registro Debito de la contabilizacion del documento de cartera.
-        $cta_x_cobrar_id = ContabMovimiento::where('core_tipo_transaccion_id',$movement->doc_cxc_transacc_id)
-                                            ->where('core_tipo_doc_app_id',$movement->doc_cxc_tipo_doc_id)
-                                            ->where('consecutivo',$movement->doc_cxc_consecutivo)
-                                            ->where('core_tercero_id',$movement->core_tercero_id)
-                                            ->where('valor_credito',0)
-                                            ->value('contab_cuenta_id');
-
-        if( is_null( $cta_x_cobrar_id ) )
-        {
-            $cta_x_cobrar_id = config('configuracion.cta_cartera_default');
+        $origen = $movement->getMovimientoCxc();
+        if (!$origen) {
+            throw new \InvalidArgumentException('No se identifico de forma unica el movimiento de CxC del abono.');
         }
-
-        return $cta_x_cobrar_id;
+        return (new RecaudoCxcMovimientoService)->cuenta($origen);
     }
 
     public function set_data_contra($movement,$data)

@@ -178,6 +178,7 @@ class ContabilidadController extends TransaccionController
                 $this->datos['saldo_pendiente'] = $valor_debito;
                 $this->datos['fecha_vencimiento'] = $tabla_registros_documento[$i]->fecha_vencimiento;
                 $this->datos['estado'] = 'Pendiente';
+                $this->datos['contab_cuenta_id'] = (int)$contab_cuenta_id;
                 CxcMovimiento::create( $this->datos );
             }
 
