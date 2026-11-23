@@ -26,30 +26,9 @@ class OutstandingBalancesAcr
         // En el movimiento hay saldos de anticipos (Negativos) (Ej, documentos de Recaudos) y saldos de cartera (Positivos) (Ej, documentos de Facturas de ventas)
         foreach( $movimientos as $movimiento )
         {
-            if ( $movimiento->valor_documento < 0 )
-            {
-                // ANTICIPO
-                $array_wheres2 = [
-                                    ['core_tipo_transaccion_id', '=', $movimiento->core_tipo_transaccion_id ],
-                                    ['core_tipo_doc_app_id', '=', $movimiento->core_tipo_doc_app_id ],
-                                    ['consecutivo', '=', $movimiento->consecutivo ],
-                                    ['core_tercero_id', '=', $movimiento->core_tercero_id ],
-                                    ['fecha', '<=', $deadline ]
-                                ];
-            }else{
-                // DOCUMENTO DE CXC (FACTURA)
-                $array_wheres2 = [
-                                    ['doc_cxc_transacc_id', '=', $movimiento->core_tipo_transaccion_id ],
-                                    ['doc_cxc_tipo_doc_id', '=', $movimiento->core_tipo_doc_app_id ],
-                                    ['doc_cxc_consecutivo', '=', $movimiento->consecutivo ],
-                                    ['core_tercero_id', '=', $movimiento->core_tercero_id ],
-                                    ['fecha', '<=', $deadline ]
-                                ];
-            }
+            $abonos = CxcAbono::queryDelMovimientoCxc($movimiento)
+                ->where('fecha', '<=', $deadline)->sum('abono');
 
-            // Sumar los abonos hechos al documento del movimiento para restarlos al valor del documento y mostrarlo en el saldo pendiente
-            $abonos = CxcAbono::where( $array_wheres2 )->sum('abono'); // Siempre positivo
-            
             if ( $movimiento->valor_documento < 0 )
             {
                 // ANTICIPO
@@ -68,29 +47,8 @@ class OutstandingBalancesAcr
     // The payment can be applied in an Invoice or in an Advance
     public function get_acr_movement_payments($row, $deadline)
     {
-        if ( $row->valor_documento < 0 )
-        {
-            // ANTICIPO
-            $array_wheres2 = [
-                            ['core_tipo_transaccion_id', '=', $row->core_tipo_transaccion_id ],
-                            ['core_tipo_doc_app_id', '=', $row->core_tipo_doc_app_id ],
-                            ['consecutivo', '=', $row->consecutivo ],
-                            ['core_tercero_id', '=', $row->core_tercero_id ],
-                            ['fecha', '<=', $deadline ]
-                        ];
-        }else{
-            // DOCUMENTO DE CXC (FACTURA)
-            $array_wheres2 = [
-                            ['doc_cxc_transacc_id', '=', $row->core_tipo_transaccion_id ],
-                            ['doc_cxc_tipo_doc_id', '=', $row->core_tipo_doc_app_id ],
-                            ['doc_cxc_consecutivo', '=', $row->consecutivo ],
-                            ['core_tercero_id', '=', $row->core_tercero_id ],
-                            ['fecha', '<=', $deadline ]
-                        ];
-        }
-        
-        // Abonos hechos al documento del movimiento
-        $payments = CxcAbono::where( $array_wheres2 )->get();
+        $payments = CxcAbono::queryDelMovimientoCxc($row)
+            ->where('fecha', '<=', $deadline)->get();
 
         $records = [];
         foreach ($payments as $payment) {

@@ -75,6 +75,25 @@ class CxcAbono extends Model
             ->exists();
     }
 
+    /** Consulta abonos por movimiento, conservando la compatibilidad de abonos antiguos. */
+    public static function queryDelMovimientoCxc(CxcMovimiento $movimiento)
+    {
+        $query = static::where('core_empresa_id', $movimiento->core_empresa_id)
+            ->where('core_tercero_id', $movimiento->core_tercero_id);
+        if ($movimiento->valor_documento < 0) {
+            return $query->where('core_tipo_transaccion_id', $movimiento->core_tipo_transaccion_id)
+                ->where('core_tipo_doc_app_id', $movimiento->core_tipo_doc_app_id)
+                ->where('consecutivo', $movimiento->consecutivo);
+        }
+        return $query->where('doc_cxc_transacc_id', $movimiento->core_tipo_transaccion_id)
+            ->where('doc_cxc_tipo_doc_id', $movimiento->core_tipo_doc_app_id)
+            ->where('doc_cxc_consecutivo', $movimiento->consecutivo)
+            ->where(function ($abonos) use ($movimiento) {
+                $abonos->where('cxc_movimiento_id', $movimiento->id)
+                    ->orWhereNull('cxc_movimiento_id');
+            });
+    }
+
     public function getMovimientoCxc($bloquear = false)
     {
         $query = CxcMovimiento::where('core_empresa_id', $this->core_empresa_id)

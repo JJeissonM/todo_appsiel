@@ -90,6 +90,63 @@ class RecaudoCxcMovimientosSeparadosTest extends TestCase
         $this->comprobarAbonos();
     }
 
+    private function prepararReportePendientes()
+    {
+        DB::connection()->getPdo()->sqliteCreateFunction('CONCAT', function () { return implode('',func_get_args()); });
+        Schema::create('core_terceros',function ($tabla) {
+            $tabla->increments('id');$tabla->string('descripcion');$tabla->string('numero_identificacion');
+        });
+        Schema::create('core_tipos_docs_apps',function ($tabla) {
+            $tabla->increments('id');$tabla->string('prefijo');
+        });
+        DB::table('core_terceros')->insert(['id'=>10,'descripcion'=>'Cliente prueba','numero_identificacion'=>'123']);
+        DB::table('core_tipos_docs_apps')->insert(['id'=>15,'prefijo'=>'NI']);
+        CxcMovimiento::query()->update(['fecha'=>'2026-06-30','fecha_vencimiento'=>'2026-06-30']);
+        $doc = $this->recibo();$doc->fecha='2026-07-01';
+        $doc->almacenar_y_contabilizar_abonos_cxc(new Request(['lineas_registros'=>$this->lineas()]));
+    }
+
+    public function testReportePendientesConservaLasDosLineasYTotalizaCincoMillones()
+    {
+        $this->prepararReportePendientes();
+        $movimiento = (new App\CxC\Services\DocumentosPendientesCxC)->get_movimiento_documentos_pendientes_fecha_corte('',10);
+        $this->assertCount(2,$movimiento);
+        $this->assertEquals(4950000,$movimiento->keyBy('id')->get(1)->saldo_pendiente);
+        $this->assertEquals(50000,$movimiento->keyBy('id')->get(2)->saldo_pendiente);
+        $this->assertEquals(10000000,$movimiento->sum('valor_documento'));
+        $this->assertEquals(5000000,$movimiento->sum('valor_pagado'));
+        $this->assertEquals(5000000,$movimiento->sum('saldo_pendiente'));
+        foreach ($movimiento as $linea) { $linea->show=1;$linea->lbl_estudiante=''; }
+        $html = view('cxc.reportes.documentos_pendientes_cxc',['movimiento'=>$movimiento,'mostrar_columna_tercero'=>1])->render();
+        $this->assertContains('4.950.000,00',$html);
+        $this->assertContains('50.000,00',$html);
+        $this->assertContains('5.000.000,00',$html);
+    }
+
+    public function testReporteRespetaFechaDeCorteYNoMezclaAbonosDeOtrasEmpresas()
+    {
+        $this->prepararReportePendientes();
+        $otro = CxcAbono::first()->replicate();$otro->core_empresa_id=2;$otro->abono=90000;$otro->save();
+        $servicio = new App\CxC\Services\DocumentosPendientesCxC;
+        $antes = $servicio->get_movimiento_documentos_pendientes_fecha_corte('2026-06-30',10);
+        $this->assertEquals(0,$antes->sum('valor_pagado'));
+        $this->assertEquals(10000000,$antes->sum('saldo_pendiente'));
+        $despues = $servicio->get_movimiento_documentos_pendientes_fecha_corte('2026-07-01',10);
+        $this->assertEquals(5000000,$despues->sum('saldo_pendiente'));
+        $estado = (new App\CxC\Services\OutstandingBalancesAcr)->get_outstanding_balance_ofcontact_ondeadline('2026-07-01',10);
+        $this->assertCount(2,$estado);
+        $this->assertEquals(50000,$estado->keyBy('id')->get(2)->saldo_pendiente);
+        $this->assertEquals(4950000,$estado->keyBy('id')->get(1)->saldo_pendiente);
+    }
+
+    public function testAbonoHistoricoSinReferenciaSigueContandoParaDocumentoUnico()
+    {
+        CxcMovimiento::where('id',2)->delete();
+        CxcAbono::create(['core_empresa_id'=>1,'core_tercero_id'=>10,
+            'doc_cxc_transacc_id'=>9,'doc_cxc_tipo_doc_id'=>15,'doc_cxc_consecutivo'=>3,'abono'=>1000]);
+        $this->assertEquals(1000,CxcAbono::queryDelMovimientoCxc(CxcMovimiento::find(1))->sum('abono'));
+    }
+
     public function testMigracionAgregaReferenciasSinModificarMovimientosHistoricos()
     {
         Schema::drop('cxc_abonos');

@@ -32,6 +32,7 @@ class DocumentosPendientesCxC
                                     ->where( $array_wheres )
                                     ->select(
                                                 'cxc_movimientos.id',
+                                                'cxc_movimientos.core_empresa_id',
                                                 'cxc_movimientos.core_tipo_transaccion_id',
                                                 'cxc_movimientos.core_tipo_doc_app_id',
                                                 'cxc_movimientos.consecutivo',
@@ -52,33 +53,11 @@ class DocumentosPendientesCxC
         // En el movimiento hay documentos de anticipo (Ej, Recaudos) y documentos de cartera (Ej, Facturas de ventas)
         foreach( $movimiento as $linea_movimiento )
         {
-            if ( $linea_movimiento->valor_documento < 0 )
-            {
-                // ANTICIPO
-                $array_wheres2 = [
-                                    ['core_tipo_transaccion_id', '=', $linea_movimiento->core_tipo_transaccion_id ],
-                                    ['core_tipo_doc_app_id', '=', $linea_movimiento->core_tipo_doc_app_id ],
-                                    ['consecutivo', '=', (int)$linea_movimiento->consecutivo ],
-                                    ['core_tercero_id', '=', $linea_movimiento->core_tercero_id ]
-                                ];
-            }else{
-                // DOCUMENTO DE CXC (FACTURA)
-                $array_wheres2 = [
-                                    ['doc_cxc_transacc_id', '=', $linea_movimiento->core_tipo_transaccion_id ],
-                                    ['doc_cxc_tipo_doc_id', '=', $linea_movimiento->core_tipo_doc_app_id ],
-                                    ['doc_cxc_consecutivo', '=', (int)$linea_movimiento->consecutivo ],
-                                    ['core_tercero_id', '=', $linea_movimiento->core_tercero_id ]
-                                ];
+            $consulta_abonos = CxcAbono::queryDelMovimientoCxc($linea_movimiento);
+            if ($fecha_corte != '') {
+                $consulta_abonos->where('fecha', '<=', $fecha_corte);
             }
-
-            if( $fecha_corte != '' )
-            {
-                $fecha_corte = \Carbon\Carbon::parse( $fecha_corte )->format('Y-m-d');
-                $array_wheres2 = array_merge( $array_wheres2, [ ['fecha', '<=', $fecha_corte ] ] );
-            }
-
-            // Sumar los abonos hechos al documento del movimiento para restarlos al valor del documento y mostrarlo en el saldo pendiente
-            $abonos = CxcAbono::where( $array_wheres2 )->sum('abono'); // Siempre positivo
+            $abonos = $consulta_abonos->sum('abono');
 
             if ($abonos > abs($linea_movimiento->valor_documento)) {
                 $abonos = abs($linea_movimiento->valor_documento);
