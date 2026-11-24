@@ -65,6 +65,14 @@
 				&nbsp;				 
 			</div>
 
+			<div class="row" style="padding:5px;">
+				<label class="control-label col-sm-4"> <b> Documento contabilizado a retirar: </b> </label>
+
+				<div class="col-sm-8">
+					{{ Form::select('nom_doc_encabezado_id_retirar', App\Nomina\NomDocEncabezado::opciones_campo_select_contabilizados(), null, ['class' => 'combobox', 'id' => 'nom_doc_encabezado_id_retirar']) }}
+				</div>
+			</div>
+
 			<div class="row" style="padding:5px; text-align: center;">
 				<div class="col-md-6">
 					<button class="btn btn-success" id="btn_cargar"> <i class="fa fa-calculator"></i> Liquidar </button>
@@ -137,17 +145,19 @@
 
 			$("#btn_retirar").on('click',function(event){
 		    	event.preventDefault();
+				var documentoId = $('#nom_doc_encabezado_id_retirar').val();
 
-		    	if ( !validar_requeridos() )
-		    	{
-		    		return false;
-		    	}
+				if (!documentoId) {
+					alert('Debe seleccionar el documento contabilizado que desea retirar.');
+					$('#nom_doc_encabezado_id_retirar').focus();
+					return false;
+				}
 
 		 		$("#div_spin").show();
 		 		$("#div_cargando").show();
         		$("#div_resultado").html( '' );
 
-				var url = "{{ url('nom_retirar_contabilizacion_documento_nomina') }}" + '/' + $('#nom_doc_encabezado_id').val();
+				var url = "{{ url('nom_retirar_contabilizacion_documento_nomina') }}" + '/' + documentoId;
 
 				$.ajax({
 				    url: url,

@@ -121,5 +121,27 @@ class NomDocEncabezadoOpcionesContabilizacionTest extends TestCase
 
         $this->assertArrayNotHasKey(40, NomDocEncabezado::opciones_campo_select_contabilizacion());
         $this->assertArrayNotHasKey(40, NomDocEncabezado::opciones_campo_select_ingreso_registros());
+        $this->assertArrayHasKey(40, NomDocEncabezado::opciones_campo_select_contabilizados());
+    }
+
+    /** @test */
+    public function el_selector_de_retiro_incluye_documentos_marcados_como_contabilizados()
+    {
+        DB::table('core_tipos_docs_apps')->insert(['id' => 1, 'prefijo' => 'NM']);
+        DB::table('nom_doc_encabezados')->insert([
+            'id' => 50,
+            'core_empresa_id' => 1,
+            'core_tipo_transaccion_id' => 14,
+            'core_tipo_doc_app_id' => 1,
+            'consecutivo' => '81',
+            'fecha' => '2026-08-31',
+            'descripcion' => 'NÓMINA AGOSTO',
+            'estado' => NomDocEncabezado::ESTADO_CONTABILIZADO,
+        ]);
+
+        $opciones = NomDocEncabezado::opciones_campo_select_contabilizados();
+
+        $this->assertArrayHasKey(50, $opciones);
+        $this->assertSame('NM 81 - NÓMINA AGOSTO', $opciones[50]);
     }
 }

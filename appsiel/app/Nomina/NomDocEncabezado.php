@@ -286,6 +286,20 @@ class NomDocEncabezado extends Model
         return self::opciones_campo_select_no_contabilizados('descripcion');
     }
 
+    public static function opciones_campo_select_contabilizados()
+    {
+        $opciones = self::query_contabilizados()
+            ->orderBy('nom_doc_encabezados.fecha', 'DESC')
+            ->get();
+
+        $vec[''] = '';
+        foreach ($opciones as $opcion) {
+            $vec[$opcion->id] = $opcion->get_label_documento() . ' - ' . $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
     public static function opciones_campo_select_reportes()
     {
         return self::opciones_campo_select_por_estados([]);
@@ -334,6 +348,22 @@ class NomDocEncabezado extends Model
             ->where('nom_doc_encabezados.estado', self::ESTADO_ACTIVO)
             ->whereNull('contab_movimientos.id')
             ->select('nom_doc_encabezados.*');
+    }
+
+    protected static function query_contabilizados()
+    {
+        return self::leftJoin('contab_movimientos', function ($join) {
+                $join->on('contab_movimientos.core_empresa_id', '=', 'nom_doc_encabezados.core_empresa_id')
+                    ->on('contab_movimientos.core_tipo_transaccion_id', '=', 'nom_doc_encabezados.core_tipo_transaccion_id')
+                    ->on('contab_movimientos.core_tipo_doc_app_id', '=', 'nom_doc_encabezados.core_tipo_doc_app_id')
+                    ->on('contab_movimientos.consecutivo', '=', 'nom_doc_encabezados.consecutivo');
+            })
+            ->where(function ($query) {
+                $query->where('nom_doc_encabezados.estado', self::ESTADO_CONTABILIZADO)
+                    ->orWhereNotNull('contab_movimientos.id');
+            })
+            ->select('nom_doc_encabezados.*')
+            ->distinct();
     }
 
     public function esta_activo_para_transacciones()
