@@ -16,60 +16,71 @@
   <div class="row" style="padding:5px;">
     <!-- COLUMNA IZQUIERDA: Proceso de contabilización -->
     <div class="col-sm-6">
-      <div class="row" style="padding:5px;">
-        <label class="control-label col-sm-12"> <b> *Documento de liquidación: </b> </label>
-        <div class="col-sm-12">
-{{ Form::select( 'nom_doc_encabezado_id', App\Nomina\NomDocEncabezado::opciones_campo_select_contabilizacion(),null, [ 'id' => 'nom_doc_encabezado_id', 'required' => 'required' ]) }}
-        </div>
-      </div>
+		<?php
+			$documentos_penmdientes = App\Nomina\NomDocEncabezado::opciones_campo_select_contabilizacion();
+		?>
 
-      <div class="row" style="padding:5px;">
-        <label class="control-label col-sm-12"> <b> *Opciones de liquidación: </b> </label>
-        <div class="col-sm-12">
-{{ Form::select( 'almacenar_registros', ['Previsualizar','Almacenar registros'],null, [ 'class' => 'form-control', 'id' => 'almacenar_registros' ]) }}
-        </div>
-      </div>
+		@if( count($documentos_penmdientes) == 0 )
+			<div class="alert alert-info">
+				No hay documentos de nómina pendientes por contabilizar.
+			</div>
+		@else
+			<div class="row" style="padding:5px;">
+				<label class="control-label col-sm-12"> <b> *Documento de liquidación: </b> </label>
+				<div class="col-sm-12">
+					{{ Form::select( 'nom_doc_encabezado_id', $documentos_penmdientes,null, [ 'id' => 'nom_doc_encabezado_id', 'required' => 'required' ]) }}
+				</div>
+			</div>
 
-      <div class="row" style="padding:5px;">
-        <?php
-        if ( (int)config('nomina.tercero_id_salarios_por_pagar') == 0 )
-        {
-          $tercero_descripcion = 'A nombre de cada empleado.';
-        }else{
-          $tercero_descripcion = App\Core\Tercero::find( (int)config('nomina.tercero_id_salarios_por_pagar') )->descripcion;
-        }
-        ?>
-        <label class="control-label col-sm-12"> <b> Tercero causación pasivo: </b> </label>
-        <div class="col-sm-12">
-{{ Form::text( 'tercero', $tercero_descripcion, [ 'class' => 'form-control', 'disabled' => 'disabled' ]) }}
-        </div>
-      </div>
+			<div class="row" style="padding:5px;">
+				<label class="control-label col-sm-12"> <b> *Opciones de liquidación: </b> </label>
+				<div class="col-sm-12">
+					{{ Form::select( 'almacenar_registros', ['Previsualizar','Almacenar registros'],null, [ 'class' => 'form-control', 'id' => 'almacenar_registros' ]) }}
+				</div>
+			</div>
 
-      <div class="row" style="padding:5px;">
-        <?php
-        $cuenta_descripcion = 'A nombre de cada empleado.';
-        if ( (int)config('nomina.cuenta_id_salarios_por_pagar') != 0 )
-        {
-          $cuenta = App\Contabilidad\ContabCuenta::find( (int)config('nomina.cuenta_id_salarios_por_pagar') );
-          if ( $cuenta )
-          {
-            $cuenta_descripcion = $cuenta->codigo . ' ' . $cuenta->descripcion;
-          }
-        }
-        ?>
-        <label class="control-label col-sm-12"> <b> Cuenta causación pasivo: </b> </label>
-        <div class="col-sm-12">
-{{ Form::text( 'cuenta', $cuenta_descripcion, [ 'class' => 'form-control', 'disabled' => 'disabled' ]) }}
-        </div>
-      </div>
+			<div class="row" style="padding:5px;">
+				<?php
+				if ( (int)config('nomina.tercero_id_salarios_por_pagar') == 0 )
+				{
+				$tercero_descripcion = 'A nombre de cada empleado.';
+				}else{
+				$tercero_descripcion = App\Core\Tercero::find( (int)config('nomina.tercero_id_salarios_por_pagar') )->descripcion;
+				}
+				?>
+				<label class="control-label col-sm-12"> <b> Tercero causación pasivo: </b> </label>
+				<div class="col-sm-12">
+					{{ Form::text( 'tercero', $tercero_descripcion, [ 'class' => 'form-control', 'disabled' => 'disabled' ]) }}
+				</div>
+			</div>
 
-      <div class="row" style="padding:5px;">
-        &nbsp;
-      </div>
+			<div class="row" style="padding:5px;">
+				<?php
+				$cuenta_descripcion = 'A nombre de cada empleado.';
+				if ( (int)config('nomina.cuenta_id_salarios_por_pagar') != 0 )
+				{
+				$cuenta = App\Contabilidad\ContabCuenta::find( (int)config('nomina.cuenta_id_salarios_por_pagar') );
+				if ( $cuenta )
+				{
+					$cuenta_descripcion = $cuenta->codigo . ' ' . $cuenta->descripcion;
+				}
+				}
+				?>
+				<label class="control-label col-sm-12"> <b> Cuenta causación pasivo: </b> </label>
+				<div class="col-sm-12">
+					{{ Form::text( 'cuenta', $cuenta_descripcion, [ 'class' => 'form-control', 'disabled' => 'disabled' ]) }}
+				</div>
+			</div>
 
-      <div class="row" style="padding:5px; text-align: center;">
-        <button class="btn btn-success" id="btn_cargar"> <i class="fa fa-calculator"></i> Liquidar </button>
-      </div>
+			<div class="row" style="padding:5px;">
+				&nbsp;
+			</div>
+
+			<div class="row" style="padding:5px; text-align: center;">
+				<button class="btn btn-success" id="btn_cargar"> <i class="fa fa-calculator"></i> Liquidar </button>
+			</div>
+		
+		@endif
     </div>
 
     <!-- COLUMNA DERECHA: Retirar documento de nómina contabilizado -->
