@@ -20,7 +20,7 @@
 			$documentos_penmdientes = App\Nomina\NomDocEncabezado::opciones_campo_select_contabilizacion();
 		?>
 
-		@if( count($documentos_penmdientes) == 0 )
+		@if( array_shift($documentos_penmdientes) == "" )
 			<div class="alert alert-info">
 				No hay documentos de nómina pendientes por contabilizar.
 			</div>
