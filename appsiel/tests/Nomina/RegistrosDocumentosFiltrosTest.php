@@ -32,6 +32,9 @@ class RegistrosDocumentosFiltrosTest extends TestCase
         });
         Schema::create('nom_doc_encabezados', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('core_tipo_transaccion_id')->nullable();
+            $table->integer('core_tipo_doc_app_id')->nullable();
+            $table->string('consecutivo')->nullable();
             $table->date('fecha');
             $table->integer('core_empresa_id');
             $table->decimal('tiempo_a_liquidar', 8, 3);
@@ -40,6 +43,13 @@ class RegistrosDocumentosFiltrosTest extends TestCase
             $table->decimal('total_deducciones', 15, 2)->default(0);
             $table->string('estado');
             $table->timestamps();
+        });
+        Schema::create('contab_movimientos', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('core_empresa_id');
+            $table->integer('core_tipo_transaccion_id');
+            $table->integer('core_tipo_doc_app_id');
+            $table->string('consecutivo');
         });
         Schema::create('core_terceros', function (Blueprint $table) {
             $table->increments('id');
@@ -165,6 +175,39 @@ class RegistrosDocumentosFiltrosTest extends TestCase
         $this->assertSame([101, 202], array_column($datos['empleados'], 'id'));
         $this->assertSame([10, 20], array_column($datos['grupos'], 'id'));
         $this->assertSame([100, 200], array_column($datos['cargos'], 'id'));
+    }
+
+    /** @test */
+    public function bloquea_el_ingreso_de_registros_si_el_documento_ya_tiene_movimientos_contables()
+    {
+        DB::table('nom_doc_encabezados')->where('id', 1)->update([
+            'core_tipo_transaccion_id' => 14,
+            'core_tipo_doc_app_id' => 90,
+            'consecutivo' => '1',
+        ]);
+        DB::table('contab_movimientos')->insert([
+            'core_empresa_id' => 1,
+            'core_tipo_transaccion_id' => 14,
+            'core_tipo_doc_app_id' => 90,
+            'consecutivo' => '1',
+        ]);
+
+        $respuesta = (new RegistrosDocumentosController)->filtros_registros(1);
+
+        $this->assertSame(422, $respuesta->getStatusCode());
+
+        $request = Request::create('/nom_registros_documentos', 'POST', [
+            'nom_doc_encabezado_id' => 1,
+            'nom_concepto_id' => 5,
+            'nom_contrato_id' => [101],
+            'core_tercero_id' => [1],
+            'valor' => [125000],
+            'app_id' => 17,
+            'modelo_id' => 91,
+        ]);
+        (new RegistrosDocumentosController)->store($request);
+
+        $this->assertSame(0, DB::table('nom_doc_registros')->count());
     }
 
     /** @test */

@@ -278,7 +278,12 @@ class NomDocEncabezado extends Model
 
     public static function opciones_campo_select_contabilizacion()
     {
-        return self::opciones_campo_select_por_estados([self::ESTADO_ACTIVO, self::ESTADO_CONTABILIZADO]);
+        return self::opciones_campo_select_no_contabilizados('fecha');
+    }
+
+    public static function opciones_campo_select_ingreso_registros()
+    {
+        return self::opciones_campo_select_no_contabilizados('descripcion');
     }
 
     public static function opciones_campo_select_reportes()
@@ -304,9 +309,50 @@ class NomDocEncabezado extends Model
         return $vec;
     }
 
+    protected static function opciones_campo_select_no_contabilizados($orden)
+    {
+        $opciones = self::query_no_contabilizados()
+            ->orderBy('nom_doc_encabezados.' . $orden, $orden === 'fecha' ? 'DESC' : 'ASC')
+            ->get();
+
+        $vec[''] = '';
+        foreach ($opciones as $opcion) {
+            $vec[$opcion->id] = $opcion->get_label_documento() . ' - ' . $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
+    protected static function query_no_contabilizados()
+    {
+        return self::leftJoin('contab_movimientos', function ($join) {
+                $join->on('contab_movimientos.core_empresa_id', '=', 'nom_doc_encabezados.core_empresa_id')
+                    ->on('contab_movimientos.core_tipo_transaccion_id', '=', 'nom_doc_encabezados.core_tipo_transaccion_id')
+                    ->on('contab_movimientos.core_tipo_doc_app_id', '=', 'nom_doc_encabezados.core_tipo_doc_app_id')
+                    ->on('contab_movimientos.consecutivo', '=', 'nom_doc_encabezados.consecutivo');
+            })
+            ->where('nom_doc_encabezados.estado', self::ESTADO_ACTIVO)
+            ->whereNull('contab_movimientos.id')
+            ->select('nom_doc_encabezados.*');
+    }
+
     public function esta_activo_para_transacciones()
     {
         return $this->estado == self::ESTADO_ACTIVO;
+    }
+
+    public function tiene_movimientos_contables()
+    {
+        return ContabMovimiento::where('core_empresa_id', $this->core_empresa_id)
+            ->where('core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $this->core_tipo_doc_app_id)
+            ->where('consecutivo', $this->consecutivo)
+            ->exists();
+    }
+
+    public function esta_disponible_para_ingreso_registros()
+    {
+        return $this->esta_activo_para_transacciones() && !$this->tiene_movimientos_contables();
     }
 
     public function marcar_contabilizado()

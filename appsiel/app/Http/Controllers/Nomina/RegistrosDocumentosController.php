@@ -22,14 +22,7 @@ class RegistrosDocumentosController extends TransaccionController
     */
     public function crear_registros1()
     {
-        $opciones1 = NomDocEncabezado::where('estado','Activo')
-                                    ->orderBy('descripcion')
-                                    ->get();
-        $vec1['']='';
-        foreach ($opciones1 as $opcion){
-            $vec1[$opcion->id] = $opcion->get_label_documento() . ' - ' . $opcion->descripcion;
-        }
-        $documentos = $vec1;
+        $documentos = NomDocEncabezado::opciones_campo_select_ingreso_registros();
 
         $modo_liquidacion_id = 2; //2 = Manual
         $opciones2 = NomConcepto::where('estado','Activo')
@@ -55,9 +48,9 @@ class RegistrosDocumentosController extends TransaccionController
     public function filtros_registros($nom_doc_encabezado_id)
     {
         $documento = NomDocEncabezado::find((int) $nom_doc_encabezado_id);
-        if (is_null($documento) || !$documento->esta_activo_para_transacciones()) {
+        if (is_null($documento) || !$documento->esta_disponible_para_ingreso_registros()) {
             return response()->json([
-                'mensaje' => 'El documento de nómina no existe o no está activo.'
+                'mensaje' => 'El documento de nómina no existe, no está activo o ya fue contabilizado.'
             ], 422);
         }
 
@@ -115,9 +108,9 @@ class RegistrosDocumentosController extends TransaccionController
         $documento = NomDocEncabezado::find((int) $request->nom_doc_encabezado_id);
         $concepto = NomConcepto::find((int) $request->nom_concepto_id);
 
-        if (is_null($documento) || !$documento->esta_activo_para_transacciones()) {
+        if (is_null($documento) || !$documento->esta_disponible_para_ingreso_registros()) {
             return redirect()->back()->withInput()
-                ->with('mensaje_error', 'Debe seleccionar un documento de nómina activo.');
+                ->with('mensaje_error', 'Debe seleccionar un documento de nómina activo y sin contabilizar.');
         }
 
         if (is_null($concepto) || $concepto->estado !== 'Activo' || (int) $concepto->modo_liquidacion_id !== 2) {
@@ -382,8 +375,8 @@ class RegistrosDocumentosController extends TransaccionController
         $documento = NomDocEncabezado::find((int) $request->nom_doc_encabezado_id);
         $concepto = NomConcepto::find((int) $request->nom_concepto_id);
 
-        if (is_null($documento) || !$documento->esta_activo_para_transacciones()) {
-            throw new \InvalidArgumentException('El documento de nómina no existe o no está activo.');
+        if (is_null($documento) || !$documento->esta_disponible_para_ingreso_registros()) {
+            throw new \InvalidArgumentException('El documento de nómina no existe, no está activo o ya fue contabilizado.');
         }
 
         if (is_null($concepto) || $concepto->estado !== 'Activo' || (int) $concepto->modo_liquidacion_id !== 2) {
