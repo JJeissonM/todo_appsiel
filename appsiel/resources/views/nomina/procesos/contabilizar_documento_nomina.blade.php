@@ -11,88 +11,91 @@
 @endsection
 
 @section('formulario')
-	<div class="row" id="div_formulario">
-		{{ Form::open(['url'=>'nom_contabilizar_documento_nomina','id'=>'formulario_inicial','files' => true]) }}
-			<div class="row" style="padding:5px;">					
-				<label class="control-label col-sm-4" > <b> *Documento de liquidación: </b> </label>
+<div class="row" id="div_formulario">
+{{ Form::open(['url'=>'nom_contabilizar_documento_nomina','id'=>'formulario_inicial','files' => true]) }}
+  <div class="row" style="padding:5px;">
+    <!-- COLUMNA IZQUIERDA: Proceso de contabilización -->
+    <div class="col-sm-6">
+      <div class="row" style="padding:5px;">
+        <label class="control-label col-sm-12"> <b> *Documento de liquidación: </b> </label>
+        <div class="col-sm-12">
+{{ Form::select( 'nom_doc_encabezado_id', App\Nomina\NomDocEncabezado::opciones_campo_select_contabilizacion(),null, [ 'id' => 'nom_doc_encabezado_id', 'required' => 'required' ]) }}
+        </div>
+      </div>
 
-				<div class="col-sm-8">
-					{{ Form::select( 'nom_doc_encabezado_id', App\Nomina\NomDocEncabezado::opciones_campo_select_contabilizacion(),null, [ 'class' => 'combobox', 'id' => 'nom_doc_encabezado_id', 'required' => 'required' ]) }}
-				</div>					 
-			</div>
-							
-			<div class="row" style="padding:5px;">
-				<label class="control-label col-sm-4" > <b> *Opciones de liquidación: </b> </label>
+      <div class="row" style="padding:5px;">
+        <label class="control-label col-sm-12"> <b> *Opciones de liquidación: </b> </label>
+        <div class="col-sm-12">
+{{ Form::select( 'almacenar_registros', ['Previsualizar','Almacenar registros'],null, [ 'class' => 'form-control', 'id' => 'almacenar_registros' ]) }}
+        </div>
+      </div>
 
-				<div class="col-sm-8">
-					{{ Form::select( 'almacenar_registros', ['Previsualizar','Almacenar registros'],null, [ 'class' => 'form-control', 'id' => 'almacenar_registros' ]) }}
-				</div>
-			</div>
+      <div class="row" style="padding:5px;">
+        <?php
+        if ( (int)config('nomina.tercero_id_salarios_por_pagar') == 0 )
+        {
+          $tercero_descripcion = 'A nombre de cada empleado.';
+        }else{
+          $tercero_descripcion = App\Core\Tercero::find( (int)config('nomina.tercero_id_salarios_por_pagar') )->descripcion;
+        }
+        ?>
+        <label class="control-label col-sm-12"> <b> Tercero causación pasivo: </b> </label>
+        <div class="col-sm-12">
+{{ Form::text( 'tercero', $tercero_descripcion, [ 'class' => 'form-control', 'disabled' => 'disabled' ]) }}
+        </div>
+      </div>
 
-			<div class="row" style="padding:5px;">
-				<?php
-					if ( (int)config('nomina.tercero_id_salarios_por_pagar') == 0 )
-					{
-						$tercero_descripcion = 'A nombre de cada empleado.';
-					}else{
-						$tercero_descripcion = App\Core\Tercero::find( (int)config('nomina.tercero_id_salarios_por_pagar') )->descripcion;
-					}
-				?>
-				<label class="control-label col-sm-4" > <b> Tercero causación pasivo: </b> </label>
+      <div class="row" style="padding:5px;">
+        <?php
+        $cuenta_descripcion = 'A nombre de cada empleado.';
+        if ( (int)config('nomina.cuenta_id_salarios_por_pagar') != 0 )
+        {
+          $cuenta = App\Contabilidad\ContabCuenta::find( (int)config('nomina.cuenta_id_salarios_por_pagar') );
+          if ( $cuenta )
+          {
+            $cuenta_descripcion = $cuenta->codigo . ' ' . $cuenta->descripcion;
+          }
+        }
+        ?>
+        <label class="control-label col-sm-12"> <b> Cuenta causación pasivo: </b> </label>
+        <div class="col-sm-12">
+{{ Form::text( 'cuenta', $cuenta_descripcion, [ 'class' => 'form-control', 'disabled' => 'disabled' ]) }}
+        </div>
+      </div>
 
-				<div class="col-sm-8">
-					{{ Form::text( 'tercero', $tercero_descripcion, [ 'class' => 'form-control', 'disabled' => 'disabled' ]) }}
-				</div>
-			</div>
+      <div class="row" style="padding:5px;">
+        &nbsp;
+      </div>
 
-			<div class="row" style="padding:5px;">
-				<?php
-					$cuenta_descripcion = 'A nombre de cada empleado.';
-					if ( (int)config('nomina.cuenta_id_salarios_por_pagar') != 0 )
-					{
-						$cuenta = App\Contabilidad\ContabCuenta::find( (int)config('nomina.cuenta_id_salarios_por_pagar') );
-						$cuenta_descripcion = $cuenta->codigo . ' ' . $cuenta->descripcion;
-					}
-				?>
-				<label class="control-label col-sm-4" > <b> Cuenta causación pasivo: </b> </label>
+      <div class="row" style="padding:5px; text-align: center;">
+        <button class="btn btn-success" id="btn_cargar"> <i class="fa fa-calculator"></i> Liquidar </button>
+      </div>
+    </div>
 
-				<div class="col-sm-8">
-					{{ Form::text( 'cuenta', $cuenta_descripcion, [ 'class' => 'form-control', 'disabled' => 'disabled' ]) }}
-				</div>
-			</div>
+    <!-- COLUMNA DERECHA: Retirar documento de nómina contabilizado -->
+    <div class="col-sm-6" style="border-left: 1px solid #ccc; padding-left: 15px; height: 350px;">
+      <div class="row" style="padding:5px;">
+        <label class="control-label col-sm-12"> <b> Documento contabilizado a retirar: </b> </label>
+        <div class="col-sm-12">
+{{ Form::select('nom_doc_encabezado_id_retirar', App\Nomina\NomDocEncabezado::opciones_campo_select_contabilizados(), null, ['class' => 'combobox', 'id' => 'nom_doc_encabezado_id_retirar']) }}
+        </div>
+      </div>
 
-			<div class="row" style="padding:5px;">
-				&nbsp;				 
-			</div>
+      <div class="row" style="padding:5px; text-align: center;">
+        <button class="btn btn-danger" id="btn_retirar"> <i class="fa fa-trash"></i> Retirar </button>
+      </div>
+    </div>
+  </div>
 
-			<div class="row" style="padding:5px;">
-				<label class="control-label col-sm-4"> <b> Documento contabilizado a retirar: </b> </label>
+{{ Form::close() }}
+</div>
 
-				<div class="col-sm-8">
-					{{ Form::select('nom_doc_encabezado_id_retirar', App\Nomina\NomDocEncabezado::opciones_campo_select_contabilizados(), null, ['class' => 'combobox', 'id' => 'nom_doc_encabezado_id_retirar']) }}
-				</div>
-			</div>
+{{ Form::bsBtnExcel( 'contabilizacion_documento_nomina' ) }}
+{{ Form::bsBtnPdf( 'contabilizacion_documento_nomina' ) }}
 
-			<div class="row" style="padding:5px; text-align: center;">
-				<div class="col-md-6">
-					<button class="btn btn-success" id="btn_cargar"> <i class="fa fa-calculator"></i> Liquidar </button>
-				</div>
-				<div class="col-md-6">
-					<button class="btn btn-danger" id="btn_retirar"> <i class="fa fa-trash"></i> Retirar </button>
-				</div>
-			</div>
-
-				
-		{{ Form::close() }}
-	</div>
-
-
-	{{ Form::bsBtnExcel( 'contabilizacion_documento_nomina' ) }}
-	{{ Form::bsBtnPdf( 'contabilizacion_documento_nomina' ) }}
-
-	<div class="row" id="div_resultado">
-			
-	</div>
+<div class="row" id="div_resultado">
+  
+</div>
 
 @endsection
 
