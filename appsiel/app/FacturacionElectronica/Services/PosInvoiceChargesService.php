@@ -22,7 +22,7 @@ class PosInvoiceChargesService
         }
         if (!$pos) {
             if ($adjustment != 0 || $bags != 0) {
-                throw new \UnexpectedValueException('No se encontró la factura POS para verificar el ajuste al peso.');
+                throw new \UnexpectedValueException('No se encontró la factura POS de origen para verificar los cargos de bolsas y/o el ajuste al peso.');
             }
             return [];
         }
@@ -72,14 +72,23 @@ class PosInvoiceChargesService
 
     protected function findPosInvoice($invoice)
     {
-        if (!(int)$invoice->ventas_doc_relacionado_id) {
-            return null;
-        }
-        // El mismo id puede existir en documentos de ventas no relacionados con POS.
-        return FacturaPos::where('id', (int)$invoice->ventas_doc_relacionado_id)
-            ->where('core_empresa_id', $invoice->core_empresa_id)
+        // Las conversiones antiguas pueden no tener el enlace explícito al POS.
+        // La identidad completa evita confundir IDs de tablas distintas.
+        $query = FacturaPos::where('core_empresa_id', $invoice->core_empresa_id)
             ->where('core_tipo_transaccion_id', $invoice->core_tipo_transaccion_id)
             ->where('core_tipo_doc_app_id', $invoice->core_tipo_doc_app_id)
-            ->where('consecutivo', $invoice->consecutivo)->first();
+            ->where('consecutivo', $invoice->consecutivo);
+
+        if ((int)$invoice->ventas_doc_relacionado_id) {
+            // Un enlace explícito incorrecto no se sustituye silenciosamente.
+            return $query->where('id', (int)$invoice->ventas_doc_relacionado_id)->first();
+        }
+
+        $candidates = $query->take(2)->get();
+        if ($candidates->count() > 1) {
+            throw new \UnexpectedValueException('Existe más de una factura POS con la identidad de la factura electrónica. Revise la relación antes de enviar.');
+        }
+
+        return $candidates->first();
     }
 }

@@ -232,7 +232,11 @@ class FacturaController extends TransaccionController
             return redirect($ruta_show)->with('mensaje_error',  $error_message);
         }
 
-        $mensaje = $vtas_doc_encabezado->enviar_al_proveedor_tecnologico();
+        try {
+            $mensaje = $vtas_doc_encabezado->enviar_al_proveedor_tecnologico();
+        } catch (\UnexpectedValueException $e) {
+            return redirect($ruta_show)->with('mensaje_error', $e->getMessage());
+        }
         
         if (is_array($mensaje)) {
             $mensaje = (object) $mensaje;
