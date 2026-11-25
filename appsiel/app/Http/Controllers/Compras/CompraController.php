@@ -1108,7 +1108,9 @@ class CompraController extends TransaccionController
             }
 
             if ($factura->enviado_electronicamente()) {
-                return redirect('compras/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', 'Documento NO puede ser anulado. Ya fue enviado electrónicamente a la DIAN.');
+                return redirect('compras/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', (int)$factura->core_tipo_transaccion_id == 48
+                    ? 'Un documento soporte aceptado por la DIAN se anula con una nota de ajuste (concepto 2).'
+                    : 'Documento NO puede ser anulado. Ya fue enviado electrónicamente a la DIAN.');
             }
 
             $array_wheres = [

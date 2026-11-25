@@ -13,6 +13,8 @@ class DocSoporte
    protected $invoice_type_code;
    protected $cantidadDecimales;
    protected $tipo_transaccion;
+   // Llave raíz del JSON enviado; la nota de ajuste la sobrescribe (support_doc_note).
+   protected $llave_raiz = 'support_doc';
 
    public $env;
 
@@ -68,7 +70,7 @@ class DocSoporte
       $json_doc_electronico_enviado = PayloadNormalizer::normalize($json_doc_electronico_enviado);
 
       try {
-         $client = new \GuzzleHttp\Client(['base_uri' => $this->url_emision]);
+         $client = $this->client();
 
          $response = $client->post($this->url_emision, [
             'headers' => [
@@ -177,11 +179,11 @@ class DocSoporte
       $zip_key = $array_respuesta['zip_key'];
       $company_nit = $array_respuesta['CompanyNIT'];
 
-      if ($json_doc_electronico_enviado['support_doc']['env'] == 'PRUEBAS') {
+      if ($json_doc_electronico_enviado[$this->llave_raiz]['env'] == 'PRUEBAS') {
          $env = 'testing';
          $endpointGetStatusZip = "https://osei.com.co/api/v1/invoices/get_status_zip/{$zip_key}/{$company_nit}/{$env}";
          try {
-            $client = new \GuzzleHttp\Client();
+            $client = $this->client();
             $response = $client->get($endpointGetStatusZip, [
                'headers' => [
                   'Content-Type' => 'application/json',
@@ -468,6 +470,12 @@ class DocSoporte
       }
 
       return $json->support_doc;
+   }
+
+   /** Cliente HTTP hacia OSEI; las pruebas lo sustituyen por uno con MockHandler. */
+   protected function client()
+   {
+      return new \GuzzleHttp\Client(['base_uri' => $this->url_emision]);
    }
 
    /**

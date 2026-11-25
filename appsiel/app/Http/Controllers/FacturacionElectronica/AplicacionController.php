@@ -6,6 +6,8 @@ use App\Core\Services\ResolucionFacturacionService;
 use App\Core\TipoDocApp;
 use App\FacturacionElectronica\DATAICO\DocSoporte as DATAICODocSoporte;
 use App\FacturacionElectronica\OSEI\DocSoporte as OSEIDocSoporte;
+use App\FacturacionElectronica\OSEI\NotaAjusteDocSoporte as OSEINotaAjusteDocSoporte;
+use App\FacturacionElectronica\NotaAjusteDocSoporte;
 use App\FacturacionElectronica\OSEI\DocumentosOsei;
 use App\FacturacionElectronica\OSEI\FacturaGeneralOsei;
 use App\Http\Controllers\Controller;
@@ -38,6 +40,10 @@ class AplicacionController extends Controller
         {
             case 'support_doc':
                 $encabezado_doc = DocSoporte::find( $doc_encabezado_id );
+                break;
+
+            case 'support_doc_note':
+                $encabezado_doc = NotaAjusteDocSoporte::find( $doc_encabezado_id );
                 break;
 
             default:
@@ -105,6 +111,21 @@ class AplicacionController extends Controller
         return new DATAICODocSoporte( $encabezado_doc, $tipo_operacion );
     }
 
+    private function documento_osei( $encabezado_doc, $tipo_operacion )
+    {
+        switch ( $tipo_operacion )
+        {
+            case 'support_doc':
+                return new OSEIDocSoporte( $encabezado_doc, $tipo_operacion );
+
+            case 'support_doc_note':
+                return new OSEINotaAjusteDocSoporte( $encabezado_doc, $tipo_operacion );
+
+            default:
+                return new FacturaGeneralOsei( $encabezado_doc, $tipo_operacion );
+        }
+    }
+
     /**
      * PDF de un documento ya emitido en OSEI (FEV, NC, ND o DS): resuelve el
      * mismo prefijo que viajó en el JSON y lo descarga del endpoint para ERP
@@ -112,9 +133,7 @@ class AplicacionController extends Controller
      */
     private function descargarPdfOsei( $encabezado_doc, $tipo_operacion )
     {
-        $documento = $tipo_operacion == 'support_doc'
-            ? new OSEIDocSoporte( $encabezado_doc, $tipo_operacion )
-            : new FacturaGeneralOsei( $encabezado_doc, $tipo_operacion );
+        $documento = $this->documento_osei( $encabezado_doc, $tipo_operacion );
 
         $prefijo = $documento->prefijo_osei();
         $numero = $encabezado_doc->consecutivo;
@@ -148,17 +167,26 @@ class AplicacionController extends Controller
             return response()->json(['ok' => false, 'message' => 'Máximo 10 correos.']);
         }
 
-        $encabezado_doc = $tipo_operacion == 'support_doc'
-            ? DocSoporte::find( $doc_encabezado_id )
-            : Factura::find( $doc_encabezado_id );
+        switch ( $tipo_operacion )
+        {
+            case 'support_doc':
+                $encabezado_doc = DocSoporte::find( $doc_encabezado_id );
+                break;
+
+            case 'support_doc_note':
+                $encabezado_doc = NotaAjusteDocSoporte::find( $doc_encabezado_id );
+                break;
+
+            default:
+                $encabezado_doc = Factura::find( $doc_encabezado_id );
+                break;
+        }
 
         if ( !$encabezado_doc ) {
             return response()->json(['ok' => false, 'message' => 'Documento no encontrado.'], 404);
         }
 
-        $documento = $tipo_operacion == 'support_doc'
-            ? new OSEIDocSoporte( $encabezado_doc, $tipo_operacion )
-            : new FacturaGeneralOsei( $encabezado_doc, $tipo_operacion );
+        $documento = $this->documento_osei( $encabezado_doc, $tipo_operacion );
 
         $prefijo = $documento->prefijo_osei();
         $numero = $encabezado_doc->consecutivo;
