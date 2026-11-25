@@ -32,6 +32,7 @@ Route::resource('fe_nota_debito', 'FacturacionElectronica\NotaDebitoController')
 
 // Doc. Soporte Compras
 Route::get('fe_doc_soporte_enviar/{id}', 'FacturacionElectronica\DocSoporteController@enviar_doc_soporte');
+Route::get('fe_nota_ajuste_doc_soporte_enviar/{id}', 'FacturacionElectronica\DocSoporteController@enviar_nota_ajuste')->middleware('auth');
 
 // Testing
 Route::get('fe_testing', 'FacturacionElectronica\AplicacionController@testing');
