@@ -27,6 +27,26 @@ class PagoAutomaticoNominaService
 {
     const TRANSACCION_PAGO_CXP = 33;
 
+    public static function opcionesTiposDocumentoPago()
+    {
+        $opciones = ['' => 'Seleccione...'];
+        $transaccion = TipoTransaccion::find(self::TRANSACCION_PAGO_CXP);
+        if (is_null($transaccion)) {
+            return $opciones;
+        }
+
+        $tipos = $transaccion->tipos_documentos()
+            ->where('core_tipos_docs_apps.estado', 'Activo')
+            ->orderBy('core_tipos_docs_apps.descripcion')
+            ->get();
+
+        foreach ($tipos as $tipo) {
+            $opciones[$tipo->id] = $tipo->prefijo . ' - ' . $tipo->descripcion;
+        }
+
+        return $opciones;
+    }
+
     public function empleadosParaPrevisualizar(NomDocEncabezado $documento)
     {
         $movimientos = $this->queryMovimientosDocumento($documento)
@@ -76,7 +96,7 @@ class PagoAutomaticoNominaService
         return $lineas;
     }
 
-    public function generar($documentoId, array $tercerosSeleccionados, $fechaPago, $medioId, $destinoId, $token)
+    public function generar($documentoId, array $tercerosSeleccionados, $fechaPago, $medioId, $destinoId, $tipoDocumentoId, $token)
     {
         $empresaId = (int) Auth::user()->empresa_id;
         $email = Auth::user()->email;
@@ -88,6 +108,7 @@ class PagoAutomaticoNominaService
             $fechaPago,
             $medioId,
             $destinoId,
+            $tipoDocumentoId,
             $token,
             $empresaId,
             $email
@@ -124,7 +145,7 @@ class PagoAutomaticoNominaService
 
             $destino = $this->validarMedioYDestino($medioId, $destinoId, $empresaId);
             $motivo = $this->resolverMotivo($empresaId);
-            $tipoDocumento = $this->resolverTipoDocumentoPago();
+            $tipoDocumento = $this->resolverTipoDocumentoPago($tipoDocumentoId);
 
             $movimientos = $this->queryMovimientosDocumento($documento)
                 ->whereIn('core_tercero_id', $tercerosSeleccionados)
@@ -287,7 +308,7 @@ class PagoAutomaticoNominaService
         return $motivo;
     }
 
-    protected function resolverTipoDocumentoPago()
+    public function resolverTipoDocumentoPago($tipoDocumentoId)
     {
         $transaccion = TipoTransaccion::find(self::TRANSACCION_PAGO_CXP);
         if (is_null($transaccion) || $transaccion->estado !== 'Activo') {
@@ -297,11 +318,17 @@ class PagoAutomaticoNominaService
             throw new \InvalidArgumentException('La transacción Pagos de CxP (33) no tiene un modelo asociado.');
         }
 
-        $tipoId = (int) config('nomina.pago_cxp_tipo_doc_app_id');
-        $query = $transaccion->tipos_documentos()->where('core_tipos_docs_apps.estado', 'Activo');
-        $tipo = $tipoId > 0 ? $query->where('core_tipos_docs_apps.id', $tipoId)->first() : $query->first();
+        $tipoId = (int) $tipoDocumentoId;
+        if ($tipoId <= 0) {
+            throw new \InvalidArgumentException('Debe seleccionar el tipo de documento para el pago de nómina.');
+        }
+
+        $tipo = $transaccion->tipos_documentos()
+            ->where('core_tipos_docs_apps.estado', 'Activo')
+            ->where('core_tipos_docs_apps.id', $tipoId)
+            ->first();
         if (is_null($tipo)) {
-            throw new \InvalidArgumentException('Configure un tipo de documento activo para la transacción Pagos de CxP.');
+            throw new \InvalidArgumentException('El tipo de documento seleccionado no está activo o no pertenece a la transacción Pagos de CxP.');
         }
         return $tipo;
     }

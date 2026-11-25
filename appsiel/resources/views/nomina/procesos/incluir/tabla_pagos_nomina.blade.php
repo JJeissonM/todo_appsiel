@@ -16,6 +16,7 @@
                 {{ Form::hidden('fecha_pago', '', ['id' => 'pago_nomina_fecha']) }}
                 {{ Form::hidden('teso_medio_recaudo_id', '', ['id' => 'pago_nomina_medio_id']) }}
                 {{ Form::hidden('teso_medio_recaudo_destino_id', '', ['id' => 'pago_nomina_destino_id']) }}
+                {{ Form::hidden('core_tipo_doc_app_id', '', ['id' => 'pago_nomina_tipo_documento_id']) }}
                 {{ Form::hidden('token_solicitud', '', ['id' => 'pago_nomina_token']) }}
 
                 <div class="table-responsive">

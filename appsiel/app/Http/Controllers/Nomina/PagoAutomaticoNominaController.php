@@ -35,6 +35,12 @@ class PagoAutomaticoNominaController extends Controller
             return response('<div class="alert alert-warning">El documento debe estar contabilizado antes de generar pagos.</div>', 422);
         }
 
+        try {
+            $service->resolverTipoDocumentoPago((int) $request->core_tipo_doc_app_id);
+        } catch (\InvalidArgumentException $e) {
+            return response('<div class="alert alert-danger">' . e($e->getMessage()) . '</div>', 422);
+        }
+
         $lineas = $service->empleadosParaPrevisualizar($documento);
         $historial = NomPagoAutomatico::where('core_empresa_id', Auth::user()->empresa_id)
             ->where('nom_doc_encabezado_id', $documento->id)
@@ -67,6 +73,7 @@ class PagoAutomaticoNominaController extends Controller
                 trim((string) $request->fecha_pago),
                 (int) $request->teso_medio_recaudo_id,
                 (int) $request->teso_medio_recaudo_destino_id,
+                (int) $request->core_tipo_doc_app_id,
                 $token
             );
 

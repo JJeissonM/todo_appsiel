@@ -21,6 +21,8 @@
             $documentos[$doc->id] = $doc->get_label_documento() . ' - ' . $doc->descripcion . ' (' . $doc->fecha . ')';
         }
 
+        $tiposDocumentoPago = App\Nomina\Services\PagoAutomaticoNominaService::opcionesTiposDocumentoPago();
+
         $opcionesPago = ['' => 'Seleccione...'];
         $cajasPermitidas = App\Tesoreria\TesoCaja::get_cajas_permitidas()->pluck('id')->map(function ($id) { return (int) $id; })->toArray();
         $cuentasPermitidas = App\Tesoreria\TesoCuentaBancaria::get_cuentas_permitidas()->pluck('id')->map(function ($id) { return (int) $id; })->toArray();
@@ -74,6 +76,11 @@
                             Configure los destinos en el catálogo <b>Medios de recaudo</b> de Tesorería.
                         </div>
                     @endif
+                    @if (count($tiposDocumentoPago) === 1)
+                        <div class="alert alert-danger">
+                            No hay tipos de documento activos asociados a la transacción <b>Pagos de CxP</b>.
+                        </div>
+                    @endif
                     {{ Form::open(['url' => 'nomina/procesos/pagos/previsualizar', 'id' => 'formulario_pago_nomina']) }}
                         <div class="row" style="padding:5px;">
                             <label class="control-label col-sm-4"><b>*Documento de nómina:</b></label>
@@ -88,6 +95,13 @@
                             </div>
                         </div>
                         <div class="row" style="padding:5px;">
+                            <label class="control-label col-sm-4"><b>*Tipo de documento:</b></label>
+                            <div class="col-sm-8">
+                                {{ Form::select('core_tipo_doc_app_id', $tiposDocumentoPago, '', ['class' => 'form-control', 'id' => 'core_tipo_doc_app_id', 'required' => 'required']) }}
+                                <span class="help-block">Seleccione el comprobante que se generará en Tesorería, por ejemplo CE - Comprobante de egreso.</span>
+                            </div>
+                        </div>
+                        <div class="row" style="padding:5px;">
                             <label class="control-label col-sm-4"><b>*Medio y origen del pago:</b></label>
                             <div class="col-sm-8">
                                 {{ Form::select('opcion_pago', $opcionesPago, '', ['class' => 'form-control', 'id' => 'opcion_pago', 'required' => 'required']) }}
@@ -96,7 +110,7 @@
                         </div>
                         <div class="row" style="padding:5px; text-align:center;">
                             <div class="col-md-12">
-                                <button type="submit" class="btn btn-info" id="btn_previsualizar_pago" {{ count($documentos) === 1 || count($opcionesPago) === 1 ? 'disabled' : '' }}>
+                                <button type="submit" class="btn btn-info" id="btn_previsualizar_pago" {{ count($documentos) === 1 || count($opcionesPago) === 1 || count($tiposDocumentoPago) === 1 ? 'disabled' : '' }}>
                                     <i class="fa fa-eye"></i> Previsualizar
                                 </button>
                                 <span class="pago-nomina-spinner" style="display:none; margin-left:10px;">
@@ -157,6 +171,10 @@ $(document).ready(function () {
             alert('Seleccione la fecha de pago.');
             return;
         }
+        if (!$('#core_tipo_doc_app_id').val()) {
+            alert('Seleccione el tipo de documento del pago.');
+            return;
+        }
         if (opcion.length !== 2 || !opcion[0] || !opcion[1]) {
             alert('Seleccione el medio y origen del pago.');
             return;
@@ -170,7 +188,8 @@ $(document).ready(function () {
             dataType: 'html',
             data: {
                 _token: '{{ csrf_token() }}',
-                nom_doc_encabezado_id: $('#nom_doc_encabezado_id').val()
+                nom_doc_encabezado_id: $('#nom_doc_encabezado_id').val(),
+                core_tipo_doc_app_id: $('#core_tipo_doc_app_id').val()
             }
         }).done(function (html) {
             $('#resultado_pago_nomina').html(html).hide().fadeIn(300);
@@ -178,6 +197,7 @@ $(document).ready(function () {
             $('#pago_nomina_fecha').val($('#fecha_pago').val());
             $('#pago_nomina_medio_id').val(opcion[0]);
             $('#pago_nomina_destino_id').val(opcion[1]);
+            $('#pago_nomina_tipo_documento_id').val($('#core_tipo_doc_app_id').val());
             $('#pago_nomina_token').val(nuevaSolicitud());
             actualizarSeleccion();
         }).fail(function (xhr) {
@@ -187,7 +207,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#nom_doc_encabezado_id, #fecha_pago, #opcion_pago').on('change', function () {
+    $('#nom_doc_encabezado_id, #fecha_pago, #core_tipo_doc_app_id, #opcion_pago').on('change', function () {
         $('#resultado_pago_nomina').html('');
     });
 
