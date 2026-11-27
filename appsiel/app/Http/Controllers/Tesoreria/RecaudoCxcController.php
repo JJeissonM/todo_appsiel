@@ -132,7 +132,7 @@ class RecaudoCxcController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $propagarErrores = false)
     {
         try {
             $this->validarMediosRecaudoSolicitados($request);
@@ -185,8 +185,14 @@ class RecaudoCxcController extends Controller
                 return redirect($url_show);
             });
         } catch (\InvalidArgumentException $exception) {
+            if ($propagarErrores) {
+                throw $exception;
+            }
             return $this->respuestaErrorAlGuardar($request, $exception);
         } catch (\Exception $exception) {
+            if ($propagarErrores) {
+                throw $exception;
+            }
             return $this->respuestaErrorAlGuardar($request, $exception);
         }
     }
@@ -231,6 +237,14 @@ class RecaudoCxcController extends Controller
         ];
 
         foreach ($campos as $campo => $tipo_registro) {
+            if ($tipo_registro === 'transferencia_consignacion') {
+                foreach ((array)json_decode((string)$request->input($campo)) as $linea) {
+                    if (!empty($linea->tipo_operacion_id_transferencia_consignacion)) {
+                        RegistroDeTransferenciaConsignacion::resolverMedioBancario($linea);
+                    }
+                }
+                continue;
+            }
             if ($this->contieneLineasRegistrables($request->input($campo))) {
                 TesoMedioRecaudo::get_id_por_tipo_registro($tipo_registro);
             }

@@ -15,6 +15,18 @@ use Illuminate\Support\Facades\Auth;
 
 class RegistroDeTransferenciaConsignacion extends TesoDocEncabezado
 {
+    public static function resolverMedioBancario($linea)
+    {
+        $id = isset($linea->teso_medio_recaudo_id)
+            ? (int)$linea->teso_medio_recaudo_id
+            : TesoMedioRecaudo::get_id_por_tipo_registro('transferencia_consignacion');
+        $medio = TesoMedioRecaudo::find($id);
+        if (is_null($medio) || $medio->estado !== 'Activo' || $medio->comportamiento !== 'Tarjeta bancaria') {
+            throw new \InvalidArgumentException('El medio seleccionado para el recaudo bancario no existe, no está activo o no es bancario.');
+        }
+        return $medio;
+    }
+
     public function almacenar_registros( $json_lineas_registros, $doc_encabezado, $pdv_id = null )
     {
         $lineas_registros = json_decode( $json_lineas_registros );
@@ -39,18 +51,14 @@ class RegistroDeTransferenciaConsignacion extends TesoDocEncabezado
             return false;
         }
 
-        $teso_medio_recaudo_id = TesoMedioRecaudo::get_id_por_tipo_registro('transferencia_consignacion');
-        $medio_recaudo = TesoMedioRecaudo::find($teso_medio_recaudo_id);
-        if (is_null($medio_recaudo)) {
-            throw new \Exception('El medio de recaudo para Transferencia/Consignación no existe.');
-        }
-
         $valor_linea = 0;
         $valor_debito = 0;
         $valor_credito = 0;
         for ($i=0; $i < $cantidad; $i++) 
         {
             $linea = $lineas_registros[$i];
+            $medio_recaudo = self::resolverMedioBancario($linea);
+            $teso_medio_recaudo_id = (int)$medio_recaudo->id;
             $motivo_id = isset($linea->teso_motivo_id_transferencia_consignacion)
                 ? (int)$linea->teso_motivo_id_transferencia_consignacion
                 : 0;
@@ -88,7 +96,7 @@ class RegistroDeTransferenciaConsignacion extends TesoDocEncabezado
                 throw new \Exception('La cuenta bancaria seleccionada no existe, no está activa o pertenece a otra empresa.');
             }
             if (!$medio_recaudo->tiene_cuenta_bancaria_destino($cuenta_id)) {
-                throw new \Exception('La cuenta bancaria seleccionada no está asociada al medio de recaudo Transferencia/Consignación.');
+                throw new \InvalidArgumentException('La cuenta bancaria seleccionada no está asociada al medio de recaudo ' . $medio_recaudo->descripcion . '.');
             }
             if (Auth::check() && !TesoCuentaBancaria::es_permitida_para_usuario($cuenta_id)) {
                 throw new \Exception('El usuario no tiene permiso para usar la cuenta bancaria seleccionada.');

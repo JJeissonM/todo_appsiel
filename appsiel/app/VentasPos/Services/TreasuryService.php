@@ -48,7 +48,7 @@ class TreasuryService
 
     protected function storeReceivablePayment(Request $request)
     {
-        return (new RecaudoCxcController())->store($request);
+        return (new RecaudoCxcController())->store($request, true);
     }
 
     /**
@@ -135,8 +135,8 @@ class TreasuryService
 
                 if ( $teso_caja_id == 0 )
                 {
-                    // Si la caja es 0, es una linea de registro por transferencia o consignación
-                    $lineas_registros_transferencia_consignacion .= '{"tipo_operacion_id_transferencia_consignacion":"' . config('tesoreria.tipo_operacion_recaudos_cxc') . '","teso_motivo_id_transferencia_consignacion":"' . $recaudos_cxc_motivo_id . '","banco_id_transferencia_consignacion":"' . explode("-", $linea->teso_cuenta_bancaria_id)[0] . '","valor_transferencia_consignacion":"' . (float)substr($linea->valor, 1) . '","Operación":"--","Motivo":"--","numero_comprobante_transferencia_consignacion":"","Caja":"--","Valor":"00"},';
+                    // El recaudo bancario conserva el medio POS (tarjeta, QR o transferencia).
+                    $lineas_registros_transferencia_consignacion .= '{"teso_medio_recaudo_id":"' . (int)$linea->teso_medio_recaudo_id . '","tipo_operacion_id_transferencia_consignacion":"' . config('tesoreria.tipo_operacion_recaudos_cxc') . '","teso_motivo_id_transferencia_consignacion":"' . $recaudos_cxc_motivo_id . '","banco_id_transferencia_consignacion":"' . explode("-", $linea->teso_cuenta_bancaria_id)[0] . '","valor_transferencia_consignacion":"' . (float)substr($linea->valor, 1) . '","Operación":"--","Motivo":"--","numero_comprobante_transferencia_consignacion":"","Caja":"--","Valor":"00"},';
 
                 }else{
 
