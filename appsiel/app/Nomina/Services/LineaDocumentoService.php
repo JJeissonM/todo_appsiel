@@ -27,7 +27,27 @@ class LineaDocumentoService
 
     public function total_deducciones_modo_liquidacion_entidad_pension( $lapso, $modo_liquidacion_id, $entidad_pension_id )
     {
-        $ids_empleados_entidad = NomContrato::where( 'entidad_pension_id', $entidad_pension_id )->get()->pluck('id')->toArray();
+        return $this->total_deducciones_modo_liquidacion_entidad(
+            $lapso,
+            $modo_liquidacion_id,
+            'entidad_pension_id',
+            $entidad_pension_id
+        );
+    }
+
+    public function total_deducciones_modo_liquidacion_entidad_salud( $lapso, $modo_liquidacion_id, $entidad_salud_id )
+    {
+        return $this->total_deducciones_modo_liquidacion_entidad(
+            $lapso,
+            $modo_liquidacion_id,
+            'entidad_salud_id',
+            $entidad_salud_id
+        );
+    }
+
+    protected function total_deducciones_modo_liquidacion_entidad( $lapso, $modo_liquidacion_id, $campo_entidad, $entidad_id )
+    {
+        $ids_empleados_entidad = NomContrato::where( $campo_entidad, $entidad_id )->get()->pluck('id')->toArray();
 
         return NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
                                 ->where( 'nom_conceptos.modo_liquidacion_id', $modo_liquidacion_id )

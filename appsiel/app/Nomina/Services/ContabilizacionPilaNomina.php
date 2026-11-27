@@ -96,8 +96,22 @@ class ContabilizacionPilaNomina
 				case 'EPS':
 					$cuenta_contable_db_id = $datos_empresa->contab_cuenta_db_eps_id;
 					$cuenta_contable_cr_id = $datos_empresa->contab_cuenta_cr_eps_id;
-					$valor_cotizacion = isset($linea_registro->total_cotizacion_empresa) ? $linea_registro->total_cotizacion_empresa : 0;
-					$detalle_calculo_contable = 'Se contabiliza solo el aporte patronal de salud. El 4% del trabajador ya debe quedar causado como deducción de nómina.';
+
+					$linea_doc_service = new LineaDocumentoService();
+					$modo_liquidacion_id = 12; // Salud obligatoria
+					$valor_salud_nomina = $linea_doc_service->total_deducciones_modo_liquidacion_entidad_salud(
+						new LapsoNomina($this->fecha_final_promedios),
+						$modo_liquidacion_id,
+						$linea_registro->entidad->id
+					);
+
+					// La PILA es la fuente final. Solo se descuenta lo que ya fue causado
+					// como aporte del trabajador en los documentos de nomina del periodo.
+					$valor_cotizacion = $this->calcularValorPilaPendiente(
+						$linea_registro->total_cotizacion,
+						$valor_salud_nomina
+					);
+					$detalle_calculo_contable = 'Total PILA de salud menos deducciones de nómina ya causadas: salud obligatoria $' . number_format($valor_salud_nomina, 0, ',', '.') . '.';
 					break;
 				
 				case 'AFP':
@@ -113,7 +127,10 @@ class ContabilizacionPilaNomina
 					$valor_fondo_solidaridad = $linea_doc_service->total_deducciones_modo_liquidacion_entidad_pension( new LapsoNomina($this->fecha_final_promedios), $modo_liquidacion_id, $linea_registro->entidad->id );
 					
 					// A lo que ya está liquidado en la planilla se le resta lo que ya está descontado en los documentos de nómina; y que ya debería estar contabilizado.
-					$valor_cotizacion = max(0, $linea_registro->total_cotizacion - $valor_pension_obligatoria - $valor_fondo_solidaridad);
+					$valor_cotizacion = $this->calcularValorPilaPendiente(
+						$linea_registro->total_cotizacion,
+						$valor_pension_obligatoria + $valor_fondo_solidaridad
+					);
 					$detalle_calculo_contable = 'Total PILA menos deducciones de nómina ya causadas: pensión obligatoria $' . number_format($valor_pension_obligatoria, 0, ',', '.') . ' y FSP $' . number_format($valor_fondo_solidaridad, 0, ',', '.') . '.';
 
 					if( $linea_registro->entidad->tercero->numero_identificacion == 900336004 )
@@ -219,6 +236,18 @@ class ContabilizacionPilaNomina
 			$this->movimiento_contabilizar->push( $registro_equivalencia_contable );
 			$this->valor_credito_total += $valor_credito;
 		}
+	}
+
+	/**
+	 * Calcula el valor de PILA que aun no ha sido causado por nomina.
+	 *
+	 * Los valores vigentes de las tablas de liquidacion de PILA son la
+	 * fuente final. Las deducciones de nomina se restan exclusivamente para
+	 * evitar que el mismo aporte del trabajador se contabilice dos veces.
+	 */
+	protected function calcularValorPilaPendiente( $total_pila, $valor_causado_nomina )
+	{
+		return max(0, (float)$total_pila - (float)$valor_causado_nomina);
 	}
 
 	protected function getTerceroCxpPila($datos_empresa)
