@@ -15,14 +15,14 @@
 		if ( $calificacion_nota_original != null )
 		{
 			$cali_periodo = (float)$calificacion_nota_original->calificacion;
-			$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' );
+			$lbl_cali_periodo = $etiqueta_calificacion_boletin->formatear( $cali_periodo );
 
 			$cali_nivelacion_periodo = $linea->calificaciones_niveladas_todos_los_periodos_asignatura_estudiante->where('id_periodo', $periodo_lista->id)->first();
 
 			if( $cali_nivelacion_periodo != null )
 			{
 				$cali_periodo = (float)$cali_nivelacion_periodo->calificacion;
-				$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' ) . '<sup>n</sup>';
+				$lbl_cali_periodo = $etiqueta_calificacion_boletin->formatear( $cali_periodo ) . '<sup>n</sup>';
 			}
 		}
 
@@ -42,7 +42,7 @@
 		if ( $calificacion_nota_original != null )
 		{
 			$cali_periodo = (float)$calificacion_nota_original->$campo;
-			$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' );
+			$lbl_cali_periodo = $etiqueta_calificacion_boletin->formatear( $cali_periodo );
 
 			$n++;
 		}
@@ -69,7 +69,7 @@
 	$lbl_cali_prom = '&nbsp;';
 	if( $n != 0 || $linea->calificacion != null )
 	{
-		$lbl_cali_prom = number_format( $prom, $decimales, ',', '.' );
+		$lbl_cali_prom = $etiqueta_calificacion_boletin->formatear( $prom );
 	}
 	
 	// Si el periodo es marcado como periodo_de_promedios, se reemplaza el calculo anterior de lbl_cali_prom
@@ -83,13 +83,13 @@
 			if ($cali_promedio_periodo_final->calificacion == null) {
 				$observacion = '* Promedio Final no calculado.';
 			}
-			$lbl_cali_prom = number_format( $cali_promedio_periodo_final->calificacion, $decimales, ',', '.' ) . $observacion;
+			$lbl_cali_prom = $etiqueta_calificacion_boletin->formatear( $cali_promedio_periodo_final->calificacion ) . $observacion;
 		}
 	}
 
 	if( $linea->calificacion_nivelacion != null )
 	{
-		$lbl_cali_prom = number_format( $linea->calificacion_nivelacion, $decimales, ',', '.' ) . '<sup>n</sup>';
+		$lbl_cali_prom = $etiqueta_calificacion_boletin->formatear( $linea->calificacion_nivelacion ) . '<sup>n</sup>';
 	}
 
 	echo '<td align="center"> ' . $lbl_cali_prom . ' </td>';

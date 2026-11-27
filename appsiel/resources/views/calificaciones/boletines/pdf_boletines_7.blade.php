@@ -3,6 +3,10 @@
 @section('contenido_formato')
 
 	<?php
+        $etiqueta_calificacion_boletin = new App\Calificaciones\Services\EtiquetaCalificacionBoletin(
+            App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id', $periodo->periodo_lectivo_id)->get()
+        );
+
 	    if ( $mostrar_areas == 'Si')
 		{
 			$lbl_asigatura = 'Área / Asignaturas';

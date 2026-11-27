@@ -19,14 +19,14 @@
 		if ( !is_null( $calificacion_nota_original ) )
 		{
 			$cali_periodo = (float)$calificacion_nota_original->calificacion;
-			$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' );
+			$lbl_cali_periodo = $etiqueta_calificacion_boletin->formatear( $cali_periodo );
 
 			$cali_nivelacion_periodo = $periodo_lista->get_calificacion_nivelacion( $curso->id, $registro->estudiante->id, $linea->asignatura_id );
 
 			if( !is_null( $cali_nivelacion_periodo ) )
 			{
 				$cali_periodo = (float)$cali_nivelacion_periodo->calificacion;
-				$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' ) . '<sup>n</sup>';
+				$lbl_cali_periodo = $etiqueta_calificacion_boletin->formatear( $cali_periodo ) . '<sup>n</sup>';
 			}
 
 			$sumatoria_calificaciones_peridos += $cali_periodo;
@@ -51,7 +51,7 @@
 	$lbl_cali_prom = '&nbsp;';
 	if( $n != 0 )
 	{
-		$lbl_cali_prom = number_format( $sumatoria_calificaciones_peridos / $n, $decimales, ',', '.' );
+		$lbl_cali_prom = $etiqueta_calificacion_boletin->formatear( $sumatoria_calificaciones_peridos / $n );
 		$value_cali_prom = $sumatoria_calificaciones_peridos / $n;
 	}
 
@@ -66,12 +66,12 @@
 			if ($cali_promedio_periodo_final->calificacion == null) {
 				$observacion = '* Promedio Final no calculado.';
 			}
-			$lbl_cali_prom = number_format( $cali_promedio_periodo_final->calificacion, $decimales, ',', '.' ) . $observacion;
+			$lbl_cali_prom = $etiqueta_calificacion_boletin->formatear( $cali_promedio_periodo_final->calificacion ) . $observacion;
 		}
 
 		if( $linea->calificacion_nivelacion != null )
 		{
-			$lbl_cali_prom = number_format( $linea->calificacion_nivelacion, $decimales, ',', '.' ) . '<sup>n</sup>';
+			$lbl_cali_prom = $etiqueta_calificacion_boletin->formatear( $linea->calificacion_nivelacion ) . '<sup>n</sup>';
 		}
 
 		$lbl_calificacion = $lbl_cali_prom;

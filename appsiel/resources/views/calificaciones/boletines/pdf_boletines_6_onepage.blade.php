@@ -60,8 +60,8 @@
                 @include('calificaciones.boletines.fila_area')
 
                 <tr>
-                    <td style="width:{{$ancho_columna_asignatura}}px; padding: 2;">
-                        <b>{{ $linea->asignatura_descripcion }} </b>
+                    <td style="width:{{$ancho_columna_asignatura}}px; padding: 2; vertical-align: {{ $mostrar_logros ? 'middle' : 'bottom' }};">
+                        @include('calificaciones.boletines.formatos.nombre_asignatura')
                     </td>
 
                     @if($mostrar_logros == 1)

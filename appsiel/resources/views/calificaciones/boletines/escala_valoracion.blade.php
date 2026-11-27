@@ -2,7 +2,7 @@
 
 	$escala = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->get();
 
-	$tbody = '<table style="border: 1px solid; border_collapsed: collapsed; width:170px; font-size: 3.5mm;">
+	$tbody = '<table style="border: 1px solid; border-collapse: collapse; width:170px; font-size: 3.5mm;">
 				<tr>
 					<td colspan="3" style="text-align:center;border: 1px solid;">Escala de valoración
 					</td>
@@ -32,26 +32,7 @@
 			{!! $tbody !!}
 		</td>
 		<td>
-			<table border="0">
-				<tr>
-					<td width="50px"> &nbsp; </td>
-					<td align="center">
-						@include('calificaciones.boletines.firmas_rector_profesor',[ 'i' => 0, 'nombre_archivo' => 'firma_rector'])
-					</td>
-					<td align="center"> &nbsp;	</td>
-					<td align="center">
-						@include('calificaciones.boletines.firmas_rector_profesor',[ 'i' => 1, 'nombre_archivo' => 'firma_profesor'])
-					</td>
-					<td width="50px">&nbsp;</td>
-				</tr>
-				<tr style="font-size: {{$tam_letra}}mm;">
-					<td width="50px"> &nbsp; </td>
-					<td align="center">	{{ $colegio->piefirma1 }} </td>
-					<td align="center"> &nbsp;	</td>
-					<td align="center">	{{ $colegio->piefirma2 }} </td>
-					<td width="50px">&nbsp;</td>
-				</tr>
-			</table>
+			@include('calificaciones.boletines.tabla_firmas')
 		</td>
 	</tr>
 </table>
