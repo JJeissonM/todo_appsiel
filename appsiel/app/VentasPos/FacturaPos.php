@@ -297,6 +297,8 @@ class FacturaPos extends Model
                 ->orWhere("vtas_pos_doc_encabezados.estado", "LIKE", "%$search%");
         });
 
+        self::priorizarConsecutivoExacto($query, $search);
+
         return $query
             ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_pos_doc_encabezados'))
             ->paginate($nro_registros);
@@ -329,6 +331,8 @@ class FacturaPos extends Model
         $query = self::aplicarFiltroCreadoPor($query, 'vtas_pos_doc_encabezados.creado_por');
 
         $query->having('nueva_cadena', 'LIKE', $texto_busqueda);
+
+        self::priorizarConsecutivoExacto($query, $search);
 
         return self::reemplazarBindingsSql($query
             ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_pos_doc_encabezados'))
@@ -375,9 +379,24 @@ class FacturaPos extends Model
                 ->orWhere("vtas_pos_doc_encabezados.estado", "LIKE", "%$search%");
         });
 
+        self::priorizarConsecutivoExacto($query, $search);
+
         return $query
             ->orderByRaw(\App\Core\Services\TransactionIndexOrder::sql('vtas_pos_doc_encabezados'))
             ->paginate($nro_registros);
+    }
+
+    protected static function priorizarConsecutivoExacto($query, $search)
+    {
+        $search = trim((string)$search);
+        if (preg_match('/^[0-9]+$/D', $search)) {
+            // Las series POS y electrónicas tienen consecutivos independientes.
+            // Buscar 757 debe mostrar primero 757, antes de 61757, 60757, etc.
+            $query->orderByRaw(
+                'CASE WHEN vtas_pos_doc_encabezados.consecutivo = ? THEN 0 ELSE 1 END',
+                [$search]
+            );
+        }
     }
 
     protected static function reemplazarBindingsSql($sql, $bindings)

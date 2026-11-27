@@ -261,7 +261,7 @@ class ConfiguracionController extends ModeloController
         $app = Aplicacion::find( $request->url_id );
         if ($app->app == 'configuracion') {
             $this->validate($request, [
-                'orden_transacciones_index' => 'sometimes|in:consecutivo,fecha',
+                'orden_transacciones_index' => 'sometimes|in:consecutivo,fecha,created_at',
             ], [
                 'orden_transacciones_index.in' => 'Seleccione un orden válido para los registros de transacciones.',
             ]);

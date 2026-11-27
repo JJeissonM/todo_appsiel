@@ -13,7 +13,12 @@ class TransactionIndexOrder
             throw new \InvalidArgumentException('Tabla no habilitada para el ordenamiento de transacciones.');
         }
 
-        if (config('configuracion.orden_transacciones_index', 'consecutivo') === 'fecha') {
+        $order = config('configuracion.orden_transacciones_index', 'consecutivo');
+        if ($order === 'created_at') {
+            return $table.'.created_at DESC, '.$table.'.id DESC';
+        }
+
+        if ($order === 'fecha') {
             return $table.'.fecha DESC, '.$table.'.created_at DESC, '.$table.'.id DESC';
         }
 

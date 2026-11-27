@@ -64,6 +64,18 @@ class TransactionIndexOrderTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function testCreationTimeIgnoresDocumentDateWithStableTiesAndPagination()
+    {
+        $this->container['config']->set('configuracion.orden_transacciones_index', 'created_at');
+        foreach ($this->tables as $table) {
+            $this->assertSame([1, 4, 3, 2], $this->orderedIds($table));
+            $this->assertSame([3, 2], $this->orderedIds($table, 2));
+            // Cambiar el consecutivo no altera el orden por creación.
+            $this->connection->table($table)->where('id', 2)->update(['consecutivo' => 9999]);
+            $this->assertSame([1, 4, 3, 2], $this->orderedIds($table));
+        }
+    }
+
     public function testOtherModulesCannotUseTheSetting()
     {
         $this->setExpectedException(InvalidArgumentException::class);
