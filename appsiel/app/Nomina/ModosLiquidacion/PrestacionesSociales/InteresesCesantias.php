@@ -115,8 +115,6 @@ class InteresesCesantias implements Estrategia
         $fecha_inicial_liquidacion = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
         $cantidad_dias = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial_liquidacion, $this->fecha_final_liquidacion );
 
-        $this->tabla_resumen['dias_reales_laborados'] = $cantidad_dias;
-
         $this->tabla_resumen['cantidad_dias'] = $cantidad_dias;
 
         $this->tabla_resumen['base_liquidacion'] = $parametros_prestacion->base_liquidacion;
@@ -190,6 +188,23 @@ class InteresesCesantias implements Estrategia
                 break;
         }
 
+        if ($parametros_prestacion->base_liquidacion == 'promedio_agrupacion')
+        {
+            $base_diaria_docente = PrestacionSocial::get_valor_base_diaria_docente_salario_estable(
+                $empleado,
+                $parametros_prestacion->nom_agrupacion_id,
+                $fecha_inicial,
+                $fecha_final
+            );
+
+            if (!is_null($base_diaria_docente))
+            {
+                $valor_base_diaria = $base_diaria_docente;
+                $this->tabla_resumen['valor_acumulado_agrupacion'] = $base_diaria_docente * $cantidad_dias;
+                $this->tabla_resumen['valor_agrupacion_x_dia'] = $base_diaria_docente;
+            }
+        }
+
         return $valor_base_diaria;
     }
 
@@ -204,21 +219,23 @@ class InteresesCesantias implements Estrategia
         $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
 
         $dias_totales_laborados = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial, $this->fecha_final_liquidacion );
-        $this->tabla_resumen['dias_reales_laborados'] = $dias_totales_laborados;
-        
+        $dias_adicionales_docente = 0;
         // 22 = Profesor de establecimiento particular
         if ( $empleado->tipo_cotizante == 22) {
-            $dias_totales_laborados += $empleado->dias_laborados_adicionales_docentes();
+            $dias_adicionales_docente = $empleado->dias_laborados_adicionales_docentes(
+                $fecha_inicial,
+                $this->fecha_final_liquidacion,
+                $dias_totales_laborados
+            );
+            $dias_totales_laborados += $dias_adicionales_docente;
         }
+
+        $this->tabla_resumen['dias_reales_laborados'] = $dias_totales_laborados;
 
         $dias_calendario_laborados = PrestacionSocial::calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $this->fecha_final_liquidacion );
+        $dias_calendario_laborados += $dias_adicionales_docente;
 
         $dias_totales_no_laborados = $dias_calendario_laborados - $dias_totales_laborados;
-        
-        // 22 = Profesor de establecimiento particular
-        if ( $empleado->tipo_cotizante == 22) {
-            $dias_totales_no_laborados += $empleado->dias_laborados_adicionales_docentes();
-        }
 
         $dias_totales_liquidacion = $dias_totales_laborados * $parametros_prestacion->dias_a_liquidar / self::DIAS_BASE_LEGALES;
 

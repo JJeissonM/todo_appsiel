@@ -163,6 +163,77 @@ class PrestacionSocial
         return ( $total_devengos - $total_deducciones );
     }
 
+    /**
+     * Obtiene la base diaria del último salario mensual estable de un docente.
+     *
+     * Para respetar el artículo 253 del CST no se promedian meses con vacaciones
+     * o novedades cuando la remuneración base de los tres meses finales no tuvo
+     * variación. Si los meses varían, se retorna null y la estrategia conserva
+     * el promedio configurado.
+     */
+    public static function get_valor_base_diaria_docente_salario_estable(
+        $empleado,
+        $nom_agrupacion_id,
+        $fecha_inicial,
+        $fecha_final
+    ) {
+        if ((string)$empleado->tipo_cotizante !== '22')
+        {
+            return null;
+        }
+
+        $conceptos_de_la_agrupacion = self::get_agrupacion_validada($nom_agrupacion_id)
+            ->conceptos
+            ->pluck('id')
+            ->toArray();
+
+        $registros = NomDocRegistro::whereIn('nom_concepto_id', $conceptos_de_la_agrupacion)
+            ->where('nom_contrato_id', $empleado->id)
+            ->whereBetween('fecha', [$fecha_inicial, $fecha_final])
+            ->orderBy('fecha')
+            ->get();
+
+        $totales_por_mes = [];
+        $concepto_vacaciones_id = self::get_concepto_vacaciones_id($empleado);
+
+        foreach ($registros as $registro)
+        {
+            if ($registro->nom_concepto_id == $concepto_vacaciones_id
+                && !is_null($registro->encabezado_documento)
+                && $registro->encabezado_documento->tipo_liquidacion == 'terminacion_contrato')
+            {
+                continue;
+            }
+
+            $mes = substr($registro->fecha, 0, 7);
+            if (!isset($totales_por_mes[$mes]))
+            {
+                $totales_por_mes[$mes] = 0;
+            }
+
+            $totales_por_mes[$mes] += $registro->valor_devengo - $registro->valor_deduccion;
+        }
+
+        $fecha_mes = Carbon::createFromFormat('Y-m-d', $fecha_final)->startOfMonth();
+        $ultimos_tres_meses = [];
+        for ($i = 0; $i < 3; $i++)
+        {
+            $mes = $fecha_mes->copy()->subMonths($i)->format('Y-m');
+            if (!isset($totales_por_mes[$mes]))
+            {
+                return null;
+            }
+            $ultimos_tres_meses[] = (float)$totales_por_mes[$mes];
+        }
+
+        if ((max($ultimos_tres_meses) - min($ultimos_tres_meses)) > 1)
+        {
+            return null;
+        }
+
+        return $ultimos_tres_meses[0] / 30;
+    }
+
     public static function get_agrupacion_validada($nom_agrupacion_id)
     {
         $agrupacion = AgrupacionConcepto::with('conceptos')->find((int)$nom_agrupacion_id);

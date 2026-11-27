@@ -247,6 +247,59 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$docentes_prestaciones_contrato_parcial = 'tiempo_real';
+								if ( isset($parametros['docentes_prestaciones_contrato_parcial']) )
+								{
+									$docentes_prestaciones_contrato_parcial = $parametros['docentes_prestaciones_contrato_parcial'];
+								}
+							?>
+							{{ Form::bsSelect(
+								'docentes_prestaciones_contrato_parcial',
+								$docentes_prestaciones_contrato_parcial,
+								'Prestaciones de docentes con contrato inferior al año escolar',
+								[
+									'tiempo_real' => 'Liquidar únicamente el tiempo realmente trabajado',
+									'proporcional_anio_escolar' => 'Proyectar proporcionalmente: 12 meses por cada 10 trabajados'
+								],
+								['class'=>'form-control', 'required'=>'required']
+							) }}
+							<small class="help-block">
+								Aplica a cesantías, intereses de cesantías y vacaciones de cotizantes tipo 22.
+								La prima usa esta opción solamente cuando se activa el pago de prima completa.
+							</small>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$pagar_prima_completa_docentes = '0';
+								if ( isset($parametros['pagar_prima_completa_docentes']) )
+								{
+									$pagar_prima_completa_docentes = $parametros['pagar_prima_completa_docentes'];
+								}
+							?>
+							{{ Form::bsSelect(
+								'pagar_prima_completa_docentes',
+								$pagar_prima_completa_docentes,
+								'Pagar prima completa en liquidación de docentes',
+								['0' => 'No', '1' => 'Sí'],
+								['class'=>'form-control', 'required'=>'required']
+							) }}
+							<small class="help-block">
+								Sí: cada 10 meses de prima equivalen a 12 para cotizantes tipo 22.
+								En contratos parciales respeta la opción configurada en el campo anterior.
+							</small>
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros generación Plaanilla integrada Autoliquidación de Aportes (PILA)  </h4>
 				<hr>
 				<div class="row">

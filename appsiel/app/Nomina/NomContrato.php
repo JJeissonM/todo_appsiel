@@ -10,6 +10,7 @@ use App\Nomina\NomDocRegistro;
 use App\Nomina\ParametroLegal;
 use App\Nomina\CambioSalario;
 use App\Nomina\ParametrosRetefuenteEmpleado;
+use App\Nomina\ModosLiquidacion\Estrategias\PrestacionSocial;
 use App\Compras\ProveedorCuentaBancaria;
 use App\Core\Ciudad;
 use App\Tesoreria\TesoEntidadFinanciera;
@@ -19,6 +20,9 @@ use Illuminate\Support\Facades\Input;
 
 class NomContrato extends Model
 {
+    const DOCENTE_PRESTACIONES_PARCIAL_TIEMPO_REAL = 'tiempo_real';
+    const DOCENTE_PRESTACIONES_PARCIAL_PROPORCIONAL = 'proporcional_anio_escolar';
+
     //protected $table = 'nom_contratos';
     /**
      * clase_contrato = { normal | labor_contratada | por_turnos }
@@ -274,16 +278,94 @@ class NomContrato extends Model
         return $valor_ibc->valor_ibc_mes;
     }
 
-    public function dias_laborados_adicionales_docentes()
+    public function dias_laborados_adicionales_docentes(
+        $fecha_inicial = null,
+        $fecha_final = null,
+        $dias_reales_laborados = null
+    )
     {
-        // Verificar si tiene movimiento en 10 meses del año
-        $cantidad_meses_laborados = NomDocRegistro::where('nom_contrato_id',$this->id)->groupBy('fecha')->get()->count();
-        if( $cantidad_meses_laborados >= 10 )
+        if ((string)$this->tipo_cotizante !== '22'
+            || empty($fecha_inicial)
+            || empty($fecha_final)
+            || empty($this->fecha_ingreso)
+            || empty($this->contrato_hasta)
+            || $this->contrato_hasta === '0000-00-00')
         {
-            return (12 - $cantidad_meses_laborados ) * 30;
+            return 0;
         }
 
-        return 0;
+        // La equivalencia especial solo procede cuando el periodo liquidado
+        // comprende todo el contrato pactado.
+        if ($fecha_inicial > $this->fecha_ingreso || $fecha_final < $this->contrato_hasta)
+        {
+            return 0;
+        }
+
+        $dias_anio_escolar = PrestacionSocial::calcular_dias_laborados_calendario_30_dias(
+            $this->fecha_ingreso,
+            $this->contrato_hasta
+        );
+
+        if ($dias_anio_escolar >= 300 && $dias_anio_escolar < 360)
+        {
+            // En el calendario laboral 30/360, febrero a noviembre son 300 días.
+            // El artículo 102 del CST los equipara a 360 días exclusivamente para
+            // cesantías y vacaciones (y los intereses derivados de las cesantías).
+            return 360 - $dias_anio_escolar;
+        }
+
+        if ($dias_anio_escolar <= 0 || $dias_anio_escolar >= 300)
+        {
+            return 0;
+        }
+
+        if (config(
+            'nomina.docentes_prestaciones_contrato_parcial',
+            self::DOCENTE_PRESTACIONES_PARCIAL_TIEMPO_REAL
+        ) !== self::DOCENTE_PRESTACIONES_PARCIAL_PROPORCIONAL)
+        {
+            return 0;
+        }
+
+        if (is_null($dias_reales_laborados))
+        {
+            $dias_reales_laborados = $dias_anio_escolar;
+        }
+
+        // Cada día efectivamente trabajado equivale a 1,2 días para estas
+        // prestaciones: 12 meses reconocidos por cada 10 meses trabajados.
+        return $dias_reales_laborados * 2 / 10;
+    }
+
+    public function dias_prima_adicionales_docentes($dias_reales_laborados)
+    {
+        if ((string)$this->tipo_cotizante !== '22'
+            || (int)config('nomina.pagar_prima_completa_docentes', 0) !== 1
+            || $dias_reales_laborados <= 0
+            || empty($this->fecha_ingreso)
+            || empty($this->contrato_hasta)
+            || $this->contrato_hasta === '0000-00-00')
+        {
+            return 0;
+        }
+
+        $dias_contrato = PrestacionSocial::calcular_dias_laborados_calendario_30_dias(
+            $this->fecha_ingreso,
+            $this->contrato_hasta
+        );
+
+        $es_anio_escolar_completo = $dias_contrato >= 300 && $dias_contrato < 360;
+        $proyectar_contrato_parcial = config(
+            'nomina.docentes_prestaciones_contrato_parcial',
+            self::DOCENTE_PRESTACIONES_PARCIAL_TIEMPO_REAL
+        ) === self::DOCENTE_PRESTACIONES_PARCIAL_PROPORCIONAL;
+
+        if (!$es_anio_escolar_completo && !$proyectar_contrato_parcial)
+        {
+            return 0;
+        }
+
+        return $dias_reales_laborados * 2 / 10;
     }
 
     public function get_registros_documentos_nomina_entre_fechas($fecha_inicial, $fecha_final)

@@ -274,6 +274,17 @@ class ConfiguracionController extends ModeloController
                 'ea_tipo_doc_app_id.exists' => 'El documento para entradas de almacén debe existir y estar activo.',
             ]);
         }
+        if ($app->app == 'nomina') {
+            $this->validate($request, [
+                'docentes_prestaciones_contrato_parcial' => 'required|in:tiempo_real,proporcional_anio_escolar',
+                'pagar_prima_completa_docentes' => 'required|in:0,1',
+            ], [
+                'docentes_prestaciones_contrato_parcial.required' => 'Seleccione cómo liquidar las prestaciones de docentes con contrato parcial.',
+                'docentes_prestaciones_contrato_parcial.in' => 'La opción de prestaciones para docentes con contrato parcial no es válida.',
+                'pagar_prima_completa_docentes.required' => 'Seleccione si se debe pagar la prima completa a los docentes.',
+                'pagar_prima_completa_docentes.in' => 'La opción para pagar la prima completa a docentes no es válida.',
+            ]);
+        }
 
 
         $array = [];

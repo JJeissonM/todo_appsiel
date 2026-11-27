@@ -199,6 +199,13 @@ class ConsolidadoPrestacionesController extends TransaccionController
 
                 $dias_totales_laborados = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final_promedios );
 
+                if ( $prestacion == 'prima_legal' )
+                {
+                    $dias_totales_laborados += $empleado->dias_prima_adicionales_docentes(
+                        $dias_totales_laborados
+                    );
+                }
+
                 $dias_base_legales = 360;
                 if ( $prestacion == 'prima_legal' )
                 {

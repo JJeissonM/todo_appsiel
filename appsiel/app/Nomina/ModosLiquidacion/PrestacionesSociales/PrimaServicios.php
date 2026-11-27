@@ -196,6 +196,23 @@ class PrimaServicios implements Estrategia
                 break;
         }
 
+        if ($parametros_prestacion->base_liquidacion == 'promedio_agrupacion')
+        {
+            $base_diaria_docente = PrestacionSocial::get_valor_base_diaria_docente_salario_estable(
+                $empleado,
+                $parametros_prestacion->nom_agrupacion_id,
+                $fecha_inicial,
+                $fecha_final
+            );
+
+            if (!is_null($base_diaria_docente))
+            {
+                $valor_base_diaria = $base_diaria_docente;
+                $this->tabla_resumen['valor_acumulado_agrupacion'] = $base_diaria_docente * $cantidad_dias;
+                $this->tabla_resumen['valor_agrupacion_x_dia'] = $base_diaria_docente;
+            }
+        }
+
         return $valor_base_diaria;
     }
 
@@ -261,7 +278,13 @@ class PrimaServicios implements Estrategia
 
         $dias_totales_laborados = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial, $this->fecha_final_liquidacion );
 
+        $dias_adicionales_docente = $empleado->dias_prima_adicionales_docentes(
+            $dias_totales_laborados
+        );
+        $dias_totales_laborados += $dias_adicionales_docente;
+
         $dias_calendario_laborados = PrestacionSocial::calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $this->fecha_final_liquidacion );
+        $dias_calendario_laborados += $dias_adicionales_docente;
 
         $dias_totales_no_laborados = $dias_calendario_laborados - $dias_totales_laborados;
 
