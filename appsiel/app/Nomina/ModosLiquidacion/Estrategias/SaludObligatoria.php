@@ -30,7 +30,7 @@ class SaludObligatoria implements Estrategia
         // Un concepto de seguridad social tiene una agrupación de conceptos para el cálculo de su valor; se deben suman los valores liquidados de cada concepto de su Agrupación para cálculo
         $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $liquidacion['concepto']->nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 
-        $tiempo_a_liquidar =  NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
+        $tiempo_a_liquidar = (float) NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'nom_doc_encabezado_id', $liquidacion['documento_nomina']->id )
                                             ->where( 'core_tercero_id', $liquidacion['empleado']->core_tercero_id )
                                             ->sum('cantidad_horas');

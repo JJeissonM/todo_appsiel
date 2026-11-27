@@ -131,6 +131,46 @@ class FondoSolidaridadPensionalTest extends TestCase
         $this->assertSame(1, DB::table('nom_doc_registros')->where('nom_concepto_id', 74)->count());
     }
 
+    /** @test */
+    public function normaliza_cantidad_de_horas_nula_al_almacenar_un_registro_automatico()
+    {
+        $usuario = new User(['email' => 'pruebas@appsiel.test']);
+
+        (new NominaController())->almacenar_linea_registro_documento(
+            NomDocEncabezado::find(1),
+            NomContrato::find(10),
+            \App\Nomina\NomConcepto::find(73),
+            [
+                'cantidad_horas' => null,
+                'valor_devengo' => 0,
+                'valor_deduccion' => 200000,
+            ],
+            $usuario
+        );
+
+        $registro = DB::table('nom_doc_registros')->where('nom_concepto_id', 73)->first();
+
+        $this->assertNotNull($registro);
+        $this->assertSame(0.0, (float) $registro->cantidad_horas);
+        $this->assertSame(200000.0, (float) $registro->valor_deduccion);
+    }
+
+    /** @test */
+    public function pension_convierte_a_cero_la_suma_de_horas_nulas()
+    {
+        DB::table('nom_doc_registros')->where('id', 1)->update(['cantidad_horas' => null]);
+
+        $liquidacion = new LiquidacionConcepto(
+            73,
+            NomContrato::find(10),
+            NomDocEncabezado::find(1)
+        );
+
+        $valores = (new \App\Nomina\ModosLiquidacion\Estrategias\PensionObligatoria())->calcular($liquidacion);
+
+        $this->assertSame(0.0, $valores[0]['cantidad_horas']);
+    }
+
     protected function crearEsquema()
     {
         Schema::create('nom_parametros_legales', function (Blueprint $table) {
@@ -185,9 +225,12 @@ class FondoSolidaridadPensionalTest extends TestCase
             $table->integer('nom_concepto_id');
             $table->integer('novedad_tnl_id')->nullable();
             $table->date('fecha');
-            $table->decimal('cantidad_horas', 10, 2)->default(0);
+            $table->decimal('cantidad_horas', 10, 2)->nullable()->default(0);
             $table->decimal('valor_devengo', 15, 2)->default(0);
             $table->decimal('valor_deduccion', 15, 2)->default(0);
+            $table->string('estado')->nullable();
+            $table->string('creado_por')->nullable();
+            $table->string('modificado_por')->nullable();
             $table->timestamps();
         });
         Schema::create('nom_elect_cat_cptos_dian', function (Blueprint $table) {

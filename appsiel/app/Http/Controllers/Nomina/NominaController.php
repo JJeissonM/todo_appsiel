@@ -201,13 +201,9 @@ class NominaController extends TransaccionController
 
             foreach( $valores as $registro )
             {
-                $cantidad_horas = 0;
-                if( isset($registro['cantidad_horas'] ) )
-                {
-                    $cantidad_horas = $registro['cantidad_horas'];
-                }
+                $registro = $this->normalizar_valores_registro_liquidacion($registro);
 
-                if( ( $registro['valor_devengo'] + $registro['valor_deduccion']  + $cantidad_horas ) != 0 )
+                if( ( $registro['valor_devengo'] + $registro['valor_deduccion']  + $registro['cantidad_horas'] ) != 0 )
                 {
                     $registro['valor_devengo'] = round( $registro['valor_devengo'], 0);
                     $registro['valor_deduccion'] = round( $registro['valor_deduccion'], 0);
@@ -263,6 +259,12 @@ class NominaController extends TransaccionController
 
     public function almacenar_linea_registro_documento($documento_nomina, $empleado, $concepto, $registro, $usuario)
     {
+        // Algunas liquidaciones (por ejemplo, seguridad social en una liquidación
+        // de contrato) no tienen una cantidad de horas asociada. La columna es
+        // obligatoria en la base de datos, por lo que esos valores deben
+        // persistirse como cero y no como NULL.
+        $registro = $this->normalizar_valores_registro_liquidacion($registro);
+
         NomDocRegistro::create(
                                     ['nom_doc_encabezado_id' => $documento_nomina->id ] + 
                                     ['fecha' => $documento_nomina->fecha] + 
@@ -275,6 +277,17 @@ class NominaController extends TransaccionController
                                     ['modificado_por' => '']+ 
                                     $registro
                                 );
+    }
+
+    protected function normalizar_valores_registro_liquidacion(array $registro)
+    {
+        foreach (['cantidad_horas', 'valor_devengo', 'valor_deduccion'] as $campo) {
+            if (!isset($registro[$campo]) || $registro[$campo] === '') {
+                $registro[$campo] = 0;
+            }
+        }
+
+        return $registro;
     }
 
     /**

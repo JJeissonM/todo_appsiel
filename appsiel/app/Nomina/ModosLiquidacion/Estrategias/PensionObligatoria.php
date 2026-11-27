@@ -43,7 +43,7 @@ class PensionObligatoria implements Estrategia
                                             ->where( 'core_tercero_id', $liquidacion['empleado']->core_tercero_id )
                                             ->sum('valor_deduccion');
 
-        $tiempo_a_liquidar =  NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
+        $tiempo_a_liquidar = (float) NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'nom_doc_encabezado_id', $liquidacion['documento_nomina']->id )
                                             ->where( 'core_tercero_id', $liquidacion['empleado']->core_tercero_id )
                                             ->sum('cantidad_horas');
