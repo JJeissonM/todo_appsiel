@@ -93,6 +93,50 @@ class PrestacionesLiquidadas extends Model
 		}
 	}
 
+	/**
+	 * Indica si una prestación fue liquidada por terminación de contrato
+	 * dentro del periodo que se está consolidando.
+	 *
+	 * Se consulta nom_prestaciones_liquidadas, y no solamente los registros
+	 * del documento, para que retirar una prestación también retire la señal
+	 * de cierre del consolidado.
+	 */
+	public static function existe_prestacion_terminacion_entre_fechas(
+		$nom_contrato_id,
+		$prestacion,
+		$fecha_inicial,
+		$fecha_final
+	) {
+		$registros = self::join(
+								'nom_doc_encabezados',
+								'nom_doc_encabezados.id',
+								'=',
+								'nom_prestaciones_liquidadas.nom_doc_encabezado_id'
+							)
+							->where('nom_prestaciones_liquidadas.nom_contrato_id', $nom_contrato_id)
+							->where('nom_doc_encabezados.tipo_liquidacion', 'terminacion_contrato')
+							->whereBetween(
+								'nom_prestaciones_liquidadas.fecha_final_promedios',
+								[$fecha_inicial, $fecha_final]
+							)
+							->select('nom_prestaciones_liquidadas.prestaciones_liquidadas')
+							->get();
+
+		foreach ($registros as $registro)
+		{
+			foreach (self::get_prestaciones_desde_json($registro->prestaciones_liquidadas) as $prestacion_liquidada)
+			{
+				if (isset($prestacion_liquidada->prestacion)
+					&& $prestacion_liquidada->prestacion == $prestacion)
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public static function consultar_registros($nro_registros, $search)
 	{
 	    return PrestacionesLiquidadas::leftJoin('nom_doc_encabezados','nom_doc_encabezados.id','=','nom_prestaciones_liquidadas.nom_doc_encabezado_id')

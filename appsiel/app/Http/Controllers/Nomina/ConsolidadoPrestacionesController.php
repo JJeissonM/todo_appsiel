@@ -15,6 +15,7 @@ use App\Nomina\NomContrato;
 
 use App\Nomina\ParametroLiquidacionPrestacionesSociales;
 use App\Nomina\ConsolidadoPrestacionesSociales;
+use App\Nomina\PrestacionesLiquidadas;
 
 use App\Nomina\ModosLiquidacion\Estrategias\PrestacionSocial;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +24,8 @@ use Illuminate\Support\Facades\View;
 
 class ConsolidadoPrestacionesController extends TransaccionController
 {
+    const OBSERVACION_CIERRE_TERMINACION = 'CIERRE POR TERMINACION DE CONTRATO.';
+
     protected $valor_consolidado_mes_cesantias = 0;
 
     /*
@@ -232,6 +235,25 @@ class ConsolidadoPrestacionesController extends TransaccionController
 
                 $valor_acumulado =  $valor_acumulado_mes_anterior - $valor_pagado_mes + $valor_consolidado_mes;
                 $dias_acumulados = 0;
+                $observacion = '';
+
+                $prestacion_liquidada_por_terminacion = PrestacionesLiquidadas::existe_prestacion_terminacion_entre_fechas(
+                    $empleado->id,
+                    $prestacion,
+                    $fecha_inicial_promedios[0] . '-' . $fecha_inicial_promedios[1] . '-01',
+                    $fecha_final_promedios
+                );
+
+                $valores_cierre = $this->aplicar_cierre_por_terminacion(
+                    $valor_acumulado_mes_anterior,
+                    $valor_pagado_mes,
+                    $valor_consolidado_mes,
+                    $prestacion_liquidada_por_terminacion
+                );
+                $valor_pagado_mes = $valores_cierre['valor_pagado_mes'];
+                $valor_acumulado = $valores_cierre['valor_acumulado'];
+                $dias_acumulados = $valores_cierre['dias_acumulados'];
+                $observacion = $valores_cierre['observacion'];
 
                 if ( $request->almacenar_registros )
                 {
@@ -243,6 +265,29 @@ class ConsolidadoPrestacionesController extends TransaccionController
 
                     if ( !is_null( $consolidado_mes ) )
                     {
+                        // Se permite actualizar únicamente el cierre por terminación.
+                        // Así una reliquidación es idempotente y, si se retira la
+                        // prestación, el consolidado recupera el cálculo ordinario.
+                        if ( $this->debe_actualizar_consolidado_existente(
+                            $consolidado_mes,
+                            $prestacion_liquidada_por_terminacion
+                        ) )
+                        {
+                            $consolidado_mes->valor_acumulado_mes_anterior = round($valor_acumulado_mes_anterior, 0);
+                            $consolidado_mes->valor_pagado_mes = round($valor_pagado_mes, 0);
+                            $consolidado_mes->valor_consolidado_mes = round($valor_consolidado_mes, 0);
+                            $consolidado_mes->dias_consolidado_mes = $dias_totales_liquidacion;
+                            $consolidado_mes->valor_acumulado = round($valor_acumulado, 0);
+                            $consolidado_mes->dias_acumulados = $dias_acumulados;
+                            $consolidado_mes->observacion = $observacion;
+                            $consolidado_mes->dias_totales_laborados = $dias_totales_laborados;
+                            $consolidado_mes->estado = 'Activo';
+                            $consolidado_mes->save();
+
+                            $lista_consolidados[] = $consolidado_mes;
+                            continue;
+                        }
+
                         $lista_consolidados[] = (object)[
                                                         'tercero' => (object)[ 'descripcion' => $empleado->tercero->descripcion, 'numero_identificacion' => $empleado->tercero->numero_identificacion],
                                                         'tipo_prestacion'=> $prestacion,
@@ -253,7 +298,7 @@ class ConsolidadoPrestacionesController extends TransaccionController
                                                         'dias_consolidado_mes' => $dias_totales_liquidacion,
                                                         'valor_acumulado' => $valor_acumulado,
                                                         'dias_acumulados' => $dias_acumulados,
-                                                        'observacion' => '',
+                                                        'observacion' => $observacion,
                                                         'dias_totales_laborados' => $dias_totales_laborados,
                                                         'estado' => 'Advertencia. La prestación ya tiene almacenados registros consolidados para el mes actual.'
                                                     ];
@@ -270,7 +315,7 @@ class ConsolidadoPrestacionesController extends TransaccionController
                                                             [ 'dias_consolidado_mes' => $dias_totales_liquidacion ] + 
                                                             [ 'valor_acumulado' => round( $valor_acumulado, 0) ] + 
                                                             [ 'dias_acumulados' => $dias_acumulados ] + 
-                                                            [ 'observacion' => '' ] + 
+                                                            [ 'observacion' => $observacion ] +
                                                             [ 'dias_totales_laborados' => $dias_totales_laborados ] + 
                                                             [ 'estado' => 'Activo' ]
                                                         );
@@ -285,7 +330,7 @@ class ConsolidadoPrestacionesController extends TransaccionController
                                                         'dias_consolidado_mes' => $dias_totales_liquidacion,
                                                         'valor_acumulado' => $valor_acumulado,
                                                         'dias_acumulados' => $dias_acumulados,
-                                                        'observacion' => '',
+                                                        'observacion' => $observacion,
                                                         'dias_totales_laborados' => $dias_totales_laborados,
                                                         'estado' => 'Activo'
                                                     ];
@@ -294,6 +339,51 @@ class ConsolidadoPrestacionesController extends TransaccionController
         }
 
         return View::make( 'nomina.reportes.tabla_consolidados_prestaciones_sociales', compact( 'lista_consolidados' ) )->render();
+    }
+
+    protected function aplicar_cierre_por_terminacion(
+        $valor_acumulado_mes_anterior,
+        $valor_pagado_mes,
+        $valor_consolidado_mes,
+        $prestacion_liquidada_por_terminacion
+    ) {
+        $resultado = [
+            'valor_pagado_mes' => $valor_pagado_mes,
+            'valor_acumulado' => $valor_acumulado_mes_anterior - $valor_pagado_mes + $valor_consolidado_mes,
+            'dias_acumulados' => 0,
+            'observacion' => ''
+        ];
+
+        if ( !$prestacion_liquidada_por_terminacion )
+        {
+            return $resultado;
+        }
+
+        // El valor aplicado a la provisión debe cancelar exactamente el saldo
+        // anterior más la provisión causada durante el último mes del contrato.
+        $resultado['valor_pagado_mes'] = $valor_acumulado_mes_anterior + $valor_consolidado_mes;
+        $resultado['valor_acumulado'] = 0;
+        $resultado['dias_acumulados'] = 0;
+        $resultado['observacion'] = self::OBSERVACION_CIERRE_TERMINACION
+            . ' Valor liquidado en nomina: ' . round($valor_pagado_mes, 0)
+            . '. Valor aplicado al consolidado: ' . round($resultado['valor_pagado_mes'], 0) . '.';
+
+        return $resultado;
+    }
+
+    protected function debe_actualizar_consolidado_existente(
+        ConsolidadoPrestacionesSociales $consolidado,
+        $prestacion_liquidada_por_terminacion
+    ) {
+        if ( $prestacion_liquidada_por_terminacion )
+        {
+            return true;
+        }
+
+        return strpos(
+            (string)$consolidado->observacion,
+            self::OBSERVACION_CIERRE_TERMINACION
+        ) === 0;
     }
 
     public function get_valor_pagado_mes( $fecha_inicial, $fecha_final, $nom_contrato_id, $nom_concepto_id, $prestacion )
